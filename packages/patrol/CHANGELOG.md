@@ -1,4 +1,4 @@
-## Unreleased
+## 4.9.0
 
 - Fix macOS builds failing with `module 'PatrolImpl' not found` under Swift Package Manager (#3177). The public `patrol` module no longer `@import`s the Swift implementation; `PatrolPlugin` is ObjC and macro-facing types are declared as ObjC interfaces in the umbrella, so app builds and RunnerUITests keep working with a single `@import patrol` / `import patrol`.
 - Add Marathon integration for running Patrol tests on Android and iOS simulators. See the [Marathon integration guide](https://patrol.leancode.co/documentation/integrations/marathon).

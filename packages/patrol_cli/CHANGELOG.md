@@ -1,10 +1,6 @@
-## 4.6.1
+## 4.7.0
 
-- Fix `patrol develop` printing "You must specify a --flavor option" on iOS/macOS projects with schemes, by passing the flavor to `flutter attach`.
-- Fail fast with a clear error instead of hanging on gradlew when the Android SDK can't be located (`sdk.dir` missing from `android/local.properties` after the config-only build). (#3168)
-
-## Unreleased
-
+- **Requires `patrol` 4.9.0 or newer.**
 - Pass `-Ppatrol-enabled=true` to Android Gradle builds so apps can detect a Patrol build.
 - Support running Patrol tests on multiple iOS simulators in parallel, by reading the native automation ports at runtime in the generated test bundle. See the [Marathon integration guide](https://patrol.leancode.co/documentation/integrations/marathon).
 - Add experimental build-time test discovery, enabled with `patrol.emit_test_manifest` in
@@ -16,6 +12,11 @@
   discovery. (#3197)
 - Add `--record-video` flag to `patrol test` and `patrol develop` to record a video per test case (Android and iOS simulators). (#2741)
 - Fix `patrol test`/`patrol develop` not reading logs from iOS simulators, by streaming the simulator's log via `simctl spawn`. (#3198)
+
+## 4.6.1
+
+- Fix `patrol develop` printing "You must specify a --flavor option" on iOS/macOS projects with schemes, by passing the flavor to `flutter attach`.
+- Fail fast with a clear error instead of hanging on gradlew when the Android SDK can't be located (`sdk.dir` missing from `android/local.properties` after the config-only build). (#3168)
 
 ## 4.6.0
 
