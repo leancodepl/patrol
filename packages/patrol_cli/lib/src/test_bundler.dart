@@ -238,19 +238,18 @@ Future<void> main() async {
     config: PlatformAutomatorConfig.defaultConfig(),
   );
   await platformAutomator.initialize();
-  
+
   PatrolBinding.ensureInitialized(platformAutomator)
     ..workaroundDebugDefaultTargetPlatformOverride =
         debugDefaultTargetPlatformOverride;
 
-  await PatrolRuntimePorts.ensureLoaded();
-
   // START: GENERATED TEST GROUPS
 ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e').join('\n')}
   // END: GENERATED TEST GROUPS
+
+  await PatrolRuntimePorts.ensureLoaded();
 }
 ''';
-
     final bundle = getBundledTestFile(testDirectory)
       ..createSync(recursive: true)
       ..writeAsStringSync(contents);
