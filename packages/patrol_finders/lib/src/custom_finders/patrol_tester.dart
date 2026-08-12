@@ -987,11 +987,19 @@ class PatrolTester {
   /// that a scrolling [Scrollable] keeps over its contents.
   void _stopInProgressScrolling() {
     for (final element in find.byType(Scrollable).evaluate()) {
-      final state = (element as StatefulElement).state;
+      if (element is! StatefulElement) {
+        continue;
+      }
+      final state = element.state;
       if (state is ScrollableState) {
-        final position = state.position;
-        if (position.isScrollingNotifier.value && position.hasPixels) {
-          position.jumpTo(position.pixels);
+        try {
+          final position = state.position;
+          if (position.isScrollingNotifier.value && position.hasPixels) {
+            position.jumpTo(position.pixels);
+          }
+        } catch (_) {
+          // A scrollable whose position is not yet established can't be
+          // mid-fling, so skipping it is safe.
         }
       }
     }
