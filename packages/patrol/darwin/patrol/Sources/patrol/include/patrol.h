@@ -27,6 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// against module `patrol` without importing the Swift module.
 @interface PatrolServer : NSObject
 @property(nonatomic, assign) BOOL appReady;
+@property(nonatomic, readonly) NSInteger boundTestPort;
+@property(nonatomic, readonly) NSInteger boundAppPort;
 - (instancetype)init;
 - (BOOL)startAndReturnError:(NSError *_Nullable *_Nullable)error;
 @end
@@ -39,6 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ObjCPatrolAppServiceClient : NSObject
 - (instancetype)init;
+- (instancetype)initWithPort:(NSInteger)port;
 - (void)listDartTestsWithCompletion:(void (^)(NSArray<NSDictionary *> *_Nullable tests,
                                               NSError *_Nullable error))completion;
 - (void)runDartTestWithName:(NSString *)name

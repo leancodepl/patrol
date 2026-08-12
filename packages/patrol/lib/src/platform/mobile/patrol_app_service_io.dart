@@ -8,6 +8,7 @@ import 'package:patrol/patrol.dart';
 import 'package:patrol/src/common.dart';
 import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:patrol/src/platform/contracts/patrol_app_service_server.dart';
+import 'package:patrol/src/platform/mobile/patrol_runtime_ports.dart';
 import 'package:patrol_log/patrol_log.dart';
 import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as shelf_io;
@@ -54,14 +55,21 @@ Future<void> runAppService(PatrolAppService service) async {
 /// the generated code can access it.
 class PatrolAppService extends PatrolAppServiceServer {
   /// Creates a new [PatrolAppService].
-  PatrolAppService({required this.topLevelDartTestGroup})
-    : port = const int.fromEnvironment(
-        'PATROL_APP_SERVER_PORT',
-        defaultValue: 8082,
-      );
+  PatrolAppService({required this.topLevelDartTestGroup});
 
   /// Port the server will use to listen for incoming HTTP traffic.
-  final int port;
+  int get port => _resolveAppServerPort();
+
+  static int _resolveAppServerPort() {
+    final injectedPort = PatrolRuntimePorts.appServerPort();
+    if (injectedPort != null) {
+      return injectedPort;
+    }
+    return const int.fromEnvironment(
+      'PATROL_APP_SERVER_PORT',
+      defaultValue: 8082,
+    );
+  }
 
   /// The ambient test group that wraps all the other groups and tests in the
   /// bundled Dart test file.

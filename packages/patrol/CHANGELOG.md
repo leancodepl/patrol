@@ -1,6 +1,10 @@
 ## Unreleased
 
 - Fix macOS builds failing with `module 'PatrolImpl' not found` under Swift Package Manager (#3177). The public `patrol` module no longer `@import`s the Swift implementation; `PatrolPlugin` is ObjC and macro-facing types are declared as ObjC interfaces in the umbrella, so app builds and RunnerUITests keep working with a single `@import patrol` / `import patrol`.
+- Add Marathon integration for running Patrol tests on Android and iOS simulators. See the [Marathon integration guide](https://patrol.leancode.co/documentation/integrations/marathon).
+- Support build-time test discovery: add the static iOS runner macros
+  (`PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN`/`_END`), so each Dart test can be compiled
+  into a real native test instead of being registered after the app launches. (#3197)
 - Fix `AndroidNativeView.visibleBounds` always having zero height. (#3202)
 - Collect Chrome JavaScript coverage in the web runner when `patrol test --coverage` runs on the web platform.
 
