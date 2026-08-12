@@ -143,7 +143,11 @@ Check out our video version of this tutorial on YouTube!
           `<test-directory>/screenshots` after the run (override with
           `--screenshots-output-dir`; works with emulators too).
         - **BrowserStack App Automate**: enable the Espresso
-          `debugscreenshots: true` capability; images appear in the Screenshots tab.
+          `debugscreenshots: true` capability; images appear in the Screenshots
+          tab. Also enable build-time test discovery (`emit_test_manifest`)
+          so each test reports a URL-safe name — BrowserStack currently can't
+          render screenshot URLs with spaces/commas, which the default
+          `runDartTest[...]` names contain.
         - **Firebase Test Lab**: pass
           `--directories-to-pull=/sdcard/Download/screenshots` so the files are
           copied to the results bucket.
@@ -155,17 +159,10 @@ Check out our video version of this tutorial on YouTube!
         `patrol test`/`develop`. You can also capture on demand from a test with
         `await $.takeNativeScreenshot('tag')`.
 
-        `url_safe_test_names: true` sanitizes the reported Android JUnit test
-        names (`[^A-Za-z0-9._-]` → `_`) while keeping the original names for
-        execution. It keeps screenshot paths free of spaces/commas — mainly a
-        stopgap for BrowserStack, which currently can't render such URLs. Off by
-        default; when off, reported test names are unchanged.
-
         ```yaml title="pubspec.yaml (optional)"
         patrol:
           app_name: My App
           screenshot_on_failure: true
-          url_safe_test_names: true # only needed until BrowserStack fixes path rendering
           android:
             package_name: com.example.myapp
         ```

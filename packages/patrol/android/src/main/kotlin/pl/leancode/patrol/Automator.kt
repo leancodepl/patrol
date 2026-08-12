@@ -95,11 +95,12 @@ class Automator private constructor() {
 
     @Volatile private var currentLongitude: Double = 0.0
 
-    // Identity of the currently executing JUnit test, set by PatrolJUnitRunner.
-    // Used to name screenshots so BrowserStack associates them with the test.
-    @Volatile var currentDartTestName: String? = null
+    // JUnit identity of the currently running test, recorded by
+    // PatrolTestNameListener from the test's Description. Used verbatim to name
+    // screenshots so a device farm associates them with the reported test.
+    @Volatile var screenshotClassName: String? = null
 
-    @Volatile var testClassName: String? = null
+    @Volatile var screenshotMethodName: String? = null
 
     fun initialize() {
         if (!this::instrumentation.isInitialized) {
@@ -142,21 +143,22 @@ class Automator private constructor() {
 
     private fun delay(ms: Long = 1000) = SystemClock.sleep(ms)
 
-    // Captures the current device screen to the path BrowserStack's Espresso
+    // Captures the current device screen to the path a device farm's Espresso
     // debugscreenshots collector scans:
     // Downloads/screenshots/<className>/<methodName>/<timestamp>_<tag>.png.
-    // methodName is the reported JUnit name, used verbatim (no sanitization).
+    // className/methodName are the reported JUnit identity (from the test's
+    // Description), used verbatim so the folder matches what the farm reports.
     // Never throws into the test - a failed screenshot must not flake the test.
     fun takeNativeScreenshot(tag: String) {
         try {
-            // Set by PatrolJUnitRunner before any test runs; the class-name
-            // convention lives there and isn't duplicated here.
-            val className = testClassName
-            if (className == null) {
-                Logger.e("Native screenshot skipped: test class name is not set")
+            // Recorded by PatrolTestNameListener from the running test's
+            // Description; the JUnit identity isn't reconstructed here.
+            val className = screenshotClassName
+            val methodName = screenshotMethodName
+            if (className == null || methodName == null) {
+                Logger.e("Native screenshot skipped: no running JUnit test recorded")
                 return
             }
-            val methodName = "runDartTest[${currentDartTestName ?: "unknown"}]"
             // `tag` is public API input; sanitize it so a value with '/' (or
             // other path chars) can't break out of the target directory.
             val safeTag = tag.replace(Regex("[^A-Za-z0-9._-]"), "_")

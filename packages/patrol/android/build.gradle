@@ -60,7 +60,6 @@ android {
         minSdk 21
         buildConfigField("String", "PATROL_APP_PORT", project.hasProperty('app-server-port') ? '"' + project.getProperty('app-server-port') + '"' : '""')
         buildConfigField("String", "PATROL_TEST_PORT", project.hasProperty('test-server-port') ? '"' + project.getProperty('test-server-port') + '"' : '""')
-        buildConfigField("boolean", "PATROL_URL_SAFE_TEST_NAMES", project.hasProperty('url-safe-test-names') ? project.getProperty('url-safe-test-names') : 'false')
     }
 
     buildFeatures {

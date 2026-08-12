@@ -331,7 +331,6 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       uninstall: uninstall,
-      urlSafeTestNames: config.urlSafeTestNames,
       emitTestManifest: emitTestManifest,
     );
 

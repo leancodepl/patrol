@@ -6,8 +6,7 @@
   into a real native test instead of being registered after the app launches. (#3197)
 - Fix `AndroidNativeView.visibleBounds` always having zero height. (#3202)
 - Collect Chrome JavaScript coverage in the web runner when `patrol test --coverage` runs on the web platform.
-- Add opt-in native failure screenshots on Android for device farms (e.g. BrowserStack, Firebase Test Lab): set `screenshot_on_failure: true` in the pubspec's `patrol` section to capture the failing screen from the Dart failure path (before teardown). Patrol writes the PNG on-device; the farm collects it. Also adds `$.takeNativeScreenshot('tag')` for on-demand captures. Off by default; iOS is a no-op for now. (#3222)
-- Add opt-in `url_safe_test_names` (pubspec `patrol` section) that sanitizes reported Android JUnit test names to `[A-Za-z0-9._-]` while keeping the original names for execution. Stopgap so screenshot URLs render on BrowserStack; off by default (reported names unchanged when off). (#3222)
+- Add opt-in native failure screenshots on Android for device farms (e.g. BrowserStack, Firebase Test Lab): set `screenshot_on_failure: true` in the pubspec's `patrol` section to capture the failing screen from the Dart failure path (before teardown). The screenshot is written to the folder named after the running JUnit test (read from its `Description`), so it matches what the farm reports. Also adds `$.takeNativeScreenshot('tag')` for on-demand captures. Off by default; iOS is a no-op for now. (#3222)
 
 ## 4.8.0
 

@@ -198,7 +198,6 @@ class BuildAndroidCommand extends PatrolCommand {
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       uninstall: uninstall,
-      urlSafeTestNames: config.urlSafeTestNames,
       emitTestManifest:
           optionalBoolArg('emit-test-manifest') ?? config.emitTestManifest,
     );

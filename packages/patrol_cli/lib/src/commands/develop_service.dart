@@ -244,7 +244,6 @@ class DevelopService {
       appServerPort: options.appServerPort,
       testServerPort: options.testServerPort,
       uninstall: options.uninstall,
-      urlSafeTestNames: config.urlSafeTestNames,
     );
 
     final iosOpts = IOSAppOptions(

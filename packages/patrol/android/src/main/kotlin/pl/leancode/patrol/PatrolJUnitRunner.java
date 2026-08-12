@@ -35,14 +35,6 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
     public PatrolAppServiceClient patrolAppServiceClient;
     private Map<String, Boolean> dartTestCaseSkipMap = new HashMap<>();
 
-    // Maps the reported JUnit name (possibly URL-safe) to the real Dart test
-    // name used for execution. Identity mapping unless url-safe names are on.
-    private final Map<String, String> reportedNameToDartName = new HashMap<>();
-
-    // When true, reported JUnit names are sanitized to be URL-safe so screenshot
-    // paths render on BrowserStack. The original name is kept for execution.
-    private final boolean urlSafeTestNames = BuildConfig.PATROL_URL_SAFE_TEST_NAMES;
-
     @Override
     protected boolean shouldWaitForActivitiesToComplete() {
         return false;
@@ -50,6 +42,18 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
 
     @Override
     public void onCreate(Bundle arguments) {
+        // Register a RunListener that records each test's JUnit class/method
+        // (from its Description) so native screenshots can be named to match
+        // what the device farm reports for the test.
+        String listeners = arguments.getString("listener");
+        String patrolListener = PatrolTestNameListener.class.getName();
+        arguments.putString(
+                "listener",
+                listeners == null || listeners.isEmpty()
+                        ? patrolListener
+                        : listeners + "," + patrolListener
+        );
+
         super.onCreate(arguments);
 
         // This is only true when the ATO requests a list of tests from the app during the initial run.
@@ -93,13 +97,6 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         // It's simpler because we don't have the need for that much synchronization.
         // Currently, the only synchronization point we're interested in is when the app under test returns the list of tests.
         Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
-
-        // Record the JUnit test class so native screenshots are written to the
-        // path BrowserStack scans: Downloads/screenshots/<className>/<methodName>/.
-        // Use the app-under-test package (not the activity's, which may be a
-        // framework class such as FlutterActivity) as the MainActivityTest package.
-        String appPackage = instrumentation.getTargetContext().getPackageName();
-        Automator.Companion.getInstance().setTestClassName(appPackage + ".MainActivityTest");
 
         PatrolServer patrolServer = new PatrolServer();
         patrolServer.start(); // Gets killed when the instrumentation process dies. We're okay with this.
@@ -153,24 +150,8 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             List<DartGroupEntry> dartTestCases = ContractsExtensionsKt.listTestsFlat(dartTestGroup, "");
             List<String> dartTestCaseNamesList = new ArrayList<>();
             for (DartGroupEntry dartTestCase : dartTestCases) {
-                final String dartTestName = dartTestCase.getName();
-                dartTestCaseSkipMap.put(dartTestName, dartTestCase.getSkip());
-
-                // The reported name equals the Dart name unless url-safe names
-                // are on, in which case it is sanitized (de-duped on collision).
-                String reportedName = dartTestName;
-                if (urlSafeTestNames) {
-                    final String base = toUrlSafe(dartTestName);
-                    reportedName = base;
-                    int suffix = 2;
-                    while (reportedNameToDartName.containsKey(reportedName)) {
-                        reportedName = base + "_" + suffix++;
-                    }
-                    // Only needed to map the sanitized name back for execution.
-                    // When off, runDartTest falls back to the name as-is.
-                    reportedNameToDartName.put(reportedName, dartTestName);
-                }
-                dartTestCaseNamesList.add(reportedName);
+                dartTestCaseSkipMap.put(dartTestCase.getName(), dartTestCase.getSkip());
+                dartTestCaseNamesList.add(dartTestCase.getName());
             }
             Object[] dartTestCaseNames = dartTestCaseNamesList.toArray();
             Logger.INSTANCE.i(TAG + "Got Dart tests: " + Arrays.toString(dartTestCaseNames));
@@ -186,19 +167,10 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
      * Throws AssertionError if the test fails.
      */
     public RunDartTestResponse runDartTest(String name) {
-        // `name` is the reported JUnit name; when url-safe names are enabled it
-        // is the sanitized form, so map it back to the real Dart test name.
-        String dartTestName = reportedNameToDartName.get(name);
-        if (dartTestName == null) {
-            dartTestName = name;
-        }
-
         // Runtime-discovery path: the skip flag was recorded by listDartTests().
         // Guard against a missing entry so a null Boolean can't NPE on unboxing.
-        final Boolean skip = dartTestCaseSkipMap.get(dartTestName);
-        // The reported JUnit method is runDartTest[<name>], so pass `name` as the
-        // reported name for native screenshot naming.
-        return runDartTest(dartTestName, Boolean.TRUE.equals(skip), name);
+        final Boolean skip = dartTestCaseSkipMap.get(name);
+        return runDartTest(name, Boolean.TRUE.equals(skip));
     }
 
     /**
@@ -213,17 +185,6 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
      * </p>
      */
     public RunDartTestResponse runDartTest(String name, boolean skip) {
-        // Called directly by the generated test class, which has no separate
-        // reported name; use the Dart name so a native screenshot isn't tagged
-        // "unknown".
-        return runDartTest(name, skip, name);
-    }
-
-    private RunDartTestResponse runDartTest(String name, boolean skip, String reportedName) {
-        // Expose the reported name so a Dart-triggered native screenshot names
-        // its file to match the folder the device farm scans for this test.
-        Automator.Companion.getInstance().setCurrentDartTestName(reportedName);
-
         final String TAG = "PatrolJUnitRunner.runDartTest(" + name + "): ";
 
         if (skip) {
@@ -243,11 +204,5 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             Logger.INSTANCE.e(TAG + e.getMessage(), e.getCause());
             throw new RuntimeException(e);
         }
-    }
-
-    // Replaces characters outside [A-Za-z0-9._-] with '_' so the name is safe to
-    // use in a screenshot path/URL. Only applied to the reported (JUnit) name.
-    private static String toUrlSafe(String name) {
-        return name.replaceAll("[^A-Za-z0-9._-]", "_");
     }
 }

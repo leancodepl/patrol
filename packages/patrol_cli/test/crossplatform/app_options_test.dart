@@ -82,7 +82,6 @@ void main() {
             '-Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true',
             '-Papp-server-port=1',
             '-Ptest-server-port=2',
-            '-Purl-safe-test-names=false',
           ]),
         );
       });
@@ -117,7 +116,6 @@ void main() {
             '-Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true',
             '-Papp-server-port=1',
             '-Ptest-server-port=2',
-            '-Purl-safe-test-names=false',
           ]),
         );
       });
@@ -160,7 +158,6 @@ void main() {
             '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg==',
             '-Papp-server-port=1',
             '-Ptest-server-port=2',
-            '-Purl-safe-test-names=false',
           ]),
         );
       });
@@ -195,7 +192,6 @@ void main() {
             '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg==',
             '-Papp-server-port=1',
             '-Ptest-server-port=2',
-            '-Purl-safe-test-names=false',
           ]),
         );
       });
@@ -231,7 +227,6 @@ void main() {
             '-Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true',
             '-Papp-server-port=1',
             '-Ptest-server-port=2',
-            '-Purl-safe-test-names=false',
           ]),
         );
       });

@@ -215,14 +215,15 @@ the run (override with `--screenshots-output-dir`). On device farms the farm
 collects them:
 
 - **BrowserStack App Automate**: enable the Espresso `debugscreenshots: true`
-  capability; images appear in the Screenshots tab.
+  capability; images appear in the Screenshots tab. Also enable build-time test
+  discovery (`emit_test_manifest`) so each test reports a URL-safe name —
+  BrowserStack can't render screenshot URLs with spaces/commas, which the
+  default `runDartTest[...]` names contain.
 - **Firebase Test Lab**: pass `--directories-to-pull=/sdcard/Download/screenshots`.
 
 <Info>
     Android only for now (a no-op on iOS). Works in the `patrol build android`
-    APK as well as `patrol test`. `url_safe_test_names: true` sanitizes the
-    reported JUnit names so screenshot paths render on BrowserStack (a stopgap;
-    off by default, reported names unchanged when off).
+    APK as well as `patrol test`.
 </Info>
 
 ### Web Platform

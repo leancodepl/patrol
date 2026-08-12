@@ -124,27 +124,6 @@ patrol:
         expect(reader.read().screenshotOnFailure, isTrue);
       });
 
-      test('defaults `url_safe_test_names` to false when absent', () {
-        fs.file('pubspec.yaml').writeAsStringSync('''
-$_pubspecBase
-patrol:
-  app_name: Example
-''');
-
-        expect(reader.read().urlSafeTestNames, isFalse);
-      });
-
-      test('reads `url_safe_test_names`', () {
-        fs.file('pubspec.yaml').writeAsStringSync('''
-$_pubspecBase
-patrol:
-  app_name: Example
-  url_safe_test_names: true
-''');
-
-        expect(reader.read().urlSafeTestNames, isTrue);
-      });
-
       test('overrides global values with platform-specific ones', () {
         fs.file('pubspec.yaml').writeAsStringSync('''
 $_pubspecBase
