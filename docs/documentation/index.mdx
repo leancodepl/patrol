@@ -612,36 +612,6 @@ Check out our video version of this tutorial on YouTube!
           ```
         </Step>
 
-        <Step id="add-build-phases">
-          Go to **RunnerUITests** -> **Build Phases** and add 2 new "Run Script Phase" Build Phases.
-            Rename them to `xcode_backend build` and `xcode_backend embed_and_thin` by double clicking
-            on their names.
-
-          ![Xcode config setup](/assets/macos_runner_build_phases_create.png)
-        </Step>
-
-        <Step id="order-build-phases">
-          Arrange the newly created Build Phases in the order shown in the screenshot below.
-
-          ![Xcode config setup](/assets/macos_runner_build_phases.png)
-        </Step>
-
-        <Step id="set-macos-assemble-build">
-          Paste this code into the first `macos_assemble build` Build Phase:
-
-          ```
-          /bin/sh "$FLUTTER_ROOT/packages/flutter_tools/bin/macos_assemble.sh" build
-          ```
-        </Step>
-
-        <Step id="set-macos-assemble-embed">
-          Paste this code into the second `macos_assemble embed` Build Phase:
-
-          ```
-          /bin/sh "$FLUTTER_ROOT/packages/flutter_tools/bin/macos_assemble.sh" embed
-          ```
-        </Step>
-
         <Step id="disable-parallel-execution">
           Xcode by default also enables a "parallel execution" setting, which
             breaks Patrol. Disable it **for all schemes** (if you have more than one):
