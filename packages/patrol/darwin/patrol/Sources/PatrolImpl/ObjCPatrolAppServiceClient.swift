@@ -1,7 +1,7 @@
 import Foundation
 
 /// Simplified objective-c RunDartTestResponse model that we use in PatrolIntegrationTestRunner.h
-@objc public class ObjCRunDartTestResponse: NSObject {
+@objc(ObjCRunDartTestResponse) public class ObjCRunDartTestResponse: NSObject {
   @objc public dynamic let passed: Bool
   @objc public dynamic let details: String?
 
@@ -16,7 +16,7 @@ import Foundation
 /// The client must do its work off the main thread. Otherwise, a deadlock will quickly appear.
 /// That's because the main thread is used by methods in ``Automator``, which perform
 /// various UI actions such as tapping, entering text, etc., and they must be called on the main thread.
-@objc public class ObjCPatrolAppServiceClient: NSObject {
+@objc(ObjCPatrolAppServiceClient) public class ObjCPatrolAppServiceClient: NSObject {
   private static let envPortKey = "PATROL_APP_PORT"
   private static let defaultPort = 8082
 
