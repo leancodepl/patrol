@@ -237,12 +237,18 @@ class DevelopService {
       buildNumber: options.buildNumber,
     );
 
+    // Develop bundles a single target, so the generated native tests cover
+    // only that one until the next `patrol build`.
+    final emitTestManifest =
+        options.emitTestManifest ?? config.emitTestManifest;
+
     final androidOpts = AndroidAppOptions(
       flutter: flutterOpts,
       packageName: packageName,
       appServerPort: options.appServerPort,
       testServerPort: options.testServerPort,
       uninstall: options.uninstall,
+      emitTestManifest: emitTestManifest,
     );
 
     final iosOpts = IOSAppOptions(
@@ -254,6 +260,7 @@ class DevelopService {
       osVersion: options.iosVersion ?? 'latest',
       appServerPort: options.appServerPort,
       testServerPort: options.testServerPort,
+      emitTestManifest: emitTestManifest,
     );
 
     final macosOpts = MacOSAppOptions(

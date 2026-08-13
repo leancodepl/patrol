@@ -1,3 +1,11 @@
+## Unreleased
+
+- Fix `patrol develop` ignoring build-time test discovery, which made every iOS develop build fail
+  with `'PatrolGeneratedTests.inc' file not found`. `patrol.emit_test_manifest` and
+  `--emit-test-manifest` now apply to `patrol develop` too, generating the tests for its `--target`.
+- Fail with an explanation when `RunnerUITests.m` uses the static runner while build-time discovery
+  is disabled, instead of letting the build die on the missing include.
+
 ## 4.7.0
 
 - **Requires `patrol` 4.9.0 or newer.**

@@ -127,6 +127,8 @@ class IOSTestBackend {
           );
         }
         _generateXcodeTests(manifestPath);
+      } else {
+        _verifyRuntimeRunnerSetup();
       }
 
       // flutter build ios --config-only
@@ -203,20 +205,10 @@ class IOSTestBackend {
   /// the STATIC macro and `#include`s that file; otherwise the build would
   /// silently fall back to runtime discovery, which is confusing.
   void _verifyStaticRunnerSetup() {
-    final runner = _rootDirectory
-        .childDirectory('ios')
-        .childDirectory('RunnerUITests')
-        .childFile('RunnerUITests.m');
-    if (!runner.existsSync()) {
-      // Missing target is surfaced by the regular xcodebuild step; nothing to
-      // guard here.
-      return;
-    }
-
-    final contents = runner.readAsStringSync();
-    const beginMacro = 'PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN';
-    const include = '#include "PatrolGeneratedTests.inc"';
-    if (contents.contains(beginMacro) && contents.contains(include)) {
+    final runner = _runnerFile;
+    // Missing target is surfaced by the regular xcodebuild step; nothing to
+    // guard here.
+    if (!runner.existsSync() || _usesStaticRunner(runner)) {
       return;
     }
 
@@ -231,6 +223,44 @@ class IOSTestBackend {
       '\n'
       'See https://patrol.leancode.co/documentation/ci/build-time-test-discovery',
     );
+  }
+
+  /// Fails fast when the runner is static but discovery is off: nobody
+  /// generates `PatrolGeneratedTests.inc` then, so the build would die on a bare
+  /// `'PatrolGeneratedTests.inc' file not found`.
+  void _verifyRuntimeRunnerSetup() {
+    final runner = _runnerFile;
+    if (!runner.existsSync() || !_usesStaticRunner(runner)) {
+      return;
+    }
+
+    throwToolExit(
+      '${runner.path} uses the static (build-time discovery) runner, but '
+      'build-time discovery is disabled, so PatrolGeneratedTests.inc is never '
+      'generated and the build cannot compile.\n'
+      '\n'
+      'Either enable discovery (patrol.emit_test_manifest: true in '
+      'pubspec.yaml, or --emit-test-manifest), or go back to runtime discovery '
+      'by restoring the PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerUITests) '
+      'macro.\n'
+      '\n'
+      'See https://patrol.leancode.co/documentation/ci/build-time-test-discovery',
+    );
+  }
+
+  File get _runnerFile => _rootDirectory
+      .childDirectory('ios')
+      .childDirectory('RunnerUITests')
+      .childFile('RunnerUITests.m');
+
+  /// Whether [runner] is set up for build-time discovery: the static macro plus
+  /// the `#include` that pulls in the generated tests.
+  bool _usesStaticRunner(File runner) {
+    final contents = runner.readAsStringSync();
+    return contents.contains(
+          'PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN',
+        ) &&
+        contents.contains('#include "PatrolGeneratedTests.inc"');
   }
 
   /// Maps requested Dart test [onlyTests] names to the generated XCTest

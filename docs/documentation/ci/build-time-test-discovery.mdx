@@ -99,7 +99,9 @@ PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_END
   generated `.inc`, so a build **without** `--emit-test-manifest` won't compile.
   To go back to runtime discovery you must restore the
   `PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerUITests)` macro; `--no-emit-test-manifest`
-  alone is not enough on iOS.
+  alone is not enough on iOS. This covers every command that builds, including
+  `patrol develop` — when the runner and the setting disagree, Patrol says which
+  one to change instead of failing on a missing `.inc`.
 </Warning>
 
 <Info>
@@ -257,6 +259,10 @@ Then point SauceLabs at it with `shard: concurrency` + `testListFile`. See
   free port pair per run and the app reads it at launch, so shards on one machine
   don't collide. See the [Marathon integration guide](/documentation/integrations/marathon).
   On Android, shard across separate hosts/VMs (one emulator each).
+- **`patrol develop` regenerates for its own target.** A develop session bundles
+  only the single `--target` test file, so the tests it generates (and the
+  manifest) cover just that file. Run `patrol build` again before
+  `patrol test-without-building`.
 - **Slower initial build.** Discovery adds a host `flutter test` pass to every
   `patrol build`, so the first build takes a bit longer. This cost is paid once —
   subsequent `patrol test-without-building` runs skip building altogether.
