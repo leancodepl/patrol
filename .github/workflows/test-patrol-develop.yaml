@@ -130,12 +130,13 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v4
 
-      # Hot Restart on web needs flutter/flutter#183838, which is not in
-      # stable 3.44.x, hence beta rather than the pin the other jobs use.
+      # Hot restart on web needs flutter/flutter#183838, first released in
+      # 3.47.0, so this job runs ahead of the repo-wide 3.38.x pin.
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: beta
+          flutter-version: '3.47.x'
+          channel: stable
 
       - name: Preload Flutter artifacts
         run: flutter precache --web
