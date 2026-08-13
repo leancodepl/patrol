@@ -375,9 +375,8 @@ class DevelopService {
     String? appId;
 
     // `flutter logs` resolves the iOS app package without a build
-    // configuration, so it needs a scheme named Runner and exits on a project
-    // whose schemes are the flavors instead. It takes no option to pick one,
-    // so Patrol's own log stream has to carry the app's logs there.
+    // configuration, so it needs a scheme named Runner and takes no option to
+    // pick another.
     final flutterLogsUnavailable =
         device.targetPlatform == TargetPlatform.iOS &&
         flutterOpts.flavor != null;

@@ -55,9 +55,7 @@ void main() {
     });
 
     // `flutter attach` exits with a usage error on an option it does not
-    // define, and that failure is silent, so an unvetted option here disables
-    // hot restart for a whole develop session. Check `flutter attach --help`
-    // before extending this set.
+    // define. Check `flutter attach --help` before extending this set.
     test('attach passes only options flutter attach defines', () {
       final process = MockProcess();
       when(
