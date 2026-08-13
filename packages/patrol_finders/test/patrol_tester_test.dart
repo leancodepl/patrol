@@ -470,6 +470,40 @@ void main() {
         },
       );
 
+      patrolWidgetTest(
+        'timeout duration is drag time, not settleBetweenScrollsTimeout',
+        (tester) async {
+          await tester.pumpWidget(
+            MaterialApp(
+              home: ListView(children: const [Text('one'), Text('two')]),
+            ),
+          );
+
+          const dragDuration = Duration(milliseconds: 40);
+          const maxIteration = 2;
+          const settleBetweenScrollsTimeout = Duration(seconds: 20);
+
+          await expectLater(
+            () => tester.dragUntilExists(
+              finder: find.text('three'),
+              view: find.byType(Scrollable),
+              moveStep: const Offset(0, defaultScrollDelta),
+              dragDuration: dragDuration,
+              maxIteration: maxIteration,
+              settleBetweenScrollsTimeout: settleBetweenScrollsTimeout,
+              settlePolicy: SettlePolicy.noSettle,
+            ),
+            throwsA(
+              isA<WaitUntilExistsTimeoutException>().having(
+                (e) => e.duration,
+                'duration',
+                dragDuration * maxIteration,
+              ),
+            ),
+          );
+        },
+      );
+
       patrolWidgetTest('drags to existing and visible widget', (tester) async {
         await tester.pumpWidget(
           const MaterialApp(
@@ -637,6 +671,40 @@ void main() {
               moveStep: const Offset(0, defaultScrollDelta),
             ),
             throwsA(isA<WaitUntilVisibleTimeoutException>()),
+          );
+        },
+      );
+
+      patrolWidgetTest(
+        'timeout duration is drag time, not settleBetweenScrollsTimeout',
+        (tester) async {
+          await tester.pumpWidget(
+            MaterialApp(
+              home: ListView(children: const [Text('one'), Text('two')]),
+            ),
+          );
+
+          const dragDuration = Duration(milliseconds: 40);
+          const maxIteration = 2;
+          const settleBetweenScrollsTimeout = Duration(seconds: 20);
+
+          await expectLater(
+            () => tester.dragUntilVisible(
+              finder: find.text('three'),
+              view: find.byType(Scrollable),
+              moveStep: const Offset(0, defaultScrollDelta),
+              dragDuration: dragDuration,
+              maxIteration: maxIteration,
+              settleBetweenScrollsTimeout: settleBetweenScrollsTimeout,
+              settlePolicy: SettlePolicy.noSettle,
+            ),
+            throwsA(
+              isA<WaitUntilVisibleTimeoutException>().having(
+                (e) => e.duration,
+                'duration',
+                dragDuration * maxIteration,
+              ),
+            ),
           );
         },
       );

@@ -717,8 +717,7 @@ class PatrolTester {
           if (iterationsLeft <= 0) {
             throw WaitUntilExistsTimeoutException(
               finder: finder,
-              // TODO: set reasonable duration or create new exception for this case
-              duration: settleBetweenScrollsTimeout!,
+              duration: dragDuration! * maxIteration,
             );
           }
 
@@ -799,8 +798,7 @@ class PatrolTester {
           if (iterationsLeft <= 0) {
             throw WaitUntilVisibleTimeoutException(
               finder: hitTestableFinder,
-              // TODO: set reasonable duration or create new exception for this case
-              duration: settleBetweenScrollsTimeout!,
+              duration: dragDuration! * maxIteration,
             );
           }
 

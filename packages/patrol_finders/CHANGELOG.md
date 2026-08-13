@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Report drag time on `dragUntilExists` / `dragUntilVisible` timeouts instead of `settleBetweenScrollsTimeout`. (#2103)
 - Add a regression test for finding widgets by keys containing special characters (diacritics, symbols, emoji). (#3169)
 
 ## 3.6.0
