@@ -216,8 +216,13 @@ class Contracts {
   }
 
   data class ConfigureRequest (
-    val findTimeoutMillis: Long
-  )
+    val findTimeoutMillis: Long,
+    val androidDontSuppressAccessibilityServices: Boolean? = null
+  ){
+    fun hasAndroidDontSuppressAccessibilityServices(): Boolean {
+      return androidDontSuppressAccessibilityServices != null
+    }
+  }
 
   data class OpenAppRequest (
     val appId: String

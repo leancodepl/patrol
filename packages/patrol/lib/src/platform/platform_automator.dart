@@ -66,6 +66,13 @@ class PlatformAutomatorConfig {
     /// Name of the application under test on iOS.
     String? iosAppName,
 
+    /// Whether Patrol should keep third-party `AccessibilityService`s running
+    /// during the test session.
+    ///
+    /// Android only. See
+    /// [AndroidAutomatorConfig.dontSuppressAccessibilityServices].
+    bool? androidDontSuppressAccessibilityServices,
+
     /// Called when a native action is performed.
     void Function(String)? logger,
 
@@ -80,6 +87,8 @@ class PlatformAutomatorConfig {
         packageName: packageName,
         appName: androidAppName,
         keyboardBehavior: keyboardBehavior,
+        dontSuppressAccessibilityServices:
+            androidDontSuppressAccessibilityServices,
         connectionTimeout: connectionTimeout,
         findTimeout: findTimeout,
         logger: logger,
