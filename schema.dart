@@ -42,6 +42,9 @@ class ConfigureRequest {
   // Android only. true (default) keeps third-party AccessibilityServices running
   // (FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES); false suppresses them.
   bool? androidDontSuppressAccessibilityServices;
+  // Android only. false clears the FLAG_RETRIEVE_INTERACTIVE_WINDOWS that
+  // uiautomator 2.3.0 force-enables, which breaks WebView native selectors.
+  bool? androidRetrieveInteractiveWindows;
 }
 
 class OpenAppRequest {

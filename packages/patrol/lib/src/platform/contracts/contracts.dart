@@ -293,6 +293,7 @@ class ConfigureRequest with Equatable {
   const ConfigureRequest({
     required this.findTimeoutMillis,
     this.androidDontSuppressAccessibilityServices,
+    this.androidRetrieveInteractiveWindows,
   });
 
   factory ConfigureRequest.fromJson(Map<String, dynamic> json) =>
@@ -300,6 +301,7 @@ class ConfigureRequest with Equatable {
 
   final int findTimeoutMillis;
   final bool? androidDontSuppressAccessibilityServices;
+  final bool? androidRetrieveInteractiveWindows;
 
   Map<String, dynamic> toJson() => _$ConfigureRequestToJson(this);
 
@@ -307,6 +309,7 @@ class ConfigureRequest with Equatable {
   List<Object?> get props => [
     findTimeoutMillis,
     androidDontSuppressAccessibilityServices,
+    androidRetrieveInteractiveWindows,
   ];
 }
 

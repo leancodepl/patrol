@@ -61,6 +61,7 @@ class AndroidAutomator extends NativeMobileAutomator
     findTimeoutMillis: _config.findTimeout.inMilliseconds,
     androidDontSuppressAccessibilityServices:
         _config.dontSuppressAccessibilityServices,
+    androidRetrieveInteractiveWindows: _config.retrieveInteractiveWindows,
   );
 
   /// Opens a platform-specific app.

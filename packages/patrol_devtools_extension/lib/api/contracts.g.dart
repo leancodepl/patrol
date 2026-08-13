@@ -71,6 +71,8 @@ ConfigureRequest _$ConfigureRequestFromJson(Map<String, dynamic> json) =>
       findTimeoutMillis: (json['findTimeoutMillis'] as num).toInt(),
       androidDontSuppressAccessibilityServices:
           json['androidDontSuppressAccessibilityServices'] as bool?,
+      androidRetrieveInteractiveWindows:
+          json['androidRetrieveInteractiveWindows'] as bool?,
     );
 
 Map<String, dynamic> _$ConfigureRequestToJson(ConfigureRequest instance) =>
@@ -78,6 +80,8 @@ Map<String, dynamic> _$ConfigureRequestToJson(ConfigureRequest instance) =>
       'findTimeoutMillis': instance.findTimeoutMillis,
       'androidDontSuppressAccessibilityServices':
           instance.androidDontSuppressAccessibilityServices,
+      'androidRetrieveInteractiveWindows':
+          instance.androidRetrieveInteractiveWindows,
     };
 
 OpenAppRequest _$OpenAppRequestFromJson(Map<String, dynamic> json) =>

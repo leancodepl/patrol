@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Android: keep third-party `AccessibilityService`s running during the test session again. `AndroidAutomatorConfig.dontSuppressAccessibilityServices` now defaults to `true` (it was effectively `false` since 4.8.0) and is configurable, also via the `PATROL_ANDROID_DONT_SUPPRESS_ACCESSIBILITY_SERVICES` dart-define. (#3227)
+- Add opt-in `AndroidAutomatorConfig.retrieveInteractiveWindows` (dart-define `PATROL_ANDROID_RETRIEVE_INTERACTIVE_WINDOWS`); set it to `false` to clear the `FLAG_RETRIEVE_INTERACTIVE_WINDOWS` that uiautomator 2.3.0 force-enables, restoring `$.native` selectors inside some WebViews. Defaults to today's behavior. (#3228)
 
 ## 4.9.0
 
