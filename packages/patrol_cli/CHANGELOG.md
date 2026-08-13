@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Fix hot restart silently doing nothing for the whole `patrol develop` session on projects with a flavor, by no longer passing `--flavor` to `flutter attach`, which defines no such option and exited with a usage error. Regressed in 4.6.1. (#3223)
+- Fix `patrol develop` printing "You must specify a --flavor option" and losing the app's logs on iOS projects whose Xcode schemes are the flavors. `flutter logs` resolves the app package without a build configuration and takes no option to pick a scheme, so Patrol's own log stream carries the logs there instead. (#2465)
 
 ## 4.7.0
 
