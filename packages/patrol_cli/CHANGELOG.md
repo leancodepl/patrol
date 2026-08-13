@@ -37,6 +37,7 @@
 - Fix hot restart dying on flavored `patrol develop`, which regressed in 4.6.1. (#3223)
 - Fix flavored iOS `patrol develop` losing logs on devices and failing on simulators. (#2465, #3279)
 - Fix `patrol develop` crashing on hosts whose terminal modes can't be changed. (#3278)
+- Report a dead `flutter attach` or `flutter logs` in `patrol develop` instead of waiting forever. (#3234)
 
 ## 4.7.0
 

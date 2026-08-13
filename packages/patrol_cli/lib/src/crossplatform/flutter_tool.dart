@@ -43,6 +43,7 @@ class FlutterTool {
   var _devtoolsUrl = '';
   io.Process? _attachProcess;
   var _pendingHotRestart = false;
+  String? _attachFailure;
   void Function()? _onRestartCompleted;
   void Function()? _onRestartFailed;
 
@@ -61,6 +62,10 @@ class FlutterTool {
     _onRestartCompleted = onCompleted;
     _onRestartFailed = onFailed;
     final process = _attachProcess;
+    if (_attachFailure case final failure?) {
+      _logger.warn(failure);
+      return;
+    }
     if (process == null || !_hotRestartActive) {
       _logger.warn(
         'Hot Restart: not attached to the app yet, will restart once attached',
@@ -208,11 +213,37 @@ class FlutterTool {
         }
       });
 
+      // `flutter attach` reports a rejected option by exiting. Only its
+      // stdout completes the wait below.
+      final stderrLines = <String>[];
+      final stderrDone = Completer<void>();
+      unawaited(
+        process.exitCode.then((code) async {
+          // The lines explaining the exit can still be in flight when
+          // exitCode completes.
+          await _awaitStderr(stderrDone);
+          if (completer.isCompleted) {
+            return;
+          }
+
+          final failure =
+              'Hot Restart is not available: '
+              '${_describeExit('flutter attach', code, stderrLines)}';
+          _attachFailure = failure;
+          _logger.err(failure);
+          completer.complete();
+        }),
+      );
+
       _stdin
           .listen((event) async {
             final char = String.fromCharCode(event.first);
             if (char == 'r' || char == 'R') {
               if (!_hotRestartActive) {
+                if (_attachFailure case final failure?) {
+                  _logger.warn(failure);
+                  return;
+                }
                 _logger.warn(
                   'Hot Restart: not attached to the app yet, will restart once '
                   'attached',
@@ -313,13 +344,21 @@ class FlutterTool {
           .disposedBy(scope);
 
       process
-          .listenStdErr((line) {
-            if (line.startsWith('Waiting for another flutter command')) {
-              // This is a warning that we can ignore
-              return;
-            }
-            _logger.err('\t$line');
-          })
+          .listenStdErr(
+            (line) {
+              if (line.startsWith('Waiting for another flutter command')) {
+                // This is a warning that we can ignore
+                return;
+              }
+              stderrLines.add(line);
+              _logger.err('\t$line');
+            },
+            onDone: () {
+              if (!stderrDone.isCompleted) {
+                stderrDone.complete();
+              }
+            },
+          )
           .disposedBy(scope);
 
       await completer.future;
@@ -353,6 +392,30 @@ class FlutterTool {
           completer.complete();
         }
       });
+
+      // `flutter logs` exits when it cannot resolve the project, and the
+      // caller awaits this.
+      final stderrLines = <String>[];
+      final stderrDone = Completer<void>();
+      unawaited(
+        process.exitCode.then((code) async {
+          await _awaitStderr(stderrDone);
+          if (!completer.isCompleted) {
+            _logger.err(
+              'Logs are not available: '
+              '${_describeExit('flutter logs', code, stderrLines)}',
+            );
+            completer.complete();
+          }
+
+          if (observationUrlCompleter case final urlCompleter?
+              when !urlCompleter.isCompleted) {
+            urlCompleter.completeError(
+              StateError('flutter logs exited before reporting the VM service'),
+            );
+          }
+        }),
+      );
 
       process
           .listenStdOut((line) {
@@ -393,10 +456,36 @@ class FlutterTool {
           })
           .disposedBy(scope);
 
-      process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
+      process
+          .listenStdErr(
+            (line) {
+              stderrLines.add(line);
+              _logger.err('\t$line');
+            },
+            onDone: () {
+              if (!stderrDone.isCompleted) {
+                stderrDone.complete();
+              }
+            },
+          )
+          .disposedBy(scope);
 
       await completer.future;
     });
+  }
+
+  /// Waits for the stderr stream to drain, bounded so it cannot hang.
+  Future<void> _awaitStderr(Completer<void> stderrDone) async {
+    await stderrDone.future.timeout(
+      const Duration(seconds: 1),
+      onTimeout: () {},
+    );
+  }
+
+  String _describeExit(String command, int code, List<String> stderrLines) {
+    final lines = stderrLines.where((line) => line.trim().isNotEmpty);
+    final reason = lines.isEmpty ? '' : ':\n\t${lines.join('\n\t')}';
+    return '`$command` exited with code $code$reason';
   }
 
   /// Enables interactive mode. Returns the previous stdin modes.
