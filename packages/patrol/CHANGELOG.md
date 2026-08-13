@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Surface uncaught exceptions in `patrol develop` (Hot Restart) mode. Previously an exception delivered asynchronously to `FlutterError.onError` (e.g. thrown from a widget's `onPressed` callback) was captured by the test framework but never reported, so the test appeared to pass. It is now logged as a failure without ending the Hot Restart session. (#3200)
+- Report uncaught exceptions (e.g. from `onPressed`) in `patrol develop` instead of silently passing. (#3200)
 
 ## 4.8.0
 
