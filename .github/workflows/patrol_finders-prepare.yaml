@@ -44,6 +44,10 @@ jobs:
         if: success() || failure()
         run: flutter test
 
+      - name: flutter test (web)
+        if: success() || failure()
+        run: flutter test --platform chrome
+
       - name: Run analyzer
         if: success() || failure()
         run: |
