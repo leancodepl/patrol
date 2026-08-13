@@ -6,6 +6,7 @@
 - Fix an issue when building iOS tests from different directory than project's root - we were looking in a wrong place for .xctestrun file. (#3250)
 - Fix hot restart dying on flavored `patrol develop` — `flutter attach` has no `--flavor`. Regressed in 4.6.1. (#3223)
 - Fix flavored iOS `patrol develop` losing logs — they now come from Patrol's own stream. Simulator unchanged. (#2465)
+- Report a dead `flutter attach` or `flutter logs` in `patrol develop` instead of waiting forever. (#3223)
 
 ## 4.7.0
 

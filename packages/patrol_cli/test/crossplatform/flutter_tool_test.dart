@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:mocktail/mocktail.dart';
@@ -14,16 +15,18 @@ void main() {
 
   late FlutterTool flutterTool;
   late MockProcessManager processManager;
+  late MockLogger logger;
   late Platform platform;
 
   setUp(() {
     final disposeScope = DisposeScope();
     final stdin = StreamController<List<int>>();
     processManager = MockProcessManager();
+    logger = MockLogger();
     platform = FakePlatform();
 
     flutterTool = FlutterTool(
-      logger: MockLogger(),
+      logger: logger,
       parentDisposeScope: disposeScope,
       processManager: processManager,
       platform: platform,
@@ -31,16 +34,35 @@ void main() {
     );
   });
 
+  /// Defaults to a process that neither prints anything nor exits.
+  MockProcess stubProcess({
+    List<String> stderr = const [],
+    Future<int>? exitCode,
+  }) {
+    final process = MockProcess();
+    when(
+      () => process.stdout,
+    ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
+    when(() => process.stderr).thenAnswer(
+      (_) => Stream<List<int>>.fromIterable(
+        stderr.map((line) => utf8.encode('$line\n')),
+      ),
+    );
+    when(
+      () => process.exitCode,
+    ).thenAnswer((_) => exitCode ?? Completer<int>().future);
+    when(() => processManager.start(any())).thenAnswer((_) async => process);
+    // `logs` starts its process with `runInShell`, which is a separate
+    // invocation as far as mocktail is concerned.
+    when(
+      () => processManager.start(any(), runInShell: any(named: 'runInShell')),
+    ).thenAnswer((_) async => process);
+    return process;
+  }
+
   group('FlutterTool', () {
     test('attach passes deviceId correctly', () {
-      final process = MockProcess();
-      when(
-        () => process.stdout,
-      ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
-      when(
-        () => process.stderr,
-      ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
-      when(() => processManager.start(any())).thenAnswer((_) async => process);
+      stubProcess();
 
       flutterTool.attach(
         flutterCommand: flutterCommand,
@@ -57,14 +79,7 @@ void main() {
     // `flutter attach` exits with a usage error on an option it does not
     // define. Check `flutter attach --help` before extending this set.
     test('attach passes only options flutter attach defines', () {
-      final process = MockProcess();
-      when(
-        () => process.stdout,
-      ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
-      when(
-        () => process.stderr,
-      ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
-      when(() => processManager.start(any())).thenAnswer((_) async => process);
+      stubProcess();
 
       flutterTool.attach(
         flutterCommand: flutterCommand,
@@ -91,6 +106,57 @@ void main() {
         '--target',
         '--dart-define',
       });
+    });
+
+    test('attach returns and reports why when the process exits', () async {
+      stubProcess(
+        stderr: ['Could not find an option named "--flavor".'],
+        exitCode: Future.value(64),
+      );
+
+      await flutterTool.attach(
+        flutterCommand: flutterCommand,
+        deviceId: 'testDeviceId',
+        target: 'target',
+        appId: 'appId',
+        dartDefines: {},
+        openBrowser: false,
+      );
+
+      final reported = verify(
+        () => logger.err(captureAny()),
+      ).captured.map((message) => message.toString()).join('\n');
+      expect(reported, contains('Hot Restart is not available'));
+      expect(reported, contains('exited with code 64'));
+      expect(reported, contains('Could not find an option named "--flavor".'));
+    });
+
+    test('logs returns and reports why when the process exits', () async {
+      stubProcess(
+        stderr: ['You must specify a --flavor option to select one.'],
+        exitCode: Future.value(1),
+      );
+
+      await flutterTool.logs('testDeviceId', flutterCommand: flutterCommand);
+
+      final reported = verify(
+        () => logger.err(captureAny()),
+      ).captured.map((message) => message.toString()).join('\n');
+      expect(reported, contains('Logs are not available'));
+      expect(reported, contains('exited with code 1'));
+    });
+
+    test('logs does not leave the observation URL pending on exit', () async {
+      stubProcess(exitCode: Future.value(1));
+      final observationUrl = Completer<String>();
+
+      await flutterTool.logs(
+        'testDeviceId',
+        flutterCommand: flutterCommand,
+        observationUrlCompleter: observationUrl,
+      );
+
+      await expectLater(observationUrl.future, throwsStateError);
     });
   });
 
