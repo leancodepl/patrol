@@ -177,21 +177,20 @@ void patrolTest(
       }
 
       // In develop mode the exception gatherer is off, so exceptions the
-      // framework catches (e.g. from `onPressed`) are never reported. Surface
-      // them here without ending the Hot Restart session.
+      // framework catches (e.g. from `onPressed`) are never reported. The full
+      // stack is dumped to the console by `PatrolBinding.reportExceptionNoticed`
+      // (forwarded by `patrol develop`); log a short failure entry here for the
+      // structured status, without ending the Hot Restart session.
       void reportDevelopException() {
         final caughtException = patrolBinding.takeException();
         if (caughtException == null) {
           return;
         }
-        // `takeException()` drops the stack; the full details are kept by
-        // `PatrolBinding.reportExceptionNoticed`, so prefer them for file/line.
-        final details = patrolBinding.takeLastReportedExceptionDetails();
         patrolLog.log(
           TestEntry(
             name: global_state.currentTestFullName,
             status: TestEntryStatus.failure,
-            error: details?.toString() ?? caughtException.toString(),
+            error: caughtException.toString(),
           ),
         );
       }
