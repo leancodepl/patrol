@@ -2,6 +2,7 @@
 
 - Fix hot restart silently doing nothing for the whole `patrol develop` session on flavored projects, by no longer passing `--flavor` to `flutter attach`, which defines no such option. Regressed in 4.6.1. (#3223)
 - Fix `patrol develop` printing "You must specify a --flavor option" and losing the app's logs on flavored iOS projects, by routing them through Patrol's own log stream instead of `flutter logs`. (#2465)
+- Report why hot restart or logs stopped working in `patrol develop` instead of waiting forever, by detecting that the `flutter attach` or `flutter logs` process exited. (#3223)
 
 ## 4.7.0
 
