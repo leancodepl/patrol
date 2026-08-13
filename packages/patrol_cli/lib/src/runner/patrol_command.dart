@@ -75,7 +75,10 @@ abstract class PatrolCommand extends Command<int> {
     );
   }
 
-  void usesBuildModeOption() {
+  /// Registers only the build-mode selection flags. These pick the build mode
+  /// *and* therefore which already-built artifacts are used, so commands that
+  /// merely run prebuilt tests need them as well.
+  void usesBuildModeSelectionOption() {
     _usesBuildOption = true;
     argParser
       ..addFlag(
@@ -86,12 +89,16 @@ abstract class PatrolCommand extends Command<int> {
         'profile',
         help: 'Build a version of your app for performance profiling.',
       )
-      ..addFlag('release', help: 'Build a release version of your app')
-      ..addFlag(
-        'no-tree-shake-icons',
-        help: 'Disable tree shaking of icons when building the app.',
-        negatable: false,
-      );
+      ..addFlag('release', help: 'Build a release version of your app');
+  }
+
+  void usesBuildModeOption() {
+    usesBuildModeSelectionOption();
+    argParser.addFlag(
+      'no-tree-shake-icons',
+      help: 'Disable tree shaking of icons when building the app.',
+      negatable: false,
+    );
   }
 
   void usesFlavorOption() {
@@ -198,6 +205,39 @@ abstract class PatrolCommand extends Command<int> {
             'Pass iOS version. If empty, `latest` will be used. This flag only works with iOS simulator.',
         valueHelp: '17.5',
       );
+  }
+
+  /// Registers the experimental `--emit-test-manifest` flag, shared by the iOS
+  /// and Android build/test paths.
+  ///
+  /// Declared with a null default (via [optionalBoolArg]) so that "flag not
+  /// passed" is distinguishable from an explicit `--no-emit-test-manifest`;
+  /// this lets the CLI flag override the persistent `patrol.emit_test_manifest`
+  /// pubspec setting when present, and fall back to it otherwise.
+  void usesEmitTestManifestOption() {
+    argParser.addFlag(
+      'emit-test-manifest',
+      help:
+          'Experimental: discover Dart tests at build time (host `flutter '
+          'test`) and generate static native test methods, so each Dart test '
+          'becomes an individually-selectable native test and the runtime '
+          'discovery launch is skipped. Defaults to the '
+          '`patrol.emit_test_manifest` value in pubspec.yaml.',
+      defaultsTo: null,
+    );
+  }
+
+  /// Registers `--only`, which selects individual already-built tests by their
+  /// Dart name. Selection happens natively (the name is mapped to the generated
+  /// test method through the build-time manifest), so it needs no rebuild.
+  void usesOnlyOption() {
+    argParser.addMultiOption(
+      'only',
+      help:
+          'Run only the test(s) with the given exact Dart name (as printed '
+          'during discovery). Repeatable; omit to run every built test.',
+      valueHelp: 'example_test logs in',
+    );
   }
 
   void usesMacOSOptions() {

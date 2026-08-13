@@ -1,7 +1,7 @@
 import Foundation
 
 /// Simplified objective-c RunDartTestResponse model that we use in PatrolIntegrationTestRunner.h
-@objc public class ObjCRunDartTestResponse: NSObject {
+@objc(ObjCRunDartTestResponse) public class ObjCRunDartTestResponse: NSObject {
   @objc public dynamic let passed: Bool
   @objc public dynamic let details: String?
 
@@ -16,7 +16,7 @@ import Foundation
 /// The client must do its work off the main thread. Otherwise, a deadlock will quickly appear.
 /// That's because the main thread is used by methods in ``Automator``, which perform
 /// various UI actions such as tapping, entering text, etc., and they must be called on the main thread.
-@objc public class ObjCPatrolAppServiceClient: NSObject {
+@objc(ObjCPatrolAppServiceClient) public class ObjCPatrolAppServiceClient: NSObject {
   private static let envPortKey = "PATROL_APP_PORT"
   private static let defaultPort = 8082
 
@@ -24,7 +24,7 @@ import Foundation
 
   private let client: PatrolAppServiceClient
 
-  private var passedPort: Int = {
+  private static func portFromEnvironment() -> Int {
     guard let portStr = ProcessInfo.processInfo.environment[envPortKey] else {
       Logger.shared.i("\(envPortKey) is null, falling back to default (\(defaultPort))")
       return defaultPort
@@ -38,16 +38,21 @@ import Foundation
     }
 
     return portInt
-  }()
+  }
 
-  @objc public override init() {
-    self.port = passedPort
+  @objc public init(port: Int) {
+    self.port = port
 
     // https://github.com/leancodepl/patrol/issues/1683
     let timeout = TimeInterval(2 * 60 * 60)
 
     client = PatrolAppServiceClient(port: port, address: "localhost", timeout: timeout)
+    super.init()
     NSLog("PatrolAppServiceClient: created, port: \(port)")
+  }
+
+  @objc public convenience override init() {
+    self.init(port: Self.portFromEnvironment())
   }
 
   @objc public func listDartTests(completion: @escaping ([[String: Any]]?, Error?) -> Void) {
@@ -71,25 +76,19 @@ import Foundation
   @objc public func runDartTest(
     name: String, completion: @escaping (ObjCRunDartTestResponse?, Error?) -> Void
   ) {
-    // TODO: simple workaround - patrolAppService starts running too slowly.
-    // We should wait for appReady in the dynamically created test case method,
-    // before calling runDartTest() (in PATROL_INTEGRATION_TEST_[IOS/MACOS]_MACRO)
-    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-      NSLog("PatrolAppServiceClient.runDartTest(\(name))")
+    NSLog("PatrolAppServiceClient.runDartTest(\(name))")
 
-      let request = RunDartTestRequest(name: name)
-      self.client.runDartTest(request: request) { result in
-        switch result {
-        case .success(let result):
-          let testRespone = ObjCRunDartTestResponse(
-            passed: result.result == .success,
-            details: result.details
-          )
-          completion(testRespone, nil)
-        case .failure(let error):
-          completion(nil, error)
-        }
-
+    let request = RunDartTestRequest(name: name)
+    client.runDartTest(request: request) { result in
+      switch result {
+      case .success(let result):
+        let testResponse = ObjCRunDartTestResponse(
+          passed: result.result == .success,
+          details: result.details
+        )
+        completion(testResponse, nil)
+      case .failure(let error):
+        completion(nil, error)
       }
     }
   }

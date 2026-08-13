@@ -2,7 +2,9 @@ name: test patrol develop
 
 on:
   workflow_dispatch:
-  pull_request_target:
+  # Not `pull_request_target`: this workflow needs no secrets, and that trigger
+  # checked out the base branch, so every run tested master instead of the PR.
+  pull_request:
     types: [opened, synchronize]
     paths:
       - 'packages/patrol/**'
@@ -74,7 +76,9 @@ jobs:
 
   test-macos:
     name: Test `patrol develop` on macOS
-    runs-on: macos-15
+    # macos-15 is on macOS 15.7, where simulator mDNS is broken and
+    # `flutter attach` cannot discover the app. See flutter#166333.
+    runs-on: macos-latest
     timeout-minutes: 30
 
     steps:
@@ -102,7 +106,8 @@ jobs:
       - name: Start iOS simulator
         uses: futureware-tech/simulator-action@v2
         with:
-          model: iPhone 16 Pro
+          # iPhone 16 Pro has no iOS 26.2 device on the macos-latest image.
+          model: iPhone 17
           os: iOS
           # The version must match the version specified in the --ios flag.
           os_version: '26.2'

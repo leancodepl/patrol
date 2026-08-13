@@ -1,0 +1,66 @@
+---
+title: test-without-building
+---
+
+### Synopsis
+
+Run already-built integration tests, without rebuilding them.
+
+```
+patrol test-without-building
+```
+
+To see all available options and flags, run
+`patrol test-without-building --help`.
+
+### Description
+
+This command runs the tests produced by a previous `patrol build`, reusing its
+artifacts. Nothing is bundled, compiled or reinstalled — it only asks the native
+test runner to execute tests, using `xcodebuild test-without-building` on iOS and
+`adb shell am instrument` on Android.
+
+It requires [build-time test discovery][discovery]
+(`patrol.emit_test_manifest: true`), because selecting individual tests natively
+is only possible thanks to the static native tests that discovery generates.
+
+<Info>
+  It's a separate command rather than a flag on `patrol test` because it's a
+  different operation. The options that shape a build (`--target`, `--tags`,
+  `--dart-define`, `--build-name`, …) can't apply here, so they aren't accepted at
+  all.
+</Info>
+
+### Examples
+
+**Run everything that was built**
+
+```bash
+patrol build ios --emit-test-manifest
+patrol test-without-building
+```
+
+**Run a single test, repeatedly, without rebuilding**
+
+```bash
+patrol test-without-building --only "example_test tap counter increments"
+```
+
+`--only` takes the **exact Dart test name**, as printed by discovery during
+`patrol build`. It can be repeated to run several tests. Omit it to run every
+built test.
+
+### Discussion
+
+The command runs exactly what was last built, so use it while the app and test
+code are unchanged — a fast loop for debugging one failing test. After changing
+Dart or native code, run `patrol build` again.
+
+`--flavor` and the build-mode flags (`--debug`/`--profile`/`--release`) are still
+accepted, because they select **which built artifacts** to run.
+
+On Android, the instrumentation to run is resolved from the device
+(`pm list instrumentation`), so a custom `testApplicationId` or a custom runner is
+picked up automatically once installed.
+
+[discovery]: /documentation/ci/build-time-test-discovery

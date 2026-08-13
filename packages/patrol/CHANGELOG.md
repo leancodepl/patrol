@@ -2,6 +2,16 @@
 
 - Report uncaught exceptions (e.g. from `onPressed`) in `patrol develop` instead of silently passing. (#3200)
 
+## 4.9.0
+
+- Fix macOS builds failing with `module 'PatrolImpl' not found` under Swift Package Manager (#3177). The public `patrol` module no longer `@import`s the Swift implementation; `PatrolPlugin` is ObjC and macro-facing types are declared as ObjC interfaces in the umbrella, so app builds and RunnerUITests keep working with a single `@import patrol` / `import patrol`.
+- Add Marathon integration for running Patrol tests on Android and iOS simulators. See the [Marathon integration guide](https://patrol.leancode.co/documentation/integrations/marathon).
+- Support build-time test discovery: add the static iOS runner macros
+  (`PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN`/`_END`), so each Dart test can be compiled
+  into a real native test instead of being registered after the app launches. (#3197)
+- Fix `AndroidNativeView.visibleBounds` always having zero height. (#3202)
+- Collect Chrome JavaScript coverage in the web runner when `patrol test --coverage` runs on the web platform.
+
 ## 4.8.0
 
 - Wire additional Playwright browser launch and context options into the web runner config, configurable through the matching `patrol_cli` `--web-*` flags: (#3155)
@@ -25,6 +35,7 @@
   - accept downloads
 - Add support for Patrol extensions. (#3160)
 - Bump ktor packages. (#3187)
+- Fix incorrect test description in the failure log entry when a test fails in `patrol develop` (hot restart) mode. (#3167)
 
 ## 4.7.1
 

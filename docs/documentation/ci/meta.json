@@ -1,4 +1,4 @@
 {
   "title": "Patrol and CI",
-  "pages": ["overview", "platforms"]
+  "pages": ["overview", "platforms", "build-time-test-discovery"]
 }

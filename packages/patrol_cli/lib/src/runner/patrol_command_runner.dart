@@ -21,10 +21,12 @@ import 'package:patrol_cli/src/commands/develop.dart';
 import 'package:patrol_cli/src/commands/devices.dart';
 import 'package:patrol_cli/src/commands/doctor.dart';
 import 'package:patrol_cli/src/commands/test.dart';
+import 'package:patrol_cli/src/commands/test_without_building.dart';
 import 'package:patrol_cli/src/commands/update.dart';
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
 import 'package:patrol_cli/src/compatibility_checker/version_compatibility.dart';
 import 'package:patrol_cli/src/coverage/coverage_tool.dart';
+import 'package:patrol_cli/src/coverage/web_coverage_tool.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
@@ -248,6 +250,23 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
           logger: _logger,
           parentDisposeScope: _disposeScope,
         ),
+        webCoverageTool: WebCoverageTool(
+          fs: _fs,
+          rootDirectory: rootDirectory,
+          logger: _logger,
+        ),
+        analytics: _analytics,
+        logger: _logger,
+      ),
+    );
+
+    addCommand(
+      TestWithoutBuildingCommand(
+        deviceFinder: deviceFinder,
+        testBundler: testBundler,
+        pubspecReader: PubspecReader(projectRoot: rootDirectory),
+        androidTestBackend: androidTestBackend,
+        iosTestBackend: iosTestBackend,
         analytics: _analytics,
         logger: _logger,
       ),

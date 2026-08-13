@@ -44,9 +44,12 @@ let package = Package(
       path: "Sources/HTTPParserC",
       publicHeadersPath: "include"
     ),
-    // Swift implementation. SwiftPM does not allow mixing Swift and ObjC in a
-    // single target, so the Swift code lives here and the ObjC runner macros
-    // live in the `patrol` Clang target below, which re-exports this module.
+    // Swift implementation (automator, server, …). SwiftPM does not allow
+    // mixing Swift and ObjC in a single target, so this stays separate from
+    // the public Clang `patrol` module. Linked as a dependency of `patrol`
+    // but not `@import`ed into its umbrella — that would make `patrol`
+    // unimportable from Swift (Flutter's macOS registrant). See
+    // https://github.com/leancodepl/patrol/issues/3177.
     .target(
       name: "PatrolImpl",
       dependencies: [
@@ -67,11 +70,12 @@ let package = Package(
       swiftSettings: patrolImplSwiftSettings,
       linkerSettings: patrolImplLinkerSettings
     ),
-    // Public module named `patrol`. This is the module Flutter's generated
-    // registrant imports and the module users `@import` from RunnerUITests.
-    // It hosts the ObjC runner macros (Sources/patrol/include) and re-exports
-    // PatrolImpl (via include/patrol.h + `export *` in module.modulemap), so a
-    // single `@import patrol` exposes both the macro and the Swift @objc API.
+    // Public module named `patrol`. Flutter's registrants import this
+    // (`@import patrol` on iOS, `import patrol` on macOS) and users
+    // `@import patrol` from RunnerUITests. Hosts ObjC PatrolPlugin, runner
+    // macros, and ObjC interface stubs for PatrolImpl's @objc types so a
+    // single `@import patrol` is enough — without re-exporting the Swift
+    // module into the Clang interface.
     .target(
       name: "patrol",
       dependencies: ["PatrolImpl"],
