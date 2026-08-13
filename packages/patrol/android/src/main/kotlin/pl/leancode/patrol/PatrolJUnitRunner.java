@@ -35,6 +35,9 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
     public PatrolAppServiceClient patrolAppServiceClient;
     private Map<String, Boolean> dartTestCaseSkipMap = new HashMap<>();
 
+    /** Simple name of the class written by build-time test discovery (`patrol build android --emit-test-manifest`). */
+    private static final String GENERATED_TESTS_CLASS = "PatrolGeneratedTests";
+
     @Override
     protected boolean shouldWaitForActivitiesToComplete() {
         return false;
@@ -79,6 +82,11 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
      * </p>
      */
     public void setUp(Class<?> activityClass) {
+        if (isSupersededByGeneratedTests()) {
+            Logger.INSTANCE.i("PatrolJUnitRunner.setUp(): standing down, " + GENERATED_TESTS_CLASS + " runs these tests");
+            return;
+        }
+
         Logger.INSTANCE.i("PatrolJUnitRunner.setUp(): activityClass = " + activityClass.getCanonicalName());
 
         // This code launches the app under test. It's based on ActivityTestRule#launchActivity.
@@ -124,6 +132,10 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
     public void waitForPatrolAppService() {
         final String TAG = "PatrolJUnitRunner.setUp(): ";
 
+        if (isSupersededByGeneratedTests()) {
+            return;
+        }
+
         Logger.INSTANCE.i(TAG + "Waiting for PatrolAppService to report its readiness...");
         PatrolServer.Companion.getAppReady().block();
 
@@ -132,6 +144,11 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
 
     public Object[] listDartTests() {
         final String TAG = "PatrolJUnitRunner.listDartTests(): ";
+
+        if (isSupersededByGeneratedTests()) {
+            Logger.INSTANCE.i(TAG + "Reporting no tests, " + GENERATED_TESTS_CLASS + " covers the whole Dart test suite");
+            return new Object[]{};
+        }
 
         try {
             final DartGroupEntry dartTestGroup = patrolAppServiceClient.listDartTests();
@@ -147,6 +164,49 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         } catch (PatrolAppServiceClientException e) {
             Logger.INSTANCE.e(TAG + "Failed to list Dart tests: ", e);
             throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Whether the calling test class must contribute no tests because build-time test discovery
+     * compiled its generated class into the same APK.
+     * </p>
+     *
+     * <p>
+     * The generated class and the runtime-discovery host class each run the entire Dart suite, so
+     * leaving both active runs everything twice. {@code patrol test} selects the generated class
+     * explicitly, but any other runner (Firebase Test Lab, saucectl, emulator.wtf, Marathon)
+     * instruments the APK as built.
+     * </p>
+     */
+    private boolean isSupersededByGeneratedTests() {
+        for (StackTraceElement frame : new Throwable().getStackTrace()) {
+            final String caller = frame.getClassName();
+            if (caller.equals(PatrolJUnitRunner.class.getName()) || caller.equals(getClass().getName())) {
+                continue;
+            }
+            return isSupersededByGeneratedTests(caller);
+        }
+        return false;
+    }
+
+    /**
+     * Whether a generated test class sits next to {@code callerClassName}, which is then the host
+     * class it supersedes. The generated class lives in the host's package, so this also tells the
+     * two apart: the generated class never supersedes itself.
+     */
+    static boolean isSupersededByGeneratedTests(String callerClassName) {
+        final int packageEnd = callerClassName.lastIndexOf('.');
+        if (packageEnd < 0 || callerClassName.substring(packageEnd + 1).equals(GENERATED_TESTS_CLASS)) {
+            return false;
+        }
+
+        try {
+            Class.forName(callerClassName.substring(0, packageEnd + 1) + GENERATED_TESTS_CLASS);
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
         }
     }
 

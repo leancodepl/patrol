@@ -180,6 +180,18 @@ This is what enables per-test sharding across machines (e.g. SauceLabs
 `testListFile`, or any tool that enumerates the compiled test bundle), balanced
 Android sharding, and clean per-test names in reports.
 
+<Info>
+  On Android the runtime-discovery host class (your parameterized
+  `MainActivityTest`) is still compiled into the androidTest APK next to the
+  generated one. It stands down whenever the generated class is present — it
+  reports no tests and never launches the app — so tools that instrument the
+  built APK directly (Firebase Test Lab, saucectl, emulator.wtf, Marathon) run
+  each Dart test exactly once. With a Patrol version older than the one that
+  introduced this, restrict those tools to the generated class yourself
+  (`testOptions.class` for saucectl, `test-targets` for emulator.wtf) — otherwise
+  both classes run and the whole suite executes twice.
+</Info>
+
 ### iOS sharding on device farms that need a test list
 
 XCUITest has no built-in sharding. Device farms shard it by taking an **explicit
