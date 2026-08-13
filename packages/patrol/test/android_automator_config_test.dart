@@ -4,38 +4,42 @@ import 'package:patrol/src/platform/android/android_automator_native.dart';
 
 void main() {
   group('AndroidAutomatorConfig', () {
-    test('dontSuppressAccessibilityServices defaults to true', () {
+    test('accessibility flags default to true', () {
       const config = AndroidAutomatorConfig();
 
       expect(config.dontSuppressAccessibilityServices, isTrue);
+      expect(config.retrieveInteractiveWindows, isTrue);
     });
 
-    test('copyWith overrides dontSuppressAccessibilityServices', () {
+    test('copyWith overrides the accessibility flags', () {
       const config = AndroidAutomatorConfig();
 
-      expect(
-        config
-            .copyWith(dontSuppressAccessibilityServices: false)
-            .dontSuppressAccessibilityServices,
-        isFalse,
+      final updated = config.copyWith(
+        dontSuppressAccessibilityServices: false,
+        retrieveInteractiveWindows: false,
       );
+
+      expect(updated.dontSuppressAccessibilityServices, isFalse);
+      expect(updated.retrieveInteractiveWindows, isFalse);
     });
   });
 
   group('AndroidAutomator.buildConfigureRequest()', () {
-    test('forwards the accessibility flag to the native side', () {
+    test('forwards the accessibility flags to the native side', () {
       final automator = AndroidAutomator(
         config: const AndroidAutomatorConfig(
           dontSuppressAccessibilityServices: false,
+          retrieveInteractiveWindows: false,
         ),
       );
 
       final request = automator.buildConfigureRequest();
 
       expect(request.androidDontSuppressAccessibilityServices, isFalse);
+      expect(request.androidRetrieveInteractiveWindows, isFalse);
     });
 
-    test('forwards the default (true)', () {
+    test('forwards the defaults (true)', () {
       final automator = AndroidAutomator(
         config: const AndroidAutomatorConfig(),
       );
@@ -43,6 +47,7 @@ void main() {
       final request = automator.buildConfigureRequest();
 
       expect(request.androidDontSuppressAccessibilityServices, isTrue);
+      expect(request.androidRetrieveInteractiveWindows, isTrue);
     });
   });
 }

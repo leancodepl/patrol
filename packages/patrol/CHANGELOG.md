@@ -3,6 +3,7 @@
 - Android: keep third-party `AccessibilityService`s running during the test session again. `AndroidAutomatorConfig.dontSuppressAccessibilityServices` now defaults to `true` (it was effectively `false` since 4.8.0) and is configurable, also via the `PATROL_ANDROID_DONT_SUPPRESS_ACCESSIBILITY_SERVICES` dart-define. (#3227)
 - Report uncaught exceptions (e.g. from `onPressed`) in `patrol develop` instead of silently passing. (#3200)
 - Add opt-in native failure screenshots on Android for device farms (e.g. BrowserStack, Firebase Test Lab): set `screenshot_on_failure: true` in the pubspec's `patrol` section to capture the failing screen from the Dart failure path (before teardown). The screenshot is written to the folder named after the running JUnit test (read from its `Description`), so it matches what the farm reports. Also adds `$.takeNativeScreenshot('tag')` for on-demand captures. Off by default; iOS is a no-op for now. (#3222)
+- Add opt-in `AndroidAutomatorConfig.retrieveInteractiveWindows` (dart-define `PATROL_ANDROID_RETRIEVE_INTERACTIVE_WINDOWS`); set it to `false` to clear the `FLAG_RETRIEVE_INTERACTIVE_WINDOWS` that uiautomator 2.3.0 force-enables, restoring `$.native` selectors inside some WebViews. Defaults to today's behavior. (#3228)
 
 ## 4.9.0
 
