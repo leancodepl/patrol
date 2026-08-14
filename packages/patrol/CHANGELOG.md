@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Fix the whole test shard hanging when a test fails while an asynchronous error source (e.g. a still-running `WebView` platform view) is active. `FlutterError.onError` is now restored in a `finally`, so a failing test reports its result immediately instead of leaving the native runner blocked on `runDartTest` until its timeout. (#3243)
 - Android: keep third-party `AccessibilityService`s running during the test session again. `AndroidAutomatorConfig.dontSuppressAccessibilityServices` now defaults to `true` (it was effectively `false` since 4.8.0) and is configurable, also via the `PATROL_ANDROID_DONT_SUPPRESS_ACCESSIBILITY_SERVICES` dart-define. (#3227)
 
 ## 4.9.0

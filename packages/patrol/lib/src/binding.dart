@@ -243,9 +243,15 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
       }
     };
 
-    await testBody();
-
-    FlutterError.onError = previousOnError;
+    try {
+      await testBody();
+    } finally {
+      // Restore even if the body throws. Otherwise a later async error trips
+      // flutter_test's "overrode FlutterError.onError" invariant and the test
+      // never completes, blocking the native runner until the runDartTest
+      // timeout instead of reporting the failure.
+      FlutterError.onError = previousOnError;
+    }
   }
 
   @override
