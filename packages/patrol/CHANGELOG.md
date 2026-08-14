@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Android: stop applying the Kotlin Gradle Plugin on AGP 9+ so that Patrol uses built-in Kotlin without triggering Flutter's incompatible-plugin warning. AGP 8 and older continue to use KGP. (#3238)
 - Android: keep third-party `AccessibilityService`s running during the test session again. `AndroidAutomatorConfig.dontSuppressAccessibilityServices` now defaults to `true` (it was effectively `false` since 4.8.0) and is configurable, also via the `PATROL_ANDROID_DONT_SUPPRESS_ACCESSIBILITY_SERVICES` dart-define. (#3227)
 
 ## 4.9.0
