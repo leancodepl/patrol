@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
@@ -8,6 +10,8 @@ import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 import 'package:test/test.dart';
+
+import '../src/mocks.dart';
 
 void main() {
   group('BuildMode', () {
@@ -205,6 +209,34 @@ void main() {
           iosTestBackend.stripFlavorFromAppId(appId, flavor),
           'com.company.app_dev',
         );
+      });
+    });
+
+    group('disableXcodeDiagnosticCollection', () {
+      test('sets the generated test target policy to never', () async {
+        final processManager = MockProcessManager();
+        final backend = IOSTestBackend(
+          processManager: processManager,
+          platform: FakePlatform(),
+          fs: fs,
+          rootDirectory: fs.currentDirectory,
+          parentDisposeScope: DisposeScope(),
+          logger: MockLogger(),
+        );
+        when(
+          () => processManager.run(any(), runInShell: true),
+        ).thenAnswer((_) async => ProcessResult(1, 0, '', ''));
+
+        await backend.disableXcodeDiagnosticCollection('/tmp/test.xctestrun');
+
+        verify(
+          () => processManager.run([
+            '/usr/libexec/PlistBuddy',
+            '-c',
+            'Set :TestConfigurations:0:TestTargets:0:DiagnosticCollectionPolicy 0',
+            '/tmp/test.xctestrun',
+          ], runInShell: true),
+        ).called(1);
       });
     });
   });
