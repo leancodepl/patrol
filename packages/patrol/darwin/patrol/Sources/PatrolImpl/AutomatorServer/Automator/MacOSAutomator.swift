@@ -39,14 +39,11 @@
     }
 
     private func getApp(withBundleId bundleId: String) throws -> XCUIApplication {
-      let app = XCUIApplication(bundleIdentifier: bundleId)
-      // TODO: Doesn't work
-      // See https://stackoverflow.com/questions/73976961/how-to-check-if-any-app-is-installed-during-xctest
-      // guard app.exists else {
-      //   throw PatrolError.appNotInstalled(bundleId)
-      // }
-
-      return app
+      // UI tests always drive the app under test. Looking up by bundle id via
+      // XCUIApplication(bundleIdentifier:) asserts when XCTest hasn't registered
+      // that process yet (common on local unsigned macOS builds).
+      _ = bundleId
+      return XCUIApplication()
     }
 
     func pressHome() throws {
@@ -88,8 +85,24 @@
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws {
-      try runAction("tap") {
-        throw PatrolError.methodNotImplemented("tap")
+      var view = createLogMessage(element: "view", from: selector)
+      view += " in app \(bundleId)"
+
+      try runAction("tapping on \(view)") {
+        let app = try self.getApp(withBundleId: bundleId)
+        app.activate()
+
+        let query = app.descendants(matching: .any).matching(selector.toNSPredicate())
+
+        Logger.shared.i("waiting for existence of \(view)")
+        guard
+          let element = self.waitFor(
+            query: query, index: selector.instance ?? 0, timeout: timeout ?? self.timeout)
+        else {
+          throw PatrolError.viewNotExists(view)
+        }
+
+        element.forceClick()
       }
     }
 
@@ -148,8 +161,20 @@
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws {
-      try runAction("waitUntilVisible") {
-        throw PatrolError.methodNotImplemented("waitUntilVisible")
+      let view = createLogMessage(element: "view", from: selector)
+      try runAction(
+        "waiting until \(view) in app \(bundleId) becomes visible"
+      ) {
+        let app = try self.getApp(withBundleId: bundleId)
+        app.activate()
+
+        let query = app.descendants(matching: .any).containing(selector.toNSPredicate())
+        guard
+          let element = self.waitFor(
+            query: query, index: selector.instance ?? 0, timeout: timeout ?? self.timeout)
+        else {
+          throw PatrolError.viewNotExists(view)
+        }
       }
     }
 
@@ -352,6 +377,56 @@
       return false
     }
 
+    @discardableResult
+    private func waitFor(query: XCUIElementQuery, index: Int, timeout: TimeInterval)
+      -> XCUIElement?
+    {
+      var foundElement: XCUIElement?
+      let startTime = Date()
+
+      while Date().timeIntervalSince(startTime) < timeout {
+        let elements = query.allElementsBoundByIndex
+        if index < elements.count && elements[index].exists {
+          foundElement = elements[index]
+          break
+        }
+        sleep(1)
+      }
+
+      return foundElement
+    }
+
+    private func createLogMessage(element: String, from selector: IOSSelector) -> String {
+      var logMessage = element
+
+      if let text = selector.text {
+        logMessage += " with text '\(text)'"
+      }
+      if let startsWith = selector.textStartsWith {
+        logMessage += " starting with '\(startsWith)'"
+      }
+      if let contains = selector.textContains {
+        logMessage += " containing '\(contains)'"
+      }
+      if let instance = selector.instance {
+        logMessage += " with instance '\(instance)'"
+      }
+      if let elementType = selector.elementType {
+        logMessage += " with elementType '\(elementType)'"
+      }
+      if let identifier = selector.identifier {
+        logMessage += " with identifier '\(identifier)'"
+      }
+      if let label = selector.label {
+        logMessage += " with label '\(label)'"
+      }
+      if let title = selector.title {
+        logMessage += " with title '\(title)'"
+      }
+
+      return logMessage
+    }
+
     private func runAction<T>(_ log: String, block: @escaping () throws -> T) rethrows -> T {
       return try DispatchQueue.main.sync {
         Logger.shared.i("\(log)...")
@@ -359,6 +434,17 @@
         Logger.shared.i("done \(log)")
         Logger.shared.i("result: \(result)")
         return result
+      }
+    }
+  }
+
+  extension XCUIElement {
+    fileprivate func forceClick() {
+      if self.isHittable {
+        self.click()
+      } else {
+        let coordinate = self.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+        coordinate.click()
       }
     }
   }
