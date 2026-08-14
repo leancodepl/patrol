@@ -368,7 +368,6 @@ class PatrolFinder implements MatchFinder {
     String? description,
   }) => wrapWithPatrolLog(
     action: 'enterText',
-    value: text,
     color: AnsiCodes.magenta,
     description: description,
     function: () => tester.enterText(
