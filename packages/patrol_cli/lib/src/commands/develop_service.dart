@@ -7,6 +7,7 @@ import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/commands/dart_define_utils.dart';
 import 'package:patrol_cli/src/commands/develop_options.dart';
+import 'package:patrol_cli/src/commands/hot_restart_result.dart';
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
@@ -53,6 +54,7 @@ class DevelopService {
     required Stream<List<int>> stdin,
     this.onTestsCompleted,
     this.onLogEntry,
+    this.onHotRestart,
   }) : _deviceFinder = deviceFinder,
        _testFinderFactory = testFinderFactory,
        _testBundler = testBundler,
@@ -73,6 +75,11 @@ class DevelopService {
   /// (including flutter attach) to tear down.
   final void Function(TestCompletionResult result)? onTestsCompleted;
   final void Function(Entry entry)? onLogEntry;
+
+  /// Optional callback invoked for every hot restart outcome, including the
+  /// ones `flutter run` drops. Without it a caller waiting on the restarted
+  /// test has no way to tell a failed recompile from a slow test.
+  final void Function(HotRestartResult result)? onHotRestart;
 
   final DeviceFinder _deviceFinder;
   final TestFinderFactory _testFinderFactory;
@@ -96,6 +103,42 @@ class DevelopService {
   /// The Chrome debugger port used by the web develop session.
   String? get webDebuggerPort => _webTestBackend.debuggerPort;
 
+  /// Set once [run] has bundled a target, so the target can be swapped later
+  /// without re-reading the pubspec.
+  String? _testDirectory;
+  String? _testFileSuffix;
+  var _bundleIsOurs = false;
+
+  /// Rewrites the develop test bundle so the next hot restart runs [target].
+  ///
+  /// The entrypoint path never changes, only what it contains, which is why
+  /// this works at all: `flutter run` recompiles the same file. Requires the
+  /// hot restart fix from flutter/flutter#183838 (Flutter 3.47), without which
+  /// the old bundle keeps running and the swap silently does nothing.
+  ///
+  /// Returns the resolved target. Throws if the session isn't bundling its own
+  /// tests, or if [target] doesn't resolve to a test file.
+  String switchDevelopTarget(String target) {
+    final testDirectory = _testDirectory;
+    final testFileSuffix = _testFileSuffix;
+    if (testDirectory == null || testFileSuffix == null) {
+      throw StateError('No develop session to switch the target on');
+    }
+    if (!_bundleIsOurs) {
+      throw StateError(
+        'This session was started with a bundle it does not own '
+        '(--no-generate-bundle), so its target cannot be switched',
+      );
+    }
+
+    final testFinder = _testFinderFactory.create(testDirectory);
+    final resolved = testFinder.findTest(target, testFileSuffix);
+    _testBundler.createDevelopTestBundle(testDirectory, resolved);
+    _webTestBackend.setDevelopTarget(resolved);
+    _logger.detail('Switched develop target to: $resolved');
+    return resolved;
+  }
+
   /// Runs the full develop flow: discover device, read config, bundle test,
   /// build, execute, and attach for hot restart.
   Future<void> run(DevelopOptions options) async {
@@ -113,6 +156,9 @@ class DevelopService {
     if (options.generateBundle) {
       _testBundler.createDevelopTestBundle(testDirectory, target);
     }
+    _testDirectory = testDirectory;
+    _testFileSuffix = config.testFileSuffix;
+    _bundleIsOurs = options.generateBundle;
 
     final androidFlavor = options.flavor ?? config.android.flavor;
     final iosFlavor = options.flavor ?? config.ios.flavor;
@@ -432,6 +478,7 @@ class DevelopService {
           clearTestSteps: clearTestSteps,
           stdin: _stdin,
           onLogEntry: onLogEntry,
+          onHotRestart: onHotRestart,
           openDevtools: openDevtools,
         );
     }

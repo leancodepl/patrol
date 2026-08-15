@@ -128,13 +128,18 @@ enum TestState {
   idle,
   running,
   finishedPassed,
-  finishedFailed;
+  finishedFailed,
+
+  /// The run never started. Distinct from [finishedFailed] so callers can tell
+  /// "the test failed" from "no test ran", and never from [finishedPassed].
+  blocked;
 
   String get summary => switch (this) {
     finishedPassed => 'Tests completed successfully ✅',
     finishedFailed => 'Tests failed ❌',
     running => 'Tests are currently running...',
     idle => 'Patrol session is idle',
+    blocked => 'Test was not started ⛔',
   };
 }
 
@@ -240,11 +245,17 @@ final class PatrolSession {
     _deviceSelectionNote = null;
     if (_isRunning) {
       if (_currentTestFile != testFile) {
-        return 'Patrol session is already running "$_currentTestFile". '
-            'Cannot start different test "$testFile". '
-            'Use quit first or run the same test file.';
+        // Swap what the bundle runs, then restart into it. The entrypoint path
+        // is the same file either way, so this stays a hot restart.
+        try {
+          _developService?.switchDevelopTarget(testFile);
+        } on Object catch (err) {
+          return 'Patrol session is already running "$_currentTestFile" and '
+              'could not switch to "$testFile": $err. Use quit first.';
+        }
+        _currentTestFile = testFile;
       }
-      // Same test file - hot restart. The device can't change on hot restart.
+      // Same session - hot restart. The device can't change on hot restart.
       if (device != null) {
         _deviceSelectionNote =
             'Device "$device" ignored: hot-restarting the running session on '
@@ -370,6 +381,7 @@ final class PatrolSession {
       },
       onLogEntry: _handleEntry,
       onTestsCompleted: _handleTestsCompleted,
+      onHotRestart: _handleHotRestart,
     );
     _developService = developService;
 
@@ -519,6 +531,29 @@ final class PatrolSession {
     }
   }
 
+  /// Hot restart outcome from [DevelopService].
+  ///
+  /// A successful restart changes nothing here: the test is now running and
+  /// completion still arrives over PATROL_LOG. A failed or dropped one is the
+  /// end of the road though, since no test will run and nothing else would
+  /// ever complete the wait.
+  void _handleHotRestart(HotRestartResult result) {
+    if (result.success || _testState != TestState.running) {
+      return;
+    }
+
+    final error = result.error;
+    if (error != null) {
+      _errorDetails.add(error);
+      _pushOutput('ERROR: $error');
+    }
+    _testState = TestState.finishedFailed;
+    _finishWarning =
+        'The hot restart did not go through, so the test never ran. The app is '
+        'still running the previous version of the code.';
+    _completeFinish();
+  }
+
   /// Backend exit signal from [DevelopService].
   ///
   /// Develop sessions stay alive across hot restarts on every platform, so a
@@ -664,11 +699,12 @@ final class PatrolSession {
   }) async {
     final warning = await _start(testFile, device: device);
     if (warning != null) {
-      // Return current status with warning (blocked by different test)
+      // Nothing ran. Report `blocked` rather than whatever the previous run
+      // left behind, which would otherwise read as a pass.
       final status = getStatus();
       return PatrolStatus(
         isDevelopRunning: status.isDevelopRunning,
-        testState: status.testState,
+        testState: TestState.blocked,
         output: status.output,
         currentTestFile: status.currentTestFile,
         warning: warning,

@@ -321,24 +321,34 @@ class FlutterTool {
     });
   }
 
-  /// Enables interactive mode. Returns the previous stdin modes.
-  StdinModes enableInteractiveMode() {
-    final stdinModes = StdinModes(
-      echoMode: io.stdin.echoMode,
-      lineMode: io.stdin.lineMode,
-    );
+  /// Enables interactive mode. Returns the previous stdin modes, or null if
+  /// stdin doesn't support them.
+  ///
+  /// `hasTerminal` is not a reliable guard: it reports true for things that
+  /// then reject echo mode (a /dev/null redirect on macOS, some MCP hosts),
+  /// and a develop session that only needs key commands shouldn't die over it.
+  StdinModes? enableInteractiveMode() {
+    try {
+      final stdinModes = StdinModes(
+        echoMode: io.stdin.echoMode,
+        lineMode: io.stdin.lineMode,
+      );
 
-    // Prevents keystrokes from being printed automatically. Needs to be
-    // disabled for lineMode to be disabled too.
-    io.stdin.echoMode = false;
+      // Prevents keystrokes from being printed automatically. Needs to be
+      // disabled for lineMode to be disabled too.
+      io.stdin.echoMode = false;
 
-    // Causes the stdin stream to provide the input as soon as it arrives (one
-    // key press at a time).
-    io.stdin.lineMode = false;
+      // Causes the stdin stream to provide the input as soon as it arrives (one
+      // key press at a time).
+      io.stdin.lineMode = false;
 
-    _logger.detail('Interactive shell mode enabled.');
+      _logger.detail('Interactive shell mode enabled.');
 
-    return stdinModes;
+      return stdinModes;
+    } on io.StdinException catch (err) {
+      _logger.detail('Interactive shell mode unavailable: $err');
+      return null;
+    }
   }
 
   void revertInteractiveMode(StdinModes stdinModes) {

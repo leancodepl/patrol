@@ -6,6 +6,7 @@ import 'package:file/local.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/commands/develop_service.dart';
+import 'package:patrol_cli/src/commands/hot_restart_result.dart';
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
@@ -38,6 +39,8 @@ class DevelopSessionFactory {
   /// [onTestsCompleted] is forwarded to [DevelopService] for test completion
   /// notifications.
   /// [onLogEntry] is called for every parsed log entry during the session.
+  /// [onHotRestart] is forwarded to [DevelopService] and reports the outcome
+  /// of every hot restart, including the ones `flutter run` drops.
   /// [verbose] enables verbose logging when `true`.
   static DevelopService create({
     required String projectRoot,
@@ -46,6 +49,7 @@ class DevelopSessionFactory {
     Future<void> Function()? onExit,
     void Function(TestCompletionResult result)? onTestsCompleted,
     void Function(Entry entry)? onLogEntry,
+    void Function(HotRestartResult result)? onHotRestart,
     bool verbose = false,
   }) {
     const fs = LocalFileSystem();
@@ -112,6 +116,7 @@ class DevelopSessionFactory {
       stdin: stdin,
       onTestsCompleted: onTestsCompleted,
       onLogEntry: onLogEntry,
+      onHotRestart: onHotRestart,
     );
   }
 }
