@@ -1,9 +1,11 @@
 ## Unreleased
 
+- Answer the native runner when it asks for a test this app skips or doesn't have, instead of
+  leaving it waiting forever for a result nothing will produce. Such a test is now reported as
+  skipped (iOS, macOS) or as an assumption failure (Android). (#3241)
 - Android: stand the runtime-discovery host class down when build-time test discovery compiled its
   generated class into the same APK, so tools that instrument the APK directly (Firebase Test Lab,
   saucectl, emulator.wtf, Marathon) no longer run the whole suite twice.
-
 - Android: keep third-party `AccessibilityService`s running during the test session again. `AndroidAutomatorConfig.dontSuppressAccessibilityServices` now defaults to `true` (it was effectively `false` since 4.8.0) and is configurable, also via the `PATROL_ANDROID_DONT_SUPPRESS_ACCESSIBILITY_SERVICES` dart-define. (#3227)
 - Report uncaught exceptions (e.g. from `onPressed`) in `patrol develop` instead of silently passing. (#3200)
 

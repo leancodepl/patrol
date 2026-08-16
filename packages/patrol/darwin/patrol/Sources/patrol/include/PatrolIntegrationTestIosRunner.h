@@ -358,6 +358,9 @@
         }                                                                                                           \
         BOOL passed = response ? response.passed : NO;                                                              \
         NSString *details = response ? response.details : @"(no details - app likely crashed)";                     \
+        if (response && response.skipped) {                                                                         \
+          XCTSkip(@"%@", details);                                                                                  \
+        }                                                                                                           \
         XCTAssertTrue(passed, @"%@", details);                                                                      \
       });                                                                                                           \
       SEL selector = NSSelectorFromString(selectorName);                                                            \
@@ -577,6 +580,9 @@
     }                                                                                                                  \
     BOOL passed = response ? response.passed : NO;                                                                     \
     NSString *details = response ? response.details : @"(no details - app likely crashed)";                            \
+    if (response && response.skipped) {                                                                                \
+      XCTSkip(@"%@", details);                                                                                         \
+    }                                                                                                                  \
     XCTAssertTrue(passed, @"%@", details);                                                                             \
   }
 

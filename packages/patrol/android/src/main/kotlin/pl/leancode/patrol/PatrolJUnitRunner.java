@@ -246,6 +246,12 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             if (response.getResult() == Contracts.RunDartTestResponseResult.failure) {
                 throw new AssertionError("Dart test failed: " + name + "\n" + response.getDetails());
             }
+            // The app can skip a test the native side was told to run, for example when a
+            // platform-dependent `skip:` was evaluated differently during build-time discovery.
+            if (response.getResult() == Contracts.RunDartTestResponseResult.skipped) {
+                Logger.INSTANCE.i(TAG + "Test skipped by the app: " + response.getDetails());
+                assumeTrue(response.getDetails(), false);
+            }
             Logger.INSTANCE.i(TAG + "Test execution succeeded");
             return response;
         } catch (PatrolAppServiceClientException e) {
