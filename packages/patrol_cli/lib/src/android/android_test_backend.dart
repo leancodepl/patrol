@@ -80,11 +80,16 @@ class AndroidTestBackend {
       codegen.deleteGenerated(androidDir);
 
       if (options.emitTestManifest) {
-        final manifestPath = await TestManifestGenerator(
-          processManager: _processManager,
-          rootDirectory: _rootDirectory,
-          logger: _logger,
-        ).generate(options.flutter, scope);
+        final manifestPath =
+            await TestManifestGenerator(
+              processManager: _processManager,
+              rootDirectory: _rootDirectory,
+              logger: _logger,
+            ).generate(
+              options.flutter,
+              scope,
+              targetPlatform: TargetPlatform.android,
+            );
         if (manifestPath == null) {
           throwToolExit(
             'Build-time test discovery failed; fix the errors above or disable '

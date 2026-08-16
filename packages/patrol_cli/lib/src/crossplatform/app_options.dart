@@ -68,9 +68,14 @@ class FlutterAppOptions {
   /// executes during discovery. That holds regardless of how those hooks were
   /// registered (plain `setUp`, `patrolSetUp`, or a project's own wrapper), so
   /// device-dependent fixtures can't break the host discovery run.
+  ///
+  /// The run happens on the developer's machine, so [targetPlatform] tells the
+  /// bundle which platform the tests are really being built for - that's what
+  /// backs `patrolTargetPlatform`.
   @nonVirtual
   List<String> toFlutterTestDiscoveryInvocation({
     required String manifestOutputPath,
+    required TargetPlatform targetPlatform,
   }) {
     return [
       ...[command.executable, ...command.arguments],
@@ -81,6 +86,10 @@ class FlutterAppOptions {
       ...['--plain-name', 'patrol_test_explorer'],
       ...['--dart-define', 'PATROL_TEST_DISCOVERY=true'],
       ...['--dart-define', 'PATROL_MANIFEST_OUTPUT=$manifestOutputPath'],
+      ...[
+        '--dart-define',
+        'PATROL_TEST_DISCOVERY_PLATFORM=${targetPlatform.name.toLowerCase()}',
+      ],
       for (final dartDefine in dartDefines.entries) ...[
         '--dart-define',
         '${dartDefine.key}=${dartDefine.value}',

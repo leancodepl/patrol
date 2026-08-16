@@ -24,6 +24,7 @@ void main() {
     test('runs only the explorer test and forwards the dart-defines', () {
       final invocation = flutterOptions.toFlutterTestDiscoveryInvocation(
         manifestOutputPath: '/tmp/manifest.json',
+        targetPlatform: TargetPlatform.iOS,
       );
 
       expect(
@@ -41,9 +42,34 @@ void main() {
           'PATROL_TEST_DISCOVERY=true',
           '--dart-define',
           'PATROL_MANIFEST_OUTPUT=/tmp/manifest.json',
+          // The run happens on the host, so the bundle is told which platform
+          // it's discovering for (this backs `patrolTargetPlatform`).
+          '--dart-define',
+          'PATROL_TEST_DISCOVERY_PLATFORM=ios',
           '--dart-define',
           'TARGET_ENV=staging',
         ]),
+      );
+    });
+
+    test('reports the platform each backend builds for', () {
+      String platformDefine(TargetPlatform targetPlatform) {
+        final invocation = flutterOptions.toFlutterTestDiscoveryInvocation(
+          manifestOutputPath: '/tmp/manifest.json',
+          targetPlatform: targetPlatform,
+        );
+        return invocation.firstWhere(
+          (arg) => arg.startsWith('PATROL_TEST_DISCOVERY_PLATFORM='),
+        );
+      }
+
+      expect(
+        platformDefine(TargetPlatform.android),
+        'PATROL_TEST_DISCOVERY_PLATFORM=android',
+      );
+      expect(
+        platformDefine(TargetPlatform.macOS),
+        'PATROL_TEST_DISCOVERY_PLATFORM=macos',
       );
     });
   });

@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Tell the build-time discovery run which platform it builds for, so `patrolTargetPlatform` reports
+  the device's platform while discovering on the host. (#3241)
 - Fix `patrol develop` ignoring build-time test discovery, which made every iOS develop build fail
   with `'PatrolGeneratedTests.inc' file not found`. `patrol.emit_test_manifest` and
   `--emit-test-manifest` now apply to `patrol develop` too, generating the tests for its `--target`.

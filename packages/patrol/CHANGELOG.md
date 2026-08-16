@@ -1,5 +1,9 @@
 ## Unreleased
 
+- Add `patrolTargetPlatform`, which reports the platform a test run targets. Use it instead of
+  `defaultTargetPlatform` or `dart:io`'s `Platform` for anything that decides whether a test is
+  registered (most often `skip:`): build-time test discovery registers tests on the host, where
+  those two describe your machine, and the manifest then disagrees with the device. (#3241)
 - Answer the native runner when it asks for a test this app skips or doesn't have, instead of
   leaving it waiting forever for a result nothing will produce. Such a test is now reported as
   skipped (iOS, macOS) or as an assumption failure (Android). (#3241)

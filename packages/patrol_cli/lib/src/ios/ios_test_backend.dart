@@ -119,7 +119,7 @@ class IOSTestBackend {
           processManager: _processManager,
           rootDirectory: _rootDirectory,
           logger: _logger,
-        ).generate(options.flutter, scope);
+        ).generate(options.flutter, scope, targetPlatform: TargetPlatform.iOS);
         if (manifestPath == null) {
           throwToolExit(
             'Build-time test discovery failed; fix the errors above or disable '

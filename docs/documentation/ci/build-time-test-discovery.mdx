@@ -143,6 +143,32 @@ when you want to run a single test.
 
 </Steps>
 
+## Platform-dependent tests
+
+Your tests are registered twice now: on your machine, to build the manifest, and
+on the device. So anything that decides **whether a test exists or is skipped**
+has to give the same answer in both runs — and `defaultTargetPlatform` doesn't.
+Under `flutter test` Flutter reports `android` no matter what you're building for,
+and `dart:io`'s `Platform` describes your computer. Use `patrolTargetPlatform`:
+
+```dart
+patrolTest(
+  'shares the invoice',
+  ($) async { ... },
+  skip: patrolTargetPlatform == PatrolTargetPlatform.iOS,
+);
+```
+
+Patrol tells it which platform the build targets, so discovery and the device
+agree. Inside a test body nothing changes — there you're on the device, and any
+platform check works.
+
+<Info>
+  If the two do disagree anyway, the app answers the native runner with a skip
+  (or a failure naming the test it doesn't have) instead of leaving it waiting for
+  a result that will never arrive.
+</Info>
+
 ## Running tests without rebuilding
 
 Once you've built with build-time discovery, you can run the already-built tests
@@ -257,11 +283,12 @@ Then point SauceLabs at it with `shard: concurrency` + `testListFile`. See
 **Limitations & caveats**
 
 - **Host-vs-device discovery.** Discovery runs on the host (`flutter test`), not on
-  the device. Tests that are registered conditionally based on the runtime
-  environment — e.g. `Platform.isIOS`, or a description built from a
-  `--dart-define` — may be discovered differently than they would on-device, and a
-  conditionally-registered test could be silently missing from the manifest. Keep
-  your test registration platform-independent.
+  the device. Tests registered conditionally on the runtime environment — a
+  description built from a `--dart-define`, say — may be discovered differently
+  than they would on-device, and such a test can end up missing from the manifest.
+  For the platform, use
+  [`patrolTargetPlatform`](#platform-dependent-tests); for everything else, keep
+  your test registration environment-independent.
 - **Test location.** Discovery needs your tests to run as plain widget tests on the
   host. Tests kept under `integration_test/` are treated by Flutter as integration
   tests (they require a device and a direct `integration_test` dependency), so
