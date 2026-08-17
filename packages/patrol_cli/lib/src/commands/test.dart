@@ -13,6 +13,7 @@ import 'package:patrol_cli/src/coverage/web_coverage_tool.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
+import 'package:patrol_cli/src/dashboard/dashboard_config.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/macos/macos_test_backend.dart';
@@ -76,6 +77,7 @@ class TestCommand extends PatrolCommand {
     usesAndroidOptions();
     usesIOSOptions();
     usesVideoRecordingOptions();
+    usesHtmlReportOptions();
     usesEmitTestManifestOption();
 
     usesWeb();
@@ -546,6 +548,15 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       bitRate: int.tryParse(stringArg('video-bit-rate') ?? ''),
     );
 
+    // Passing a path is enough to ask for the report.
+    final htmlReportPath = stringArg('html-report-path');
+    final dashboardConfig = DashboardConfig(
+      enabled: boolArg('html-report') || htmlReportPath != null,
+      outputPath:
+          htmlReportPath ?? DashboardConfig.defaultOutputPath(testDirectory),
+      testDirectory: testDirectory,
+    );
+
     switch (device.targetPlatform) {
       case TargetPlatform.android:
         action = () => _androidTestBackend.execute(
@@ -558,6 +569,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
           videoConfig: videoConfig,
           pullScreenshots: true,
           screenshotsOutputDir: screenshotsOutputDir,
+          dashboardConfig: dashboardConfig,
         );
         final package = android.packageName;
         if (package != null && uninstall) {
@@ -574,6 +586,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
           clearTestSteps: clearTestSteps,
           videoConfig: videoConfig,
           screenshotsOutputDir: screenshotsOutputDir,
+          dashboardConfig: dashboardConfig,
         );
         final bundleId = ios.bundleId;
         if (bundleId != null && uninstall) {

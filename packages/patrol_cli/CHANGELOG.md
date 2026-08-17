@@ -8,6 +8,11 @@
   `<test-directory>/screenshots`. Requires Xcode 16 or newer. See the
   [docs](https://patrol.leancode.co/cli-commands/test#on-ios). (#3271)
 
+- Add `--html-report` to `patrol test`, which writes a self-contained HTML dashboard of the run:
+  per-test status and duration, expandable Patrol steps with their own durations and logs, the
+  full exception of each failure, and the videos recorded with `--record-video`. Set the location
+  with `--html-report-path`. Built from Patrol's log stream, so it is identical on Android and iOS.
+
 ## 4.10.0
 
 - Read coverage from runs with the test orchestrator's `clearPackageData:true` in
