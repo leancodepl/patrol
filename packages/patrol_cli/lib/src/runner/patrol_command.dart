@@ -557,6 +557,25 @@ abstract class PatrolCommand extends Command<int> {
       );
   }
 
+  void usesHtmlReportOptions() {
+    argParser
+      ..addFlag(
+        'html-report',
+        help:
+            'Generate a self-contained HTML report of the run, with each '
+            "test's steps, exception and duration, plus the videos recorded "
+            'with --record-video. Works the same on Android and iOS.',
+      )
+      ..addOption(
+        'html-report-path',
+        help:
+            'Where to write the HTML report. Defaults to '
+            '<test directory>/reports/patrol_report.html. Implies '
+            '--html-report.',
+        valueHelp: 'path/to/report.html',
+      );
+  }
+
   /// Gets the parsed command-line flag named [name] as a `bool`.
   ///
   /// If no flag named [name] was added to the `ArgParser`, an [ArgumentError]

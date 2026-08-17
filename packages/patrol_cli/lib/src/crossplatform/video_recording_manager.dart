@@ -12,10 +12,19 @@ abstract class VideoRecordingManager {
   Future<void> _operations = Future<void>.value();
 
   final List<String> _savedVideos = [];
+  final Map<String, String> _savedVideosByTest = {};
 
-  /// Records that a video was successfully saved at [videoPath].
+  /// Records that a video for [testName] was successfully saved at [videoPath].
   @protected
-  void addSavedVideo(String videoPath) => _savedVideos.add(videoPath);
+  void addSavedVideo(String testName, String videoPath) {
+    _savedVideos.add(videoPath);
+    _savedVideosByTest[testName] = videoPath;
+  }
+
+  /// Paths of the saved recordings, keyed by the test they belong to. Consumed
+  /// by the HTML report, which shows the video next to its test.
+  Map<String, String> get savedVideosByTest =>
+      Map.unmodifiable(_savedVideosByTest);
 
   /// One-line summary of saved recordings for the CLI summary, or `null` if
   /// nothing was recorded.

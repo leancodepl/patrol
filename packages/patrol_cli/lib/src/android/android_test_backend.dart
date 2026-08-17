@@ -16,6 +16,8 @@ import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/crossplatform/test_manifest.dart';
 import 'package:patrol_cli/src/crossplatform/test_manifest_generator.dart';
 import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
+import 'package:patrol_cli/src/dashboard/dashboard_config.dart';
+import 'package:patrol_cli/src/dashboard/dashboard_reporter.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
@@ -377,6 +379,7 @@ class AndroidTestBackend {
     VideoRecordingConfig? videoConfig,
     bool pullScreenshots = false,
     String? screenshotsOutputDir,
+    DashboardConfig? dashboardConfig,
   }) async {
     await _disposeScope.run((scope) async {
       // Create video recording manager if enabled
@@ -392,6 +395,14 @@ class AndroidTestBackend {
           scope: scope,
         );
       }
+
+      final dashboardReporter = (dashboardConfig?.enabled ?? false)
+          ? DashboardReporter(
+              rootDirectory: _rootDirectory,
+              logger: _logger,
+              config: dashboardConfig!,
+            )
+          : null;
 
       // Read patrol logs from logcat
       final processLogcat =
@@ -411,6 +422,17 @@ class AndroidTestBackend {
           ? path.replaceAll(r'\', '/')
           : path;
 
+      // Both the video manager and the HTML report observe the log entries.
+      var logEntryCallback = onLogEntry;
+      if (dashboardReporter != null) {
+        logEntryCallback = dashboardReporter.wrapOnLogEntry(logEntryCallback);
+      }
+      if (videoRecordingManager != null) {
+        logEntryCallback = videoRecordingManager.wrapOnLogEntry(
+          logEntryCallback,
+        );
+      }
+
       final patrolLogReader =
           PatrolLogReader(
               listenStdOut: processLogcat.listenStdOut,
@@ -420,9 +442,7 @@ class AndroidTestBackend {
               showFlutterLogs: showFlutterLogs,
               hideTestSteps: hideTestSteps,
               clearTestSteps: clearTestSteps,
-              onLogEntry:
-                  videoRecordingManager?.wrapOnLogEntry(onLogEntry) ??
-                  onLogEntry,
+              onLogEntry: logEntryCallback,
             )
             ..listen()
             ..startTimer();
@@ -498,6 +518,15 @@ class AndroidTestBackend {
         if (recordingSummary != null) {
           _logger.info(recordingSummary);
         }
+        dashboardReporter?.writeAndLog(
+          platform: 'Android',
+          device: device,
+          buildMode: options.flutter.buildMode.name,
+          videoRecordingManager: videoRecordingManager,
+          appDescription: options.description,
+          flavor: flavor,
+          nativeReportPath: reportPath,
+        );
       }
 
       if (exitCode == 0) {
