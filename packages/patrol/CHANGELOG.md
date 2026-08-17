@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Fix a failing test hanging the whole shard: `FlutterError.onError` was not restored when a test body threw, so the native runner could block on `runDartTest` until its timeout and every test queued behind it never ran. The failure is now reported, with its details. (#3243)
 - Android: keep third-party `AccessibilityService`s running during the test session again. `AndroidAutomatorConfig.dontSuppressAccessibilityServices` now defaults to `true` (it was effectively `false` since 4.8.0) and is configurable, also via the `PATROL_ANDROID_DONT_SUPPRESS_ACCESSIBILITY_SERVICES` dart-define. (#3227)
 
 ## 4.9.0

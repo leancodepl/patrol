@@ -243,9 +243,37 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
       }
     };
 
-    await testBody();
-
-    FlutterError.onError = previousOnError;
+    try {
+      await testBody();
+    } catch (err, stackTrace) {
+      // Record the thrown error before the `finally` below uninstalls the
+      // handler. A thrown failure (a failed `expect`, a finder timeout, a
+      // PatrolActionException) is only reported by flutter_test after it has
+      // unwound out of the body, by which point our onError is gone — so
+      // without this the native side gets a result with no details at all.
+      //
+      // Deliberately not done via `reportTestException`: that hook receives
+      // flutter_test's `_pendingExceptionDetails`, which collapses to the
+      // "Multiple exceptions were thrown" placeholder as soon as a second
+      // error arrives. Recording that is exactly the regression #2362 fixed
+      // (#951). The thrown object is always the real one.
+      //
+      // A Failure already gathered by onError accumulates every framework
+      // error seen during the test, so it stays.
+      if (_currentDartTest case final testName?) {
+        _testResults[testName] = switch (_testResults[testName]) {
+          Failure(:final details?) => Failure(testName, details),
+          _ => Failure(testName, '$err\n$stackTrace'),
+        };
+      }
+      rethrow;
+    } finally {
+      // Restore even if the body throws. Otherwise a later async error trips
+      // flutter_test's "overrode FlutterError.onError" invariant and the test
+      // never completes, blocking the native runner until the runDartTest
+      // timeout instead of reporting the failure.
+      FlutterError.onError = previousOnError;
+    }
   }
 
   @override
