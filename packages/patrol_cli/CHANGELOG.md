@@ -1,3 +1,7 @@
+## Unreleased
+
+- Fix `idevicesyslog` not being scoped to the device under test, which made concurrent runs on a host with several real iOS devices attached all stream the same device's log — corrupting the step display, `--show-flutter-logs` output and the test summary. (#3245)
+
 ## 4.7.0
 
 - **Requires `patrol` 4.9.0 or newer.**
