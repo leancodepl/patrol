@@ -7,6 +7,8 @@
   exception of each failure folded into the step that broke, and the videos recorded with
   `--record-video`. Set the location with `--html-report-path`. Built from Patrol's log stream,
   so it is identical on Android and iOS.
+- Support `--html-report` in `patrol test-without-building` and on the web, so every platform that
+  produces a Patrol log stream can produce a report.
 
 ## 4.7.0
 

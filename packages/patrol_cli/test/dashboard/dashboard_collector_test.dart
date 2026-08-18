@@ -305,6 +305,32 @@ void main() {
       expect(run.errors, isEmpty);
     });
 
+    test('does not duplicate an exception the entry already carried', () {
+      // `patrol` 4.10.0+ puts the exception on the failure entry. Older
+      // versions send it separately, which the test above covers.
+      final sut = collector()
+        ..handleEntry(
+          TestEntry(
+            name: 'app_test signs in',
+            status: TestEntryStatus.start,
+            timestamp: at(0),
+          ),
+        )
+        ..handleEntry(
+          TestEntry(
+            name: 'app_test signs in',
+            status: TestEntryStatus.failure,
+            error: 'Expected: one candidate',
+            timestamp: at(100),
+          ),
+        )
+        ..handleEntry(ErrorEntry(message: 'Expected: one candidate'));
+
+      final run = _build(sut);
+      expect(run.tests.single.error, 'Expected: one candidate');
+      expect(run.errors, ['Expected: one candidate']);
+    });
+
     test('stops stitching failure details at the next test', () {
       final sut = collector()
         ..handleEntry(

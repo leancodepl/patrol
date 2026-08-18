@@ -48,6 +48,7 @@ class TestWithoutBuildingCommand extends PatrolCommand {
     usesShowFlutterLogs();
     usesHideTestSteps();
     usesClearTestSteps();
+    usesHtmlReportOptions();
 
     usesAndroidOptions();
     argParser
@@ -133,6 +134,7 @@ class TestWithoutBuildingCommand extends PatrolCommand {
     final showFlutterLogs = boolArg('show-flutter-logs');
     final hideTestSteps = boolArg('hide-test-steps');
     final clearTestSteps = boolArg('clear-test-steps');
+    final dashboardConfig = htmlReportConfig(config.testDirectory);
 
     try {
       switch (device.targetPlatform) {
@@ -153,6 +155,7 @@ class TestWithoutBuildingCommand extends PatrolCommand {
             hideTestSteps: hideTestSteps,
             clearTestSteps: clearTestSteps,
             onlyTests: onlyTests,
+            dashboardConfig: dashboardConfig,
           );
         case TargetPlatform.iOS:
           await _iosTestBackend.execute(
@@ -172,6 +175,7 @@ class TestWithoutBuildingCommand extends PatrolCommand {
             hideTestSteps: hideTestSteps,
             clearTestSteps: clearTestSteps,
             onlyTests: onlyTests,
+            dashboardConfig: dashboardConfig,
           );
         case TargetPlatform.macOS:
         case TargetPlatform.web:

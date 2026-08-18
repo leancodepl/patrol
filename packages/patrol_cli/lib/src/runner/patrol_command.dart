@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
+import 'package:patrol_cli/src/dashboard/dashboard_config.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
 
@@ -574,6 +575,19 @@ abstract class PatrolCommand extends Command<int> {
             '--html-report.',
         valueHelp: 'path/to/report.html',
       );
+  }
+
+  /// The HTML report configuration for this run, from `--html-report` and
+  /// `--html-report-path`.
+  DashboardConfig htmlReportConfig(String testDirectory) {
+    // Passing a path is enough to ask for the report.
+    final outputPath = stringArg('html-report-path');
+    return DashboardConfig(
+      enabled: boolArg('html-report') || outputPath != null,
+      outputPath:
+          outputPath ?? DashboardConfig.defaultOutputPath(testDirectory),
+      testDirectory: testDirectory,
+    );
   }
 
   /// Gets the parsed command-line flag named [name] as a `bool`.

@@ -4,11 +4,15 @@ import 'dart:io' as io;
 import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart';
+import 'package:file/file.dart' as fs;
 import 'package:package_config/package_config.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
+import 'package:patrol_cli/src/crossplatform/log_entry_observers.dart';
+import 'package:patrol_cli/src/dashboard/dashboard_config.dart';
+import 'package:patrol_cli/src/dashboard/dashboard_reporter.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_log/patrol_log_reader.dart';
 import 'package:process/process.dart';
@@ -19,14 +23,17 @@ class WebTestBackend {
   WebTestBackend({
     required ProcessManager processManager,
     required DisposeScope parentDisposeScope,
+    required fs.Directory rootDirectory,
     required Logger logger,
   }) : _processManager = processManager,
+       _rootDirectory = rootDirectory,
        _logger = logger,
        _disposeScope = DisposeScope() {
     _disposeScope.disposedBy(parentDisposeScope);
   }
 
   final ProcessManager _processManager;
+  final fs.Directory _rootDirectory;
   final Logger _logger;
   final DisposeScope _disposeScope;
 
@@ -57,6 +64,7 @@ class WebTestBackend {
     bool showFlutterLogs = false,
     bool hideTestSteps = false,
     bool clearTestSteps = false,
+    DashboardConfig? dashboardConfig,
   }) async {
     _logger
       ..detail('Starting web test execution...')
@@ -79,9 +87,11 @@ class WebTestBackend {
       await _runPlaywrightTests(
         baseUrl,
         options,
+        device,
         showFlutterLogs: showFlutterLogs,
         hideTestSteps: hideTestSteps,
         clearTestSteps: clearTestSteps,
+        dashboardConfig: dashboardConfig,
       );
     } finally {
       // Clean up Flutter process gracefully
@@ -419,10 +429,12 @@ class WebTestBackend {
 
   Future<void> _runPlaywrightTests(
     String baseUrl,
-    WebAppOptions options, {
+    WebAppOptions options,
+    Device device, {
     required bool showFlutterLogs,
     required bool hideTestSteps,
     required bool clearTestSteps,
+    DashboardConfig? dashboardConfig,
   }) async {
     _logger.info('Running Playwright tests against: $baseUrl');
     final completer = Completer<void>();
@@ -460,6 +472,12 @@ class WebTestBackend {
             )
             ..disposedBy(scope);
 
+      final dashboardReporter = DashboardReporter.maybe(
+        rootDirectory: _rootDirectory,
+        logger: _logger,
+        config: dashboardConfig,
+      );
+
       final isShardedRun = (options.workers ?? 0) > 1;
       if (isShardedRun) {
         _logger.warn(
@@ -479,6 +497,7 @@ class WebTestBackend {
               hideTestSteps: hideTestSteps || isShardedRun,
               clearTestSteps: clearTestSteps,
               hideTestLifecycle: isShardedRun,
+              onLogEntry: observeLogEntries(null, dashboard: dashboardReporter),
             )
             ..listen()
             ..startTimer();
@@ -500,6 +519,12 @@ class WebTestBackend {
           patrolLogReader.stopTimer();
           // TODO: Don't print the summary in develop
           _logger.info(patrolLogReader.summary);
+          dashboardReporter?.writeAndLog(
+            platform: 'Web',
+            device: device,
+            buildMode: options.flutter.buildMode.name,
+            nativeReportPath: testReportDir,
+          );
 
           if (patrolLogReader.failedTestsCount > 0) {
             completer.completeError('Some tests failed.');

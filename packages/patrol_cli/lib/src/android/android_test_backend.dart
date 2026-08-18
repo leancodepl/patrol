@@ -13,6 +13,7 @@ import 'package:patrol_cli/src/base/extensions/completer.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
+import 'package:patrol_cli/src/crossplatform/log_entry_observers.dart';
 import 'package:patrol_cli/src/crossplatform/test_manifest.dart';
 import 'package:patrol_cli/src/crossplatform/test_manifest_generator.dart';
 import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
@@ -420,17 +421,6 @@ class AndroidTestBackend {
           ? path.replaceAll(r'\', '/')
           : path;
 
-      // Both the video manager and the HTML report observe the log entries.
-      var logEntryCallback = onLogEntry;
-      if (dashboardReporter != null) {
-        logEntryCallback = dashboardReporter.wrapOnLogEntry(logEntryCallback);
-      }
-      if (videoRecordingManager != null) {
-        logEntryCallback = videoRecordingManager.wrapOnLogEntry(
-          logEntryCallback,
-        );
-      }
-
       final patrolLogReader =
           PatrolLogReader(
               listenStdOut: processLogcat.listenStdOut,
@@ -440,7 +430,11 @@ class AndroidTestBackend {
               showFlutterLogs: showFlutterLogs,
               hideTestSteps: hideTestSteps,
               clearTestSteps: clearTestSteps,
-              onLogEntry: logEntryCallback,
+              onLogEntry: observeLogEntries(
+                onLogEntry,
+                dashboard: dashboardReporter,
+                videos: videoRecordingManager,
+              ),
             )
             ..listen()
             ..startTimer();
@@ -558,6 +552,7 @@ class AndroidTestBackend {
     required bool clearTestSteps,
     List<String> onlyTests = const [],
     void Function(Entry entry)? onLogEntry,
+    DashboardConfig? dashboardConfig,
   }) async {
     final packageName = options.packageName;
     if (packageName == null) {
@@ -608,6 +603,12 @@ class AndroidTestBackend {
           ? path.replaceAll(r'\', '/')
           : path;
 
+      final dashboardReporter = DashboardReporter.maybe(
+        rootDirectory: _rootDirectory,
+        logger: _logger,
+        config: dashboardConfig,
+      );
+
       final patrolLogReader =
           PatrolLogReader(
               listenStdOut: processLogcat.listenStdOut,
@@ -617,7 +618,10 @@ class AndroidTestBackend {
               showFlutterLogs: showFlutterLogs,
               hideTestSteps: hideTestSteps,
               clearTestSteps: clearTestSteps,
-              onLogEntry: onLogEntry,
+              onLogEntry: observeLogEntries(
+                onLogEntry,
+                dashboard: dashboardReporter,
+              ),
             )
             ..listen()
             ..startTimer();
@@ -652,6 +656,14 @@ class AndroidTestBackend {
       patrolLogReader.stopTimer();
       processLogcat.kill();
       _logger.info(patrolLogReader.summary);
+      dashboardReporter?.writeAndLog(
+        platform: 'Android',
+        device: device,
+        buildMode: options.flutter.buildMode.name,
+        appDescription: options.description,
+        flavor: flavor,
+        nativeReportPath: reportPath,
+      );
 
       if (exitCode == 0 && !failed) {
         task.complete('Completed executing $subject');
