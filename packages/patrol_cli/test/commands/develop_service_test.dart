@@ -36,6 +36,13 @@ void main() {
       real: false,
     );
 
+    const iosDevice = Device(
+      name: 'iPhone 17 Pro',
+      id: 'iphone-17-pro',
+      targetPlatform: TargetPlatform.iOS,
+      real: false,
+    );
+
     setUpAll(() {
       registerFallbackValue(
         const AndroidAppOptions(
@@ -53,6 +60,26 @@ void main() {
           appServerPort: 8080,
           testServerPort: 8081,
           uninstall: false,
+        ),
+      );
+      registerFallbackValue(
+        IOSAppOptions(
+          flutter: const FlutterAppOptions(
+            command: FlutterCommand('flutter'),
+            target: 'patrol_test/test_bundle.dart',
+            flavor: null,
+            buildMode: BuildMode.debug,
+            dartDefines: <String, String>{},
+            dartDefineFromFilePaths: <String>[],
+            buildName: null,
+            buildNumber: null,
+          ),
+          scheme: 'Runner',
+          configuration: 'Debug',
+          simulator: true,
+          osVersion: 'latest',
+          appServerPort: 8080,
+          testServerPort: 8081,
         ),
       );
       registerFallbackValue(androidDevice);
@@ -170,6 +197,7 @@ void main() {
             dartDefines: any(named: 'dartDefines'),
             openDevtools: any(named: 'openDevtools'),
             attachUsingUrl: any(named: 'attachUsingUrl'),
+            forwardFlutterLogs: any(named: 'forwardFlutterLogs'),
             onQuit: any(named: 'onQuit'),
           ),
         ).thenAnswer((_) => attachNeverCompletes.future);
@@ -221,6 +249,7 @@ void main() {
             dartDefines: any(named: 'dartDefines'),
             openDevtools: any(named: 'openDevtools'),
             attachUsingUrl: any(named: 'attachUsingUrl'),
+            forwardFlutterLogs: any(named: 'forwardFlutterLogs'),
             onQuit: any(named: 'onQuit'),
           ),
         ).thenAnswer((_) => attachNeverCompletes.future);
@@ -244,6 +273,96 @@ void main() {
         expect(_lastResult!.error, isA<Exception>());
       },
     );
+
+    group('iOS logs', () {
+      /// Runs a develop session on [iosDevice] and reports where the app's
+      /// logs were routed.
+      Future<({bool fromFlutterLogs, bool fromPatrol})> runOnIos({
+        required String? flavor,
+      }) async {
+        bool? fromFlutterLogs;
+        bool? fromPatrol;
+
+        when(
+          () => deviceFinder.find(
+            any(),
+            flutterCommand: any(named: 'flutterCommand'),
+          ),
+        ).thenAnswer((_) async => [iosDevice]);
+        when(() => iosTestBackend.build(any())).thenAnswer((_) async {});
+        when(
+          () => iosTestBackend.getInstalledAppsEnvVariable(any()),
+        ).thenAnswer((_) async => '[]');
+        when(
+          () => iosTestBackend.execute(
+            any(),
+            any(),
+            interruptible: any(named: 'interruptible'),
+            showFlutterLogs: any(named: 'showFlutterLogs'),
+            hideTestSteps: any(named: 'hideTestSteps'),
+            clearTestSteps: any(named: 'clearTestSteps'),
+            onLogEntry: any(named: 'onLogEntry'),
+            videoConfig: any(named: 'videoConfig'),
+          ),
+        ).thenAnswer((invocation) {
+          fromPatrol =
+              invocation.namedArguments[#showFlutterLogs] as bool? ?? false;
+          return Completer<void>().future;
+        });
+        when(
+          () => flutterTool.attachForHotRestart(
+            flutterCommand: any(named: 'flutterCommand'),
+            deviceId: any(named: 'deviceId'),
+            target: any(named: 'target'),
+            appId: any(named: 'appId'),
+            dartDefines: any(named: 'dartDefines'),
+            openDevtools: any(named: 'openDevtools'),
+            attachUsingUrl: any(named: 'attachUsingUrl'),
+            forwardFlutterLogs: any(named: 'forwardFlutterLogs'),
+            onQuit: any(named: 'onQuit'),
+          ),
+        ).thenAnswer((invocation) {
+          fromFlutterLogs =
+              invocation.namedArguments[#forwardFlutterLogs] as bool? ?? true;
+          return Completer<void>().future;
+        });
+
+        unawaited(
+          buildService().run(
+            DevelopOptions(
+              target: options.target,
+              flutterCommand: options.flutterCommand,
+              buildMode: options.buildMode,
+              testServerPort: options.testServerPort,
+              appServerPort: options.appServerPort,
+              flavor: flavor,
+              generateBundle: false,
+              uninstall: false,
+              checkCompatibility: false,
+            ),
+          ),
+        );
+
+        await _waitFor(() => fromFlutterLogs != null && fromPatrol != null);
+        return (fromFlutterLogs: fromFlutterLogs!, fromPatrol: fromPatrol!);
+      }
+
+      // `flutter logs` needs a scheme named Runner, which a flavored project
+      // does not have, so the app's logs have to come from Patrol's own stream.
+      test('come from Patrol when a flavor is set', () async {
+        final routing = await runOnIos(flavor: 'dev');
+
+        expect(routing.fromFlutterLogs, isFalse);
+        expect(routing.fromPatrol, isTrue);
+      });
+
+      test('come from flutter logs when no flavor is set', () async {
+        final routing = await runOnIos(flavor: null);
+
+        expect(routing.fromFlutterLogs, isTrue);
+        expect(routing.fromPatrol, isFalse);
+      });
+    });
   });
 }
 

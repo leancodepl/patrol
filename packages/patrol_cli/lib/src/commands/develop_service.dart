@@ -374,6 +374,14 @@ class DevelopService {
     Future<void> Function()? finalizer;
     String? appId;
 
+    // `flutter logs` resolves the iOS app package without a build
+    // configuration, so it needs a scheme named Runner and takes no option to
+    // pick another.
+    final flutterLogsUnavailable =
+        device.targetPlatform == TargetPlatform.iOS &&
+        flutterOpts.flavor != null;
+    final effectiveShowFlutterLogs = showFlutterLogs || flutterLogsUnavailable;
+
     switch (device.targetPlatform) {
       case TargetPlatform.android:
         appId = android.packageName;
@@ -402,7 +410,7 @@ class DevelopService {
           iosOpts,
           device,
           interruptible: true,
-          showFlutterLogs: showFlutterLogs,
+          showFlutterLogs: effectiveShowFlutterLogs,
           hideTestSteps: hideTestSteps,
           clearTestSteps: clearTestSteps,
           onLogEntry: onLogEntry,
@@ -461,8 +469,8 @@ class DevelopService {
           appId: appId,
           dartDefines: flutterOpts.dartDefines,
           openDevtools: openDevtools,
-          flavor: flutterOpts.flavor,
           attachUsingUrl: device.targetPlatform == TargetPlatform.macOS,
+          forwardFlutterLogs: !flutterLogsUnavailable,
           onQuit: onQuitCleanup,
         );
       }
