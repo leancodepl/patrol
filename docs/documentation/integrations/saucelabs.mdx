@@ -1,0 +1,136 @@
+---
+title: SauceLabs
+---
+
+# SauceLabs overview
+
+[SauceLabs] is a popular cloud device farm, with virtual and real devices on both
+Android and iOS.
+
+Your Patrol tests are ordinary native tests (Espresso on Android, XCUITest on iOS),
+so this page only covers what is specific to Patrol. For the config format, device
+names, sharding options and everything else, follow [SauceLabs' Espresso and
+XCUITest docs][saucectl config].
+
+## Prerequisites
+
+- The standard Patrol setup. Unlike BrowserStack and LambdaTest, SauceLabs needs no
+  farm-specific `testInstrumentationRunner`, so keep the
+  `pl.leancode.patrol.PatrolJUnitRunner` you already have.
+- [saucectl] installed, with `SAUCE_USERNAME` and `SAUCE_ACCESS_KEY` exported.
+
+## Android
+
+<Steps>
+
+### Build
+
+```bash
+patrol build android
+```
+
+### Point a config at the two APKs
+
+The command prints both paths. If you use a flavor, both the directory and the file
+name carry it (`apk/staging/debug/app-staging-debug.apk`).
+
+```yaml title=".sauce/android.yml"
+apiVersion: v1alpha
+kind: espresso
+sauce:
+  region: us-west-1
+espresso:
+  app: build/app/outputs/apk/debug/app-debug.apk
+  testApp: build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+suites:
+  - name: "Android"
+    devices:
+      - name: "Google Pixel 9 Pro"
+```
+
+### Run
+
+```bash
+saucectl run --config .sauce/android.yml
+```
+
+</Steps>
+
+<Warning>
+  If every test executes twice, restrict the suite to the class that
+  [build-time test discovery](/documentation/ci/build-time-test-discovery) generated:
+
+  ```yaml
+      testOptions:
+        class:
+          - com.example.myapp.PatrolGeneratedTests
+  ```
+
+  Discovery *adds* that class to your APK rather than replacing the `MainActivityTest`
+  host from your setup. Both enumerate your whole Dart suite, and SauceLabs runs every
+  test class the APK contains. You won't see this under `patrol test`, which narrows
+  the class itself.
+</Warning>
+
+## iOS
+
+<Steps>
+
+### Build
+
+```bash
+patrol build ios --simulator   # or --release, for real devices
+```
+
+For **real devices**, XCUITest wants `.ipa` files rather than the `.app` bundles the
+build produces. Pack each one into an `.ipa` (a zip with the `.app` inside a
+`Payload/` directory) and point your config at the results.
+
+<Warning>
+  Do the [Setup for physical iOS devices] first. The test runner is a separate app
+  from the one under test, so it needs its own identifier, certificate and profile.
+</Warning>
+
+### Point a config at the two bundles
+
+```yaml title=".sauce/ios.yml"
+apiVersion: v1alpha
+kind: xcuitest
+sauce:
+  region: us-west-1
+xcuitest:
+  app: build/ios_integ/Build/Products/Debug-iphonesimulator/Runner.app
+  testApp: build/ios_integ/Build/Products/Debug-iphonesimulator/RunnerUITests-Runner.app
+suites:
+  - name: "iOS"
+    simulators:
+      - name: "iPhone 15 Simulator"
+        platformVersions:
+          - "17.0"
+```
+
+### Run
+
+```bash
+saucectl run --config .sauce/ios.yml
+```
+
+</Steps>
+
+<Info>
+  When a test fails, look for the Dart stack trace in the job's `xcodebuild.log`
+  asset. The JUnit report truncates the failure message.
+</Info>
+
+### Sharding
+
+SauceLabs shards XCUITest by splitting an explicit list of test identifiers
+(`shard: concurrency` with `testListFile`). To generate that list you need
+[build-time test discovery](/documentation/ci/build-time-test-discovery). That page
+has the one-liner that writes the file, and the caveat that the entry format differs
+between simulators and real devices.
+
+[SauceLabs]: https://saucelabs.com
+[saucectl]: https://docs.saucelabs.com/dev/cli/saucectl/
+[saucectl config]: https://docs.saucelabs.com/mobile-apps/automated-testing/espresso-xcuitest/
+[Setup for physical iOS devices]: /documentation/physical-ios-devices-setup

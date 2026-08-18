@@ -57,6 +57,19 @@ See also:
 
 - [emulator.wtf pricing]
 
+### SauceLabs
+
+[SauceLabs] offers both virtual devices (Android emulators, iOS simulators) and
+physical ones, on Android and iOS. You upload the app and test binaries with its
+`saucectl` CLI, and it returns results with a video recording and per-job logs.
+
+It runs Patrol tests as the native tests they are — Espresso and XCUITest — so no
+Flutter-specific support is required on its side. Sharding is available on both
+platforms, though on iOS it needs an explicit list of test identifiers.
+
+See the [SauceLabs guide](/documentation/integrations/saucelabs) for the configs and the
+platform-specific caveats.
+
 ### Xcode Cloud
 
 [Xcode Cloud] is a CI/CD platform built into Xcode and designed expressly for
@@ -150,6 +163,7 @@ about your experiences!
 [aws device farm]: https://aws.amazon.com/device-farm
 [emulator.wtf]: https://emulator.wtf
 [emulator.wtf pricing]: https://emulator.wtf/pricing
+[saucelabs]: https://saucelabs.com
 [firebase test lab]: https://firebase.google.com/docs/test-lab
 [firebase test lab pricing]: https://firebase.google.com/docs/test-lab/usage-quotas-pricing
 [xcode cloud]: https://developer.apple.com/xcode-cloud
