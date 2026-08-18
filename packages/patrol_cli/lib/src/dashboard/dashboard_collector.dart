@@ -29,9 +29,9 @@ class DashboardCollector {
 
   /// Test whose failure details are still arriving.
   ///
-  /// On mobile, patrol logs the failure entry without an error and then sends
-  /// the exception one [ErrorEntry] per line, so the lines have to be stitched
-  /// back onto the test that just failed.
+  /// `patrol` before 4.10.0 logged the failure entry without an error and sent
+  /// the exception separately, one [ErrorEntry] per line. Newer versions put it
+  /// on the entry, so this only kicks in for the older wire format.
   DashboardTest? _failureDetailsTarget;
 
   /// Returns an `onLogEntry` callback that feeds this collector and then
@@ -149,7 +149,8 @@ class DashboardCollector {
           _openStep = null;
         }
 
-        if (entry.status == TestEntryStatus.failure) {
+        // Nothing to stitch when the entry already carried the exception.
+        if (entry.status == TestEntryStatus.failure && test.error == null) {
           _failureDetailsTarget = test;
         }
     }

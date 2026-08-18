@@ -13,6 +13,7 @@ import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart'
     show getObservationUrl;
+import 'package:patrol_cli/src/crossplatform/log_entry_observers.dart';
 import 'package:patrol_cli/src/crossplatform/patrol_build_environment.dart';
 import 'package:patrol_cli/src/crossplatform/test_manifest.dart';
 import 'package:patrol_cli/src/crossplatform/test_manifest_generator.dart';
@@ -479,16 +480,6 @@ class IOSTestBackend {
         onDone: onDone,
         cancelOnError: cancelOnError,
       );
-      // Both the video manager and the HTML report observe the log entries.
-      var logEntryCallback = onLogEntry;
-      if (dashboardReporter != null) {
-        logEntryCallback = dashboardReporter.wrapOnLogEntry(logEntryCallback);
-      }
-      if (videoRecordingManager != null) {
-        logEntryCallback = videoRecordingManager.wrapOnLogEntry(
-          logEntryCallback,
-        );
-      }
 
       final patrolLogReader =
           PatrolLogReader(
@@ -499,7 +490,11 @@ class IOSTestBackend {
               showFlutterLogs: showFlutterLogs,
               hideTestSteps: hideTestSteps,
               clearTestSteps: clearTestSteps,
-              onLogEntry: logEntryCallback,
+              onLogEntry: observeLogEntries(
+                onLogEntry,
+                dashboard: dashboardReporter,
+                videos: videoRecordingManager,
+              ),
             )
             ..listen()
             ..startTimer();

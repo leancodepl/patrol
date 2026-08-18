@@ -167,6 +167,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
     final webTestBackend = WebTestBackend(
       processManager: _processManager,
       parentDisposeScope: _disposeScope,
+      rootDirectory: rootDirectory,
       logger: _logger,
     );
 

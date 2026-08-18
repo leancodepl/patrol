@@ -236,11 +236,18 @@ class PatrolLogReader {
           }
 
           final executionTime = singleEntry?.executionTime.inSeconds;
-          // Print test entry summary to console.
+          // Print test entry summary to console. The failure message is printed
+          // below the summary line rather than through `pretty()`, so the
+          // duration stays on the summary line instead of trailing the last
+          // line of a stack trace.
           if (!hideTestLifecycle) {
+            final duration = executionTime != null
+                ? ' ${AnsiCodes.gray}(${executionTime}s)${AnsiCodes.reset}'
+                : '';
+            final error = entry.error;
             log(
-              '${entry.pretty()} '
-              '${executionTime != null ? '${AnsiCodes.gray}(${executionTime}s)${AnsiCodes.reset}' : ''}',
+              '${entry.status.name} ${entry.nameWithPath}$duration'
+              '${error != null ? '\n${AnsiCodes.red}$error${AnsiCodes.reset}' : ''}',
             );
           }
         case StepEntry():

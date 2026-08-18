@@ -1,3 +1,8 @@
+## Unreleased
+
+- Print a failed test's exception below its summary line, in red, so the test duration stays on
+  the summary line instead of trailing the last line of the stack trace.
+
 ## 0.10.2
 
 - Allow `equatable` 3.x by widening the constraint to `>=2.1.0 <4.0.0`. Apps still on `equatable` 2.x keep resolving. (#3322)
