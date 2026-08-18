@@ -20,9 +20,6 @@ enum DashboardTestStatus {
   /// crashed or the run was interrupted.
   incomplete;
 
-  /// Machine-readable name used in CSS classes and filters.
-  String get slug => name;
-
   /// Label shown on the test's status badge.
   String get label => switch (this) {
     DashboardTestStatus.passed => 'Passed',
@@ -45,18 +42,6 @@ enum DashboardStepStatus {
   running,
 }
 
-/// A single log line printed by the test.
-class DashboardLog {
-  /// Creates a log line.
-  DashboardLog({required this.message, required this.timestamp});
-
-  /// The logged message.
-  final String message;
-
-  /// When the message was logged.
-  final DateTime timestamp;
-}
-
 /// A single Patrol step, e.g. a tap or a `waitUntilVisible` call.
 ///
 /// Mutable while the run is being collected; treated as read-only afterwards.
@@ -71,7 +56,7 @@ class DashboardStep {
   final DateTime startedAt;
 
   /// Log lines printed while this step was running.
-  final List<DashboardLog> logs = [];
+  final List<String> logs = [];
 
   /// The step's result.
   DashboardStepStatus status = DashboardStepStatus.running;
@@ -106,7 +91,7 @@ class DashboardTest {
   final List<DashboardStep> steps = [];
 
   /// Log lines printed before the test's first step.
-  final List<DashboardLog> logs = [];
+  final List<String> logs = [];
 
   /// The test's result.
   DashboardTestStatus status;
@@ -126,11 +111,12 @@ class DashboardTest {
       steps.isNotEmpty || logs.isNotEmpty || error != null || videoPath != null;
 
   /// The longest step duration, used to scale the step duration bars.
-  Duration get longestStepDuration => steps.fold(
-    Duration.zero,
-    (longest, step) =>
-        (step.duration ?? Duration.zero) > longest ? step.duration! : longest,
-  );
+  Duration get longestStepDuration => steps
+      .map((step) => step.duration ?? Duration.zero)
+      .fold(
+        Duration.zero,
+        (longest, duration) => duration > longest ? duration : longest,
+      );
 }
 
 /// Everything the dashboard shows about one `patrol test` run.
@@ -217,9 +203,6 @@ class DashboardRun {
     }
     return passedCount / executed;
   }
-
-  /// Whether any test has a video recording attached.
-  bool get hasVideos => tests.any((test) => test.videoPath != null);
 
   int _countWith(DashboardTestStatus status) =>
       tests.where((test) => test.status == status).length;

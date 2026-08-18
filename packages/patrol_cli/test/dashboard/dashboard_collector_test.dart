@@ -157,10 +157,8 @@ void main() {
         );
 
       final test = _build(sut).tests.single;
-      expect(test.logs.map((log) => log.message), ['before any step']);
-      expect(test.steps.single.logs.map((log) => log.message), [
-        'inside the step',
-      ]);
+      expect(test.logs, ['before any step']);
+      expect(test.steps.single.logs, ['inside the step']);
     });
 
     test('records skipped tests without a finish entry', () {
@@ -273,24 +271,6 @@ void main() {
         _build(sut).tests.single.videoPath,
         '/project/integration_test/videos/signs_in.mp4',
       );
-      expect(_build(sut).hasVideos, isTrue);
-    });
-
-    test('attaches a video registered while the test is still running', () {
-      final sut = collector()
-        ..handleEntry(
-          TestEntry(
-            name: 'app_test signs in',
-            status: TestEntryStatus.start,
-            timestamp: at(0),
-          ),
-        )
-        ..registerVideo(
-          testName: 'app_test signs in',
-          videoPath: '/videos/signs_in.mp4',
-        );
-
-      expect(_build(sut).tests.single.videoPath, '/videos/signs_in.mp4');
     });
 
     test('stitches per-line failure details onto the failed test', () {

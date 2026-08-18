@@ -311,6 +311,12 @@ class IOSTestBackend {
   }) async {
     final onlyTesting = _resolveOnlyTesting(onlyTests);
     await _disposeScope.run((scope) async {
+      final dashboardReporter = DashboardReporter.maybe(
+        rootDirectory: _rootDirectory,
+        logger: _logger,
+        config: dashboardConfig,
+      );
+
       // Create video recording manager if enabled
       IOSVideoRecordingManager? videoRecordingManager;
       if (videoConfig?.enabled ?? false) {
@@ -321,16 +327,8 @@ class IOSTestBackend {
           config: videoConfig!,
           device: device,
           scope: scope,
-        );
+        )..onVideoSaved = dashboardReporter?.registerVideo;
       }
-
-      final dashboardReporter = (dashboardConfig?.enabled ?? false)
-          ? DashboardReporter(
-              rootDirectory: _rootDirectory,
-              logger: _logger,
-              config: dashboardConfig!,
-            )
-          : null;
 
       final patrolLogCommand = device.real
           ? ['idevicesyslog']
@@ -429,7 +427,6 @@ class IOSTestBackend {
           platform: 'iOS',
           device: device,
           buildMode: options.flutter.buildMode.name,
-          videoRecordingManager: videoRecordingManager,
           appDescription: options.description,
           nativeReportPath: reportPath,
           flavor: options.flutter.flavor,

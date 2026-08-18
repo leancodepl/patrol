@@ -382,6 +382,12 @@ class AndroidTestBackend {
     DashboardConfig? dashboardConfig,
   }) async {
     await _disposeScope.run((scope) async {
+      final dashboardReporter = DashboardReporter.maybe(
+        rootDirectory: _rootDirectory,
+        logger: _logger,
+        config: dashboardConfig,
+      );
+
       // Create video recording manager if enabled
       AndroidVideoRecordingManager? videoRecordingManager;
       if (videoConfig?.enabled ?? false) {
@@ -393,16 +399,8 @@ class AndroidTestBackend {
           config: videoConfig!,
           device: device,
           scope: scope,
-        );
+        )..onVideoSaved = dashboardReporter?.registerVideo;
       }
-
-      final dashboardReporter = (dashboardConfig?.enabled ?? false)
-          ? DashboardReporter(
-              rootDirectory: _rootDirectory,
-              logger: _logger,
-              config: dashboardConfig!,
-            )
-          : null;
 
       // Read patrol logs from logcat
       final processLogcat =
@@ -522,7 +520,6 @@ class AndroidTestBackend {
           platform: 'Android',
           device: device,
           buildMode: options.flutter.buildMode.name,
-          videoRecordingManager: videoRecordingManager,
           appDescription: options.description,
           flavor: flavor,
           nativeReportPath: reportPath,

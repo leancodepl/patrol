@@ -106,9 +106,7 @@ void main() {
             )
             ..status = DashboardStepStatus.passed
             ..duration = const Duration(milliseconds: 640);
-      step.logs.add(
-        DashboardLog(message: 'waiting for the app', timestamp: DateTime(2026)),
-      );
+      step.logs.add('waiting for the app');
 
       final html = renderer.render(
         run([
