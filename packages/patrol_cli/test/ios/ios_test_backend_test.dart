@@ -214,9 +214,8 @@ void main() {
     group('build', () {
       void writeRunner({required bool static}) {
         final body = static
-            ? 'PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN(RunnerUITests)\n'
+            ? 'PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE(RunnerUITests)\n'
                   '#include "PatrolGeneratedTests.inc"\n'
-                  'PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_END\n'
             : 'PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerUITests)\n';
         fs.file('ios/RunnerUITests/RunnerUITests.m')
           ..createSync(recursive: true)
@@ -270,7 +269,7 @@ void main() {
               isA<ToolExit>().having(
                 (e) => e.message,
                 'message',
-                contains('PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN'),
+                contains('PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE'),
               ),
             ),
           );

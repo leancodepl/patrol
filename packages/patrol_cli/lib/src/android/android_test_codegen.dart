@@ -4,19 +4,19 @@ import 'package:patrol_cli/src/crossplatform/test_manifest.dart';
 /// The result of [AndroidTestCodegen.generate].
 class AndroidCodegenResult {
   AndroidCodegenResult({
-    required this.fullyQualifiedClassName,
-    required this.outputPath,
+    required this.fullyQualifiedClassNames,
+    required this.directoryPath,
     required this.testCount,
   });
 
-  /// Fully-qualified name of the generated JUnit class, for example
-  /// `pl.leancode.patrol.e2e_app.PatrolGeneratedTests`. Used to select only the
-  /// generated class when running the tests (the Android analog of iOS
-  /// `-only-testing`).
-  final String fullyQualifiedClassName;
+  /// Fully-qualified names of the generated JUnit classes, one per Dart test
+  /// file, for example `pl.leancode.patrol.e2e_app.PatrolGeneratedTests_app_test`.
+  /// Used to select only the generated classes when running the tests (the
+  /// Android analog of iOS `-only-testing`).
+  final List<String> fullyQualifiedClassNames;
 
-  /// Absolute path of the generated `.java` file.
-  final String outputPath;
+  /// Absolute path of the directory the classes were written to.
+  final String directoryPath;
 
   /// Number of generated `@Test` methods.
   final int testCount;
@@ -69,43 +69,70 @@ class AndroidTestCodegen {
     final tests = TestManifest.parse(
       _fs.file(manifestPath).readAsStringSync(),
     ).tests;
+    final names = generatePerFileTestNames(tests, classPrefix: className);
 
-    final source = _render(
-      host.packageName,
-      className,
-      tests,
-      activityClass: host.activityClass,
-      activityImport: host.activityImport,
-    );
-    final output =
-        _fs.file(_fs.path.join(host.directory.path, '$className.java'))
-          ..createSync(recursive: true)
-          ..writeAsStringSync(source);
+    final byClass = <String, List<int>>{};
+    for (var i = 0; i < tests.length; i++) {
+      byClass.putIfAbsent(names[i].className, () => <int>[]).add(i);
+    }
+
+    for (final entry in byClass.entries) {
+      final source = _render(
+        host.packageName,
+        entry.key,
+        [for (final i in entry.value) tests[i]],
+        [for (final i in entry.value) names[i].methodName],
+        activityClass: host.activityClass,
+        activityImport: host.activityImport,
+      );
+      _fs.file(_fs.path.join(host.directory.path, '${entry.key}.java'))
+        ..createSync(recursive: true)
+        ..writeAsStringSync(source);
+    }
+
+    // The host class stands down when a class named exactly [className] sits
+    // next to it, so keep that name as a marker with no tests of its own.
+    _fs.file(_fs.path.join(host.directory.path, '$className.java'))
+      ..createSync(recursive: true)
+      ..writeAsStringSync(_renderMarker(host.packageName, className));
 
     return AndroidCodegenResult(
-      fullyQualifiedClassName: '${host.packageName}.$className',
-      outputPath: output.path,
+      fullyQualifiedClassNames: [
+        for (final name in byClass.keys) '${host.packageName}.$name',
+      ],
+      directoryPath: host.directory.path,
       testCount: tests.length,
     );
   }
 
-  /// Finds the fully-qualified name of an already-generated class, without
-  /// regenerating it. Used at execution time to build the class filter.
-  String? findGeneratedClassName(
+  /// Finds the fully-qualified names of the already-generated classes, without
+  /// regenerating them. Used at execution time to build the class filter. Empty
+  /// when nothing was generated.
+  List<String> findGeneratedClassNames(
     Directory androidDir, {
     String className = 'PatrolGeneratedTests',
   }) {
     final host = _locateHostTest(androidDir, generatedClassName: className);
     if (host == null) {
-      return null;
+      return const [];
     }
-    final generated = _fs.file(
-      _fs.path.join(host.directory.path, '$className.java'),
-    );
-    if (!generated.existsSync()) {
-      return null;
+    return [
+      for (final file in _generatedFiles(host.directory, className))
+        '${host.packageName}.${file.basename.replaceAll('.java', '')}',
+    ];
+  }
+
+  /// The generated per-file test classes in [directory], excluding the marker
+  /// class (which holds no tests), sorted so the order never depends on the
+  /// filesystem listing.
+  List<File> _generatedFiles(Directory directory, String className) {
+    if (!directory.existsSync()) {
+      return const [];
     }
-    return '${host.packageName}.$className';
+    return directory.listSync().whereType<File>().where((f) {
+      return f.basename.startsWith('${className}_') &&
+          f.basename.endsWith('.java');
+    }).toList()..sort((a, b) => a.path.compareTo(b.path));
   }
 
   /// Deletes a previously generated class, if present. Returns `true` when a
@@ -121,14 +148,16 @@ class AndroidTestCodegen {
     if (host == null) {
       return false;
     }
-    final generated = _fs.file(
-      _fs.path.join(host.directory.path, '$className.java'),
-    );
-    if (!generated.existsSync()) {
-      return false;
+    final generated = [
+      ..._generatedFiles(host.directory, className),
+      _fs.file(_fs.path.join(host.directory.path, '$className.java')),
+    ].where((f) => f.existsSync());
+    var deleted = false;
+    for (final file in generated) {
+      file.deleteSync();
+      deleted = true;
     }
-    generated.deleteSync();
-    return true;
+    return deleted;
   }
 
   /// Locates the host instrumentation test under `android/app/src/androidTest`,
@@ -256,11 +285,11 @@ class AndroidTestCodegen {
   String _render(
     String packageName,
     String className,
-    List<DiscoveredTest> tests, {
+    List<DiscoveredTest> tests,
+    List<String> methodNames, {
     String activityClass = 'MainActivity',
     String? activityImport,
   }) {
-    final methodNames = generateAndroidMethodNames(tests);
     final buffer = StringBuffer()
       ..writeln(_generatedMarker)
       ..writeln(
@@ -294,8 +323,9 @@ class AndroidTestCodegen {
         '        PatrolJUnitRunner instrumentation = '
         '(PatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();',
       )
-      ..writeln('        instrumentation.setUp($activityClass.class);')
-      ..writeln('        instrumentation.waitForPatrolAppService();')
+      // setUpGenerated, not setUp: the generated classes must never stand down
+      // for the host class they replace.
+      ..writeln('        instrumentation.setUpGenerated($activityClass.class);')
       ..writeln('    }')
       ..writeln();
 
@@ -322,6 +352,26 @@ class AndroidTestCodegen {
       ..writeln('}');
 
     return buffer.toString();
+  }
+
+  /// The marker class: same name the host class checks for, no tests of its own
+  /// (no `@RunWith`, no `@Test`), so the runner enumerates only the per-file
+  /// classes.
+  String _renderMarker(String packageName, String className) {
+    return '''
+$_generatedMarker
+// Generated by `patrol build android` from the build-time test manifest.
+//
+// Marker only: the tests live in the ${className}_<file> classes next to this
+// one. Its presence tells PatrolJUnitRunner that the host test class is
+// superseded by build-time discovery.
+
+package $packageName;
+
+public final class $className {
+    private $className() {}
+}
+''';
   }
 
   String _javaStringLiteral(String value) {

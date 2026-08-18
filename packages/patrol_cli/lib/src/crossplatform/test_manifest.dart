@@ -150,6 +150,187 @@ String _uniqueIosSelector(String dartName, int index, Set<String> used) {
   return selector;
 }
 
+/// A generated native test name, split into the class (derived from the Dart
+/// test file) and the method (the test's name within that file). Identical on
+/// both platforms: an Objective-C class with `test_` methods on iOS, a JUnit
+/// class with `test_` methods on Android.
+class GeneratedTestName {
+  const GeneratedTestName({required this.className, required this.methodName});
+
+  /// Simple class name, e.g. `PatrolGeneratedTests_permissions_location_test`.
+  final String className;
+
+  /// Method name, e.g. `test_grants_the_location_permission`.
+  final String methodName;
+
+  /// `<class>#<method>`, the shape `am instrument -e class` expects.
+  String get qualified => '$className#$methodName';
+
+  /// `<class>/<method>`, the shape `xcodebuild -only-testing` expects below the
+  /// target.
+  String get selector => '$className/$methodName';
+}
+
+/// Per-file native names for [tests], aligned 1:1 with the input order: one
+/// class per Dart test file, and a method named after the test within that file.
+///
+/// Moving the file out of the method name gives reports a real hierarchy (class
+/// = file, method = test), makes a whole file selectable with a single
+/// `-e class` / `-only-testing` value, and scopes name collisions to one file
+/// instead of the whole suite. Single source of truth for both codegens
+/// (`XcodeTestCodegen`, `AndroidTestCodegen`) and both backends, which is what
+/// keeps the class and method names identical on the two platforms.
+List<GeneratedTestName> generatePerFileTestNames(
+  List<DiscoveredTest> tests, {
+  String classPrefix = 'PatrolGeneratedTests',
+}) {
+  final usedPerClass = <String, Set<String>>{};
+  final out = <GeneratedTestName>[];
+  for (var i = 0; i < tests.length; i++) {
+    final test = tests[i];
+    final className =
+        '${classPrefix}_${_sanitizeIdentifier(test.topLevelGroup)}';
+    final used = usedPerClass.putIfAbsent(className, () => <String>{});
+    out.add(
+      GeneratedTestName(
+        className: className,
+        methodName: _uniqueMethodName(_withinFileName(test), i, used),
+      ),
+    );
+  }
+  return out;
+}
+
+/// The test's name with its file-derived group stripped, e.g.
+/// `example_test tap once` -> `tap once`. Falls back to the full name when the
+/// group prefix isn't there (a test declared outside any file group).
+String _withinFileName(DiscoveredTest test) {
+  final prefix = '${test.topLevelGroup} ';
+  final name = test.dartName;
+  return name.startsWith(prefix) ? name.substring(prefix.length) : name;
+}
+
+/// `test_<sanitized>`, unique within its class. The `test_` prefix keeps the
+/// method name identical to the iOS selector for the same test, and the manifest
+/// index disambiguates two names that sanitize to the same identifier.
+String _uniqueMethodName(String name, int index, Set<String> used) {
+  var sanitized = _sanitizeIdentifier(name);
+  if (sanitized.length > 120) {
+    sanitized = sanitized.substring(0, 120);
+  }
+  var methodName = 'test_$sanitized';
+  if (used.contains(methodName)) {
+    methodName = '${methodName}_$index';
+  }
+  var dedup = 0;
+  while (used.contains(methodName)) {
+    dedup++;
+    methodName = 'test_${sanitized}_${index}_$dedup';
+  }
+  used.add(methodName);
+  return methodName;
+}
+
+/// The result of resolving `--only` entries against the manifest: whole classes
+/// (a test file was requested) plus individual tests, and whatever matched
+/// nothing so the caller can explain itself.
+class OnlySelection {
+  const OnlySelection({
+    required this.classNames,
+    required this.tests,
+    required this.unmatched,
+  });
+
+  /// Generated classes to run in full, e.g. `PatrolGeneratedTests_example_test`.
+  final List<String> classNames;
+
+  /// Individually selected tests.
+  final List<GeneratedTestName> tests;
+
+  /// `--only` entries that matched neither a Dart test name nor a test file.
+  final List<String> unmatched;
+
+  bool get isEmpty => classNames.isEmpty && tests.isEmpty;
+}
+
+/// Resolves `--only` entries against [tests]. An entry is either the exact Dart
+/// test name (as printed during discovery) or the path of a test file, which
+/// selects that whole file - one class selector instead of one per test.
+///
+/// A file always wins over its own tests: requesting both the file and one of
+/// its tests runs the file once, not the test twice.
+OnlySelection resolveOnlySelection(
+  List<DiscoveredTest> tests,
+  List<String> only, {
+  String classPrefix = 'PatrolGeneratedTests',
+}) {
+  final names = generatePerFileTestNames(tests, classPrefix: classPrefix);
+  final classNames = <String>{};
+  final selected = <int>{};
+  final unmatched = <String>[];
+
+  for (final entry in only) {
+    final file = _asTestFilePath(entry);
+    var matched = false;
+
+    for (var i = 0; i < tests.length; i++) {
+      final matchesFile =
+          file != null && _isFileOf(file, tests[i].topLevelGroup);
+      if (matchesFile) {
+        classNames.add(names[i].className);
+        matched = true;
+      } else if (tests[i].dartName == entry) {
+        selected.add(i);
+        matched = true;
+      }
+    }
+
+    if (!matched) {
+      unmatched.add(entry);
+    }
+  }
+
+  return OnlySelection(
+    classNames: classNames.toList(),
+    tests: [
+      for (final i in selected)
+        if (!classNames.contains(names[i].className)) names[i],
+    ],
+    unmatched: unmatched,
+  );
+}
+
+/// The entry as a normalized, extension-less test file path, or `null` when it
+/// isn't a `.dart` file reference at all (then it can only be a test name).
+String? _asTestFilePath(String entry) {
+  if (!entry.endsWith('.dart')) {
+    return null;
+  }
+  final normalized = entry
+      .replaceAll(r'\', '/')
+      .replaceAll(RegExp(r'^\./'), '');
+  return normalized.substring(0, normalized.length - '.dart'.length);
+}
+
+/// Whether [filePath] points at the file [topLevelGroup] was derived from. The
+/// bundler turns `permissions/location_test.dart` into
+/// `permissions.location_test`, so the group is compared as a path suffix and
+/// any leading test directory in the input is ignored.
+bool _isFileOf(String filePath, String topLevelGroup) {
+  if (topLevelGroup.isEmpty) {
+    return false;
+  }
+  final groupAsPath = topLevelGroup.replaceAll('.', '/');
+  return filePath == groupAsPath || filePath.endsWith('/$groupAsPath');
+}
+
+/// Collapses everything that can't appear in an identifier into single
+/// underscores.
+String _sanitizeIdentifier(String value) => value
+    .replaceAll(RegExp('[^A-Za-z0-9]+'), '_')
+    .replaceAll(RegExp('_+'), '_')
+    .replaceAll(RegExp(r'^_|_$'), '');
+
 /// Java keywords and reserved literals, which cannot be used as method names.
 const _javaReservedWords = {
   'abstract', 'assert', 'boolean', 'break', 'byte', 'case', 'catch', 'char',

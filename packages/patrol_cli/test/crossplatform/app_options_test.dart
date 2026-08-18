@@ -567,6 +567,49 @@ void main() {
         );
       });
     });
+
+    const realDevice = Device(
+      name: 'iPhone',
+      id: iosDeviceId,
+      targetPlatform: TargetPlatform.iOS,
+      real: true,
+    );
+
+    test('one -only-testing per selector, target-prefixed', () {
+      final invocation = options.testWithoutBuildingInvocation(
+        realDevice,
+        xcTestRunPath: 'run.xctestrun',
+        resultBundlePath: '',
+        onlyTesting: [
+          'PatrolGeneratedTests_example_test',
+          'PatrolGeneratedTests_app_test/test_taps',
+        ],
+        staticRunner: true,
+      );
+
+      expect(
+        invocation,
+        containsAllInOrder(<String>[
+          '-only-testing',
+          'RunnerUITests/PatrolGeneratedTests_example_test',
+          '-only-testing',
+          'RunnerUITests/PatrolGeneratedTests_app_test/test_taps',
+        ]),
+      );
+      // The base class holds no tests, so it must not be selected.
+      expect(invocation, isNot(contains('RunnerUITests/RunnerUITests')));
+    });
+
+    test('static runner with nothing selected leaves the run unrestricted', () {
+      final invocation = options.testWithoutBuildingInvocation(
+        realDevice,
+        xcTestRunPath: 'run.xctestrun',
+        resultBundlePath: '',
+        staticRunner: true,
+      );
+
+      expect(invocation, isNot(contains('-only-testing')));
+    });
   });
 
   group('MacOSAppOptions', () {

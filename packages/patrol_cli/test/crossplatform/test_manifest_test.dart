@@ -135,4 +135,98 @@ void main() {
       },
     );
   });
+
+  group('--only resolution', () {
+    final tests = [
+      DiscoveredTest(
+        dartName: 'example_test tap once',
+        skip: false,
+        topLevelGroup: 'example_test',
+      ),
+      DiscoveredTest(
+        dartName: 'example_test tap twice',
+        skip: false,
+        topLevelGroup: 'example_test',
+      ),
+      DiscoveredTest(
+        dartName: 'permissions.location_test grants location',
+        skip: false,
+        topLevelGroup: 'permissions.location_test',
+      ),
+    ];
+
+    test('an exact Dart name selects that single test', () {
+      final selection = resolveOnlySelection(tests, ['example_test tap once']);
+
+      expect(selection.classNames, isEmpty);
+      expect(selection.tests.map((t) => t.selector), [
+        'PatrolGeneratedTests_example_test/test_tap_once',
+      ]);
+      expect(selection.unmatched, isEmpty);
+    });
+
+    test('a test file selects its whole class, as one entry', () {
+      final selection = resolveOnlySelection(tests, [
+        'patrol_test/example_test.dart',
+      ]);
+
+      expect(selection.classNames, ['PatrolGeneratedTests_example_test']);
+      expect(selection.tests, isEmpty);
+    });
+
+    test('a file in a subdirectory matches the dotted group name', () {
+      final selection = resolveOnlySelection(tests, [
+        'patrol_test/permissions/location_test.dart',
+      ]);
+
+      expect(selection.classNames, [
+        'PatrolGeneratedTests_permissions_location_test',
+      ]);
+    });
+
+    test('absolute paths, ./ prefixes and backslashes all match', () {
+      for (final entry in [
+        '/Users/me/app/patrol_test/example_test.dart',
+        './patrol_test/example_test.dart',
+        r'patrol_test\example_test.dart',
+        'example_test.dart',
+      ]) {
+        expect(resolveOnlySelection(tests, [entry]).classNames, [
+          'PatrolGeneratedTests_example_test',
+        ], reason: entry);
+      }
+    });
+
+    test('a file wins over its own tests, so nothing runs twice', () {
+      final selection = resolveOnlySelection(tests, [
+        'patrol_test/example_test.dart',
+        'example_test tap once',
+      ]);
+
+      expect(selection.classNames, ['PatrolGeneratedTests_example_test']);
+      expect(selection.tests, isEmpty);
+    });
+
+    test('files and single tests can be mixed', () {
+      final selection = resolveOnlySelection(tests, [
+        'patrol_test/example_test.dart',
+        'permissions.location_test grants location',
+      ]);
+
+      expect(selection.classNames, ['PatrolGeneratedTests_example_test']);
+      expect(selection.tests.map((t) => t.qualified), [
+        'PatrolGeneratedTests_permissions_location_test#test_grants_location',
+      ]);
+    });
+
+    test('unknown entries are reported, not silently dropped', () {
+      final selection = resolveOnlySelection(tests, [
+        'patrol_test/nope_test.dart',
+        'example_test tap once',
+      ]);
+
+      expect(selection.unmatched, ['patrol_test/nope_test.dart']);
+      expect(selection.tests, hasLength(1));
+    });
+  });
 }

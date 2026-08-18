@@ -20,7 +20,7 @@ void main() {
     return fs.file('/out/PatrolGeneratedTests.inc').readAsStringSync();
   }
 
-  test('emits one method per test with index-suffixed selectors', () {
+  test('emits one class per test file, with methods named after the test', () {
     const manifest = '''
 {"group":{"name":"","type":"group","skip":false,"entries":[
   {"name":"example_test","type":"group","skip":false,"entries":[
@@ -40,15 +40,18 @@ void main() {
     final source = fs.file('/o.inc').readAsStringSync();
 
     expect(count, 2);
-    // Selector: test_<sanitized>_<zero-padded index>.
+    // The class is derived from the test file and inherits the shared base.
     expect(
       source,
-      contains('- (void)test_example_test_tap_once_shows_one_0000 {'),
+      contains('@interface PatrolGeneratedTests_example_test : RunnerUITests'),
     );
     expect(
       source,
-      contains('- (void)test_example_test_tap_twice_shows_two_0001 {'),
+      contains('@implementation PatrolGeneratedTests_example_test'),
     );
+    // The file is already in the class name, so methods carry only the test.
+    expect(source, contains('- (void)test_tap_once_shows_one {'));
+    expect(source, contains('- (void)test_tap_twice_shows_two {'));
     // The verbatim Dart name is embedded and handed to patrolExecuteDartTest:.
     expect(
       source,
@@ -75,6 +78,34 @@ void main() {
     expect(source, contains(r'\"quote\"'));
     expect(source, contains(r'\\'));
     expect(source, contains(r'\t'));
+  });
+
+  test('groups tests from different files into separate classes', () {
+    const manifest = '''
+{"group":{"name":"","type":"group","skip":false,"entries":[
+  {"name":"example_test","type":"group","skip":false,"entries":[
+    {"name":"tap once","type":"test","skip":false}
+  ]},
+  {"name":"permissions.location_test","type":"group","skip":false,"entries":[
+    {"name":"grants location","type":"test","skip":false}
+  ]}
+]}}
+''';
+    final source = generate(manifest);
+
+    expect(
+      source,
+      contains('@interface PatrolGeneratedTests_example_test : RunnerUITests'),
+    );
+    expect(
+      source,
+      contains(
+        '@interface PatrolGeneratedTests_permissions_location_test : '
+        'RunnerUITests',
+      ),
+    );
+    expect(source, contains('- (void)test_tap_once {'));
+    expect(source, contains('- (void)test_grants_location {'));
   });
 
   test('generates unique selectors for duplicate Dart names', () {

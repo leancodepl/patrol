@@ -357,14 +357,20 @@ class IOSAppOptions {
   /// invocation.
   ///
   /// When [onlyTesting] is non-empty, one `-only-testing` selector is emitted per
-  /// entry (`RunnerUITests/RunnerUITests/<selector>`), restricting the run to
-  /// those specific generated tests; otherwise the whole `RunnerUITests` class
-  /// runs. Per-test selectors require the static codegen (build-time discovery).
+  /// entry (`RunnerUITests/<selector>`, where a selector is `<class>/<method>`),
+  /// restricting the run to those specific generated tests.
+  ///
+  /// Otherwise the whole `RunnerUITests` class runs, except under
+  /// [staticRunner]: the generated tests then live in per-file subclasses, so the
+  /// run is left unrestricted and XCTest picks them all up (the base class holds
+  /// no tests). Per-test selectors require the static codegen (build-time
+  /// discovery).
   List<String> testWithoutBuildingInvocation(
     Device device, {
     required String xcTestRunPath,
     required String resultBundlePath,
     List<String> onlyTesting = const [],
+    bool staticRunner = false,
   }) {
     final destination = device.real
         ? 'platform=iOS,id=${device.id}'
@@ -373,14 +379,15 @@ class IOSAppOptions {
     final cmd = [
       ...['xcodebuild', 'test-without-building'],
       ...['-xctestrun', xcTestRunPath],
-      if (onlyTesting.isEmpty) ...[
-        '-only-testing',
-        'RunnerUITests/RunnerUITests',
-      ] else
+      if (onlyTesting.isNotEmpty)
         for (final selector in onlyTesting) ...[
           '-only-testing',
-          'RunnerUITests/RunnerUITests/$selector',
-        ],
+          'RunnerUITests/$selector',
+        ]
+      else if (!staticRunner) ...[
+        '-only-testing',
+        'RunnerUITests/RunnerUITests',
+      ],
       ...['-destination', destination],
       ...['-destination-timeout', '1'],
       ...['-resultBundlePath', resultBundlePath],

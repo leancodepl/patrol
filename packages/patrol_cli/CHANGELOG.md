@@ -1,5 +1,15 @@
 ## Unreleased
 
+- Build-time test discovery now generates one native test class per Dart test file instead of one
+  class holding every test, so reports group by file (a `Test Suite` on iOS, a class on Android) and
+  a whole file is selectable with a single native selector. **This renames every generated native
+  test**: the file moves from the method name into the class name, methods are named after the test
+  alone, and the name is no longer truncated to 80 characters nor suffixed with the test's position
+  in the manifest. Regenerate any saved shard lists, native test filters or dashboard mappings.
+  Class and method names are now identical on Android and iOS.
+- `--only` now also accepts the path of a test file, which runs that whole file as one native
+  selector, next to the exact Dart test name it already accepted. Entries matching nothing are
+  reported instead of being dropped silently.
 - Tell the build-time discovery run which platform it builds for, so `patrolTargetPlatform` reports
   the device's platform while discovering on the host. (#3241)
 - Fix `patrol develop` ignoring build-time test discovery, which made every iOS develop build fail
