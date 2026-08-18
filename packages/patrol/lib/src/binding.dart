@@ -307,6 +307,15 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
     // be not needed.
     //
     // See: https://github.com/flutter/flutter/issues/81534
+
+    // In develop (Hot Restart) mode the exception gatherer is off and the test
+    // never completes, so exceptions the framework catches - e.g. thrown from a
+    // widget's `onPressed` - would otherwise be printed nowhere. Dump them to
+    // the console like a normal test failure, so `patrol develop` forwards the
+    // full stack trace (file and line) instead of swallowing it.
+    if (_isDevelopMode) {
+      FlutterError.dumpErrorToConsole(exception, forceReport: true);
+    }
   }
 }
 
