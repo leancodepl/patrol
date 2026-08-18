@@ -78,24 +78,7 @@ void main() {
     expect(TestManifest.parse(manifest).tests, isEmpty);
   });
 
-  test('Android method names never collide with Java keywords', () {
-    const manifest = '''
-{"group":{"name":"","type":"group","skip":false,"entries":[
-  {"name":"class","type":"test","skip":false},
-  {"name":"null","type":"test","skip":false},
-  {"name":"static","type":"test","skip":false}
-]}}
-''';
-
-    final methods = generateAndroidMethodNames(
-      TestManifest.parse(manifest).tests,
-    );
-
-    // A method literally named `class` would not compile.
-    expect(methods, ['t_class', 't_null', 't_static']);
-  });
-
-  group('selector generation', () {
+  group('per-file name generation', () {
     const manifest = '''
 {"group":{"name":"","type":"group","skip":false,"entries":[
   {"name":"example_test","type":"group","skip":false,"entries":[
@@ -105,35 +88,43 @@ void main() {
 ]}}
 ''';
 
-    test('iOS selectors are unique, index-suffixed and 1:1 with tests', () {
-      final tests = TestManifest.parse(manifest).tests;
-      final selectors = generateIosSelectors(tests);
+    test('the class comes from the file, the method from the test', () {
+      final names = generatePerFileTestNames(
+        TestManifest.parse(manifest).tests,
+      );
 
-      expect(selectors, hasLength(tests.length));
-      // Zero-padded manifest index guarantees uniqueness even for duplicate
-      // Dart names.
-      expect(selectors, [
-        'test_example_test_tap_once_shows_one_0000',
-        'test_example_test_tap_once_shows_one_0001',
-      ]);
-      expect(selectors.toSet(), hasLength(selectors.length));
+      expect(names.first.className, 'PatrolGeneratedTests_example_test');
+      expect(names.first.methodName, 'test_tap_once_shows_one');
     });
 
-    test(
-      'Android method names prefer clean names, disambiguate on collision',
-      () {
-        final tests = TestManifest.parse(manifest).tests;
-        final methods = generateAndroidMethodNames(tests);
+    test('duplicate Dart names get disambiguated within their class', () {
+      final tests = TestManifest.parse(manifest).tests;
+      final names = generatePerFileTestNames(tests);
 
-        expect(methods, hasLength(tests.length));
-        // First occurrence keeps the clean name; the collision gets the index.
-        expect(methods, [
-          'example_test_tap_once_shows_one',
-          'example_test_tap_once_shows_one_1',
-        ]);
-        expect(methods.toSet(), hasLength(methods.length));
-      },
-    );
+      expect(names, hasLength(tests.length));
+      // The first occurrence keeps the clean name, the collision gets the index.
+      expect(names.map((n) => n.methodName), [
+        'test_tap_once_shows_one',
+        'test_tap_once_shows_one_1',
+      ]);
+      expect(names.map((n) => n.qualified).toSet(), hasLength(tests.length));
+    });
+
+    test('the test prefix keeps Java keywords out of method names', () {
+      const keywords = '''
+{"group":{"name":"","type":"group","skip":false,"entries":[
+  {"name":"keyword_test","type":"group","skip":false,"entries":[
+    {"name":"class","type":"test","skip":false},
+    {"name":"null","type":"test","skip":false}
+  ]}
+]}}
+''';
+      final names = generatePerFileTestNames(
+        TestManifest.parse(keywords).tests,
+      );
+
+      expect(names.map((n) => n.methodName), ['test_class', 'test_null']);
+    });
   });
 
   group('--only resolution', () {
