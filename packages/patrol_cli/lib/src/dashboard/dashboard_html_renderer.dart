@@ -203,9 +203,12 @@ class DashboardHtmlRenderer {
     }
 
     buffer.writeln('<section class="notices">');
-    for (final error in run.errors) {
+    // Patrol logs a multi-line message one entry per line, so the lines are
+    // joined back into a single block instead of a tile each.
+    if (run.errors.isNotEmpty) {
       buffer.writeln(
-        '<div class="notice notice-error">${_escape(_stripAnsi(error))}</div>',
+        '<div class="notice notice-error"><pre>'
+        '${_escape(_stripAnsi(run.errors.join('\n')).trim())}</pre></div>',
       );
     }
     for (final warning in run.warnings) {
@@ -357,9 +360,26 @@ class DashboardHtmlRenderer {
         'id="test-body-$index">',
       )
       ..writeln('<div class="test-main">');
-    _writeError(buffer, test);
+
+    // The exception belongs to the step that broke, so it is folded into that
+    // step's row. Without a failing step it goes above the list, still folded.
+    final exception = test.error == null
+        ? null
+        : _exceptionHtml(test.error!, id: 'exception-$index');
+    final failingStep = test.steps.lastIndexWhere(
+      (step) => step.status == DashboardStepStatus.failed,
+    );
+
+    if (exception != null && failingStep == -1) {
+      buffer.writeln(exception);
+    }
     _writeLogs(buffer, test.logs, prelude: true);
-    _writeSteps(buffer, test);
+    _writeSteps(
+      buffer,
+      test,
+      exception: failingStep == -1 ? null : exception,
+      exceptionStepIndex: failingStep,
+    );
     buffer.writeln('</div>');
 
     if (videoSrc != null) {
@@ -371,17 +391,92 @@ class DashboardHtmlRenderer {
       ..writeln('</article>');
   }
 
-  void _writeError(StringBuffer buffer, DashboardTest test) {
-    if (test.error case final error?) {
-      buffer
-        ..writeln('<div class="error-box">')
-        ..writeln('<div class="section-label">${_iconAlert()}Exception</div>')
-        ..writeln('<pre>${_escape(_stripAnsi(error))}</pre>')
-        ..writeln('</div>');
+  /// Builds the collapsed exception panel.
+  ///
+  /// Stack traces run to dozens of lines, so only a one-line summary is shown
+  /// until the row is clicked. The message and the stack frames are kept as two
+  /// blocks rather than a box per line.
+  String _exceptionHtml(String error, {required String id}) {
+    final (message, frames) = _splitException(_stripAnsi(error));
+    final summary = message.isEmpty
+        ? 'Exception'
+        : message
+              .split('\n')
+              .firstWhere(
+                (line) => line.trim().isNotEmpty,
+                orElse: () => 'Exception',
+              );
+
+    final buffer = StringBuffer()
+      ..write('<div class="exception">')
+      ..write(
+        '<button class="exception-head" type="button" aria-expanded="false" '
+        'aria-controls="$id">'
+        '<span class="chevron">${_iconChevron()}</span>'
+        '<span class="exception-tag">${_iconAlert()}Exception</span>'
+        '<span class="exception-summary">'
+        '${_escape(summary.trim())}</span>'
+        '</button>',
+      )
+      ..write('<div class="exception-body" id="$id">');
+
+    if (message.isNotEmpty) {
+      buffer.write('<pre class="exception-message">${_escape(message)}</pre>');
     }
+    if (frames.isNotEmpty) {
+      final count = frames.where(_framePattern.hasMatch).length;
+      buffer.write(
+        '<div class="exception-frames-label">'
+        'Stack trace · $count frame${count == 1 ? '' : 's'}</div>'
+        '<pre class="exception-frames">'
+        '${_escape(frames.join('\n'))}</pre>',
+      );
+    }
+
+    return (buffer..write('</div></div>')).toString();
   }
 
-  void _writeSteps(StringBuffer buffer, DashboardTest test) {
+  /// Splits a failure message into its human-readable part and its stack
+  /// frames, so the frames can be rendered dimmer and tighter.
+  static (String, List<String>) _splitException(String error) {
+    final lines = error.trimRight().split('\n');
+    final frames = <String>[];
+    final message = <String>[];
+
+    for (final line in lines) {
+      final isFrame = _framePattern.hasMatch(line);
+      if (isFrame || (frames.isNotEmpty && line.trim().isEmpty)) {
+        frames.add(line);
+      } else if (frames.isEmpty) {
+        message.add(line);
+      } else {
+        // A non-frame line after the frames started, e.g. an async gap marker.
+        frames.add(line);
+      }
+    }
+
+    // The frames carry their own label, so Flutter's lead-in is just noise.
+    while (message.isNotEmpty &&
+        (message.last.trim().isEmpty ||
+            message.last.trim() ==
+                'When the exception was thrown, this was the stack:')) {
+      message.removeLast();
+    }
+    while (frames.isNotEmpty && frames.last.trim().isEmpty) {
+      frames.removeLast();
+    }
+
+    return (message.join('\n').trim(), frames);
+  }
+
+  static final _framePattern = RegExp(r'^\s*#\d+\s');
+
+  void _writeSteps(
+    StringBuffer buffer,
+    DashboardTest test, {
+    String? exception,
+    int exceptionStepIndex = -1,
+  }) {
     if (test.steps.isEmpty) {
       return;
     }
@@ -419,6 +514,9 @@ class DashboardHtmlRenderer {
         ..writeln('</div>');
 
       _writeLogs(buffer, step.logs);
+      if (exception != null && i == exceptionStepIndex) {
+        buffer.writeln(exception);
+      }
       buffer.writeln('</li>');
     }
 

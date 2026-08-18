@@ -10,8 +10,9 @@
 
 - Add `--html-report` to `patrol test`, which writes a self-contained HTML dashboard of the run:
   per-test status and duration, expandable Patrol steps with their own durations and logs, the
-  full exception of each failure, and the videos recorded with `--record-video`. Set the location
-  with `--html-report-path`. Built from Patrol's log stream, so it is identical on Android and iOS.
+  exception of each failure folded into the step that broke, and the videos recorded with
+  `--record-video`. Set the location with `--html-report-path`. Built from Patrol's log stream,
+  so it is identical on Android and iOS.
 
 ## 4.10.0
 

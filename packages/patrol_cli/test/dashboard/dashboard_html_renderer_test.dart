@@ -122,6 +122,94 @@ void main() {
       expect(html, contains('waiting for the app'));
     });
 
+    test('folds the exception and nests it under the failing step', () {
+      final failing =
+          DashboardStep(
+              action: 'Wait until "Home" is visible',
+              startedAt: DateTime(2026, 8, 17),
+            )
+            ..status = DashboardStepStatus.failed
+            ..duration = const Duration(seconds: 5);
+
+      final html = renderer.render(
+        run([
+          testCase(
+            status: DashboardTestStatus.failed,
+            steps: [failing],
+            error:
+                'Expected: exactly one matching candidate\n'
+                '  Actual: none\n'
+                '\n'
+                'When the exception was thrown, this was the stack:\n'
+                '#0      fail (expect.dart:149:31)\n'
+                '#1      _expect (expect.dart:144:3)',
+          ),
+        ]),
+        reportPath: '/project/report.html',
+      );
+
+      // Folded, with only a one-line summary showing.
+      expect(html, contains('aria-expanded="false"'));
+      expect(
+        html,
+        contains(
+          '<span class="exception-summary">Expected: exactly one matching '
+          'candidate</span>',
+        ),
+      );
+      // Frames are split off the message and counted.
+      expect(html, contains('Stack trace · 2 frames'));
+      expect(html, contains('class="exception-frames"'));
+      // The panel sits inside the failing step's list item.
+      final step = html.indexOf('step step-failed');
+      final exception = html.indexOf('class="exception"');
+      final stepEnd = html.indexOf('</li>', step);
+      expect(exception, greaterThan(step));
+      expect(exception, lessThan(stepEnd));
+    });
+
+    test('places the exception above the steps when no step failed', () {
+      final html = renderer.render(
+        run([
+          testCase(
+            status: DashboardTestStatus.failed,
+            error: 'Expected: true',
+            steps: [
+              DashboardStep(action: 'Tap', startedAt: DateTime(2026, 8, 17))
+                ..status = DashboardStepStatus.passed
+                ..duration = const Duration(milliseconds: 100),
+            ],
+          ),
+        ]),
+        reportPath: '/project/report.html',
+      );
+
+      expect(
+        html.indexOf('class="exception"'),
+        lessThan(html.indexOf('<ol class="steps">')),
+      );
+    });
+
+    test('joins run-level error lines into one block', () {
+      final html = renderer.render(
+        DashboardRun(
+          tests: const [],
+          platform: 'Android',
+          deviceName: 'Pixel 9',
+          deviceId: 'emulator-5554',
+          buildMode: 'debug',
+          startedAt: DateTime(2026, 8, 17),
+          duration: Duration.zero,
+          cliVersion: '4.7.0',
+          errors: const ['first line', 'second line'],
+        ),
+        reportPath: '/project/report.html',
+      );
+
+      expect('class="notice notice-error"'.allMatches(html), hasLength(1));
+      expect(html, contains('first line\nsecond line'));
+    });
+
     test('escapes HTML and strips terminal colors from exceptions', () {
       final html = renderer.render(
         run([

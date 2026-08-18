@@ -293,6 +293,70 @@ void main() {
       expect(_build(sut).tests.single.videoPath, '/videos/signs_in.mp4');
     });
 
+    test('stitches per-line failure details onto the failed test', () {
+      // On mobile, patrol logs the failure without an error and then sends the
+      // exception one ErrorEntry per line.
+      final sut = collector()
+        ..handleEntry(
+          TestEntry(
+            name: 'app_test signs in',
+            status: TestEntryStatus.start,
+            timestamp: at(0),
+          ),
+        )
+        ..handleEntry(
+          TestEntry(
+            name: 'app_test signs in',
+            status: TestEntryStatus.failure,
+            timestamp: at(100),
+          ),
+        )
+        ..handleEntry(ErrorEntry(message: 'Expected: one candidate'))
+        ..handleEntry(ErrorEntry(message: '  Actual: none'))
+        ..handleEntry(ErrorEntry(message: '#0      fail (expect.dart:149:31)'));
+
+      final run = _build(sut);
+      expect(
+        run.tests.single.error,
+        'Expected: one candidate\n  Actual: none\n'
+        '#0      fail (expect.dart:149:31)',
+      );
+      // They belong to the test, not to the run.
+      expect(run.errors, isEmpty);
+    });
+
+    test('stops stitching failure details at the next test', () {
+      final sut = collector()
+        ..handleEntry(
+          TestEntry(
+            name: 'app_test first',
+            status: TestEntryStatus.start,
+            timestamp: at(0),
+          ),
+        )
+        ..handleEntry(
+          TestEntry(
+            name: 'app_test first',
+            status: TestEntryStatus.failure,
+            timestamp: at(100),
+          ),
+        )
+        ..handleEntry(ErrorEntry(message: 'boom'))
+        ..handleEntry(
+          TestEntry(
+            name: 'app_test second',
+            status: TestEntryStatus.start,
+            timestamp: at(200),
+          ),
+        )
+        ..handleEntry(ErrorEntry(message: 'unrelated'));
+
+      final run = _build(sut);
+      expect(run.tests.first.error, 'boom');
+      expect(run.tests.last.error, isNull);
+      expect(run.errors, ['unrelated']);
+    });
+
     test('collects run-level errors and warnings', () {
       final sut = collector()
         ..handleEntry(ErrorEntry(message: 'native automation failed'))

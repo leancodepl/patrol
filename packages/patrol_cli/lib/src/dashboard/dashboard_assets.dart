@@ -237,6 +237,7 @@ body {
   white-space: pre-wrap;
   word-break: break-word;
 }
+.notice pre { margin: 0; font: inherit; white-space: pre-wrap; }
 .notice-error { border-left-color: var(--fail); }
 .notice-warning { border-left-color: var(--warn); }
 
@@ -389,21 +390,91 @@ body {
   color: var(--text-faint);
 }
 
-.error-box {
-  margin: 0 0 20px;
-  padding: 14px 16px;
-  border: 1px solid color-mix(in srgb, var(--fail) 38%, var(--border));
+/* ---------- exception ---------- */
+
+/* Folded by default: a stack trace is dozens of lines and would otherwise
+   push the steps off the screen. */
+.exception {
+  margin: 2px 0 8px 54px;
+  border: 1px solid color-mix(in srgb, var(--fail) 30%, var(--border));
   border-radius: 10px;
-  background: color-mix(in srgb, var(--fail) 9%, var(--surface));
+  background: color-mix(in srgb, var(--fail) 7%, var(--surface));
+  overflow: hidden;
 }
-.error-box pre {
+.test-main > .exception { margin: 0 0 16px; }
+@media (max-width: 640px) { .exception { margin-left: 0; } }
+
+.exception-head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 8px 11px;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.exception-head:hover { background: color-mix(in srgb, var(--fail) 8%, transparent); }
+.exception-head:focus-visible { outline: 2px solid var(--fail); outline-offset: -2px; }
+.exception .chevron { color: var(--fail); display: flex; }
+.exception.is-open .chevron { transform: rotate(90deg); }
+
+.exception-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+  color: var(--fail);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.exception-summary {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-dim);
+}
+/* The summary repeats the message's first line, so drop it once open. */
+.exception.is-open .exception-summary { display: none; }
+
+.exception-body { display: none; padding: 2px 12px 12px; }
+.exception.is-open .exception-body { display: block; }
+.exception-message {
   margin: 0;
   font-family: var(--mono);
   font-size: 12.5px;
-  line-height: 1.6;
+  line-height: 1.55;
   white-space: pre-wrap;
   word-break: break-word;
   color: var(--text);
+}
+.exception-frames-label {
+  margin: 12px 0 4px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+/* Frames are reference material: dimmer, tighter, and scrollable past ~20. */
+.exception-frames {
+  margin: 0;
+  max-height: 320px;
+  overflow: auto;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--text-faint);
 }
 
 /* ---------- steps ---------- */
@@ -562,6 +633,21 @@ const dashboardJs = '''
       setOpen(test, !test.classList.contains('is-open'));
     });
   });
+
+  // The exception under a failing step folds on its own, so a long stack
+  // trace does not bury the steps.
+  Array.prototype.slice.call(document.querySelectorAll('.exception')).forEach(
+    function (exception) {
+      var head = exception.querySelector('.exception-head');
+      if (!head) { return; }
+      head.addEventListener('click', function (event) {
+        event.stopPropagation();
+        var open = !exception.classList.contains('is-open');
+        exception.classList.toggle('is-open', open);
+        head.setAttribute('aria-expanded', String(open));
+      });
+    }
+  );
 
   var toggleAll = document.getElementById('toggle-all');
   if (toggleAll) {
