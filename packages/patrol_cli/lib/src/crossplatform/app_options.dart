@@ -431,7 +431,7 @@ class WebAppOptions {
   final String? viewport;
   final int? globalTimeout;
   final String? shard;
-  final String? headless;
+  final bool? headless;
   final int? webPort;
   final String? browserArgs;
 
