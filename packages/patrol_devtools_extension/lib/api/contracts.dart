@@ -217,8 +217,8 @@ enum AppleApp {
 }
 
 @JsonSerializable()
-class DartGroupEntry with EquatableMixin {
-  DartGroupEntry({
+class DartGroupEntry with Equatable {
+  const DartGroupEntry({
     required this.name,
     required this.type,
     required this.entries,
@@ -242,8 +242,8 @@ class DartGroupEntry with EquatableMixin {
 }
 
 @JsonSerializable()
-class ListDartTestsResponse with EquatableMixin {
-  ListDartTestsResponse({required this.group});
+class ListDartTestsResponse with Equatable {
+  const ListDartTestsResponse({required this.group});
 
   factory ListDartTestsResponse.fromJson(Map<String, dynamic> json) =>
       _$ListDartTestsResponseFromJson(json);
@@ -257,8 +257,8 @@ class ListDartTestsResponse with EquatableMixin {
 }
 
 @JsonSerializable()
-class RunDartTestRequest with EquatableMixin {
-  RunDartTestRequest({required this.name});
+class RunDartTestRequest with Equatable {
+  const RunDartTestRequest({required this.name});
 
   factory RunDartTestRequest.fromJson(Map<String, dynamic> json) =>
       _$RunDartTestRequestFromJson(json);
@@ -272,8 +272,8 @@ class RunDartTestRequest with EquatableMixin {
 }
 
 @JsonSerializable()
-class RunDartTestResponse with EquatableMixin {
-  RunDartTestResponse({required this.result, this.details});
+class RunDartTestResponse with Equatable {
+  const RunDartTestResponse({required this.result, this.details});
 
   factory RunDartTestResponse.fromJson(Map<String, dynamic> json) =>
       _$RunDartTestResponseFromJson(json);
@@ -288,23 +288,30 @@ class RunDartTestResponse with EquatableMixin {
 }
 
 @JsonSerializable()
-class ConfigureRequest with EquatableMixin {
-  ConfigureRequest({required this.findTimeoutMillis});
+class ConfigureRequest with Equatable {
+  const ConfigureRequest({
+    required this.findTimeoutMillis,
+    this.androidDontSuppressAccessibilityServices,
+  });
 
   factory ConfigureRequest.fromJson(Map<String, dynamic> json) =>
       _$ConfigureRequestFromJson(json);
 
   final int findTimeoutMillis;
+  final bool? androidDontSuppressAccessibilityServices;
 
   Map<String, dynamic> toJson() => _$ConfigureRequestToJson(this);
 
   @override
-  List<Object?> get props => [findTimeoutMillis];
+  List<Object?> get props => [
+    findTimeoutMillis,
+    androidDontSuppressAccessibilityServices,
+  ];
 }
 
 @JsonSerializable()
-class OpenAppRequest with EquatableMixin {
-  OpenAppRequest({required this.appId});
+class OpenAppRequest with Equatable {
+  const OpenAppRequest({required this.appId});
 
   factory OpenAppRequest.fromJson(Map<String, dynamic> json) =>
       _$OpenAppRequestFromJson(json);
@@ -318,8 +325,8 @@ class OpenAppRequest with EquatableMixin {
 }
 
 @JsonSerializable()
-class AndroidOpenPlatformAppRequest with EquatableMixin {
-  AndroidOpenPlatformAppRequest({required this.androidAppId});
+class AndroidOpenPlatformAppRequest with Equatable {
+  const AndroidOpenPlatformAppRequest({required this.androidAppId});
 
   factory AndroidOpenPlatformAppRequest.fromJson(Map<String, dynamic> json) =>
       _$AndroidOpenPlatformAppRequestFromJson(json);
@@ -333,8 +340,8 @@ class AndroidOpenPlatformAppRequest with EquatableMixin {
 }
 
 @JsonSerializable()
-class IOSOpenPlatformAppRequest with EquatableMixin {
-  IOSOpenPlatformAppRequest({required this.iosAppId});
+class IOSOpenPlatformAppRequest with Equatable {
+  const IOSOpenPlatformAppRequest({required this.iosAppId});
 
   factory IOSOpenPlatformAppRequest.fromJson(Map<String, dynamic> json) =>
       _$IOSOpenPlatformAppRequestFromJson(json);
@@ -348,8 +355,8 @@ class IOSOpenPlatformAppRequest with EquatableMixin {
 }
 
 @JsonSerializable()
-class OpenQuickSettingsRequest with EquatableMixin {
-  OpenQuickSettingsRequest();
+class OpenQuickSettingsRequest with Equatable {
+  const OpenQuickSettingsRequest();
 
   factory OpenQuickSettingsRequest.fromJson(Map<String, dynamic> json) =>
       _$OpenQuickSettingsRequestFromJson(json);
@@ -361,8 +368,8 @@ class OpenQuickSettingsRequest with EquatableMixin {
 }
 
 @JsonSerializable()
-class OpenUrlRequest with EquatableMixin {
-  OpenUrlRequest({required this.url});
+class OpenUrlRequest with Equatable {
+  const OpenUrlRequest({required this.url});
 
   factory OpenUrlRequest.fromJson(Map<String, dynamic> json) =>
       _$OpenUrlRequestFromJson(json);
@@ -376,8 +383,8 @@ class OpenUrlRequest with EquatableMixin {
 }
 
 @JsonSerializable()
-class AndroidSelector with EquatableMixin {
-  AndroidSelector({
+class AndroidSelector with Equatable {
+  const AndroidSelector({
     this.className,
     this.isCheckable,
     this.isChecked,
@@ -449,8 +456,8 @@ class AndroidSelector with EquatableMixin {
 }
 
 @JsonSerializable()
-class IOSSelector with EquatableMixin {
-  IOSSelector({
+class IOSSelector with Equatable {
+  const IOSSelector({
     this.value,
     this.instance,
     this.elementType,
@@ -522,8 +529,8 @@ class IOSSelector with EquatableMixin {
 }
 
 @JsonSerializable()
-class AndroidGetNativeViewsRequest with EquatableMixin {
-  AndroidGetNativeViewsRequest({this.selector});
+class AndroidGetNativeViewsRequest with Equatable {
+  const AndroidGetNativeViewsRequest({this.selector});
 
   factory AndroidGetNativeViewsRequest.fromJson(Map<String, dynamic> json) =>
       _$AndroidGetNativeViewsRequestFromJson(json);
@@ -537,8 +544,8 @@ class AndroidGetNativeViewsRequest with EquatableMixin {
 }
 
 @JsonSerializable()
-class IOSGetNativeViewsRequest with EquatableMixin {
-  IOSGetNativeViewsRequest({
+class IOSGetNativeViewsRequest with Equatable {
+  const IOSGetNativeViewsRequest({
     this.selector,
     this.iosInstalledApps,
     required this.appId,
@@ -558,8 +565,8 @@ class IOSGetNativeViewsRequest with EquatableMixin {
 }
 
 @JsonSerializable()
-class AndroidNativeView with EquatableMixin {
-  AndroidNativeView({
+class AndroidNativeView with Equatable {
+  const AndroidNativeView({
     this.resourceName,
     this.text,
     this.className,
@@ -628,8 +635,8 @@ class AndroidNativeView with EquatableMixin {
 }
 
 @JsonSerializable()
-class IOSNativeView with EquatableMixin {
-  IOSNativeView({
+class IOSNativeView with Equatable {
+  const IOSNativeView({
     required this.children,
     required this.elementType,
     required this.identifier,
@@ -683,8 +690,8 @@ class IOSNativeView with EquatableMixin {
 }
 
 @JsonSerializable()
-class AndroidGetNativeViewsResponse with EquatableMixin {
-  AndroidGetNativeViewsResponse({required this.roots});
+class AndroidGetNativeViewsResponse with Equatable {
+  const AndroidGetNativeViewsResponse({required this.roots});
 
   factory AndroidGetNativeViewsResponse.fromJson(Map<String, dynamic> json) =>
       _$AndroidGetNativeViewsResponseFromJson(json);
@@ -698,8 +705,8 @@ class AndroidGetNativeViewsResponse with EquatableMixin {
 }
 
 @JsonSerializable()
-class IOSGetNativeViewsResponse with EquatableMixin {
-  IOSGetNativeViewsResponse({required this.roots});
+class IOSGetNativeViewsResponse with Equatable {
+  const IOSGetNativeViewsResponse({required this.roots});
 
   factory IOSGetNativeViewsResponse.fromJson(Map<String, dynamic> json) =>
       _$IOSGetNativeViewsResponseFromJson(json);
@@ -713,8 +720,8 @@ class IOSGetNativeViewsResponse with EquatableMixin {
 }
 
 @JsonSerializable()
-class Rectangle with EquatableMixin {
-  Rectangle({
+class Rectangle with Equatable {
+  const Rectangle({
     required this.minX,
     required this.minY,
     required this.maxX,
@@ -736,8 +743,8 @@ class Rectangle with EquatableMixin {
 }
 
 @JsonSerializable()
-class Point2D with EquatableMixin {
-  Point2D({required this.x, required this.y});
+class Point2D with Equatable {
+  const Point2D({required this.x, required this.y});
 
   factory Point2D.fromJson(Map<String, dynamic> json) =>
       _$Point2DFromJson(json);
@@ -752,8 +759,8 @@ class Point2D with EquatableMixin {
 }
 
 @JsonSerializable()
-class AndroidTapRequest with EquatableMixin {
-  AndroidTapRequest({
+class AndroidTapRequest with Equatable {
+  const AndroidTapRequest({
     required this.selector,
     this.timeoutMillis,
     this.delayBetweenTapsMillis,
@@ -773,8 +780,8 @@ class AndroidTapRequest with EquatableMixin {
 }
 
 @JsonSerializable()
-class IOSTapRequest with EquatableMixin {
-  IOSTapRequest({
+class IOSTapRequest with Equatable {
+  const IOSTapRequest({
     required this.selector,
     required this.appId,
     this.timeoutMillis,
@@ -794,8 +801,8 @@ class IOSTapRequest with EquatableMixin {
 }
 
 @JsonSerializable()
-class AndroidTapAtRequest with EquatableMixin {
-  AndroidTapAtRequest({required this.x, required this.y});
+class AndroidTapAtRequest with Equatable {
+  const AndroidTapAtRequest({required this.x, required this.y});
 
   factory AndroidTapAtRequest.fromJson(Map<String, dynamic> json) =>
       _$AndroidTapAtRequestFromJson(json);
@@ -810,8 +817,12 @@ class AndroidTapAtRequest with EquatableMixin {
 }
 
 @JsonSerializable()
-class IOSTapAtRequest with EquatableMixin {
-  IOSTapAtRequest({required this.x, required this.y, required this.appId});
+class IOSTapAtRequest with Equatable {
+  const IOSTapAtRequest({
+    required this.x,
+    required this.y,
+    required this.appId,
+  });
 
   factory IOSTapAtRequest.fromJson(Map<String, dynamic> json) =>
       _$IOSTapAtRequestFromJson(json);
@@ -827,8 +838,8 @@ class IOSTapAtRequest with EquatableMixin {
 }
 
 @JsonSerializable()
-class AndroidEnterTextRequest with EquatableMixin {
-  AndroidEnterTextRequest({
+class AndroidEnterTextRequest with Equatable {
+  const AndroidEnterTextRequest({
     required this.data,
     this.index,
     this.selector,
@@ -864,8 +875,8 @@ class AndroidEnterTextRequest with EquatableMixin {
 }
 
 @JsonSerializable()
-class IOSEnterTextRequest with EquatableMixin {
-  IOSEnterTextRequest({
+class IOSEnterTextRequest with Equatable {
+  const IOSEnterTextRequest({
     required this.data,
     required this.appId,
     this.index,
@@ -904,8 +915,8 @@ class IOSEnterTextRequest with EquatableMixin {
 }
 
 @JsonSerializable()
-class AndroidSwipeRequest with EquatableMixin {
-  AndroidSwipeRequest({
+class AndroidSwipeRequest with Equatable {
+  const AndroidSwipeRequest({
     required this.startX,
     required this.startY,
     required this.endX,
@@ -929,8 +940,8 @@ class AndroidSwipeRequest with EquatableMixin {
 }
 
 @JsonSerializable()
-class IOSSwipeRequest with EquatableMixin {
-  IOSSwipeRequest({
+class IOSSwipeRequest with Equatable {
+  const IOSSwipeRequest({
     required this.appId,
     required this.startX,
     required this.startY,
@@ -954,8 +965,11 @@ class IOSSwipeRequest with EquatableMixin {
 }
 
 @JsonSerializable()
-class AndroidWaitUntilVisibleRequest with EquatableMixin {
-  AndroidWaitUntilVisibleRequest({required this.selector, this.timeoutMillis});
+class AndroidWaitUntilVisibleRequest with Equatable {
+  const AndroidWaitUntilVisibleRequest({
+    required this.selector,
+    this.timeoutMillis,
+  });
 
   factory AndroidWaitUntilVisibleRequest.fromJson(Map<String, dynamic> json) =>
       _$AndroidWaitUntilVisibleRequestFromJson(json);
@@ -970,8 +984,8 @@ class AndroidWaitUntilVisibleRequest with EquatableMixin {
 }
 
 @JsonSerializable()
-class IOSWaitUntilVisibleRequest with EquatableMixin {
-  IOSWaitUntilVisibleRequest({
+class IOSWaitUntilVisibleRequest with Equatable {
+  const IOSWaitUntilVisibleRequest({
     required this.selector,
     required this.appId,
     this.timeoutMillis,
@@ -991,8 +1005,8 @@ class IOSWaitUntilVisibleRequest with EquatableMixin {
 }
 
 @JsonSerializable()
-class DarkModeRequest with EquatableMixin {
-  DarkModeRequest({required this.appId});
+class DarkModeRequest with Equatable {
+  const DarkModeRequest({required this.appId});
 
   factory DarkModeRequest.fromJson(Map<String, dynamic> json) =>
       _$DarkModeRequestFromJson(json);
@@ -1006,8 +1020,8 @@ class DarkModeRequest with EquatableMixin {
 }
 
 @JsonSerializable()
-class Notification with EquatableMixin {
-  Notification({
+class Notification with Equatable {
+  const Notification({
     this.appName,
     required this.title,
     required this.content,
@@ -1029,8 +1043,8 @@ class Notification with EquatableMixin {
 }
 
 @JsonSerializable()
-class GetNotificationsResponse with EquatableMixin {
-  GetNotificationsResponse({required this.notifications});
+class GetNotificationsResponse with Equatable {
+  const GetNotificationsResponse({required this.notifications});
 
   factory GetNotificationsResponse.fromJson(Map<String, dynamic> json) =>
       _$GetNotificationsResponseFromJson(json);
@@ -1044,8 +1058,8 @@ class GetNotificationsResponse with EquatableMixin {
 }
 
 @JsonSerializable()
-class GetNotificationsRequest with EquatableMixin {
-  GetNotificationsRequest();
+class GetNotificationsRequest with Equatable {
+  const GetNotificationsRequest();
 
   factory GetNotificationsRequest.fromJson(Map<String, dynamic> json) =>
       _$GetNotificationsRequestFromJson(json);
@@ -1057,8 +1071,8 @@ class GetNotificationsRequest with EquatableMixin {
 }
 
 @JsonSerializable()
-class AndroidTapOnNotificationRequest with EquatableMixin {
-  AndroidTapOnNotificationRequest({
+class AndroidTapOnNotificationRequest with Equatable {
+  const AndroidTapOnNotificationRequest({
     this.index,
     this.selector,
     this.timeoutMillis,
@@ -1079,8 +1093,12 @@ class AndroidTapOnNotificationRequest with EquatableMixin {
 }
 
 @JsonSerializable()
-class IOSTapOnNotificationRequest with EquatableMixin {
-  IOSTapOnNotificationRequest({this.index, this.selector, this.timeoutMillis});
+class IOSTapOnNotificationRequest with Equatable {
+  const IOSTapOnNotificationRequest({
+    this.index,
+    this.selector,
+    this.timeoutMillis,
+  });
 
   factory IOSTapOnNotificationRequest.fromJson(Map<String, dynamic> json) =>
       _$IOSTapOnNotificationRequestFromJson(json);
@@ -1096,8 +1114,25 @@ class IOSTapOnNotificationRequest with EquatableMixin {
 }
 
 @JsonSerializable()
-class PermissionDialogVisibleResponse with EquatableMixin {
-  PermissionDialogVisibleResponse({required this.visible});
+class IOSTapBackToPreviousAppButtonRequest with Equatable {
+  const IOSTapBackToPreviousAppButtonRequest({this.timeoutMillis});
+
+  factory IOSTapBackToPreviousAppButtonRequest.fromJson(
+    Map<String, dynamic> json,
+  ) => _$IOSTapBackToPreviousAppButtonRequestFromJson(json);
+
+  final int? timeoutMillis;
+
+  Map<String, dynamic> toJson() =>
+      _$IOSTapBackToPreviousAppButtonRequestToJson(this);
+
+  @override
+  List<Object?> get props => [timeoutMillis];
+}
+
+@JsonSerializable()
+class PermissionDialogVisibleResponse with Equatable {
+  const PermissionDialogVisibleResponse({required this.visible});
 
   factory PermissionDialogVisibleResponse.fromJson(Map<String, dynamic> json) =>
       _$PermissionDialogVisibleResponseFromJson(json);
@@ -1112,8 +1147,8 @@ class PermissionDialogVisibleResponse with EquatableMixin {
 }
 
 @JsonSerializable()
-class PermissionDialogVisibleRequest with EquatableMixin {
-  PermissionDialogVisibleRequest({required this.timeoutMillis});
+class PermissionDialogVisibleRequest with Equatable {
+  const PermissionDialogVisibleRequest({required this.timeoutMillis});
 
   factory PermissionDialogVisibleRequest.fromJson(Map<String, dynamic> json) =>
       _$PermissionDialogVisibleRequestFromJson(json);
@@ -1127,8 +1162,8 @@ class PermissionDialogVisibleRequest with EquatableMixin {
 }
 
 @JsonSerializable()
-class HandlePermissionRequest with EquatableMixin {
-  HandlePermissionRequest({required this.code});
+class HandlePermissionRequest with Equatable {
+  const HandlePermissionRequest({required this.code});
 
   factory HandlePermissionRequest.fromJson(Map<String, dynamic> json) =>
       _$HandlePermissionRequestFromJson(json);
@@ -1142,8 +1177,8 @@ class HandlePermissionRequest with EquatableMixin {
 }
 
 @JsonSerializable()
-class SetLocationAccuracyRequest with EquatableMixin {
-  SetLocationAccuracyRequest({required this.locationAccuracy});
+class SetLocationAccuracyRequest with Equatable {
+  const SetLocationAccuracyRequest({required this.locationAccuracy});
 
   factory SetLocationAccuracyRequest.fromJson(Map<String, dynamic> json) =>
       _$SetLocationAccuracyRequestFromJson(json);
@@ -1157,8 +1192,8 @@ class SetLocationAccuracyRequest with EquatableMixin {
 }
 
 @JsonSerializable()
-class SetMockLocationRequest with EquatableMixin {
-  SetMockLocationRequest({
+class SetMockLocationRequest with Equatable {
+  const SetMockLocationRequest({
     required this.latitude,
     required this.longitude,
     required this.packageName,
@@ -1178,8 +1213,8 @@ class SetMockLocationRequest with EquatableMixin {
 }
 
 @JsonSerializable()
-class IsVirtualDeviceResponse with EquatableMixin {
-  IsVirtualDeviceResponse({required this.isVirtualDevice});
+class IsVirtualDeviceResponse with Equatable {
+  const IsVirtualDeviceResponse({required this.isVirtualDevice});
 
   factory IsVirtualDeviceResponse.fromJson(Map<String, dynamic> json) =>
       _$IsVirtualDeviceResponseFromJson(json);
@@ -1193,8 +1228,8 @@ class IsVirtualDeviceResponse with EquatableMixin {
 }
 
 @JsonSerializable()
-class GetOsVersionResponse with EquatableMixin {
-  GetOsVersionResponse({required this.osVersion});
+class GetOsVersionResponse with Equatable {
+  const GetOsVersionResponse({required this.osVersion});
 
   factory GetOsVersionResponse.fromJson(Map<String, dynamic> json) =>
       _$GetOsVersionResponseFromJson(json);
@@ -1208,8 +1243,8 @@ class GetOsVersionResponse with EquatableMixin {
 }
 
 @JsonSerializable()
-class AndroidTakeCameraPhotoRequest with EquatableMixin {
-  AndroidTakeCameraPhotoRequest({
+class AndroidTakeCameraPhotoRequest with Equatable {
+  const AndroidTakeCameraPhotoRequest({
     this.shutterButtonSelector,
     this.doneButtonSelector,
     this.timeoutMillis,
@@ -1233,8 +1268,8 @@ class AndroidTakeCameraPhotoRequest with EquatableMixin {
 }
 
 @JsonSerializable()
-class IOSTakeCameraPhotoRequest with EquatableMixin {
-  IOSTakeCameraPhotoRequest({
+class IOSTakeCameraPhotoRequest with Equatable {
+  const IOSTakeCameraPhotoRequest({
     this.shutterButtonSelector,
     this.doneButtonSelector,
     this.timeoutMillis,
@@ -1261,8 +1296,8 @@ class IOSTakeCameraPhotoRequest with EquatableMixin {
 }
 
 @JsonSerializable()
-class AndroidPickImageFromGalleryRequest with EquatableMixin {
-  AndroidPickImageFromGalleryRequest({
+class AndroidPickImageFromGalleryRequest with Equatable {
+  const AndroidPickImageFromGalleryRequest({
     this.imageSelector,
     this.imageIndex,
     this.timeoutMillis,
@@ -1284,8 +1319,8 @@ class AndroidPickImageFromGalleryRequest with EquatableMixin {
 }
 
 @JsonSerializable()
-class IOSPickImageFromGalleryRequest with EquatableMixin {
-  IOSPickImageFromGalleryRequest({
+class IOSPickImageFromGalleryRequest with Equatable {
+  const IOSPickImageFromGalleryRequest({
     this.imageSelector,
     this.imageIndex,
     this.timeoutMillis,
@@ -1307,8 +1342,8 @@ class IOSPickImageFromGalleryRequest with EquatableMixin {
 }
 
 @JsonSerializable()
-class AndroidPickMultipleImagesFromGalleryRequest with EquatableMixin {
-  AndroidPickMultipleImagesFromGalleryRequest({
+class AndroidPickMultipleImagesFromGalleryRequest with Equatable {
+  const AndroidPickMultipleImagesFromGalleryRequest({
     this.imageSelector,
     required this.imageIndexes,
     this.timeoutMillis,
@@ -1330,8 +1365,8 @@ class AndroidPickMultipleImagesFromGalleryRequest with EquatableMixin {
 }
 
 @JsonSerializable()
-class IOSPickMultipleImagesFromGalleryRequest with EquatableMixin {
-  IOSPickMultipleImagesFromGalleryRequest({
+class IOSPickMultipleImagesFromGalleryRequest with Equatable {
+  const IOSPickMultipleImagesFromGalleryRequest({
     this.imageSelector,
     required this.imageIndexes,
     this.timeoutMillis,

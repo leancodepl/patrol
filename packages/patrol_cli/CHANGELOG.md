@@ -1,6 +1,82 @@
 ## Unreleased
 
-- Add `patrol bs pull-coverage` subcommand. Downloads a BrowserStack Espresso coverage `.ec` and splits it into a standard JaCoCo `jacoco.exec` plus a Dart `patrol_lcov.info` produced by patrol's BS coverage hook.
+- Add `patrol bs pull-coverage` subcommand. Downloads a BrowserStack Espresso coverage `.ec` and splits it into a standard JaCoCo `jacoco.exec` plus a Dart `patrol_lcov.info` produced by patrol's BS coverage hook. (#3066)
+
+## 4.7.0
+
+- **Requires `patrol` 4.9.0 or newer.**
+- Pass `-Ppatrol-enabled=true` to Android Gradle builds so apps can detect a Patrol build.
+- Support running Patrol tests on multiple iOS simulators in parallel, by reading the native automation ports at runtime in the generated test bundle. See the [Marathon integration guide](https://patrol.leancode.co/documentation/integrations/marathon).
+- Add experimental build-time test discovery, enabled with `patrol.emit_test_manifest` in
+  pubspec.yaml (or `--emit-test-manifest`): Dart tests are discovered while building and each
+  one becomes a real, individually-selectable native test, which makes per-test sharding on
+  device farms possible. (#3197)
+- Add `patrol test-without-building`, which runs the tests from a previous `patrol build`
+  without rebuilding, optionally just one of them with `--only`. Requires build-time test
+  discovery. (#3197)
+- Add `--record-video` flag to `patrol test` and `patrol develop` to record a video per test case (Android and iOS simulators). (#2741)
+- Fix `patrol test`/`patrol develop` not reading logs from iOS simulators, by streaming the simulator's log via `simctl spawn`. (#3198)
+
+## 4.6.1
+
+- Fix `patrol develop` printing "You must specify a --flavor option" on iOS/macOS projects with schemes, by passing the flavor to `flutter attach`.
+- Fail fast with a clear error instead of hanging on gradlew when the Android SDK can't be located (`sdk.dir` missing from `android/local.properties` after the config-only build). (#3168)
+
+## 4.6.0
+
+- Download only Chromium instead of all default Playwright browsers during web runner setup. (#3156)
+- Fix `patrol develop` not reporting completion when the app shuts down before the tests finish, causing `patrol_mcp` to hang until its timeout. The backend exit is now detected independently of `flutter attach`.
+- Fix `patrol test -d chrome` failing with `No devices attached` on machines without a system Chrome installation. (#3172)
+- Add browser launch and context options for web tests: (#3155)
+  - `--web-channel`
+  - `--web-executable-path`
+  - `--web-slow-mo`
+  - `--web-chromium-sandbox`
+  - `--web-downloads-path`
+  - `--web-ignore-default-args`
+  - `--web-proxy`
+  - `--web-browser-timeout`
+  - `--web-traces-dir`
+  - `--web-bypass-csp`
+  - `--web-ignore-https-errors`
+  - `--web-offline`
+  - `--web-http-credentials`
+  - `--web-extra-http-headers`
+  - `--web-screenshot`
+  - `--web-trace`
+  - `--web-storage-state`
+  - `--web-accept-downloads`
+- Convert `--web-headless` to a flag. Use `--web-headless`/`--no-web-headless` instead of `--web-headless true/false`. The old syntax still works, but is deprecated and will be removed in a future release. (#3155)
+- Fix `--web-*` options being silently overridden by a same-named variable already set in the host shell environment when running web tests. (#3155)
+- Add `patrol test --coverage` support for the web platform, producing the same `coverage/patrol_lcov.info` report as mobile. Requires a debug build (the default); Chromium only.
+
+## 4.5.1
+
+- Add a Swift Package Manager support note to the README.
+
+## 4.5.0
+
+- Add `-weak_framework XCTest` linker flags to iOS and macOS `build-for-testing` to support Swift Package Manager integration.
+- Fix `patrol develop` on iOS Simulator timing out after ~6 minutes with "Test runner never began executing tests after launching". Requires a matching `patrol` version that enables the develop-specific native test runner path. (#3139)
+- Fix `patrol test`/`patrol develop` hanging on Windows at `gradlew :app:dependencies` by also draining the gradle process stderr stream during orchestrator-version detection. (#2565)
+- Fix `--exclude` not working. (#2990)
+- Fix `--clear-permissions` being ignored by `patrol build ios`. The flag was wired into `patrol test` but dropped from `build ios`, so prebuilt iOS test bundles (e.g. for BrowserStack/Firebase Test Lab) never had `CLEAR_PERMISSIONS` enabled.
+- Fix wrong import path being generated on Windows for commands like `patrol test -t .\patrol_test\example_test.dart`.
+- Fix `test_bundle.dart` generating a broken absolute import (and an invalid import alias containing characters such as `-`) when the test target lives outside the configured `test_directory`. The import is now computed relative to the bundle and the alias is sanitized. (#3104)
+- Don't listen for `SIGTERM` on Windows, where it is not supported and throws an unhandled `SignalException`. (#3035)
+- Bump `equatable` to `^2.1.0` and migrate `PatrolPubspecConfig` and related config classes from deprecated `EquatableMixin` to `with Equatable`.
+- Bump `patrol_log` to `^0.10.0`.
+
+This version requires version `4.7.0` of `patrol` package.
+
+## 4.4.0
+
+- Fix iOS Simulator test crash on Xcode 26.4+ caused by missing platform frameworks path in xctestrun.
+- Bump `patrol_log` to `^0.9.0`.
+- Add `--app-name` flag to override `app_name` from pubspec.yaml. (#2557)
+- Fix `patrol test --coverage` crashing with `PathNotFoundException` in Pub workspaces by resolving `.dart_tool/package_config.json` from the workspace root. (#2844)
+- Add `--coverage-workspace` flag to include every package declared under the workspace root's `workspace:` key in the coverage report.
+- Fix a bug when running tests with iOS and Android specific flavors based on the configuration in pubspec. (#3046)
 
 ## 4.3.1
 

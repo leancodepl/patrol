@@ -41,10 +41,14 @@ class TestBundler {
 // ignore_for_file: type=lint, invalid_use_of_internal_member
 
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
+import 'package:patrol/src/constants.dart' as constants;
+import 'package:patrol/src/manifest_writer.dart';
 import 'package:patrol/src/platform/contracts/contracts.dart';
+import 'package:patrol/src/platform/mobile/patrol_runtime_ports.dart';
 import 'package:test_api/src/backend/invoker.dart';
 
 // START: GENERATED TEST IMPORTS
@@ -84,12 +88,21 @@ Future<void> main() async {
   // Dart test (out of which they had been created) and wait for it to complete.
   // The result of running the Dart test is the result of the native test case.
 
-  final platformAutomator = PlatformAutomator(
-    config: PlatformAutomatorConfig.defaultConfig(),
-  );
-  await platformAutomator.initialize();
-  final binding = PatrolBinding.ensureInitialized(platformAutomator);
   final testExplorationCompleter = Completer<DartGroupEntry>();
+
+  // In build-time discovery mode the bundle is driven by a host `flutter test`
+  // run: we only register tests to build the group tree, then serialize it to a
+  // manifest. PatrolBinding (a Live binding) must NOT be initialized here - it's
+  // incompatible with the automated binding `flutter test` installs on the host.
+  late final PlatformAutomator platformAutomator;
+  late final PatrolBinding binding;
+  if (!constants.testDiscoveryEnabled) {
+    platformAutomator = PlatformAutomator(
+      config: PlatformAutomatorConfig.defaultConfig(),
+    );
+    await platformAutomator.initialize();
+    binding = PatrolBinding.ensureInitialized(platformAutomator);
+  }
 
   // A special test to explore the hierarchy of groups and tests. This is a hack
   // around https://github.com/dart-lang/test/issues/1998.
@@ -105,6 +118,26 @@ Future<void> main() async {
       tags: ${tags != null ? "'$tags'" : null},
       excludeTags: ${excludeTags != null ? "'$excludeTags'" : null},
     );
+    if (constants.testDiscoveryEnabled) {
+      // Build-time discovery: serialize the WHOLE tree (same shape as
+      // ListDartTestsResponse.group) so the native side can flatten it with its
+      // existing listTestsFlat logic - selectors come out byte-identical to
+      // runtime discovery.
+      //
+      // The manifest is written from inside this test (not from main()) on
+      // purpose: under the host automated binding the framework runs tests only
+      // *after* main() finishes declaring, so awaiting the tree in main() would
+      // deadlock.
+      const manifestOutput = String.fromEnvironment('PATROL_MANIFEST_OUTPUT');
+      if (manifestOutput.isNotEmpty) {
+        writeTestManifest(
+          manifestOutput,
+          jsonEncode(ListDartTestsResponse(group: dartTestGroup).toJson()),
+        );
+      }
+      return;
+    }
+
     testExplorationCompleter.complete(dartTestGroup);
     print('patrol_test_explorer: obtained Dart-side test hierarchy:');
     reportGroupStructure(dartTestGroup);
@@ -114,9 +147,16 @@ Future<void> main() async {
 ${generateGroupsCode(testDirectory, testFilePaths).split('\n').map((e) => '  $e').join('\n')}
 // END: GENERATED TEST GROUPS
 
+  if (constants.testDiscoveryEnabled) {
+    // Returning finishes declaration; `flutter test` then runs the explorer
+    // test (which writes the manifest) plus the registered no-op bodies.
+    return;
+  }
+
   final dartTestGroup = await testExplorationCompleter.future;
   final appService = PatrolAppService(topLevelDartTestGroup: dartTestGroup);
   binding.patrolAppService = appService;
+  await PatrolRuntimePorts.ensureLoaded();
   await runAppService(appService);
 
   // Until now, the native test runner was waiting for us, the Dart side, to
@@ -187,6 +227,7 @@ ${generateGroupsCode(testDirectory, testFilePaths).split('\n').map((e) => '  $e'
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
+import 'package:patrol/src/platform/mobile/patrol_runtime_ports.dart';
 
 // START: GENERATED TEST IMPORTS
 ${generateImports(testDirectory, [testFilePath])}
@@ -197,7 +238,7 @@ Future<void> main() async {
     config: PlatformAutomatorConfig.defaultConfig(),
   );
   await platformAutomator.initialize();
-  
+
   PatrolBinding.ensureInitialized(platformAutomator)
     ..workaroundDebugDefaultTargetPlatformOverride =
         debugDefaultTargetPlatformOverride;
@@ -205,9 +246,10 @@ Future<void> main() async {
   // START: GENERATED TEST GROUPS
 ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e').join('\n')}
   // END: GENERATED TEST GROUPS
+
+  await PatrolRuntimePorts.ensureLoaded();
 }
 ''';
-
     final bundle = getBundledTestFile(testDirectory)
       ..createSync(recursive: true)
       ..writeAsStringSync(contents);
@@ -226,7 +268,7 @@ ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e
   /// [
   ///   'patrol_test/example_test.dart',
   ///   'patrol_test/permissions/permissions_location_test.dart',
-  ///   '/Users/charlie/awesome_app/patrol_test/app_test.dart',
+  ///   '/Users/charlie/awesome_app/integration_test/app_test.dart',
   /// ]
   /// ```
   /// Output:
@@ -234,7 +276,7 @@ ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e
   /// '''
   /// import 'example_test.dart' as example_test;
   /// import 'permissions/permissions_location_test.dart' as permissions__permissions_location_test;
-  /// import 'patrol_test/app_test.dart' as app_test;
+  /// import '../integration_test/app_test.dart' as integration_test__app_test;
   /// '''
   /// ```
   @visibleForTesting
@@ -245,20 +287,12 @@ ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e
   }) {
     final imports = <String>[];
     for (final testFilePath in testFilePaths) {
-      final relativeTestFilePath = _normalizeTestPath(
+      final importPath = _createImportPath(
         testDirectory,
         testFilePath,
+        web: web,
       );
-      final testName = _createTestName(testDirectory, relativeTestFilePath);
-      final relativeTestFilePathWithoutSlash = relativeTestFilePath[0] == '/'
-          ? relativeTestFilePath.replaceFirst('/', '')
-          : relativeTestFilePath;
-
-      // For web tests, include the test directory prefix in imports to ensure
-      // correct path resolution since the bundle is at project root
-      final importPath = web
-          ? '$testDirectory/$relativeTestFilePathWithoutSlash'
-          : relativeTestFilePathWithoutSlash;
+      final testName = _createTestName(testDirectory, testFilePath);
       imports.add("import '$importPath' as $testName;");
     }
 
@@ -286,11 +320,7 @@ ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e
   String generateGroupsCode(String testDirectory, List<String> testFilePaths) {
     final groups = <String>[];
     for (final testFilePath in testFilePaths) {
-      final relativeTestFilePath = _normalizeTestPath(
-        testDirectory,
-        testFilePath,
-      );
-      final testName = _createTestName(testDirectory, relativeTestFilePath);
+      final testName = _createTestName(testDirectory, testFilePath);
       final groupName = testName.replaceAll('__', '.');
       final testEntrypoint = '$testName.main';
       groups.add("group('$groupName', $testEntrypoint);");
@@ -298,37 +328,84 @@ ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e
     return groups.join('\n');
   }
 
-  /// Normalizes [testFilePath] so that it always starts with
-  /// the configured test directory.
-  String _normalizeTestPath(String testDirectory, String testFilePath) {
-    var relativeTestFilePath = testFilePath.replaceAll(
-      _projectRoot.childDirectory(testDirectory).absolute.path,
-      '',
+  /// Computes the path used in the generated `import` directive for
+  /// [testFilePath], relative to the directory the bundle file lives in.
+  ///
+  /// Using a path relative to the bundle keeps the import valid regardless of
+  /// where the test file is located - in particular when it lives outside the
+  /// configured [testDirectory] (e.g. a target under `integration_test/` while
+  /// `test_directory` is `patrol_test`). In that case the result is a path such
+  /// as `../integration_test/example_test.dart`.
+  String _createImportPath(
+    String testDirectory,
+    String testFilePath, {
+    required bool web,
+  }) {
+    final bundleDirectory = getBundledTestFile(
+      testDirectory,
+      web: web,
+    ).parent.absolute.path;
+
+    final relativeTestFilePath = _fs.path.relative(
+      _toAbsoluteTestPath(testFilePath),
+      from: bundleDirectory,
     );
 
-    if (relativeTestFilePath.startsWith(testDirectory)) {
-      relativeTestFilePath = relativeTestFilePath.replaceFirst(
-        testDirectory,
-        '',
-      );
-    }
-
-    if (relativeTestFilePath.startsWith(_fs.path.separator)) {
-      relativeTestFilePath = relativeTestFilePath.substring(1);
-    }
-
-    // Dart source code uses forward slash.
+    // Dart source code uses forward slashes regardless of the host platform.
     return relativeTestFilePath.replaceAll(_fs.path.separator, '/');
   }
 
-  String _createTestName(String testDirectory, String relativeTestFilePath) {
-    var testName = relativeTestFilePath
-        .replaceFirst('$testDirectory${_fs.path.separator}', '')
-        .replaceAll('/', '__');
+  /// Builds a valid Dart identifier used as the import alias (and, after
+  /// replacing `__` with `.`, the group name) for [testFilePath].
+  ///
+  /// The name is derived from the path of the test file relative to the
+  /// configured [testDirectory]. Any character that is not allowed in a Dart
+  /// identifier (e.g. the hyphen in `acme-corp`, or the dots introduced by a
+  /// `..` segment when the test lives outside [testDirectory]) is replaced with
+  /// an underscore so the generated bundle always compiles.
+  String _createTestName(String testDirectory, String testFilePath) {
+    final testDirectoryPath = _projectRoot
+        .childDirectory(testDirectory)
+        .absolute
+        .path;
 
-    testName = testName.substring(0, testName.length - 5);
-    return testName;
+    var name = _fs.path
+        .relative(_toAbsoluteTestPath(testFilePath), from: testDirectoryPath)
+        .replaceAll(_fs.path.separator, '/');
+
+    if (name.endsWith('.dart')) {
+      name = name.substring(0, name.length - '.dart'.length);
+    }
+
+    // Drop leading `../` segments (present when the test lives outside the
+    // test directory) so the alias stays readable instead of starting with a
+    // run of underscores.
+    while (name.startsWith('../')) {
+      name = name.substring('../'.length);
+    }
+
+    name = name.replaceAll('/', '__').replaceAll(RegExp('[^a-zA-Z0-9_]'), '_');
+
+    // A Dart identifier must not start with a digit.
+    if (name.isNotEmpty && RegExp('[0-9]').hasMatch(name[0])) {
+      name = '_$name';
+    }
+
+    return name;
   }
+
+  /// Resolves [testFilePath] to an absolute path.
+  ///
+  /// A relative path is resolved against the project root - not the process'
+  /// current working directory - so the generated bundle is identical no
+  /// matter where `patrol` is invoked from (running the CLI from outside the
+  /// project root is supported). This mirrors how `TestFinder` resolves
+  /// relative paths. In practice the commands always pass absolute targets, so
+  /// this only matters for relative paths (e.g. in tests).
+  String _toAbsoluteTestPath(String testFilePath) =>
+      _fs.path.isAbsolute(testFilePath)
+      ? testFilePath
+      : _fs.path.join(_projectRoot.absolute.path, testFilePath);
 
   bool _shouldUseEntrypointProxy(String testDirectory) {
     return !_devtoolsRootDirectories.contains(testDirectory);

@@ -233,6 +233,22 @@ void main() {
         },
       );
 
+      test('builds macOS app with custom app name', () async {
+        final result = await runCommand(['--app-name', 'Custom App']);
+
+        expect(result, equals(0));
+
+        final captured = verify(
+          () => mockMacosTestBackend.build(captureAny()),
+        ).captured;
+        final opts = captured.first as MacOSAppOptions;
+
+        expect(
+          opts.flutter.dartDefines,
+          containsPair('PATROL_MACOS_APP_NAME', 'Custom App'),
+        );
+      });
+
       test('builds macOS app with build name and number', () async {
         final result = await runCommand([
           '--build-name',

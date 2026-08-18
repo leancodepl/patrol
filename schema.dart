@@ -39,6 +39,9 @@ abstract class PatrolAppService<IOSClient, AndroidClient, DartServer> {
 
 class ConfigureRequest {
   late int findTimeoutMillis;
+  // Android only. true (default) keeps third-party AccessibilityServices running
+  // (FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES); false suppresses them.
+  bool? androidDontSuppressAccessibilityServices;
 }
 
 class OpenAppRequest {
@@ -274,6 +277,10 @@ class IOSTapOnNotificationRequest {
   int? timeoutMillis;
 }
 
+class IOSTapBackToPreviousAppButtonRequest {
+  int? timeoutMillis;
+}
+
 class PermissionDialogVisibleResponse {
   late bool visible;
 }
@@ -356,6 +363,7 @@ abstract class MobileAutomator<IOSServer, AndroidServer, DartClient> {
   void openApp(OpenAppRequest request);
   void openQuickSettings(OpenQuickSettingsRequest request);
   void openUrl(OpenUrlRequest request);
+  void sendKeyboardEnter();
 
   // volume settings
   void pressVolumeUp();
@@ -429,6 +437,9 @@ abstract class AndroidAutomator<AndroidServer, DartClient> {
   void pickMultipleImagesFromGallery(
     AndroidPickMultipleImagesFromGalleryRequest request,
   );
+
+  // permissions
+  void allowPermission();
 }
 
 abstract class IosAutomator<IOSServer, DartClient> {
@@ -446,6 +457,7 @@ abstract class IosAutomator<IOSServer, DartClient> {
   // notifications
   void closeHeadsUpNotification();
   void tapOnNotification(IOSTapOnNotificationRequest request);
+  void tapBackToPreviousAppButton(IOSTapBackToPreviousAppButtonRequest request);
 
   // permissions
   PermissionDialogVisibleResponse isPermissionDialogVisible(

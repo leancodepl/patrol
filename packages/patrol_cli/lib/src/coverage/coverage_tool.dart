@@ -7,8 +7,8 @@ import 'package:coverage/coverage.dart' as coverage;
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:glob/glob.dart';
-import 'package:package_config/package_config.dart';
 import 'package:patrol_cli/src/base/logger.dart';
+import 'package:patrol_cli/src/coverage/coverage_common.dart';
 import 'package:patrol_cli/src/coverage/device_to_host_port_transformer.dart';
 import 'package:patrol_cli/src/coverage/vm_connection_details.dart';
 import 'package:patrol_cli/src/devices.dart';
@@ -52,10 +52,20 @@ class CoverageTool {
     required Logger logger,
     required Set<Glob> ignoreGlobs,
     required FlutterCommand flutterCommand,
+    bool includeWorkspacePackages = false,
   }) async {
     final homeDirectory =
         _platform.environment['HOME'] ?? _platform.environment['USERPROFILE'];
     final hitMap = <String, coverage.HitMap>{};
+
+    // Resolved once per run; the package_config.json contents do not change
+    // mid-run and we'd otherwise re-walk + re-parse for every test isolate.
+    final packages = await getCoveragePackages(
+      rootDirectory: _rootDirectory,
+      packagesRegExps: packagesRegExps,
+      includeWorkspacePackages: includeWorkspacePackages,
+      logger: _logger,
+    );
 
     await _disposeScope.run((scope) async {
       final logsProcess =
@@ -99,10 +109,8 @@ class CoverageTool {
       vmConnectionDetailsStream
           .take(totalTestCount)
           .asyncMap(
-            (details) => _collectFromVM(
-              packagesRegExps: packagesRegExps,
-              connectionDetails: details,
-            ),
+            (details) =>
+                _collectFromVM(packages: packages, connectionDetails: details),
           )
           .listen((coverage) {
             hitMap.merge(coverage);
@@ -112,12 +120,13 @@ class CoverageTool {
         ..disposedBy(scope);
       await coverageCollectionCompleter.future;
 
-      logger.info('All coverage gathered, saving');
-      final report = hitMap.formatLcov(
-        await coverage.Resolver.create(packagePath: _rootDirectory.path),
+      await formatAndSaveLcovReport(
+        fs: _fs,
+        hitMap: hitMap,
+        packagePath: _rootDirectory.path,
         ignoreGlobs: ignoreGlobs,
+        logger: logger,
       );
-      await _saveReport(report);
     });
   }
 
@@ -146,7 +155,7 @@ class CoverageTool {
   }
 
   Future<Map<String, coverage.HitMap>> _collectFromVM({
-    required Set<RegExp> packagesRegExps,
+    required Set<String> packages,
     required VMConnectionDetails connectionDetails,
   }) async {
     final result = <String, coverage.HitMap>{};
@@ -181,7 +190,7 @@ class CoverageTool {
     result.merge(
       await _collectAndMarkTestCompleted(
         connectionDetails: connectionDetails,
-        packagesRegExps: packagesRegExps,
+        packages: packages,
         mainIsolateId: event.extensionData!.data['mainIsolateId'] as String,
       ),
     );
@@ -192,11 +201,9 @@ class CoverageTool {
 
   Future<Map<String, coverage.HitMap>> _collectAndMarkTestCompleted({
     required VMConnectionDetails connectionDetails,
-    required Set<RegExp> packagesRegExps,
+    required Set<String> packages,
     required String mainIsolateId,
   }) async {
-    final packages = await _getCoveragePackages(packagesRegExps);
-
     final data = await coverage.collect(
       connectionDetails.uri,
       false,
@@ -223,33 +230,6 @@ class CoverageTool {
     return coverage.HitMap.parseJson(
       data['coverage'] as List<Map<String, dynamic>>,
     );
-  }
-
-  Future<void> _saveReport(String report) async {
-    final coverageDirectory = _fs.directory('coverage');
-
-    if (!coverageDirectory.existsSync()) {
-      await coverageDirectory.create();
-    }
-
-    await coverageDirectory.childFile('patrol_lcov.info').writeAsString(report);
-  }
-
-  Future<Set<String>> _getCoveragePackages(Set<RegExp> packagesRegExps) async {
-    final packageConfig = await loadPackageConfig(
-      _rootDirectory
-          .childDirectory('.dart_tool')
-          .childFile('package_config.json'),
-    );
-
-    final packagesToInclude = {
-      for (final regExp in packagesRegExps)
-        ...packageConfig.packages.map((e) => e.name).where(regExp.hasMatch),
-    };
-
-    _logger.detail('Packages included in coverage: $packagesToInclude');
-
-    return packagesToInclude;
   }
 }
 

@@ -56,6 +56,13 @@ class AndroidAutomator extends NativeMobileAutomator
 
   late final AndroidAutomatorClient _client;
 
+  @override
+  ConfigureRequest buildConfigureRequest() => ConfigureRequest(
+    findTimeoutMillis: _config.findTimeout.inMilliseconds,
+    androidDontSuppressAccessibilityServices:
+        _config.dontSuppressAccessibilityServices,
+  );
+
   /// Opens a platform-specific app.
   ///
   /// On Android, opens the app specified by [androidAppId] (package name).
@@ -487,6 +494,12 @@ class AndroidAutomator extends NativeMobileAutomator
         ),
       ),
     );
+  }
+
+  /// Taps the standard Android system dialog "Allow" button.
+  @override
+  Future<void> allowPermission() async {
+    await wrapRequest('allowPermission', _client.allowPermission);
   }
 
   /// Returns a list of currently visible native UI controls, specified by

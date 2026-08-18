@@ -52,4 +52,8 @@ class PatrolAppServiceClient {
         Logger.i("PatrolAppServiceClient.runDartTest($name)")
         return client.runDartTest(Contracts.RunDartTestRequest(name))
     }
+
+    fun close() {
+        client.close()
+    }
 }

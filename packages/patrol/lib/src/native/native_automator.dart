@@ -211,6 +211,15 @@ class NativeAutomator {
   Future<void> closeHeadsUpNotification() =>
       _platform.action(ios: _platform.ios.closeHeadsUpNotification);
 
+  /// Taps on the iOS "back to previous app" breadcrumb button (iOS only).
+  ///
+  /// This button is visible in the status bar after opening another app and
+  /// has identifier `breadcrumb` with button trait.
+  Future<void> tapBackToPreviousAppButton({Duration? timeout}) =>
+      _platform.action(
+        ios: () => _platform.ios.tapBackToPreviousAppButton(timeout: timeout),
+      );
+
   /// Searches for the [index]-th visible notification and taps on it.
   ///
   /// If the notification is not visible immediately, this method waits for the
@@ -484,9 +493,9 @@ class NativeAutomator {
   /// slower gesture.
   ///
   /// The default values simulate a typical pull-to-refresh gesture:
-  /// * [from]: Center of the screen (0.5, 0.5)
-  /// * [to]: Bottom center of the screen (0.5, 0.9)
-  /// * [steps]: 50
+  /// * `from`: Center of the screen (0.5, 0.5)
+  /// * `to`: Bottom center of the screen (0.5, 0.9)
+  /// * `steps`: 50
   /// You can override these if scrollable content is not at the center of the
   /// screen or if the direction of the gesture is different.
   Future<void> pullToRefresh({

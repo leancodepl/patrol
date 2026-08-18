@@ -2,11 +2,13 @@
 // ignore_for_file: avoid_print
 
 import 'dart:async';
-import 'dart:io';
 
+import 'package:http_multi_server/http_multi_server.dart';
+import 'package:patrol/patrol.dart';
 import 'package:patrol/src/common.dart';
 import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:patrol/src/platform/contracts/patrol_app_service_server.dart';
+import 'package:patrol/src/platform/mobile/patrol_runtime_ports.dart';
 import 'package:patrol_log/patrol_log.dart';
 import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as shelf_io;
@@ -25,20 +27,18 @@ Future<void> initAppService() async {
   // No-op for IO.
 }
 
-/// Starts the gRPC server that runs the [PatrolAppService].
+/// @nodoc
+///
+/// Starts the HTTP server that runs the [PatrolAppService].
 Future<void> runAppService(PatrolAppService service) async {
   final pipeline = const shelf.Pipeline()
       .addMiddleware(shelf.logRequests())
       .addHandler(service.handle);
 
-  final server = await shelf_io.serve(
-    pipeline,
-    InternetAddress.anyIPv4,
-    service.port,
-    poweredByHeader: null,
-  );
-
+  final server = await HttpMultiServer.loopback(service.port);
   server.idleTimeout = _idleTimeout;
+
+  shelf_io.serveRequests(server, pipeline);
 
   final address = server.address;
 
@@ -49,18 +49,27 @@ Future<void> runAppService(PatrolAppService service) async {
 
 /// Implements a stateful HTTP service for querying and executing Dart tests.
 ///
+/// @nodoc
+///
 /// This is an internal class and you don't want to use it. It's public so that
 /// the generated code can access it.
 class PatrolAppService extends PatrolAppServiceServer {
   /// Creates a new [PatrolAppService].
-  PatrolAppService({required this.topLevelDartTestGroup})
-    : port = const int.fromEnvironment(
-        'PATROL_APP_SERVER_PORT',
-        defaultValue: 8082,
-      );
+  PatrolAppService({required this.topLevelDartTestGroup});
 
   /// Port the server will use to listen for incoming HTTP traffic.
-  final int port;
+  int get port => _resolveAppServerPort();
+
+  static int _resolveAppServerPort() {
+    final injectedPort = PatrolRuntimePorts.appServerPort();
+    if (injectedPort != null) {
+      return injectedPort;
+    }
+    return const int.fromEnvironment(
+      'PATROL_APP_SERVER_PORT',
+      defaultValue: 8082,
+    );
+  }
 
   /// The ambient test group that wraps all the other groups and tests in the
   /// bundled Dart test file.
@@ -114,7 +123,7 @@ class PatrolAppService extends PatrolAppServiceServer {
   }
 
   /// Returns when the native side requests execution of a Dart test. If the
-  /// native side requsted execution of [dartTest], returns true. Otherwise
+  /// native side requested execution of [dartTest], returns true. Otherwise
   /// returns false.
   ///
   /// It's used inside of [patrolTest] to halt execution of test body until

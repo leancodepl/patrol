@@ -216,8 +216,13 @@ class Contracts {
   }
 
   data class ConfigureRequest (
-    val findTimeoutMillis: Long
-  )
+    val findTimeoutMillis: Long,
+    val androidDontSuppressAccessibilityServices: Boolean? = null
+  ){
+    fun hasAndroidDontSuppressAccessibilityServices(): Boolean {
+      return androidDontSuppressAccessibilityServices != null
+    }
+  }
 
   data class OpenAppRequest (
     val appId: String
@@ -681,6 +686,14 @@ class Contracts {
     fun hasSelector(): Boolean {
       return selector != null
     }
+    fun hasTimeoutMillis(): Boolean {
+      return timeoutMillis != null
+    }
+  }
+
+  data class IOSTapBackToPreviousAppButtonRequest (
+    val timeoutMillis: Long? = null
+  ){
     fun hasTimeoutMillis(): Boolean {
       return timeoutMillis != null
     }

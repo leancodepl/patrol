@@ -66,17 +66,34 @@ class PlatformAutomatorConfig {
     /// Name of the application under test on iOS.
     String? iosAppName,
 
+    /// Whether Patrol should keep third-party `AccessibilityService`s running
+    /// during the test session.
+    ///
+    /// Android only. See
+    /// [AndroidAutomatorConfig.dontSuppressAccessibilityServices].
+    bool? androidDontSuppressAccessibilityServices,
+
     /// Called when a native action is performed.
     void Function(String)? logger,
+
+    /// Host of the native Patrol automation server.
+    String? host,
+
+    /// Port of the native Patrol automation server.
+    String? port,
   }) {
     return PlatformAutomatorConfig(
       androidConfig: AndroidAutomatorConfig(
         packageName: packageName,
         appName: androidAppName,
         keyboardBehavior: keyboardBehavior,
+        dontSuppressAccessibilityServices:
+            androidDontSuppressAccessibilityServices,
         connectionTimeout: connectionTimeout,
         findTimeout: findTimeout,
         logger: logger,
+        host: host,
+        port: port,
       ),
       iosConfig: IOSAutomatorConfig(
         iosInstalledApps: iosInstalledApps,
@@ -86,6 +103,8 @@ class PlatformAutomatorConfig {
         connectionTimeout: connectionTimeout,
         findTimeout: findTimeout,
         logger: logger,
+        host: host,
+        port: port,
       ),
       webConfig: WebAutomatorConfig(logger: logger),
     );
@@ -185,6 +204,10 @@ class PlatformAutomator {
   ///
   /// It waits for the view to become visible for [timeout] duration.
   /// If the native view is not found, an exception is thrown.
+  ///
+  /// [appId] is only used on iOS, where native queries must be scoped to a
+  /// single application. If not provided, defaults to the bundle id of the
+  /// app under test.
   Future<void> tap(
     CompoundSelector selector, {
     String? appId,
@@ -282,6 +305,10 @@ class MobileAutomator {
   ///
   /// Note: The [delayBetweenTaps] parameter is currently respected only
   /// for Android.
+  ///
+  /// [appId] is only used on iOS, where native queries must be scoped to a
+  /// single application. If not provided, defaults to the bundle id of the
+  /// app under test.
   Future<void> doubleTap(
     CompoundSelector selector, {
     Duration? timeout,
@@ -302,6 +329,10 @@ class MobileAutomator {
   /// Taps at a given [location].
   ///
   /// [location] must be in the inclusive 0-1 range.
+  ///
+  /// [appId] is only used on iOS, where native queries must be scoped to a
+  /// single application. If not provided, defaults to the bundle id of the
+  /// app under test.
   Future<void> tapAt(Offset location, {String? appId}) {
     return platform.action.mobile(
       android: () => platform.android.tapAt(location),
@@ -321,6 +352,10 @@ class MobileAutomator {
   ///
   /// See also:
   ///  * [enterTextByIndex], which is less flexible but also less verbose
+  ///
+  /// [appId] is only used on iOS, where native queries must be scoped to a
+  /// single application. If not provided, defaults to the bundle id of the
+  /// app under test.
   Future<void> enterText(
     CompoundSelector selector, {
     required String text,
@@ -361,6 +396,10 @@ class MobileAutomator {
   /// See also:
   ///  * [enterText], which allows for more precise specification of the text
   ///    field to enter text into
+  ///
+  /// [appId] is only used on iOS, where native queries must be scoped to a
+  /// single application. If not provided, defaults to the bundle id of the
+  /// app under test.
   Future<void> enterTextByIndex(
     String text, {
     required int index,
@@ -468,6 +507,14 @@ class MobileAutomator {
     return platform.action.mobile(
       android: () => platform.android.openUrl(url),
       ios: () => platform.ios.openUrl(url),
+    );
+  }
+
+  /// Sends the keyboard Enter/Return action to the currently focused input.
+  Future<void> sendKeyboardEnter() {
+    return platform.action.mobile(
+      android: platform.android.sendKeyboardEnter,
+      ios: platform.ios.sendKeyboardEnter,
     );
   }
 
@@ -657,6 +704,10 @@ class MobileAutomator {
   /// On Android, [steps] controls speed and smoothness. One unit of [steps] is
   /// equivalent to 5 ms. If you want to slow down the swipe time, increase
   /// [steps]. If [swipe] doesn't work, try increasing [steps].
+  ///
+  /// [appId] is only used on iOS, where native queries must be scoped to a
+  /// single application. If not provided, defaults to the bundle id of the
+  /// app under test.
   Future<void> swipe({
     required Offset from,
     required Offset to,
@@ -684,7 +735,9 @@ class MobileAutomator {
   ///
   /// [dy] determines the vertical offset of the swipe. It must be in the inclusive 0-1 range.
   ///
-  /// [appId] optionally specifies the application ID to target.
+  /// [appId] is only used on iOS, where native queries must be scoped to a
+  /// single application. If not provided, defaults to the bundle id of the
+  /// app under test.
   ///
   /// This is equivalent to:
   /// $.native.swipe(
@@ -717,9 +770,9 @@ class MobileAutomator {
   /// slower gesture.
   ///
   /// The default values simulate a typical pull-to-refresh gesture:
-  /// * [from]: Center of the screen (0.5, 0.5)
-  /// * [to]: Bottom center of the screen (0.5, 0.9)
-  /// * [steps]: 50
+  /// * `from`: Center of the screen (0.5, 0.5)
+  /// * `to`: Bottom center of the screen (0.5, 0.9)
+  /// * `steps`: 50
   /// You can override these if scrollable content is not at the center of the
   /// screen or if the direction of the gesture is different.
   Future<void> pullToRefresh({
@@ -735,6 +788,10 @@ class MobileAutomator {
   }
 
   /// Waits until the native view specified by [selector] becomes visible.
+  ///
+  /// [appId] is only used on iOS, where native queries must be scoped to a
+  /// single application. If not provided, defaults to the bundle id of the
+  /// app under test.
   Future<void> waitUntilVisible(
     CompoundSelector selector, {
     String? appId,

@@ -20,19 +20,26 @@ abstract class NativeMobileAutomator implements MobileAutomator {
         config.connectionTimeout > config.findTimeout,
         'find timeout is longer than connection timeout',
       ),
-      _config = config {
-    _client = MobileAutomatorClient(
-      http.Client(),
-      Uri.http('${_config.host}:${_config.port}'),
-      timeout: _config.connectionTimeout,
-    );
-    _config.logger('MobileAutomatorClient created, port: ${_config.port}');
-  }
+      _config = config;
 
   final _patrolLog = PatrolLogWriter();
   final MobileAutomatorConfig _config;
 
-  late final MobileAutomatorClient _client;
+  MobileAutomatorClient? _clientInstance;
+
+  // Created lazily so the port is read after [PatrolRuntimePorts.ensureLoaded].
+  MobileAutomatorClient get _client {
+    final existing = _clientInstance;
+    if (existing != null) {
+      return existing;
+    }
+    _config.logger('MobileAutomatorClient created, port: ${_config.port}');
+    return _clientInstance = MobileAutomatorClient(
+      http.Client(),
+      Uri.http('${_config.host}:${_config.port}'),
+      timeout: _config.connectionTimeout,
+    );
+  }
 
   @protected
   /// Wraps a request with logging and error handling for native automator calls.
@@ -85,6 +92,14 @@ abstract class NativeMobileAutomator implements MobileAutomator {
     }
   }
 
+  /// Builds the request sent to the native automator's `configure` endpoint.
+  ///
+  /// Platform-specific automators override this to send extra, platform-only
+  /// options (e.g. Android accessibility flags).
+  @protected
+  ConfigureRequest buildConfigureRequest() =>
+      ConfigureRequest(findTimeoutMillis: _config.findTimeout.inMilliseconds);
+
   /// Configures the native automator.
   ///
   /// Must be called before using any native features.
@@ -97,11 +112,7 @@ abstract class NativeMobileAutomator implements MobileAutomator {
       try {
         await wrapRequest(
           'configure',
-          () => _client.configure(
-            ConfigureRequest(
-              findTimeoutMillis: _config.findTimeout.inMilliseconds,
-            ),
-          ),
+          () => _client.configure(buildConfigureRequest()),
           enablePatrolLog: false,
         );
         exception = null;
@@ -187,7 +198,7 @@ abstract class NativeMobileAutomator implements MobileAutomator {
   Future<void> openQuickSettings() async {
     await wrapRequest(
       'openQuickSettings',
-      () => _client.openQuickSettings(OpenQuickSettingsRequest()),
+      () => _client.openQuickSettings(const OpenQuickSettingsRequest()),
     );
   }
 
@@ -200,6 +211,12 @@ abstract class NativeMobileAutomator implements MobileAutomator {
     );
   }
 
+  /// Sends the keyboard Enter/Return action to the currently focused input.
+  @override
+  Future<void> sendKeyboardEnter() async {
+    await wrapRequest('sendKeyboardEnter', _client.sendKeyboardEnter);
+  }
+
   /// Returns the first, topmost visible notification.
   ///
   /// Notification shade has to be opened with [openNotifications].
@@ -207,7 +224,7 @@ abstract class NativeMobileAutomator implements MobileAutomator {
   Future<Notification> getFirstNotification() async {
     final response = await wrapRequest(
       'getFirstNotification',
-      () => _client.getNotifications(GetNotificationsRequest()),
+      () => _client.getNotifications(const GetNotificationsRequest()),
     );
 
     return response.notifications.first;
@@ -220,7 +237,7 @@ abstract class NativeMobileAutomator implements MobileAutomator {
   Future<List<Notification>> getNotifications() async {
     final response = await wrapRequest(
       'getNotifications',
-      () => _client.getNotifications(GetNotificationsRequest()),
+      () => _client.getNotifications(const GetNotificationsRequest()),
     );
 
     return response.notifications;
@@ -362,7 +379,9 @@ abstract class NativeMobileAutomator implements MobileAutomator {
     await wrapRequest(
       'grantPermissionWhenInUse',
       () => _client.handlePermissionDialog(
-        HandlePermissionRequest(code: HandlePermissionRequestCode.whileUsing),
+        const HandlePermissionRequest(
+          code: HandlePermissionRequestCode.whileUsing,
+        ),
       ),
     );
   }
@@ -392,7 +411,9 @@ abstract class NativeMobileAutomator implements MobileAutomator {
     await wrapRequest(
       'grantPermissionOnlyThisTime',
       () => _client.handlePermissionDialog(
-        HandlePermissionRequest(code: HandlePermissionRequestCode.onlyThisTime),
+        const HandlePermissionRequest(
+          code: HandlePermissionRequestCode.onlyThisTime,
+        ),
       ),
     );
   }
@@ -415,7 +436,7 @@ abstract class NativeMobileAutomator implements MobileAutomator {
     await wrapRequest(
       'denyPermission',
       () => _client.handlePermissionDialog(
-        HandlePermissionRequest(code: HandlePermissionRequestCode.denied),
+        const HandlePermissionRequest(code: HandlePermissionRequestCode.denied),
       ),
     );
   }
@@ -429,7 +450,7 @@ abstract class NativeMobileAutomator implements MobileAutomator {
     await wrapRequest(
       'selectCoarseLocation',
       () => _client.setLocationAccuracy(
-        SetLocationAccuracyRequest(
+        const SetLocationAccuracyRequest(
           locationAccuracy: SetLocationAccuracyRequestLocationAccuracy.coarse,
         ),
       ),
@@ -445,7 +466,7 @@ abstract class NativeMobileAutomator implements MobileAutomator {
     await wrapRequest(
       'selectFineLocation',
       () => _client.setLocationAccuracy(
-        SetLocationAccuracyRequest(
+        const SetLocationAccuracyRequest(
           locationAccuracy: SetLocationAccuracyRequestLocationAccuracy.fine,
         ),
       ),

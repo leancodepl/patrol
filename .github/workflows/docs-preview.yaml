@@ -38,13 +38,16 @@ jobs:
         run: npm install --global vercel@latest
 
       - name: Pull Vercel Environment Information
+        working-directory: .
         run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Build Project Artifacts
+        working-directory: .
         run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy Project Artifacts to Vercel
         id: deploy
+        working-directory: .
         run: |
           # Deploy and get the deployment URL
           deployment_url=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})

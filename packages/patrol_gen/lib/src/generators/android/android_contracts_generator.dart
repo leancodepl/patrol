@@ -37,17 +37,19 @@ package ${config.package};
   }
 
   String _createMessage(Message message) {
-    final fields = message.fields.map((e) {
-      final optional = e.isOptional ? '? = null' : '';
-      return switch (e.type) {
-        MapFieldType(keyType: final keyType, valueType: final valueType) =>
-          '    val ${e.name}: Map<${_transformType(keyType)}, ${_transformType(valueType)}>$optional',
-        ListFieldType(type: final type) =>
-          '    val ${e.name}: List<${_transformType(type)}>$optional',
-        OrdinaryFieldType(type: final type) =>
-          '    val ${e.name}: ${_transformType(type)}$optional',
-      };
-    }).join(',\n');
+    final fields = message.fields
+        .map((e) {
+          final optional = e.isOptional ? '? = null' : '';
+          return switch (e.type) {
+            MapFieldType(keyType: final keyType, valueType: final valueType) =>
+              '    val ${e.name}: Map<${_transformType(keyType)}, ${_transformType(valueType)}>$optional',
+            ListFieldType(type: final type) =>
+              '    val ${e.name}: List<${_transformType(type)}>$optional',
+            OrdinaryFieldType(type: final type) =>
+              '    val ${e.name}: ${_transformType(type)}$optional',
+          };
+        })
+        .join(',\n');
 
     final dataKeyword = fields.isNotEmpty ? 'data ' : '';
 
@@ -55,7 +57,8 @@ package ${config.package};
 
     var optionalFieldUtils = optionalFields.map(_optionalFieldUtil).join('\n');
     if (optionalFields.isNotEmpty) {
-      optionalFieldUtils = '''
+      optionalFieldUtils =
+          '''
 {
 $optionalFieldUtils
   }''';

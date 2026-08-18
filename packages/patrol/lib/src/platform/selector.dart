@@ -9,13 +9,13 @@ import 'package:patrol/src/platform/web/web_selector.dart' as web_selector;
 /// - Use [MobileSelector] when you only need Android and iOS selectors.
 abstract interface class CompoundSelector {
   /// Returns the Android-specific selector.
-  contracts.AndroidSelector get android;
+  AndroidSelector get android;
 
   /// Returns the iOS-specific selector.
-  contracts.IOSSelector get ios;
+  IOSSelector get ios;
 
   /// Returns the Web-specific selector.
-  web_selector.WebSelector get web;
+  WebSelector get web;
 }
 
 /// A cross-platform selector for finding UI elements.
@@ -73,7 +73,7 @@ class Selector implements CompoundSelector {
   String? pkg;
 
   @override
-  contracts.AndroidSelector get android => contracts.AndroidSelector(
+  AndroidSelector get android => AndroidSelector(
     text: text,
     textStartsWith: textStartsWith,
     textContains: textContains,
@@ -89,7 +89,7 @@ class Selector implements CompoundSelector {
   );
 
   @override
-  contracts.IOSSelector get ios => contracts.IOSSelector(
+  IOSSelector get ios => IOSSelector(
     text: text,
     textStartsWith: textStartsWith,
     textContains: textContains,
@@ -97,8 +97,7 @@ class Selector implements CompoundSelector {
   );
 
   @override
-  web_selector.WebSelector get web =>
-      web_selector.WebSelector(text: text, cssOrXpath: className);
+  WebSelector get web => WebSelector(text: text, cssOrXpath: className);
 }
 
 /// A selector that allows platform-specific selectors to be specified separately.
@@ -154,7 +153,7 @@ class MobileSelector implements CompoundSelector {
       _android ?? (throw UnsupportedError('Android selector not provided'));
 
   @override
-  web_selector.WebSelector get web =>
+  WebSelector get web =>
       throw UnsupportedError('Web selector is not supported by MobileSelector');
 }
 
@@ -162,7 +161,7 @@ class MobileSelector implements CompoundSelector {
 class AndroidSelector extends contracts.AndroidSelector
     implements CompoundSelector {
   /// Creates a new [AndroidSelector].
-  AndroidSelector({
+  const AndroidSelector({
     super.className,
     super.isCheckable,
     super.isChecked,
@@ -184,21 +183,21 @@ class AndroidSelector extends contracts.AndroidSelector
     super.instance,
   });
   @override
-  contracts.AndroidSelector get android => this;
+  AndroidSelector get android => this;
 
   @override
-  contracts.IOSSelector get ios =>
+  IOSSelector get ios =>
       throw UnsupportedError('IOS selector is not supported');
 
   @override
-  web_selector.WebSelector get web =>
+  WebSelector get web =>
       throw UnsupportedError('Web selector is not supported');
 }
 
 /// An iOS-specific selector for finding UI elements.
 class IOSSelector extends contracts.IOSSelector implements CompoundSelector {
   /// Creates a new [IOSSelector].
-  IOSSelector({
+  const IOSSelector({
     super.value,
     super.instance,
     super.elementType,
@@ -220,14 +219,14 @@ class IOSSelector extends contracts.IOSSelector implements CompoundSelector {
     super.placeholderValueContains,
   });
   @override
-  contracts.AndroidSelector get android =>
+  AndroidSelector get android =>
       throw UnsupportedError('Android selector is not supported');
 
   @override
-  contracts.IOSSelector get ios => this;
+  IOSSelector get ios => this;
 
   @override
-  web_selector.WebSelector get web =>
+  WebSelector get web =>
       throw UnsupportedError('Web selector is not supported');
 }
 
@@ -245,13 +244,13 @@ class WebSelector extends web_selector.WebSelector implements CompoundSelector {
     super.cssOrXpath,
   });
   @override
-  contracts.AndroidSelector get android =>
+  AndroidSelector get android =>
       throw UnsupportedError('Android selector is not supported');
 
   @override
-  contracts.IOSSelector get ios =>
+  IOSSelector get ios =>
       throw UnsupportedError('IOS selector is not supported');
 
   @override
-  web_selector.WebSelector get web => this;
+  WebSelector get web => this;
 }

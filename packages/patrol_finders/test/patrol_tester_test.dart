@@ -2,6 +2,7 @@
 // ignore_for_file: avoid_single_child_in_multi_child_widgets
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol_finders/src/custom_finders/custom_finders.dart';
@@ -212,6 +213,137 @@ void main() {
 
         await tester.enterText(find.byType(TextField), 'some input');
         expect(find.text('content: some input'), findsOneWidget);
+      });
+
+      // The unfocus and testTextInput assertions in the three tests below don't
+      // hold on web, where enterText() skips that path.
+      patrolWidgetTest('unfocuses already focused field after entering text', (
+        tester,
+      ) async {
+        final controller = TextEditingController(text: 'initial input');
+        final focusNode = FocusNode();
+        final valuesOnUnfocus = <String>[];
+        addTearDown(controller.dispose);
+        addTearDown(focusNode.dispose);
+
+        focusNode.addListener(() {
+          if (!focusNode.hasFocus) {
+            valuesOnUnfocus.add(controller.text);
+          }
+        });
+
+        await tester.pumpWidgetAndSettle(
+          MaterialApp(
+            home: Scaffold(
+              body: TextField(
+                autofocus: true,
+                controller: controller,
+                focusNode: focusNode,
+              ),
+            ),
+          ),
+        );
+        expect(focusNode.hasFocus, true);
+
+        await tester.enterText(find.byType(TextField), 'updated input');
+
+        expect(controller.text, 'updated input');
+        expect(focusNode.hasFocus, false);
+        expect(valuesOnUnfocus, isNotEmpty);
+        expect(valuesOnUnfocus.first, 'updated input');
+        expect(valuesOnUnfocus, isNot(contains('initial input')));
+      }, skip: kIsWeb);
+
+      patrolWidgetTest('runs on-unfocus validation after entering text', (
+        tester,
+      ) async {
+        final controller = TextEditingController(text: 'initial input');
+        final focusNode = FocusNode();
+        final validatedValues = <String?>[];
+        addTearDown(controller.dispose);
+        addTearDown(focusNode.dispose);
+
+        await tester.pumpWidgetAndSettle(
+          MaterialApp(
+            home: Scaffold(
+              body: TextFormField(
+                autofocus: true,
+                autovalidateMode: AutovalidateMode.onUnfocus,
+                controller: controller,
+                focusNode: focusNode,
+                validator: (value) {
+                  validatedValues.add(value);
+                  return null;
+                },
+              ),
+            ),
+          ),
+        );
+        validatedValues.clear();
+        expect(focusNode.hasFocus, true);
+
+        await tester.enterText(find.byType(TextFormField), 'updated input');
+
+        expect(controller.text, 'updated input');
+        expect(validatedValues, isNotEmpty);
+        expect(validatedValues.first, 'updated input');
+        expect(validatedValues, isNot(contains('initial input')));
+      }, skip: kIsWeb);
+
+      patrolWidgetTest(
+        'keeps already focused field focused when hideKeyboard is false',
+        skip: kIsWeb,
+        (tester) async {
+          final controller = TextEditingController(text: 'initial input');
+          final focusNode = FocusNode();
+          addTearDown(controller.dispose);
+          addTearDown(focusNode.dispose);
+
+          await tester.pumpWidgetAndSettle(
+            MaterialApp(
+              home: Scaffold(
+                body: TextField(
+                  autofocus: true,
+                  controller: controller,
+                  focusNode: focusNode,
+                ),
+              ),
+            ),
+          );
+          expect(focusNode.hasFocus, true);
+
+          await tester.enterText(
+            find.byType(TextField),
+            'updated input',
+            hideKeyboard: false,
+          );
+
+          expect(controller.text, 'updated input');
+          expect(focusNode.hasFocus, true);
+          expect(
+            tester.tester.testTextInput.editingState?['text'],
+            'updated input',
+          );
+        },
+      );
+
+      patrolWidgetTest('enters text in the same field multiple times', (
+        tester,
+      ) async {
+        final controller = TextEditingController();
+        addTearDown(controller.dispose);
+
+        await tester.pumpWidgetAndSettle(
+          MaterialApp(
+            home: Scaffold(body: TextField(controller: controller)),
+          ),
+        );
+
+        await tester.enterText(find.byType(TextField), 'first input');
+        expect(controller.text, 'first input');
+
+        await tester.enterText(find.byType(TextField), 'second input');
+        expect(controller.text, 'second input');
       });
 
       patrolWidgetTest('enters text in the first widget by default and pumps', (

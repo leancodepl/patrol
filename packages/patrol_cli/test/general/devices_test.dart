@@ -146,4 +146,31 @@ void main() {
       expect(devicesToUse, [iosDevice]);
     });
   });
+
+  group('Device.bundledForTest()', () {
+    test('returns a synthetic web device for chrome', () {
+      final device = Device.bundledForTest('chrome');
+
+      expect(
+        device,
+        isA<Device>()
+            .having((d) => d.name, 'name', 'Chrome')
+            .having((d) => d.id, 'id', 'chrome')
+            .having(
+              (d) => d.targetPlatform,
+              'targetPlatform',
+              TargetPlatform.web,
+            )
+            .having((d) => d.real, 'real', true),
+      );
+    });
+
+    test('is case-insensitive and trims whitespace', () {
+      expect(Device.bundledForTest(' Chrome '), isNotNull);
+    });
+
+    test('returns null for a device that is not bundled', () {
+      expect(Device.bundledForTest('emulator-5554'), isNull);
+    });
+  });
 }

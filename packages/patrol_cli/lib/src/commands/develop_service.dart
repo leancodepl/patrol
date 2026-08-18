@@ -10,6 +10,7 @@ import 'package:patrol_cli/src/commands/develop_options.dart';
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
+import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
@@ -163,6 +164,9 @@ class DevelopService {
 
     final packageName = options.packageName ?? config.android.packageName;
     final bundleId = options.bundleId ?? config.ios.bundleId;
+    final androidAppName = options.appName ?? config.android.appName;
+    final iosAppName = options.appName ?? config.ios.appName;
+    final macosAppName = options.appName ?? config.macos.appName;
 
     String? iOSInstalledAppsEnvVariable;
     if (device.targetPlatform == TargetPlatform.iOS) {
@@ -178,8 +182,9 @@ class DevelopService {
       'PATROL_APP_PACKAGE_NAME': packageName,
       'PATROL_APP_BUNDLE_ID': bundleId,
       'PATROL_MACOS_APP_BUNDLE_ID': config.macos.bundleId,
-      'PATROL_ANDROID_APP_NAME': config.android.appName,
-      'PATROL_IOS_APP_NAME': config.ios.appName,
+      'PATROL_ANDROID_APP_NAME': androidAppName,
+      'PATROL_IOS_APP_NAME': iosAppName,
+      'PATROL_MACOS_APP_NAME': macosAppName,
       'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
       'PATROL_TEST_LABEL_ENABLED': options.displayLabel.toString(),
       'PATROL_TEST_DIRECTORY': config.testDirectory,
@@ -214,10 +219,17 @@ class DevelopService {
       _dartDefinesReader,
     );
 
+    final flavor = switch (device.targetPlatform) {
+      TargetPlatform.android => androidFlavor,
+      TargetPlatform.iOS => iosFlavor,
+      TargetPlatform.macOS => iosFlavor,
+      _ => null,
+    };
+
     final flutterOpts = FlutterAppOptions(
       command: options.flutterCommand,
       target: entrypoint.path,
-      flavor: androidFlavor,
+      flavor: flavor,
       buildMode: options.buildMode,
       dartDefines: mergedDartDefines,
       dartDefineFromFilePaths: options.dartDefineFromFilePaths,
@@ -270,6 +282,7 @@ class DevelopService {
         showFlutterLogs: false,
         hideTestSteps: options.hideTestSteps,
         clearTestSteps: options.clearTestSteps,
+        videoConfig: options.videoConfig,
       );
     } finally {
       for (final sub in signalSubscriptions) {
@@ -355,6 +368,7 @@ class DevelopService {
     required bool showFlutterLogs,
     required bool hideTestSteps,
     required bool clearTestSteps,
+    VideoRecordingConfig? videoConfig,
   }) async {
     Future<void> Function() action;
     Future<void> Function()? finalizer;
@@ -372,6 +386,7 @@ class DevelopService {
           flavor: flutterOpts.flavor,
           clearTestSteps: clearTestSteps,
           onLogEntry: onLogEntry,
+          videoConfig: videoConfig,
         );
         final package = android.packageName;
         if (package != null && uninstall) {
@@ -391,6 +406,7 @@ class DevelopService {
           hideTestSteps: hideTestSteps,
           clearTestSteps: clearTestSteps,
           onLogEntry: onLogEntry,
+          videoConfig: videoConfig,
         );
         final bundleId = iosOpts.bundleId;
         if (bundleId != null && uninstall) {
@@ -415,6 +431,28 @@ class DevelopService {
     try {
       final future = action();
 
+      // If the backend settles before attach returns, the app shut down early.
+      // Report it now instead of after attach (which blocks for the whole
+      // session), so callers waiting on [onTestsCompleted] don't hang.
+      var testsReported = false;
+      void reportTestsCompleted(TestCompletionResult result) {
+        if (testsReported) {
+          return;
+        }
+        testsReported = true;
+        onTestsCompleted?.call(result);
+      }
+
+      unawaited(
+        future.then(
+          (_) =>
+              reportTestsCompleted(const TestCompletionResult(success: true)),
+          onError: (Object err, StackTrace st) => reportTestsCompleted(
+            TestCompletionResult(success: false, error: err),
+          ),
+        ),
+      );
+
       if (device.targetPlatform != TargetPlatform.web) {
         await _flutterTool.attachForHotRestart(
           flutterCommand: flutterOpts.command,
@@ -423,6 +461,7 @@ class DevelopService {
           appId: appId,
           dartDefines: flutterOpts.dartDefines,
           openDevtools: openDevtools,
+          flavor: flutterOpts.flavor,
           attachUsingUrl: device.targetPlatform == TargetPlatform.macOS,
           onQuit: onQuitCleanup,
         );
@@ -430,11 +469,9 @@ class DevelopService {
 
       try {
         await future;
-        onTestsCompleted?.call(const TestCompletionResult(success: true));
+        reportTestsCompleted(const TestCompletionResult(success: true));
       } catch (err) {
-        onTestsCompleted?.call(
-          TestCompletionResult(success: false, error: err),
-        );
+        reportTestsCompleted(TestCompletionResult(success: false, error: err));
         rethrow;
       }
     } catch (err, st) {
@@ -469,10 +506,13 @@ class DevelopService {
     }
 
     subscriptions.add(ProcessSignal.sigint.watch().listen(cleanup));
-    try {
+    // ProcessSignal.sigterm is not listenable on Windows and the failure
+    // surfaces as an unhandled async SignalException (not caught by a
+    // surrounding try/catch). Guard with Platform.isWindows to match the
+    // fix in patrol_mcp/_ExitSignal. Graceful cleanup on Windows still
+    // runs via the SIGINT path above and via stdio close.
+    if (!Platform.isWindows) {
       subscriptions.add(ProcessSignal.sigterm.watch().listen(cleanup));
-    } catch (_) {
-      // Some platforms may not support sigterm.
     }
 
     return subscriptions;

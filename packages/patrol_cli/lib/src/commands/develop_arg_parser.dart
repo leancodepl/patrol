@@ -22,8 +22,10 @@ void configureDevelopArgParser(PatrolCommand command) {
     ..usesUninstallOption()
     ..usesBuildNameOption()
     ..usesBuildNumberOption()
+    ..usesAppNameOption()
     ..usesAndroidOptions()
-    ..usesIOSOptions();
+    ..usesIOSOptions()
+    ..usesVideoRecordingOptions();
 
   command.argParser.addFlag(
     'open-devtools',

@@ -39,19 +39,26 @@ class IOSAutomator extends NativeMobileAutomator
     if (_config.bundleId.isEmpty && io.Platform.isIOS) {
       _config.logger("bundleId is not set. It's recommended to set it.");
     }
-
-    _client = IosAutomatorClient(
-      http.Client(),
-      Uri.http('${_config.host}:${_config.port}'),
-      timeout: _config.connectionTimeout,
-    );
-    _config.logger('NativeAutomatorClient created, port: ${_config.port}');
   }
 
   final _patrolLog = PatrolLogWriter();
   final IOSAutomatorConfig _config;
 
-  late final IosAutomatorClient _client;
+  IosAutomatorClient? _clientInstance;
+
+  // Created lazily so the port is read after [PatrolRuntimePorts.ensureLoaded].
+  IosAutomatorClient get _client {
+    final existing = _clientInstance;
+    if (existing != null) {
+      return existing;
+    }
+    _config.logger('IosAutomatorClient created, port: ${_config.port}');
+    return _clientInstance = IosAutomatorClient(
+      http.Client(),
+      Uri.http('${_config.host}:${_config.port}'),
+      timeout: _config.connectionTimeout,
+    );
+  }
 
   /// Returns the platform-dependent unique identifier of the app under test.
   @override
@@ -131,6 +138,23 @@ class IOSAutomator extends NativeMobileAutomator
     await wrapRequest(
       'closeHeadsUpNotification',
       _client.closeHeadsUpNotification,
+    );
+  }
+
+  /// Taps on the iOS "back to previous app" breadcrumb button.
+  ///
+  /// This button is visible in the status bar after opening another app and
+  /// has identifier `breadcrumb` with button trait.
+  ///
+  @override
+  Future<void> tapBackToPreviousAppButton({Duration? timeout}) async {
+    await wrapRequest(
+      'tapBackToPreviousAppButton',
+      () => _client.tapBackToPreviousAppButton(
+        IOSTapBackToPreviousAppButtonRequest(
+          timeoutMillis: timeout?.inMilliseconds,
+        ),
+      ),
     );
   }
 

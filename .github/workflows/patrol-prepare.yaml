@@ -215,7 +215,10 @@ jobs:
 
       - name: flutter pub publish --dry-run
         if: success() || failure()
-        run: flutter pub publish --dry-run
+        run: |
+          rm -f pubspec_overrides.yaml
+          flutter pub get
+          flutter pub publish --dry-run
 
       - name: flutter pub get (example app)
         if: success() || failure()
@@ -229,3 +232,21 @@ jobs:
           git add .
           ./gen_from_schema
           git diff --exit-code || (echo "Files are not regenerated from schema. Please run ./gen_from_schema locally and push changes" && exit 1)
+
+  pana-score:
+    name: pana score
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      statuses: write
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Score with pana
+        continue-on-error: true
+        uses: leancodepl/mobile-tools/.github/actions/pana-score@e9f138c252f8e2254c88273367958fcc6bb39cad # pana-score-v1.3
+        with:
+          path: packages/patrol

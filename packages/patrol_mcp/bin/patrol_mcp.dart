@@ -5,12 +5,17 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:logging/logging.dart' as logging;
 import 'package:mcp_dart/mcp_dart.dart';
+import 'package:path/path.dart' as p;
+import 'package:patrol_cli/patrol_cli.dart' show FlutterCommand;
+import 'package:patrol_mcp/src/device_lister.dart';
+import 'package:patrol_mcp/src/device_selection.dart';
+import 'package:patrol_mcp/src/flutter_command_resolver.dart';
 import 'package:patrol_mcp/src/native_tree_service.dart';
 import 'package:patrol_mcp/src/patrol_session.dart';
 import 'package:patrol_mcp/src/screenshot_service.dart';
 
 /// Version of patrol_mcp. Must be kept in sync with pubspec.yaml.
-const version = '0.1.3';
+const version = '0.2.0';
 
 const double _defaultTimeoutMinutes = 5;
 
@@ -52,11 +57,37 @@ Duration _parseTimeout(num? timeoutMinutes) {
 class _PatrolRunArgs {
   _PatrolRunArgs.fromJson(Map<String, dynamic> json)
     : testFile = json['testFile'] as String,
-      timeout = _parseTimeout(json['timeoutMinutes'] as num?);
+      timeout = _parseTimeout(json['timeoutMinutes'] as num?),
+      device = (json['device'] as String?)?.trim().nullIfEmpty;
 
   final String testFile;
   final Duration timeout;
+  final String? device;
 }
+
+extension on String {
+  String? get nullIfEmpty => isEmpty ? null : this;
+}
+
+/// Output schema for `run` and `status` -- a serialized [PatrolStatus].
+/// Keys mirror `PatrolStatus.toMap`.
+const _sessionStatusSchema = JsonObject(
+  properties: {
+    'isDevelopRunning': JsonBoolean(),
+    'testState': JsonString(
+      enumValues: ['idle', 'running', 'finishedPassed', 'finishedFailed'],
+    ),
+    'currentTestFile': JsonString(),
+    'warning': JsonString(),
+    'deviceSelectionNote': JsonString(),
+    'deviceName': JsonString(),
+    'deviceId': JsonString(),
+    'devicePlatform': JsonString(),
+    'output': JsonString(),
+    'summary': JsonString(),
+  },
+  required: ['isDevelopRunning', 'testState', 'output', 'summary'],
+);
 
 Future<int> main(List<String> args) async {
   final argParser = _buildParser();
@@ -76,8 +107,16 @@ Future<int> main(List<String> args) async {
       return 0;
     }
 
-    final projectRoot =
-        Platform.environment['PROJECT_ROOT'] ?? Directory.current.path;
+    // Canonicalize to an absolute path before use: PROJECT_ROOT may be relative
+    // (e.g. "." or "./app"), and once we change the working directory below a
+    // relative value would resolve against the new directory (double-nesting).
+    final projectRoot = p.canonicalize(
+      Platform.environment['PROJECT_ROOT'] ?? Directory.current.path,
+    );
+    // Run from the project root so patrol_cli resolves the pubspec, test
+    // target, and build outputs there even when the server was launched from a
+    // different directory and pointed at the project via PROJECT_ROOT.
+    Directory.current = projectRoot;
     final flags = Platform.environment['PATROL_FLAGS'] ?? '';
     final showTerminal =
         Platform.environment['SHOW_TERMINAL']?.toLowerCase() == 'true';
@@ -108,6 +147,7 @@ Future<int> main(List<String> args) async {
                   '- run waits for test completion.\n'
                   '- If no session is running, run starts a new session.\n'
                   '- If a session is already running, run triggers a restart for the requested test.\n'
+                  '- run auto-selects a device; to target a specific one, call devices and pass its id as run\'s "device".\n'
                   '- status is optional and mainly useful for debugging session state and recent output.\n'
                   '- native-tree is intended for native interactions and cross-app/native context inspection.',
             ),
@@ -128,20 +168,96 @@ Future<int> main(List<String> args) async {
                 'timeoutMinutes': JsonNumber(
                   description: 'Optional timeout in minutes (default: 5)',
                 ),
+                'device': JsonString(
+                  description:
+                      'Optional device id or name to run on (from the '
+                      '`devices` tool). Omit to auto-select (Android device '
+                      '> Android emulator > iOS device > iOS simulator). A '
+                      '`--device` in PATROL_FLAGS takes precedence.',
+                ),
               },
               required: ['testFile'],
             ),
+            outputSchema: _sessionStatusSchema,
             annotations: const ToolAnnotations(title: 'Run Patrol Tests'),
             callback: (args, extra) async {
+              final testFile = args['testFile'];
+              if (testFile is! String || testFile.trim().isEmpty) {
+                return const CallToolResult(
+                  content: [
+                    TextContent(
+                      text:
+                          'The "testFile" argument is required, e.g. '
+                          '{"testFile":"integration_test/app_test.dart"}.',
+                    ),
+                  ],
+                  isError: true,
+                );
+              }
+
               final runArgs = _PatrolRunArgs.fromJson(args);
 
-              final result = await patrolSession.startAndWait(
-                runArgs.testFile,
-                timeout: runArgs.timeout,
-              );
-              return CallToolResult(
-                content: [TextContent(text: jsonEncode(result.toMap()))],
-              );
+              // If the client cancels the run (MCP notifications/cancelled),
+              // tear the develop session down so it isn't left orphaned.
+              final abortSub = extra.signal.onAbort.listen((_) {
+                unawaited(patrolSession.dispose());
+              });
+              try {
+                final result = await patrolSession.startAndWait(
+                  runArgs.testFile,
+                  timeout: runArgs.timeout,
+                  device: runArgs.device,
+                );
+                final status = result.toMap();
+                return CallToolResult(
+                  content: [TextContent(text: jsonEncode(status))],
+                  structuredContent: status,
+                );
+              } finally {
+                await abortSub.cancel();
+              }
+            },
+          )
+          ..registerTool(
+            'devices',
+            description:
+                'List attached devices patrol can run on (Android, iOS). Use '
+                'to resolve a device name/id to pass as `device` to run.',
+            annotations: const ToolAnnotations(title: 'List Devices'),
+            callback: (args, extra) async {
+              // Resolve Flutter the same way `run` does (FVM autodetect,
+              // `PATROL_FLUTTER_COMMAND` escape hatch) so device enumeration
+              // works in FVM projects without a global `flutter` on PATH.
+              final flutterCommand = FlutterCommandResolver()
+                  .resolve(projectRoot: projectRoot)
+                  .command;
+              try {
+                final attached = await listAttachedDevices(
+                  flutterCommand:
+                      flutterCommand ?? const FlutterCommand('flutter'),
+                );
+                final devices = [
+                  for (final d in supportedDevices(attached))
+                    {
+                      'id': d.id,
+                      'name': d.name,
+                      'platform': d.targetPlatform.name,
+                      'isEmulator': !d.real,
+                    },
+                ];
+                final payload = {'devices': devices};
+                return CallToolResult(
+                  content: [TextContent(text: jsonEncode(payload))],
+                  structuredContent: payload,
+                );
+              } catch (e) {
+                return CallToolResult(
+                  content: [
+                    TextContent(text: 'Failed to list attached devices: $e'),
+                  ],
+                  isError: true,
+                );
+              }
             },
           )
           ..registerTool(
@@ -149,6 +265,18 @@ Future<int> main(List<String> args) async {
             description: 'Quit the active patrol session gracefully',
             annotations: const ToolAnnotations(title: 'Quit Patrol'),
             callback: (args, extra) {
+              if (!patrolSession.getStatus().isDevelopRunning) {
+                return const CallToolResult(
+                  content: [
+                    TextContent(
+                      text:
+                          'No active patrol session to quit. '
+                          'Start one with the run tool first.',
+                    ),
+                  ],
+                  isError: true,
+                );
+              }
               final result = patrolSession.sendCommand(PatrolCommand.quit);
               return CallToolResult(content: [TextContent(text: result)]);
             },
@@ -157,15 +285,17 @@ Future<int> main(List<String> args) async {
             'status',
             description:
                 'Get the current status of the patrol session and recent output',
+            outputSchema: _sessionStatusSchema,
             annotations: const ToolAnnotations(
               title: 'Get Status',
               readOnlyHint: true,
               idempotentHint: true,
             ),
             callback: (args, extra) {
-              final status = patrolSession.getStatus();
+              final status = patrolSession.getStatus().toMap();
               return CallToolResult(
-                content: [TextContent(text: jsonEncode(status.toMap()))],
+                content: [TextContent(text: jsonEncode(status))],
+                structuredContent: status,
               );
             },
           )
@@ -201,7 +331,7 @@ Future<int> main(List<String> args) async {
             },
           );
 
-    return await _runStdio(server);
+    return await _runStdio(server, patrolSession);
   } on FormatException catch (e) {
     stderr
       ..writeln(e.message)
@@ -216,9 +346,19 @@ Future<int> main(List<String> args) async {
   }
 }
 
-Future<int> _runStdio(McpServer server) async {
+Future<int> _runStdio(McpServer server, PatrolSession patrolSession) async {
   final logger = logging.Logger('patrol_mcp');
   final transport = StdioServerTransport();
+
+  // MCP clients disconnect by closing stdin (EOF), not always via SIGTERM, so
+  // wake on EOF too -- otherwise we'd block on _ExitSignal forever and orphan.
+  final closed = Completer<void>();
+  server.server.onclose = () {
+    if (!closed.isCompleted) {
+      closed.complete();
+    }
+  };
+
   try {
     logger.info('Running MCP server on stdio');
     await server.connect(transport);
@@ -228,25 +368,50 @@ Future<int> _runStdio(McpServer server) async {
     return 1;
   }
 
-  final signal = await _ExitSignal().wait;
-  logger.info('Received ${signal.name}, stopping');
-  await server.close();
-  await transport.close();
+  // Shut down on an OS signal or a client disconnect (stdin EOF).
+  final exitSignal = _ExitSignal();
+  await Future.any([exitSignal.wait, closed.future]);
+  // ProcessSignal.watch() keeps the VM alive; the EOF path skips _handleSignal,
+  // so cancel here.
+  exitSignal.cancel();
+  logger.info('Shutting down (signal or client disconnect)');
+
+  // Tear down the active session and close the transport, but never block
+  // forever: a stalled teardown (e.g. a run cancelled mid-build) would orphan
+  // the server process. Force-exit if it doesn't finish in time.
+  Future<void> shutdown() async {
+    await patrolSession.dispose();
+    await server.close(); // closes the transport too
+  }
+
+  await shutdown().timeout(
+    const Duration(seconds: 10),
+    onTimeout: () => exit(0),
+  );
   logger.info('Stopped');
   return 0;
 }
 
 class _ExitSignal {
   _ExitSignal() {
-    _sigtermSubscription = ProcessSignal.sigterm.watch().listen(_handleSignal);
+    // ProcessSignal.sigterm cannot be listened to on Windows — it throws
+    // SignalException. On that platform, graceful shutdown comes from stdin
+    // EOF (MCP stdio transport) and Ctrl-C (SIGINT), both of which continue
+    // to work. Guard the registration so the server can start on Windows.
+    _sigtermSubscription = !Platform.isWindows
+        ? ProcessSignal.sigterm.watch().listen(_handleSignal)
+        : null;
     _sigintSubscription = ProcessSignal.sigint.watch().listen(_handleSignal);
   }
 
   final _completer = Completer<ProcessSignal>();
-  late final StreamSubscription<ProcessSignal> _sigtermSubscription;
+  late final StreamSubscription<ProcessSignal>? _sigtermSubscription;
   late final StreamSubscription<ProcessSignal> _sigintSubscription;
 
   Future<ProcessSignal> get wait => _completer.future;
+
+  /// Cancels the signal subscriptions. Idempotent.
+  void cancel() => _cleanup();
 
   void _handleSignal(ProcessSignal signal) {
     if (!_completer.isCompleted) {
@@ -256,7 +421,7 @@ class _ExitSignal {
   }
 
   void _cleanup() {
-    _sigtermSubscription.cancel();
+    _sigtermSubscription?.cancel();
     _sigintSubscription.cancel();
   }
 }
