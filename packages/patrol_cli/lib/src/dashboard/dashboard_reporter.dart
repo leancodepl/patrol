@@ -2,7 +2,6 @@ import 'package:file/file.dart';
 import 'package:path/path.dart' as path;
 import 'package:patrol_cli/src/base/constants.dart' as constants;
 import 'package:patrol_cli/src/base/logger.dart';
-import 'package:patrol_cli/src/crossplatform/video_recording_manager.dart';
 import 'package:patrol_cli/src/dashboard/dashboard_collector.dart';
 import 'package:patrol_cli/src/dashboard/dashboard_config.dart';
 import 'package:patrol_cli/src/dashboard/dashboard_html_renderer.dart';
@@ -13,12 +12,12 @@ import 'package:patrol_log/patrol_log.dart';
 /// Collects a `patrol test` run and writes the HTML dashboard when it ends.
 ///
 /// Both the Android and the iOS backend use this class the same way: chain
-/// [wrapOnLogEntry] into the `PatrolLogReader` callbacks, then call [write]
-/// once the run finished.
+/// [wrapOnLogEntry] into the `PatrolLogReader` callbacks, then call
+/// [writeAndLog] once the run finished.
 class DashboardReporter {
   /// Creates a reporter writing into [config]'s output path, resolved against
   /// [rootDirectory] when relative.
-  DashboardReporter({
+  DashboardReporter._({
     required Directory rootDirectory,
     required Logger logger,
     required DashboardConfig config,
@@ -26,6 +25,19 @@ class DashboardReporter {
        _logger = logger,
        _config = config,
        _collector = DashboardCollector(testDirectory: config.testDirectory);
+
+  /// A reporter for [config], or `null` when no report was asked for.
+  static DashboardReporter? maybe({
+    required Directory rootDirectory,
+    required Logger logger,
+    required DashboardConfig? config,
+  }) => config == null || !config.enabled
+      ? null
+      : DashboardReporter._(
+          rootDirectory: rootDirectory,
+          logger: logger,
+          config: config,
+        );
 
   final Directory _rootDirectory;
   final Logger _logger;
@@ -39,38 +51,33 @@ class DashboardReporter {
   void Function(Entry entry) wrapOnLogEntry(void Function(Entry entry)? next) =>
       _collector.wrapOnLogEntry(next);
 
-  /// Attaches recorded videos to their tests, keyed by test name.
-  void registerVideos(Map<String, String> videosByTestName) {
-    for (final entry in videosByTestName.entries) {
-      _collector.registerVideo(testName: entry.key, videoPath: entry.value);
-    }
-  }
+  /// Attaches a saved recording to its test. Shaped to be passed straight to
+  /// the video recording manager's `onVideoSaved` hook.
+  void registerVideo({required String testName, required String videoPath}) =>
+      _collector.registerVideo(testName: testName, videoPath: videoPath);
 
   /// Writes the report and prints a clickable link to it.
-  ///
-  /// Videos of [videoRecordingManager], when there is one, are attached to
-  /// their tests first.
   void writeAndLog({
     required String platform,
     required Device device,
     required String buildMode,
-    VideoRecordingManager? videoRecordingManager,
     String? appDescription,
     String? flavor,
     String? nativeReportPath,
   }) {
-    if (videoRecordingManager != null) {
-      registerVideos(videoRecordingManager.savedVideosByTest);
-    }
-
-    final reportPath = write(
-      platform: platform,
-      deviceName: device.name,
-      deviceId: device.id,
-      buildMode: buildMode,
-      appDescription: appDescription,
-      flavor: flavor,
-      nativeReportPath: nativeReportPath,
+    final reportPath = _write(
+      _collector.build(
+        platform: platform,
+        deviceName: device.name,
+        deviceId: device.id,
+        buildMode: buildMode,
+        startedAt: _startedAt,
+        duration: DateTime.now().difference(_startedAt),
+        cliVersion: constants.version,
+        appDescription: appDescription,
+        flavor: flavor,
+        nativeReportPath: nativeReportPath,
+      ),
     );
 
     if (reportPath != null) {
@@ -78,38 +85,11 @@ class DashboardReporter {
     }
   }
 
-  /// Writes the report and returns its absolute path, or `null` when writing
-  /// failed.
+  /// Renders [run] into the configured file and returns its absolute path, or
+  /// `null` when writing failed.
   ///
   /// A failure here must never fail the run, so problems are only warned about.
-  String? write({
-    required String platform,
-    required String deviceName,
-    required String deviceId,
-    required String buildMode,
-    String? appDescription,
-    String? flavor,
-    String? nativeReportPath,
-  }) {
-    final run = _collector.build(
-      platform: platform,
-      deviceName: deviceName,
-      deviceId: deviceId,
-      buildMode: buildMode,
-      startedAt: _startedAt,
-      duration: DateTime.now().difference(_startedAt),
-      cliVersion: constants.version,
-      appDescription: appDescription,
-      flavor: flavor,
-      nativeReportPath: nativeReportPath,
-    );
-
-    return writeRun(run);
-  }
-
-  /// Renders [run] into the configured file. Split out of [write] so it can be
-  /// exercised without a real test run.
-  String? writeRun(DashboardRun run) {
+  String? _write(DashboardRun run) {
     final outputPath = path.isAbsolute(_config.outputPath)
         ? _config.outputPath
         : path.join(_rootDirectory.path, _config.outputPath);

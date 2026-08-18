@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:ansi_styles/ansi_styles.dart';
 import 'package:path/path.dart' as path;
 import 'package:patrol_cli/src/dashboard/dashboard_assets.dart';
 import 'package:patrol_cli/src/dashboard/dashboard_report.dart';
@@ -68,7 +71,7 @@ class DashboardHtmlRenderer {
       ..writeln('<div class="topbar-spacer"></div>')
       ..writeln(
         '<button class="icon-button" id="theme-toggle" type="button" '
-        'title="Toggle light / dark theme">${_iconContrast()}'
+        'title="Toggle light / dark theme">$iconContrast'
         '<span>Theme</span></button>',
       )
       ..writeln('</header>');
@@ -86,15 +89,15 @@ class DashboardHtmlRenderer {
       ..writeln('<h1 class="hero-title">$verdict</h1>')
       ..writeln('<div class="hero-meta">');
 
-    _writePill(buffer, _iconDevice(), run.platform, run.deviceName);
+    _writePill(buffer, iconDevice, run.platform, run.deviceName);
     if (run.appDescription case final app?) {
-      _writePill(buffer, _iconApp(), 'App', app);
+      _writePill(buffer, iconApp, 'App', app);
     }
-    _writePill(buffer, _iconBuild(), 'Build', run.buildMode);
+    _writePill(buffer, iconBuild, 'Build', run.buildMode);
     if (run.flavor case final flavor?) {
-      _writePill(buffer, _iconFlavor(), 'Flavor', flavor);
+      _writePill(buffer, iconFlavor, 'Flavor', flavor);
     }
-    _writePill(buffer, _iconClock(), 'Started', _formatDateTime(run.startedAt));
+    _writePill(buffer, iconClock, 'Started', _formatDateTime(run.startedAt));
 
     buffer
       ..writeln('</div>')
@@ -114,64 +117,57 @@ class DashboardHtmlRenderer {
   }
 
   void _writeStats(StringBuffer buffer, DashboardRun run) {
-    buffer
-      ..writeln('<section class="stats">')
-      ..writeln(
-        _stat(
-          className: 'accent',
-          label: 'Pass rate',
-          value: '${(run.passRate * 100).round()}%',
-        ),
-      )
-      ..writeln(_stat(label: 'Total', value: '${run.totalCount}'))
-      ..writeln(
-        _stat(
-          className: 'stat-passed',
-          dot: 'passed',
-          label: 'Passed',
-          value: '${run.passedCount}',
-        ),
-      )
-      ..writeln(
-        _stat(
-          className: 'stat-failed',
-          dot: 'failed',
-          label: 'Failed',
-          value: '${run.failedCount + run.incompleteCount}',
-        ),
-      )
-      ..writeln(
-        _stat(
-          className: 'stat-skipped',
-          dot: 'skipped',
-          label: 'Skipped',
-          value: '${run.skippedCount}',
-        ),
-      )
-      ..writeln(
-        _stat(
-          label: 'Duration',
-          value: formatDuration(run.duration),
-          small: true,
-        ),
-      )
-      ..writeln('</section>');
+    final tiles = <({String label, String value, String? status, bool accent})>[
+      (
+        label: 'Pass rate',
+        value: '${(run.passRate * 100).round()}%',
+        status: null,
+        accent: true,
+      ),
+      (label: 'Total', value: '${run.totalCount}', status: null, accent: false),
+      (
+        label: 'Passed',
+        value: '${run.passedCount}',
+        status: 'passed',
+        accent: false,
+      ),
+      (
+        label: 'Failed',
+        // An unfinished test is a failure as far as the reader is concerned.
+        value: '${run.failedCount + run.incompleteCount}',
+        status: 'failed',
+        accent: false,
+      ),
+      (
+        label: 'Skipped',
+        value: '${run.skippedCount}',
+        status: 'skipped',
+        accent: false,
+      ),
+      (
+        label: 'Duration',
+        value: formatDuration(run.duration),
+        status: null,
+        accent: false,
+      ),
+    ];
+
+    buffer.writeln('<section class="stats">');
+    for (final tile in tiles) {
+      final status = tile.status;
+      buffer.writeln(
+        '<div class="stat${tile.accent ? ' accent' : ''}'
+        '${status == null ? '' : ' stat-$status'}">'
+        '<div class="stat-label">'
+        '${status == null ? '' : '<span class="dot dot-$status"></span>'}'
+        '${_escape(tile.label)}</div>'
+        '<div class="stat-value">${_escape(tile.value)}</div>'
+        '</div>',
+      );
+    }
+    buffer.writeln('</section>');
 
     _writeProgressBar(buffer, run);
-  }
-
-  String _stat({
-    required String label,
-    required String value,
-    String? className,
-    String? dot,
-    bool small = false,
-  }) {
-    final dotHtml = dot == null ? '' : '<span class="dot dot-$dot"></span>';
-    return '<div class="stat ${className ?? ''}">'
-        '<div class="stat-label">$dotHtml${_escape(label)}</div>'
-        '<div class="stat-value${small ? ' small' : ''}">${_escape(value)}</div>'
-        '</div>';
   }
 
   void _writeProgressBar(StringBuffer buffer, DashboardRun run) {
@@ -244,7 +240,7 @@ class DashboardHtmlRenderer {
       ..writeln('</div>')
       ..writeln(
         '<button class="icon-button" id="toggle-all" type="button">'
-        '${_iconExpand()}<span class="label">Expand all</span></button>',
+        '$iconExpand<span class="label">Expand all</span></button>',
       )
       ..writeln('</div>');
   }
@@ -284,33 +280,49 @@ class DashboardHtmlRenderer {
     required int index,
     required String reportDirectory,
   }) {
-    final status = test.status;
     // Failed tests are what the report is opened for, so they start expanded.
     final startsOpen =
         test.hasDetails &&
-        (status == DashboardTestStatus.failed ||
-            status == DashboardTestStatus.incomplete);
-    final searchable = _searchIndex(test);
+        (test.status == DashboardTestStatus.failed ||
+            test.status == DashboardTestStatus.incomplete);
 
+    buffer.writeln(
+      '<article class="test status-${test.status.name}'
+      '${startsOpen ? ' is-open' : ''}" '
+      'data-status="${test.status.name}" '
+      'data-details="${test.hasDetails}" '
+      'data-search="${_escape(_searchIndex(test))}">',
+    );
+    _writeTestHead(buffer, test, index: index, expanded: startsOpen);
+    if (test.hasDetails) {
+      _writeTestBody(
+        buffer,
+        test,
+        index: index,
+        reportDirectory: reportDirectory,
+      );
+    }
+    buffer.writeln('</article>');
+  }
+
+  void _writeTestHead(
+    StringBuffer buffer,
+    DashboardTest test, {
+    required int index,
+    required bool expanded,
+  }) {
     buffer
       ..writeln(
-        '<article class="test status-${status.slug}'
-        '${startsOpen ? ' is-open' : ''}" '
-        'data-status="${status.slug}" '
-        'data-details="${test.hasDetails}" '
-        'data-search="${_escape(searchable)}">',
-      )
-      ..writeln(
         '<button class="test-head" type="button" '
-        'aria-expanded="$startsOpen" aria-controls="test-body-$index">',
+        'aria-expanded="$expanded" aria-controls="test-body-$index">',
       )
       ..writeln(
-        '<span class="chevron">${test.hasDetails ? _iconChevron() : ''}</span>',
+        '<span class="chevron">${test.hasDetails ? iconChevron : ''}</span>',
       )
       ..writeln('<span class="test-title">')
       ..writeln(
         '<span class="test-name">'
-        '<span class="status-dot dot-${status.slug}"></span>'
+        '<span class="status-dot dot-${test.status.name}"></span>'
         '${_escape(test.name)}</span>',
       );
 
@@ -324,14 +336,13 @@ class DashboardHtmlRenderer {
 
     if (test.steps.isNotEmpty) {
       buffer.writeln(
-        '<span class="with-icon" title="Patrol steps">${_iconSteps()}'
+        '<span class="with-icon" title="Patrol steps">$iconSteps'
         '${test.steps.length}</span>',
       );
     }
     if (test.videoPath != null) {
       buffer.writeln(
-        '<span class="with-icon" title="Video recording">'
-        '${_iconVideo()}</span>',
+        '<span class="with-icon" title="Video recording">$iconVideo</span>',
       );
     }
     if (test.duration case final duration?) {
@@ -343,16 +354,18 @@ class DashboardHtmlRenderer {
     buffer
       ..writeln('</span>')
       ..writeln(
-        '<span class="badge badge-${status.slug}">'
-        '${_escape(status.label)}</span>',
+        '<span class="badge badge-${test.status.name}">'
+        '${_escape(test.status.label)}</span>',
       )
       ..writeln('</button>');
+  }
 
-    if (!test.hasDetails) {
-      buffer.writeln('</article>');
-      return;
-    }
-
+  void _writeTestBody(
+    StringBuffer buffer,
+    DashboardTest test, {
+    required int index,
+    required String reportDirectory,
+  }) {
     final videoSrc = _videoSrc(test.videoPath, reportDirectory);
     buffer
       ..writeln(
@@ -386,9 +399,7 @@ class DashboardHtmlRenderer {
       _writeVideo(buffer, videoSrc, test.videoPath!);
     }
 
-    buffer
-      ..writeln('</div>')
-      ..writeln('</article>');
+    buffer.writeln('</div>');
   }
 
   /// Builds the collapsed exception panel.
@@ -412,8 +423,8 @@ class DashboardHtmlRenderer {
       ..write(
         '<button class="exception-head" type="button" aria-expanded="false" '
         'aria-controls="$id">'
-        '<span class="chevron">${_iconChevron()}</span>'
-        '<span class="exception-tag">${_iconAlert()}Exception</span>'
+        '<span class="chevron">$iconChevron</span>'
+        '<span class="exception-tag">${iconAlert}Exception</span>'
         '<span class="exception-summary">'
         '${_escape(summary.trim())}</span>'
         '</button>',
@@ -438,23 +449,17 @@ class DashboardHtmlRenderer {
 
   /// Splits a failure message into its human-readable part and its stack
   /// frames, so the frames can be rendered dimmer and tighter.
+  ///
+  /// Everything from the first `#0`-style frame onwards is a frame, including
+  /// the `<asynchronous suspension>` markers between them.
   static (String, List<String>) _splitException(String error) {
     final lines = error.trimRight().split('\n');
-    final frames = <String>[];
-    final message = <String>[];
-
-    for (final line in lines) {
-      final isFrame = _framePattern.hasMatch(line);
-      if (isFrame || (frames.isNotEmpty && line.trim().isEmpty)) {
-        frames.add(line);
-      } else if (frames.isEmpty) {
-        message.add(line);
-      } else {
-        // A non-frame line after the frames started, e.g. an async gap marker.
-        frames.add(line);
-      }
+    final firstFrame = lines.indexWhere(_framePattern.hasMatch);
+    if (firstFrame == -1) {
+      return (lines.join('\n').trim(), const []);
     }
 
+    final message = lines.sublist(0, firstFrame);
     // The frames carry their own label, so Flutter's lead-in is just noise.
     while (message.isNotEmpty &&
         (message.last.trim().isEmpty ||
@@ -462,11 +467,8 @@ class DashboardHtmlRenderer {
                 'When the exception was thrown, this was the stack:')) {
       message.removeLast();
     }
-    while (frames.isNotEmpty && frames.last.trim().isEmpty) {
-      frames.removeLast();
-    }
 
-    return (message.join('\n').trim(), frames);
+    return (message.join('\n').trim(), lines.sublist(firstFrame));
   }
 
   static final _framePattern = RegExp(r'^\s*#\d+\s');
@@ -484,7 +486,7 @@ class DashboardHtmlRenderer {
     final longest = test.longestStepDuration.inMicroseconds;
     buffer
       ..writeln(
-        '<div class="section-label">${_iconSteps()}'
+        '<div class="section-label">$iconSteps'
         'Steps <span>(${test.steps.length})</span></div>',
       )
       ..writeln('<ol class="steps">');
@@ -525,7 +527,7 @@ class DashboardHtmlRenderer {
 
   void _writeLogs(
     StringBuffer buffer,
-    List<DashboardLog> logs, {
+    List<String> logs, {
     bool prelude = false,
   }) {
     if (logs.isEmpty) {
@@ -534,9 +536,7 @@ class DashboardHtmlRenderer {
 
     buffer.writeln('<ul class="logs${prelude ? ' prelude' : ''}">');
     for (final log in logs) {
-      buffer.writeln(
-        '<li class="log">${_escape(_stripAnsi(log.message))}</li>',
-      );
+      buffer.writeln('<li class="log">${_escape(_stripAnsi(log))}</li>');
     }
     buffer.writeln('</ul>');
   }
@@ -544,7 +544,7 @@ class DashboardHtmlRenderer {
   void _writeVideo(StringBuffer buffer, String src, String absolutePath) {
     buffer
       ..writeln('<aside class="video-panel">')
-      ..writeln('<div class="section-label">${_iconVideo()}Recording</div>')
+      ..writeln('<div class="section-label">${iconVideo}Recording</div>')
       ..writeln(
         '<video controls preload="metadata" playsinline src="$src"></video>',
       )
@@ -581,14 +581,20 @@ class DashboardHtmlRenderer {
 
   /// Lowercased haystack the client-side search filters on.
   String _searchIndex(DashboardTest test) {
-    final parts = <String>[
-      test.name,
-      test.filePath ?? '',
-      test.status.slug,
-      test.error ?? '',
-      for (final step in test.steps) step.action,
-    ];
-    return _stripAnsi(parts.join(' ')).toLowerCase();
+    final buffer = StringBuffer()
+      ..write(test.name)
+      ..write(' ')
+      ..write(test.filePath ?? '')
+      ..write(' ')
+      ..write(test.status.name)
+      ..write(' ')
+      ..write(test.error ?? '');
+    for (final step in test.steps) {
+      buffer
+        ..write(' ')
+        ..write(step.action);
+    }
+    return _stripAnsi(buffer.toString()).toLowerCase();
   }
 
   /// Path of the video relative to the report, as a URL.
@@ -621,9 +627,9 @@ class DashboardHtmlRenderer {
   }
 
   String _stepIcon(DashboardStepStatus status) => switch (status) {
-    DashboardStepStatus.passed => _iconCheck(),
-    DashboardStepStatus.failed => _iconCross(),
-    DashboardStepStatus.running => _iconPending(),
+    DashboardStepStatus.passed => iconCheck,
+    DashboardStepStatus.failed => iconCross,
+    DashboardStepStatus.running => iconClock,
   };
 
   static String _formatDateTime(DateTime dateTime) {
@@ -650,75 +656,17 @@ class DashboardHtmlRenderer {
     return '${minutes}m ${seconds.toString().padLeft(2, '0')}s';
   }
 
-  static final _ansiPattern = RegExp(r'\x1B\[[0-9;]*[a-zA-Z]');
-
   /// Log lines and failure messages can carry terminal colors, which would
-  /// show up as `[32m` garbage in HTML.
-  static String _stripAnsi(String value) => value.replaceAll(_ansiPattern, '');
+  /// show up as `[32m` garbage in HTML. Most lines have none, so the scan for
+  /// an escape byte is worth it before handing the string to a regex.
+  static String _stripAnsi(String value) =>
+      value.contains('\x1B') ? AnsiStyles.strip(value) : value;
 
-  static String _escape(String value) => value
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;')
-      .replaceAll("'", '&#39;');
-
-  // Inline icons, so the report needs no icon font.
-  static String _svg(String body) =>
-      '<svg class="ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" '
-      'stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" '
-      'aria-hidden="true">$body</svg>';
-
-  static String _iconCheck() => _svg('<path d="M3 8.5 6.2 11.7 13 4.9"/>');
-
-  static String _iconCross() => _svg('<path d="M4 4l8 8M12 4l-8 8"/>');
-
-  static String _iconPending() =>
-      _svg('<circle cx="8" cy="8" r="5.3"/><path d="M8 5.4V8l1.9 1.4"/>');
-
-  static String _iconChevron() => _svg('<path d="M6 3.5 10.5 8 6 12.5"/>');
-
-  static String _iconSteps() =>
-      _svg('<path d="M2.5 12.5h4v-3h4v-3h4"/><path d="M2.5 12.5v-2"/>');
-
-  static String _iconVideo() => _svg(
-    '<rect x="1.8" y="4" width="9" height="8" rx="1.6"/>'
-    '<path d="M10.8 8.2l3.4-2.1v3.8L10.8 7.8z"/>',
+  /// Escapes `& < > " '` in a single pass. The values land in attributes as
+  /// well as in text, so both quote styles have to go.
+  static const _htmlEscape = HtmlEscape(
+    HtmlEscapeMode(escapeLtGt: true, escapeQuot: true, escapeApos: true),
   );
 
-  static String _iconAlert() => _svg(
-    '<path d="M8 2.6l5.8 10.2H2.2z"/><path d="M8 6.4v3"/>'
-    '<path d="M8 11.3h.01"/>',
-  );
-
-  static String _iconClock() =>
-      _svg('<circle cx="8" cy="8" r="5.6"/><path d="M8 5v3.2l2.2 1.3"/>');
-
-  static String _iconDevice() => _svg(
-    '<rect x="4.2" y="1.8" width="7.6" height="12.4" rx="1.7"/>'
-    '<path d="M7 12.4h2"/>',
-  );
-
-  static String _iconApp() => _svg(
-    '<rect x="2.2" y="2.2" width="5" height="5" rx="1.3"/>'
-    '<rect x="8.8" y="2.2" width="5" height="5" rx="1.3"/>'
-    '<rect x="2.2" y="8.8" width="5" height="5" rx="1.3"/>'
-    '<rect x="8.8" y="8.8" width="5" height="5" rx="1.3"/>',
-  );
-
-  static String _iconBuild() => _svg(
-    '<path d="M8 1.8l5.4 3.1v6.2L8 14.2 2.6 11.1V4.9z"/><path d="M8 8v6.2"/>'
-    '<path d="M2.6 4.9L8 8l5.4-3.1"/>',
-  );
-
-  static String _iconFlavor() => _svg(
-    '<path d="M2.6 6.4h10.8"/><path d="M4.6 6.4l1.5 7h3.8l1.5-7"/>'
-    '<path d="M6.4 6.4V3.2h3.2v3.2"/>',
-  );
-
-  static String _iconContrast() =>
-      _svg('<circle cx="8" cy="8" r="5.6"/><path d="M8 2.4v11.2"/>');
-
-  static String _iconExpand() =>
-      _svg('<path d="M5 6.2 8 9.2l3-3"/><path d="M5 10.8h6"/>');
+  static String _escape(String value) => _htmlEscape.convert(value);
 }

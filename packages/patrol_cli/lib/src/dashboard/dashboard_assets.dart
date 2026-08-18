@@ -198,7 +198,6 @@ body {
   color: var(--text-faint);
 }
 .stat-value { margin-top: 8px; font-size: 30px; font-weight: 750; letter-spacing: -0.03em; }
-.stat-value.small { font-size: 24px; }
 .stat.accent { border-color: color-mix(in srgb, var(--yellow) 45%, var(--border)); background: linear-gradient(180deg, var(--yellow-soft), transparent 70%), var(--surface); }
 .stat .dot { width: 8px; height: 8px; border-radius: 50%; }
 .dot-passed { background: var(--pass); }
@@ -666,3 +665,69 @@ const dashboardJs = '''
   apply();
 })();
 ''';
+
+/// Inline icons, so the report needs no icon font. Constants rather than
+/// builders: a report has thousands of steps, each stamping the same markup.
+const _svgOpen =
+    '<svg class="ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" '
+    'stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" '
+    'aria-hidden="true">';
+
+/// Tick marking a passing step.
+const iconCheck = '$_svgOpen<path d="M3 8.5 6.2 11.7 13 4.9"/></svg>';
+
+/// Cross marking a failing step.
+const iconCross = '$_svgOpen<path d="M4 4l8 8M12 4l-8 8"/></svg>';
+
+/// Clock, for a step that never finished and for the run's start time.
+const iconClock =
+    '$_svgOpen<circle cx="8" cy="8" r="5.6"/>'
+    '<path d="M8 5v3.2l2.2 1.3"/></svg>';
+
+/// Disclosure arrow of an expandable row.
+const iconChevron = '$_svgOpen<path d="M6 3.5 10.5 8 6 12.5"/></svg>';
+
+/// Staircase, marking the step list.
+const iconSteps =
+    '$_svgOpen<path d="M2.5 12.5h4v-3h4v-3h4"/>'
+    '<path d="M2.5 12.5v-2"/></svg>';
+
+/// Camera, marking a recording.
+const iconVideo =
+    '$_svgOpen<rect x="1.8" y="4" width="9" height="8" rx="1.6"/>'
+    '<path d="M10.8 8.2l3.4-2.1v3.8L10.8 7.8z"/></svg>';
+
+/// Warning triangle, marking an exception.
+const iconAlert =
+    '$_svgOpen<path d="M8 2.6l5.8 10.2H2.2z"/><path d="M8 6.4v3"/>'
+    '<path d="M8 11.3h.01"/></svg>';
+
+/// Phone, marking the device the tests ran on.
+const iconDevice =
+    '$_svgOpen<rect x="4.2" y="1.8" width="7.6" height="12.4" rx="1.7"/>'
+    '<path d="M7 12.4h2"/></svg>';
+
+/// Grid, marking the app under test.
+const iconApp =
+    '$_svgOpen<rect x="2.2" y="2.2" width="5" height="5" rx="1.3"/>'
+    '<rect x="8.8" y="2.2" width="5" height="5" rx="1.3"/>'
+    '<rect x="2.2" y="8.8" width="5" height="5" rx="1.3"/>'
+    '<rect x="8.8" y="8.8" width="5" height="5" rx="1.3"/></svg>';
+
+/// Cube, marking the build mode.
+const iconBuild =
+    '$_svgOpen<path d="M8 1.8l5.4 3.1v6.2L8 14.2 2.6 11.1V4.9z"/>'
+    '<path d="M8 8v6.2"/><path d="M2.6 4.9L8 8l5.4-3.1"/></svg>';
+
+/// Flask, marking the flavor.
+const iconFlavor =
+    '$_svgOpen<path d="M2.6 6.4h10.8"/><path d="M4.6 6.4l1.5 7h3.8l1.5-7"/>'
+    '<path d="M6.4 6.4V3.2h3.2v3.2"/></svg>';
+
+/// Half-filled circle of the theme toggle.
+const iconContrast =
+    '$_svgOpen<circle cx="8" cy="8" r="5.6"/><path d="M8 2.4v11.2"/></svg>';
+
+/// Chevron over a line, for "expand all".
+const iconExpand =
+    '$_svgOpen<path d="M5 6.2 8 9.2l3-3"/><path d="M5 10.8h6"/></svg>';

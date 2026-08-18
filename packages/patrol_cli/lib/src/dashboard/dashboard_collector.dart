@@ -17,14 +17,12 @@ class DashboardCollector {
   /// Test cases in the order they were started.
   final List<DashboardTest> _tests = [];
 
-  /// Open tests keyed by description, so a finish entry closes the right one
-  /// even when several tests share a name (parameterized tests).
-  final Map<String, List<DashboardTest>> _openTests = {};
-
-  /// Absolute video paths keyed by test description. Recordings are saved
-  /// asynchronously, so a video may be registered before or after the test's
-  /// finish entry arrives.
-  final Map<String, String> _videos = {};
+  /// The test currently running, and its currently running step.
+  ///
+  /// Steps and logs arrive far more often than tests do, so the entries they
+  /// attach to are tracked directly instead of being searched for on each one.
+  DashboardTest? _openTest;
+  DashboardStep? _openStep;
 
   final List<String> _warnings = [];
   final List<String> _errors = [];
@@ -65,23 +63,12 @@ class DashboardCollector {
 
   /// Attaches the video saved for [testName] to its test case.
   ///
-  /// Called by the video recording manager, which knows the name of the test it
-  /// recorded.
+  /// Called by the video recording manager once a recording is saved, which
+  /// happens after the test it belongs to has finished.
   void registerVideo({required String testName, required String videoPath}) {
     final description = _parseName(testName).description;
-    _videos[description] = videoPath;
-
-    final openTest = _openTests[description]?.firstOrNull;
-    if (openTest != null) {
-      openTest.videoPath = videoPath;
-      return;
-    }
-
-    // The test already finished, so attach the video to the last matching one.
-    final finishedTest = _tests.lastWhereOrNull(
-      (test) => test.name == description,
-    );
-    finishedTest?.videoPath = videoPath;
+    _tests.lastWhereOrNull((test) => test.name == description)?.videoPath =
+        videoPath;
   }
 
   /// Builds the report of the finished run.
@@ -130,9 +117,10 @@ class DashboardCollector {
           filePath: _filePath(parsed.filePrefix),
           startedAt: entry.timestamp,
           status: DashboardTestStatus.incomplete,
-        )..videoPath = _videos[parsed.description];
+        );
         _tests.add(test);
-        _openTests.putIfAbsent(parsed.description, () => []).add(test);
+        _openTest = test;
+        _openStep = null;
 
       case TestEntryStatus.skip:
         _tests.add(
@@ -155,8 +143,11 @@ class DashboardCollector {
               ? DashboardTestStatus.passed
               : DashboardTestStatus.failed
           ..duration = entry.timestamp.difference(test.startedAt)
-          ..error = _trimmedOrNull(entry.error)
-          ..videoPath ??= _videos[parsed.description];
+          ..error = _trimmedOrNull(entry.error);
+        if (test == _openTest) {
+          _openTest = null;
+          _openStep = null;
+        }
 
         if (entry.status == TestEntryStatus.failure) {
           _failureDetailsTarget = test;
@@ -179,19 +170,22 @@ class DashboardCollector {
 
   void _handleStepEntry(StepEntry entry) {
     _failureDetailsTarget = null;
-    final test = _currentOpenTest();
+    final test = _openTest;
     if (test == null) {
       return;
     }
 
     switch (entry.status) {
       case StepEntryStatus.start:
-        test.steps.add(
-          DashboardStep(action: entry.action, startedAt: entry.timestamp),
+        final step = DashboardStep(
+          action: entry.action,
+          startedAt: entry.timestamp,
         );
+        test.steps.add(step);
+        _openStep = step;
       case StepEntryStatus.success:
       case StepEntryStatus.failure:
-        final step = _takeOpenStep(test, entry.action);
+        final step = _openStep;
         if (step == null) {
           return;
         }
@@ -200,54 +194,29 @@ class DashboardCollector {
               ? DashboardStepStatus.passed
               : DashboardStepStatus.failed
           ..duration = entry.timestamp.difference(step.startedAt);
+        _openStep = null;
     }
   }
 
   void _handleLogEntry(LogEntry entry) {
-    final test = _currentOpenTest();
+    final test = _openTest;
     if (test == null) {
       return;
     }
-
-    final log = DashboardLog(
-      message: entry.message,
-      timestamp: entry.timestamp,
-    );
     // Nest the log under the step it was printed from, if any.
-    final openStep = _openStep(test);
-    (openStep?.logs ?? test.logs).add(log);
+    (_openStep?.logs ?? test.logs).add(entry.message);
   }
 
-  /// The most recently started test that has not finished yet.
-  DashboardTest? _currentOpenTest() => _tests.lastWhereOrNull(
-    (test) => test.status == DashboardTestStatus.incomplete,
+  /// The oldest test with this name that has not finished yet.
+  ///
+  /// `_tests` is in start order, so the first match is the FIFO one — which is
+  /// what pairs a finish entry with its start when a parameterized test reuses
+  /// a name.
+  DashboardTest? _takeOpenTest(String description) => _tests.firstWhereOrNull(
+    (test) =>
+        test.name == description &&
+        test.status == DashboardTestStatus.incomplete,
   );
-
-  DashboardTest? _takeOpenTest(String description) {
-    final open = _openTests[description];
-    if (open == null || open.isEmpty) {
-      return null;
-    }
-    final test = open.removeAt(0);
-    if (open.isEmpty) {
-      _openTests.remove(description);
-    }
-    return test;
-  }
-
-  DashboardStep? _openStep(DashboardTest test) => test.steps.lastWhereOrNull(
-    (step) => step.status == DashboardStepStatus.running,
-  );
-
-  DashboardStep? _takeOpenStep(DashboardTest test, String action) {
-    final byAction = test.steps.lastWhereOrNull(
-      (step) =>
-          step.status == DashboardStepStatus.running && step.action == action,
-    );
-    // Fall back to the newest open step: patrol may reword the action between
-    // the start and the finish entry.
-    return byAction ?? _openStep(test);
-  }
 
   String? _filePath(String? filePrefix) {
     if (filePrefix == null) {

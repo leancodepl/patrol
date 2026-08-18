@@ -17,7 +17,7 @@ void main() {
   });
 
   DashboardReporter reporter({String outputPath = 'reports/report.html'}) =>
-      DashboardReporter(
+      DashboardReporter.maybe(
         rootDirectory: fileSystem.directory('/project'),
         logger: logger,
         config: DashboardConfig(
@@ -25,7 +25,7 @@ void main() {
           outputPath: outputPath,
           testDirectory: 'integration_test',
         ),
-      );
+      )!;
 
   const device = Device(
     name: 'Pixel 9',
@@ -48,6 +48,25 @@ void main() {
       final html = file.readAsStringSync();
       expect(html, contains('signs in'));
       expect(html, contains('Pixel 9'));
+    });
+
+    test('builds no reporter when the report is not asked for', () {
+      DashboardReporter? build(DashboardConfig? config) =>
+          DashboardReporter.maybe(
+            rootDirectory: fileSystem.directory('/project'),
+            logger: logger,
+            config: config,
+          );
+
+      expect(build(null), isNull);
+      expect(
+        build(const DashboardConfig(enabled: false, outputPath: 'r.html')),
+        isNull,
+      );
+      expect(
+        build(const DashboardConfig(enabled: true, outputPath: 'r.html')),
+        isNotNull,
+      );
     });
 
     test('honors an absolute output path', () {
