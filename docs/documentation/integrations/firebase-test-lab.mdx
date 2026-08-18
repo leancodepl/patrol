@@ -55,7 +55,9 @@ Farm][aws_device_farm].
     <Info>
       To collect Patrol's native failure screenshots (set `screenshot_on_failure: true`
       in your `pubspec.yaml`), add `--directories-to-pull=/sdcard/Download/screenshots`
-      to the command above. Firebase Test Lab copies them into the results bucket at
+      to the command above. You don't need to download them — Firebase Test Lab shows
+      them directly in the **Screenshots** tab of the matrix in the console. They're
+      also copied into the results bucket at
       `.../<device-model>/artifacts/sdcard/Download/screenshots/<class>/<method>/<timestamp>_failure.png`.
       This works alongside `--use-orchestrator` and `clearPackageData=true`: the PNGs
       live in shared storage, so the per-test data clear doesn't remove them.
