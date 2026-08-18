@@ -9,6 +9,7 @@ class AndroidAutomatorConfig extends MobileAutomatorConfig {
     String? packageName,
     String? appName,
     KeyboardBehavior? keyboardBehavior,
+    bool? dontSuppressAccessibilityServices,
     super.host,
     super.port,
     super.connectionTimeout,
@@ -19,7 +20,13 @@ class AndroidAutomatorConfig extends MobileAutomatorConfig {
            const String.fromEnvironment('PATROL_APP_PACKAGE_NAME'),
        appName =
            appName ?? const String.fromEnvironment('PATROL_ANDROID_APP_NAME'),
-       keyboardBehavior = keyboardBehavior ?? KeyboardBehavior.showAndDismiss;
+       keyboardBehavior = keyboardBehavior ?? KeyboardBehavior.showAndDismiss,
+       dontSuppressAccessibilityServices =
+           dontSuppressAccessibilityServices ??
+           const bool.fromEnvironment(
+             'PATROL_ANDROID_DONT_SUPPRESS_ACCESSIBILITY_SERVICES',
+             defaultValue: true,
+           );
 
   /// How the keyboard should behave when entering text.
   ///
@@ -34,6 +41,17 @@ class AndroidAutomatorConfig extends MobileAutomatorConfig {
   /// Name of the application under test on Android.
   final String appName;
 
+  /// Whether other third-party `AccessibilityService`s (screen readers,
+  /// accessibility-based tools) keep running while the test session is active.
+  ///
+  /// When `true` (the default) Patrol acquires `UiAutomation` with
+  /// `FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES`; when `false` the platform
+  /// suppresses them for the whole session. Can also be set with the
+  /// `PATROL_ANDROID_DONT_SUPPRESS_ACCESSIBILITY_SERVICES` dart-define.
+  ///
+  /// See https://github.com/leancodepl/patrol/issues/3201.
+  final bool dontSuppressAccessibilityServices;
+
   /// Creates a copy of this config but with the given fields replaced with the
   /// new values.
   AndroidAutomatorConfig copyWith({
@@ -44,6 +62,7 @@ class AndroidAutomatorConfig extends MobileAutomatorConfig {
     Duration? connectionTimeout,
     Duration? findTimeout,
     KeyboardBehavior? keyboardBehavior,
+    bool? dontSuppressAccessibilityServices,
     void Function(String)? logger,
   }) {
     return AndroidAutomatorConfig(
@@ -54,6 +73,9 @@ class AndroidAutomatorConfig extends MobileAutomatorConfig {
       connectionTimeout: connectionTimeout ?? this.connectionTimeout,
       findTimeout: findTimeout ?? this.findTimeout,
       keyboardBehavior: keyboardBehavior ?? this.keyboardBehavior,
+      dontSuppressAccessibilityServices:
+          dontSuppressAccessibilityServices ??
+          this.dontSuppressAccessibilityServices,
       logger: logger ?? this.logger,
     );
   }

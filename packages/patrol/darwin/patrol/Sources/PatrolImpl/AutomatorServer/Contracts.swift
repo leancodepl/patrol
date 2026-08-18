@@ -212,6 +212,7 @@ public struct RunDartTestResponse: Codable {
 
 public struct ConfigureRequest: Codable {
   public var findTimeoutMillis: Int
+  public var androidDontSuppressAccessibilityServices: Bool?
 }
 
 public struct OpenAppRequest: Codable {
