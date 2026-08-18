@@ -257,8 +257,9 @@ The report shows:
 
 - the run's verdict, pass rate and total duration, plus the device, build mode and flavor,
 - every test with its status and duration, expandable to reveal its Patrol steps
-  (each with its own duration), the logs printed from each step, and the full
-  exception with the stack trace for failures,
+  (each with its own duration) and the logs printed from each step,
+- for a failure, the exception folded into the step that broke: the row shows the
+  first line, and clicking it unfolds the full message and the stack trace,
 - filtering by status and a search box over test names, files and steps.
 
 Failing tests start expanded, so a red run opens on what broke.

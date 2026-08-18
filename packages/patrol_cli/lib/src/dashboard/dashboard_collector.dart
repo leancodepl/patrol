@@ -29,6 +29,13 @@ class DashboardCollector {
   final List<String> _warnings = [];
   final List<String> _errors = [];
 
+  /// Test whose failure details are still arriving.
+  ///
+  /// On mobile, patrol logs the failure entry without an error and then sends
+  /// the exception one [ErrorEntry] per line, so the lines have to be stitched
+  /// back onto the test that just failed.
+  DashboardTest? _failureDetailsTarget;
+
   /// Returns an `onLogEntry` callback that feeds this collector and then
   /// delegates to [next].
   void Function(Entry entry) wrapOnLogEntry(void Function(Entry entry)? next) {
@@ -48,7 +55,7 @@ class DashboardCollector {
       case LogEntry():
         _handleLogEntry(entry);
       case ErrorEntry():
-        _errors.add(entry.message);
+        _appendErrorLine(entry.message);
       case WarningEntry():
         _warnings.add(entry.message);
       case ConfigEntry():
@@ -90,6 +97,10 @@ class DashboardCollector {
     String? flavor,
     String? nativeReportPath,
   }) {
+    for (final test in _tests) {
+      test.error = _trimmedOrNull(test.error);
+    }
+
     return DashboardRun(
       tests: List<DashboardTest>.unmodifiable(_tests),
       platform: platform,
@@ -109,6 +120,8 @@ class DashboardCollector {
 
   void _handleTestEntry(TestEntry entry) {
     final parsed = _parseName(entry.name);
+    // Any new lifecycle event ends the previous failure's detail lines.
+    _failureDetailsTarget = null;
 
     switch (entry.status) {
       case TestEntryStatus.start:
@@ -144,10 +157,28 @@ class DashboardCollector {
           ..duration = entry.timestamp.difference(test.startedAt)
           ..error = _trimmedOrNull(entry.error)
           ..videoPath ??= _videos[parsed.description];
+
+        if (entry.status == TestEntryStatus.failure) {
+          _failureDetailsTarget = test;
+        }
     }
   }
 
+  /// Appends one line of a failure message, either to the test it belongs to
+  /// or, when no test is failing, to the run-level errors.
+  void _appendErrorLine(String line) {
+    final target = _failureDetailsTarget;
+    if (target == null) {
+      _errors.add(line);
+      return;
+    }
+
+    final existing = target.error;
+    target.error = existing == null ? line : '$existing\n$line';
+  }
+
   void _handleStepEntry(StepEntry entry) {
+    _failureDetailsTarget = null;
     final test = _currentOpenTest();
     if (test == null) {
       return;
