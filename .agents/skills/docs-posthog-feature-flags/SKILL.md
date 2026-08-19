@@ -12,8 +12,8 @@ docs_app uses PostHog (EU: `https://eu.i.posthog.com`) with `@leancodepl/feature
 
 - Typed **flags** + **experiments**: `docs_app/lib/posthog/posthog.ts`
 - SSR bootstrap (`posthog-node`): `docs_app/lib/posthog/posthog-server.ts`
-- Client init + Cookie-Script consent: `docs_app/components/FeatureFlagsProvider/index.tsx`
-- Root layout fetches bootstrap and passes it into `AppFeatureFlagsProvider`
+- Client binds OpenFeature to GTM `window.posthog` only — never calls `posthog.init` in app code: `docs_app/components/FeatureFlagsProvider/index.tsx`
+- Consent / Cookie-Script is handled outside the app (e.g. GTM loads PostHog only after consent) — do not init or opt-in/out from docs_app
 
 PostHog experiments are multivariate feature flags. Keep them in the separate `experiments` object and use `useExperiment`.
 

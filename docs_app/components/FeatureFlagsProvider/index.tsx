@@ -1,91 +1,42 @@
 "use client"
 
-import { FeatureFlagsProvider } from "@/lib/posthog/posthog"
-import posthog from "posthog-js"
-import type { BootstrapConfig } from "posthog-js"
-import { useRef } from "react"
+import { FeatureFlagsProvider, bindPostHogClient } from "@/lib/posthog/posthog"
+import type { PostHog } from "posthog-js"
+import { useEffect } from "react"
 
 declare global {
   interface Window {
-    CookieScript?: {
-      instance?: {
-        currentState?: () => {
-          action: "accept" | "reject"
-          categories: string[]
-        }
-      }
+    posthog?: PostHog & { __loaded?: boolean }
+  }
+}
+
+function isPostHogReady(client: PostHog | undefined): client is PostHog {
+  return Boolean(client && (client as PostHog & { __loaded?: boolean }).__loaded)
+}
+
+/**
+ * PostHog is initialized outside the app (GTM / HTML snippet), including consent gating.
+ * This provider only binds OpenFeature to `window.posthog` once that instance is ready.
+ * It never calls `posthog.init` itself.
+ */
+export function AppFeatureFlagsProvider({ children }: { children: React.ReactNode }) {
+  useEffect(() => {
+    if (isPostHogReady(window.posthog)) {
+      bindPostHogClient(window.posthog)
+      return
     }
-  }
 
-  interface WindowEventMap {
-    CookieScriptLoaded: Event
-    CookieScriptAcceptAll: Event
-    CookieScriptAccept: CustomEvent<{ categories: string[] }>
-    CookieScriptReject: Event
-  }
-}
+    const intervalId = window.setInterval(() => {
+      if (isPostHogReady(window.posthog)) {
+        window.clearInterval(intervalId)
+        bindPostHogClient(window.posthog)
+      }
+    }, 50)
 
-const ANALYTICS_CATEGORIES = new Set(["performance", "targeting"])
-
-function hasAnalyticsConsent(categories: string[] | undefined) {
-  return categories?.some(category => ANALYTICS_CATEGORIES.has(category)) ?? false
-}
-
-function applyAnalyticsConsent(granted: boolean) {
-  if (granted) {
-    posthog.opt_in_capturing()
-  } else {
-    posthog.opt_out_capturing()
-  }
-}
-
-function syncConsentFromCookieScript() {
-  const state = window.CookieScript?.instance?.currentState?.()
-  if (!state) {
-    return
-  }
-
-  applyAnalyticsConsent(state.action === "accept" && hasAnalyticsConsent(state.categories))
-}
-
-function initPostHog(bootstrap?: BootstrapConfig) {
-  if (typeof window === "undefined" || (posthog as { __loaded?: boolean }).__loaded) {
-    return
-  }
-
-  posthog.init(process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN!, {
-    api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
-    defaults: "2026-06-25",
-    opt_out_capturing_by_default: true,
-    bootstrap,
-    advanced_disable_feature_flags_on_first_load: Boolean(bootstrap),
-  })
-
-  window.addEventListener("CookieScriptLoaded", syncConsentFromCookieScript)
-  window.addEventListener("CookieScriptAcceptAll", () => applyAnalyticsConsent(true))
-  window.addEventListener("CookieScriptAccept", event => {
-    applyAnalyticsConsent(hasAnalyticsConsent(event.detail?.categories))
-  })
-  window.addEventListener("CookieScriptReject", () => applyAnalyticsConsent(false))
-
-  if (window.CookieScript?.instance) {
-    syncConsentFromCookieScript()
-  }
-}
-
-export function AppFeatureFlagsProvider({
-  children,
-  bootstrap,
-}: {
-  children: React.ReactNode
-  bootstrap?: BootstrapConfig
-}) {
-  const didInit = useRef(false)
-
-  if (typeof window !== "undefined" && !didInit.current) {
-    initPostHog(bootstrap)
-    didInit.current = true
-  }
+    return () => {
+      window.clearInterval(intervalId)
+    }
+  }, [])
 
   return <FeatureFlagsProvider>{children}</FeatureFlagsProvider>
 }

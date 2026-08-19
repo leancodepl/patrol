@@ -1,5 +1,4 @@
 import { AppFeatureFlagsProvider } from "@/components/FeatureFlagsProvider"
-import { getPostHogBootstrap } from "@/lib/posthog/posthog-server"
 import { config } from "@fortawesome/fontawesome-svg-core"
 import { GoogleTagManager } from "@next/third-parties/google"
 import { Banner } from "fumadocs-ui/components/banner"
@@ -18,9 +17,7 @@ const inter = Inter({
 const webinarUrl =
   "https://leancode.co/webinar/mastering-patrol-and-ai-next-level-e2e-testing?utm_source=patrol_page&utm_medium=yellow_banner&utm_campaign=webinar"
 
-export default async function Layout({ children }: LayoutProps<"/">) {
-  const bootstrap = await getPostHogBootstrap()
-
+export default function Layout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={inter.className} suppressHydrationWarning>
       <head>
@@ -36,7 +33,7 @@ export default async function Layout({ children }: LayoutProps<"/">) {
               </a>
             </span>
           </Banner>
-          <AppFeatureFlagsProvider bootstrap={bootstrap}>{children}</AppFeatureFlagsProvider>
+          <AppFeatureFlagsProvider>{children}</AppFeatureFlagsProvider>
         </RootProvider>
       </body>
       <GoogleTagManager gtmId="GTM-PBMQJ8GM" />
