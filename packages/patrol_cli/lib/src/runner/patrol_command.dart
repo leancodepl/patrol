@@ -344,10 +344,10 @@ abstract class PatrolCommand extends Command<int> {
             'Specify in the format "current/total" (e.g., "1/4" for the first of 4 shards).',
         valueHelp: '1/4',
       )
-      ..addOption(
+      ..addFlag(
         'web-headless',
         help: 'Whether to run browser in headless mode.',
-        valueHelp: 'true | false',
+        defaultsTo: null,
       )
       ..addOption(
         'web-port',
@@ -373,6 +373,12 @@ abstract class PatrolCommand extends Command<int> {
   /// If no flag named [name] was added to the `ArgParser`, an [ArgumentError]
   /// will be thrown.
   bool boolArg(String name) => argResults![name] as bool;
+
+  /// Gets the parsed command-line flag named [name] as a nullable `bool`.
+  ///
+  /// Returns null if the flag was declared with a null default and wasn't
+  /// passed on the command line.
+  bool? optionalBoolArg(String name) => argResults![name] as bool?;
 
   /// Gets the parsed command-line option named [name] as a `String`.
   ///
