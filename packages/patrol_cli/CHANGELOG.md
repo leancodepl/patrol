@@ -1,3 +1,7 @@
+## Unreleased
+
+- Disable Xcode's post-test diagnostic collection for iOS test runs, which can block a completed simulator suite for 10 minutes or hang at a password prompt on a physical device. (#3014)
+
 ## 4.7.0
 
 - **Requires `patrol` 4.9.0 or newer.**
