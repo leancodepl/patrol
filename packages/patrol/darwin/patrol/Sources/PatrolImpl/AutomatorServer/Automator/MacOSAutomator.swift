@@ -90,7 +90,12 @@
 
       try runAction("tapping on \(view)") {
         let app = try self.getApp(withBundleId: bundleId)
-        app.activate()
+        // Activating the app while a menu is open closes that menu. The
+        // top-level menu-bar tap activates the app; subsequent menu-item taps
+        // must preserve the open menu hierarchy.
+        if selector.elementType != .menuItem {
+          app.activate()
+        }
 
         let query = app.descendants(matching: .any).matching(selector.toNSPredicate())
 
