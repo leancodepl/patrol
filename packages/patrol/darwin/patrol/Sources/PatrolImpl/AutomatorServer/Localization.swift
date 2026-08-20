@@ -91,7 +91,7 @@ class Localization {
   }
 }
 
-@objc public class ObjCLocalization: NSObject {
+@objc(ObjCLocalization) public class ObjCLocalization: NSObject {
   @objc public static func getLocalizedString(key: String) -> String {
     do {
       return try Localization.getLocalizedString(key: key)

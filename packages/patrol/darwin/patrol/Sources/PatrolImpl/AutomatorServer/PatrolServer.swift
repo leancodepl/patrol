@@ -4,7 +4,7 @@ import Foundation
   import Darwin
 #endif
 
-@objc public class PatrolServer: NSObject {
+@objc(PatrolServer) public class PatrolServer: NSObject {
   private static let envPortKey = "PATROL_TEST_PORT"
 
   private static let defaultPort = 8081

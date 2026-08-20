@@ -289,17 +289,24 @@ class RunDartTestResponse with Equatable {
 
 @JsonSerializable()
 class ConfigureRequest with Equatable {
-  const ConfigureRequest({required this.findTimeoutMillis});
+  const ConfigureRequest({
+    required this.findTimeoutMillis,
+    this.androidDontSuppressAccessibilityServices,
+  });
 
   factory ConfigureRequest.fromJson(Map<String, dynamic> json) =>
       _$ConfigureRequestFromJson(json);
 
   final int findTimeoutMillis;
+  final bool? androidDontSuppressAccessibilityServices;
 
   Map<String, dynamic> toJson() => _$ConfigureRequestToJson(this);
 
   @override
-  List<Object?> get props => [findTimeoutMillis];
+  List<Object?> get props => [
+    findTimeoutMillis,
+    androidDontSuppressAccessibilityServices,
+  ];
 }
 
 @JsonSerializable()

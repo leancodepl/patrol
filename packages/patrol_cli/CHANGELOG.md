@@ -1,5 +1,11 @@
 ## Unreleased
 
+- Allow the latest `package_config` (3.x), `cli_completion` (0.6.x) and `pub_updater` (0.6.x), without raising the minimum Dart SDK.
+
+## 4.7.0
+
+- **Requires `patrol` 4.9.0 or newer.**
+- Pass `-Ppatrol-enabled=true` to Android Gradle builds so apps can detect a Patrol build.
 - Support running Patrol tests on multiple iOS simulators in parallel, by reading the native automation ports at runtime in the generated test bundle. See the [Marathon integration guide](https://patrol.leancode.co/documentation/integrations/marathon).
 - Add experimental build-time test discovery, enabled with `patrol.emit_test_manifest` in
   pubspec.yaml (or `--emit-test-manifest`): Dart tests are discovered while building and each
@@ -10,7 +16,6 @@
   discovery. (#3197)
 - Add `--record-video` flag to `patrol test` and `patrol develop` to record a video per test case (Android and iOS simulators). (#2741)
 - Fix `patrol test`/`patrol develop` not reading logs from iOS simulators, by streaming the simulator's log via `simctl spawn`. (#3198)
-- Allow the latest `package_config` (3.x), `cli_completion` (0.6.x) and `pub_updater` (0.6.x), without raising the minimum Dart SDK.
 
 ## 4.6.1
 

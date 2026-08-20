@@ -69,10 +69,16 @@ const _$RunDartTestResponseResultEnumMap = {
 ConfigureRequest _$ConfigureRequestFromJson(Map<String, dynamic> json) =>
     ConfigureRequest(
       findTimeoutMillis: (json['findTimeoutMillis'] as num).toInt(),
+      androidDontSuppressAccessibilityServices:
+          json['androidDontSuppressAccessibilityServices'] as bool?,
     );
 
 Map<String, dynamic> _$ConfigureRequestToJson(ConfigureRequest instance) =>
-    <String, dynamic>{'findTimeoutMillis': instance.findTimeoutMillis};
+    <String, dynamic>{
+      'findTimeoutMillis': instance.findTimeoutMillis,
+      'androidDontSuppressAccessibilityServices':
+          instance.androidDontSuppressAccessibilityServices,
+    };
 
 OpenAppRequest _$OpenAppRequestFromJson(Map<String, dynamic> json) =>
     OpenAppRequest(appId: json['appId'] as String);
