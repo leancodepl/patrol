@@ -323,6 +323,26 @@
                         </items>
                     </menu>
                 </menuItem>
+                <menuItem title="Patrol Test" id="PtM-01-AbC">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <menu key="submenu" title="Patrol Test" id="PtS-02-DeF">
+                        <items>
+                            <menuItem title="Actions" id="PtI-03-GhI">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" title="Actions" id="PtS-04-JkL">
+                                    <items>
+                                        <menuItem title="Record Action" id="PtI-05-MnO">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="patrolMenuAction:" target="Voe-Tx-rLC" id="PtC-06-PqR"/>
+                                            </connections>
+                                        </menuItem>
+                                    </items>
+                                </menu>
+                            </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
                 <menuItem title="Help" id="EPT-qC-fAb">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Help" systemMenu="help" id="rJ0-wn-3NY"/>

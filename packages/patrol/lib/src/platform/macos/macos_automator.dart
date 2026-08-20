@@ -51,4 +51,11 @@ abstract interface class MacOSAutomator {
     String? appId,
     Duration? timeout,
   });
+
+  /// Taps a native application menu item identified by [path].
+  ///
+  /// The first segment is the top-level menu bar item and each following
+  /// segment is a menu item or submenu item, for example
+  /// `['File', 'Export', 'PDF']`.
+  Future<void> tapMenu(List<String> path, {Duration? timeout});
 }

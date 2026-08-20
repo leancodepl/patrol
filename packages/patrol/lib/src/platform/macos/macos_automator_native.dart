@@ -227,4 +227,27 @@ class MacOSAutomator implements macos_automator.MacOSAutomator {
       timeout: timeout,
     );
   }
+
+  @override
+  Future<void> tapMenu(List<String> path, {Duration? timeout}) async {
+    if (path.length < 2 || path.any((segment) => segment.isEmpty)) {
+      throw ArgumentError.value(
+        path,
+        'path',
+        'must contain a non-empty top-level menu and menu item',
+      );
+    }
+
+    await tap(
+      IOSSelector(text: path.first, elementType: IOSElementType.menuBarItem),
+      timeout: timeout,
+    );
+
+    for (final item in path.skip(1)) {
+      await tap(
+        IOSSelector(text: item, elementType: IOSElementType.menuItem),
+        timeout: timeout,
+      );
+    }
+  }
 }
