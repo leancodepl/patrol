@@ -6,10 +6,16 @@ import 'package:path_provider/path_provider.dart';
 import 'package:vm_service/vm_service.dart' as vms;
 import 'package:vm_service/vm_service_io.dart' as vms;
 
-/// Collects Dart line coverage from inside the running app and writes per-test
-/// LCOV files into a directory the patrol native runner picks up at
-/// instrumentation shutdown (it appends them to JaCoCo's `coverage.ec` so
-/// BrowserStack's coverage endpoint returns a merged report).
+/// Collects Dart line coverage from inside the running app and writes a single
+/// cumulative LCOV file into a directory the patrol native runner picks up
+/// after every test (it appends it to JaCoCo's `coverage.ec` so BrowserStack's
+/// coverage endpoint returns a merged report).
+///
+/// The VM service reports coverage cumulatively per isolate, so each snapshot
+/// is a superset of the previous one. We overwrite one file per run rather than
+/// emitting one file per test: keeping every per-test snapshot would duplicate
+/// earlier coverage in every later record and grow the appended payload roughly
+/// quadratically, risking BrowserStack's coverage size limit on large suites.
 ///
 /// Activated by `--dart-define=PATROL_BS_COVERAGE=true`. Optional
 /// `--dart-define=PATROL_BS_COVERAGE_PACKAGES=foo,bar` restricts collection
@@ -20,9 +26,9 @@ class BrowserStackCoverage {
   BrowserStackCoverage._();
 
   /// Whether the BS coverage hook is enabled. Wired via `--dart-define`.
-  static const bool enabled = bool.fromEnvironment('PATROL_BS_COVERAGE');
+  static const enabled = bool.fromEnvironment('PATROL_BS_COVERAGE');
 
-  static const String _packagesEnv = String.fromEnvironment(
+  static const _packagesEnv = String.fromEnvironment(
     'PATROL_BS_COVERAGE_PACKAGES',
   );
 
@@ -55,19 +61,26 @@ class BrowserStackCoverage {
   }
 
   /// Records that the named test finished by capturing a coverage snapshot
-  /// from every running isolate and writing it as LCOV. Safe to call when
-  /// [enabled] is false (no-op). Errors are swallowed and logged.
+  /// from every running isolate and writing it as LCOV, overwriting the single
+  /// cumulative file from earlier tests. Safe to call when [enabled] is false
+  /// (no-op). Errors are swallowed and logged.
   static Future<void> recordTestCompleted({
     required String testName,
     required String testFilePath,
     required bool passed,
   }) async {
-    if (!enabled) return;
-    if (!Platform.isAndroid) return;
+    if (!enabled) {
+      return;
+    }
+    if (!Platform.isAndroid) {
+      return;
+    }
 
     try {
       final outDir = await _resolveOutputDir();
-      if (outDir == null) return;
+      if (outDir == null) {
+        return;
+      }
 
       final service = await _connect();
       final vm = await service.getVM();
@@ -75,7 +88,9 @@ class BrowserStackCoverage {
 
       for (final isolateRef in vm.isolates ?? const <vms.IsolateRef>[]) {
         final id = isolateRef.id;
-        if (id == null) continue;
+        if (id == null) {
+          continue;
+        }
         try {
           final report = await service.getSourceReport(
             id,
@@ -89,20 +104,23 @@ class BrowserStackCoverage {
         }
       }
 
-      if (hitMap.isEmpty) return;
+      if (hitMap.isEmpty) {
+        return;
+      }
 
       final lcov = _formatLcov(testName: testName, hitMap: hitMap);
-      final safeName = testName.replaceAll(RegExp(r'[^A-Za-z0-9._-]'), '_');
-      final file = File('$outDir/$safeName.lcov');
+      // Single cumulative file, overwritten each test. VM coverage accumulates
+      // per isolate, so the latest snapshot already contains every prior test.
+      final file = File('$outDir/coverage.lcov');
       await file.writeAsString(lcov, flush: true);
       // ignore: avoid_print -- coverage diagnostics go through stdout/logcat.
       print(
         'BrowserStackCoverage: wrote ${file.path} '
         '(${hitMap.length} files, passed=$passed)',
       );
-    } catch (e, st) {
+    } catch (err, st) {
       // ignore: avoid_print -- coverage failure must not fail the test.
-      print('BrowserStackCoverage: failed to record $testName: $e\n$st');
+      print('BrowserStackCoverage: failed to record $testName: $err\n$st');
     }
   }
 
@@ -113,13 +131,23 @@ class BrowserStackCoverage {
     final scripts = report.scripts ?? const <vms.ScriptRef>[];
     for (final range in report.ranges ?? const <vms.SourceReportRange>[]) {
       final coverage = range.coverage;
-      if (coverage == null) continue;
+      if (coverage == null) {
+        continue;
+      }
       final scriptIndex = range.scriptIndex;
-      if (scriptIndex == null) continue;
-      if (scriptIndex < 0 || scriptIndex >= scripts.length) continue;
+      if (scriptIndex == null) {
+        continue;
+      }
+      if (scriptIndex < 0 || scriptIndex >= scripts.length) {
+        continue;
+      }
       final uriStr = scripts[scriptIndex].uri;
-      if (uriStr == null) continue;
-      if (!_shouldInclude(uriStr)) continue;
+      if (uriStr == null) {
+        continue;
+      }
+      if (!_shouldInclude(uriStr)) {
+        continue;
+      }
 
       final perFile = hitMap.putIfAbsent(uriStr, () => <int, int>{});
       for (final hit in coverage.hits ?? const <int>[]) {
@@ -141,11 +169,21 @@ class BrowserStackCoverage {
       return patterns.any((p) => p.hasMatch(uri));
     }
     // Default: skip SDK/flutter framework noise.
-    if (uri.startsWith('dart:')) return false;
-    if (uri.startsWith('package:flutter/')) return false;
-    if (uri.startsWith('package:flutter_test/')) return false;
-    if (uri.startsWith('package:patrol/')) return false;
-    if (uri.startsWith('package:patrol_finders/')) return false;
+    if (uri.startsWith('dart:')) {
+      return false;
+    }
+    if (uri.startsWith('package:flutter/')) {
+      return false;
+    }
+    if (uri.startsWith('package:flutter_test/')) {
+      return false;
+    }
+    if (uri.startsWith('package:patrol/')) {
+      return false;
+    }
+    if (uri.startsWith('package:patrol_finders/')) {
+      return false;
+    }
     return true;
   }
 
@@ -165,7 +203,9 @@ class BrowserStackCoverage {
       for (final line in sortedLines) {
         final count = lines[line]!;
         buf.writeln('DA:$line,$count');
-        if (count > 0) hit++;
+        if (count > 0) {
+          hit++;
+        }
       }
       buf
         ..writeln('LF:${sortedLines.length}')
@@ -176,7 +216,9 @@ class BrowserStackCoverage {
   }
 
   static Future<String?> _resolveOutputDir() async {
-    if (_cachedDir != null) return _cachedDir;
+    if (_cachedDir != null) {
+      return _cachedDir;
+    }
     try {
       // path_provider is auto-registered in any host app that depends on it
       // directly (or transitively via flutter plugins); on Android it returns
@@ -189,9 +231,11 @@ class BrowserStackCoverage {
       }
       _cachedDir = coverageDir.path;
       return _cachedDir;
-    } catch (e) {
+    } catch (err) {
       // ignore: avoid_print -- coverage diagnostics must not fail the test.
-      print('BrowserStackCoverage: getApplicationSupportDirectory failed: $e');
+      print(
+        'BrowserStackCoverage: getApplicationSupportDirectory failed: $err',
+      );
       return null;
     }
   }
