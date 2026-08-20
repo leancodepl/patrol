@@ -21,20 +21,22 @@ class MainFlutterWindow: NSWindow {
     )
 
     channel.setMethodCallHandler { call, result in
-      guard call.method == "showAlert" else {
+      switch call.method {
+      case "showAlert":
+        let alert = NSAlert()
+        alert.messageText = "Patrol macOS Alert"
+        alert.informativeText = "Native NSAlert for Patrol automation"
+        alert.alertStyle = .informational
+        alert.addButton(withTitle: "OK")
+        alert.addButton(withTitle: "Cancel")
+
+        let response = alert.runModal()
+        result(response == .alertFirstButtonReturn ? "ok" : "cancel")
+      case "getPatrolMenuActionCount":
+        result(AppDelegate.patrolMenuActionCount)
+      default:
         result(FlutterMethodNotImplemented)
-        return
       }
-
-      let alert = NSAlert()
-      alert.messageText = "Patrol macOS Alert"
-      alert.informativeText = "Native NSAlert for Patrol automation"
-      alert.alertStyle = .informational
-      alert.addButton(withTitle: "OK")
-      alert.addButton(withTitle: "Cancel")
-
-      let response = alert.runModal()
-      result(response == .alertFirstButtonReturn ? "ok" : "cancel")
     }
   }
 }
