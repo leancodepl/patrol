@@ -94,7 +94,10 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         if (coverageFilePath != null && !coverageFilePath.isEmpty()) {
             return new File(coverageFilePath);
         }
-        return new File(getTargetContext().getDataDir(), "coverage.ec");
+        // getFilesDir() is available on all supported API levels (unlike
+        // getDataDir(), API 24+) and matches the <filesDir>/patrol_coverage
+        // location the Dart side and BrowserStackCoverage use.
+        return new File(getTargetContext().getFilesDir(), "coverage.ec");
     }
 
     /**
