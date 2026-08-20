@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add `patrol bs pull-coverage` subcommand. Downloads a BrowserStack Espresso coverage `.ec` and splits it into a standard JaCoCo `jacoco.exec` plus a Dart `patrol_lcov.info` produced by patrol's BS coverage hook. (#3066)
+
 ## 4.7.0
 
 - **Requires `patrol` 4.9.0 or newer.**
