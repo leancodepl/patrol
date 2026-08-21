@@ -1,3 +1,7 @@
+## Unreleased
+
+- Allow the latest `package_config` (3.x), `cli_completion` (0.6.x) and `pub_updater` (0.6.x), without raising the minimum Dart SDK.
+
 ## 4.7.0
 
 - **Requires `patrol` 4.9.0 or newer.**
