@@ -119,11 +119,16 @@ abstract final class ScreenshotService {
     // Get the list of debuggable targets
     final httpClient = HttpClient();
     try {
-      final request = await httpClient.getUrl(
-        Uri.parse('http://localhost:$debuggerPort/json'),
+      final request = await httpClient
+          .getUrl(Uri.parse('http://localhost:$debuggerPort/json'))
+          .timeout(const Duration(seconds: 5));
+      final response = await request.close().timeout(
+        const Duration(seconds: 5),
       );
-      final response = await request.close();
-      final body = await response.transform(utf8.decoder).join();
+      final body = await response
+          .transform(utf8.decoder)
+          .join()
+          .timeout(const Duration(seconds: 5));
       final targets = jsonDecode(body) as List;
 
       // Find the first page target
@@ -164,7 +169,7 @@ abstract final class ScreenshotService {
         await ws.close();
       }
     } finally {
-      httpClient.close();
+      httpClient.close(force: true);
     }
   }
 
