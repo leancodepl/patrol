@@ -86,6 +86,12 @@ class AndroidAutomatorClient {
     return _sendRequest('swipe', request.toJson());
   }
 
+  Future<void> takeNativeScreenshot(
+    AndroidTakeNativeScreenshotRequest request,
+  ) {
+    return _sendRequest('takeNativeScreenshot', request.toJson());
+  }
+
   Future<void> enableLocation() {
     return _sendRequest('enableLocation');
   }

@@ -850,6 +850,14 @@ Map<String, dynamic> _$AndroidTakeCameraPhotoRequestToJson(
   'timeoutMillis': instance.timeoutMillis,
 };
 
+AndroidTakeNativeScreenshotRequest _$AndroidTakeNativeScreenshotRequestFromJson(
+  Map<String, dynamic> json,
+) => AndroidTakeNativeScreenshotRequest(tag: json['tag'] as String);
+
+Map<String, dynamic> _$AndroidTakeNativeScreenshotRequestToJson(
+  AndroidTakeNativeScreenshotRequest instance,
+) => <String, dynamic>{'tag': instance.tag};
+
 IOSTakeCameraPhotoRequest _$IOSTakeCameraPhotoRequestFromJson(
   Map<String, dynamic> json,
 ) => IOSTakeCameraPhotoRequest(

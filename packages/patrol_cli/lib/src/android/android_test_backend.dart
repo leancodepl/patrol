@@ -375,6 +375,8 @@ class AndroidTestBackend {
     required bool clearTestSteps,
     void Function(Entry entry)? onLogEntry,
     VideoRecordingConfig? videoConfig,
+    bool pullScreenshots = false,
+    String? screenshotsOutputDir,
   }) async {
     await _disposeScope.run((scope) async {
       // Create video recording manager if enabled
@@ -382,6 +384,7 @@ class AndroidTestBackend {
       if (videoConfig?.enabled ?? false) {
         videoRecordingManager = AndroidVideoRecordingManager(
           processManager: _processManager,
+          adb: _adb,
           rootDirectory: _rootDirectory,
           logger: _logger,
           config: videoConfig!,
@@ -436,6 +439,17 @@ class AndroidTestBackend {
             ).findGeneratedClassName(_rootDirectory.childDirectory('android'))
           : null;
 
+      // Start from a clean slate so the screenshots pulled after this run
+      // belong to it. Leftovers from an aborted run or from `develop` (which
+      // captures but never pulls) would otherwise land in its artifacts.
+      if (pullScreenshots) {
+        await _adb.remove(
+          _deviceScreenshotsDir,
+          device: device.id,
+          recursive: true,
+        );
+      }
+
       final process =
           await _processManager.start(
               options.toGradleConnectedTestInvocation(
@@ -469,6 +483,13 @@ class AndroidTestBackend {
 
       // Cleanup video recording manager
       await videoRecordingManager?.dispose();
+
+      // Pull native screenshots (failure and on-demand) off the device.
+      // Runs whether tests passed or failed - before the exit-code check below
+      // that throws on failure - so failing runs still yield their screenshots.
+      if (pullScreenshots && screenshotsOutputDir != null) {
+        await pullDeviceScreenshots(device, screenshotsOutputDir);
+      }
 
       // Don't print the summary in develop
       if (!interruptible) {
@@ -821,6 +842,51 @@ class AndroidTestBackend {
     await _adb.uninstall(appId, device: device.id);
     _logger.detail('Uninstalling $appId.test from ${device.name}');
     await _adb.uninstall('$appId.test', device: device.id);
+  }
+
+  /// Where patrol writes native screenshots on the device.
+  static const _deviceScreenshotsDir = '/sdcard/Download/screenshots';
+
+  /// Pulls native screenshots from [device] into [outputDir]. Best-effort: never
+  /// throws; a missing directory (nothing captured) is not an error.
+  @visibleForTesting
+  Future<void> pullDeviceScreenshots(Device device, String outputDir) async {
+    try {
+      final destination = _rootDirectory.childDirectory(outputDir);
+      // `adb pull` renames the pulled dir to [destination] only when it doesn't
+      // exist; otherwise it nests under it. Start clean so the caller's chosen
+      // basename is honored (e.g. `--screenshots-output-dir=my_shots`).
+      if (destination.existsSync()) {
+        destination.deleteSync(recursive: true);
+      }
+      destination.parent.createSync(recursive: true);
+
+      final pullResult = await _adb.pull(
+        source: _deviceScreenshotsDir,
+        destination: destination.path,
+        device: device.id,
+      );
+
+      if (pullResult.exitCode != 0) {
+        _logger.detail('No screenshots to pull from device.');
+        return;
+      }
+
+      _logger.info('Screenshots saved to ${destination.path}');
+
+      // Remove them so the next run doesn't re-pull stale files.
+      try {
+        await _adb.remove(
+          _deviceScreenshotsDir,
+          device: device.id,
+          recursive: true,
+        );
+      } catch (err) {
+        _logger.detail('Failed to remove screenshots from device: $err');
+      }
+    } catch (err) {
+      _logger.warn('Failed to pull screenshots from device: $err');
+    }
   }
 
   /// Generates the Android test report path based on build mode and flavor.
