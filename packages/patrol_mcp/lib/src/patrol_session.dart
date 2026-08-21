@@ -155,6 +155,7 @@ class PatrolStatus {
     this.currentTestFile,
     this.warning,
     this.deviceSelectionNote,
+    this.error,
     this.deviceName,
     this.deviceId,
     this.devicePlatform,
@@ -166,6 +167,7 @@ class PatrolStatus {
   final String? currentTestFile;
   final String? warning;
   final String? deviceSelectionNote;
+  final String? error;
   final String? deviceName;
   final String? deviceId;
   final String? devicePlatform;
@@ -178,6 +180,7 @@ class PatrolStatus {
     'currentTestFile': ?currentTestFile,
     'warning': ?warning,
     'deviceSelectionNote': ?deviceSelectionNote,
+    'error': ?error,
     'deviceName': ?deviceName,
     'deviceId': ?deviceId,
     'devicePlatform': ?devicePlatform,
@@ -202,6 +205,7 @@ final class PatrolSession {
   var _isRunning = false;
   String? _currentTestFile;
   final _outputs = <String>[];
+  final _errorDetails = <String>[];
   TestState _testState = TestState.idle;
 
   /// Set while quitting so a backend exit we caused isn't reported as a crash.
@@ -226,6 +230,11 @@ final class PatrolSession {
   Device? get device => _developService?.device;
   int? get testServerPort => _testServerPort;
 
+  /// The underlying develop service, exposed so that callers (e.g. MCP tool
+  /// registrations) can read platform-specific properties like the web
+  /// debugger port without routing every accessor through [PatrolSession].
+  DevelopService? get developService => _developService;
+
   /// Returns null if started successfully, or a warning message if blocked
   Future<String?> _start(String testFile, {String? device}) async {
     _deviceSelectionNote = null;
@@ -242,7 +251,7 @@ final class PatrolSession {
             '${this.device?.name ?? 'the current device'}. Use quit '
             'first to switch devices.';
       }
-      sendCommand(PatrolCommand.hotRestart);
+      await sendCommand(PatrolCommand.hotRestart);
       return null;
     }
 
@@ -298,7 +307,8 @@ final class PatrolSession {
       final selected = autoSelectDevice(attached);
       if (selected == null) {
         return 'No Android or iOS device detected. Start an emulator or '
-            'simulator (or connect a device) and try again.';
+            'simulator (or connect a device) and try again, or pass '
+            'device: "chrome" to run in a browser.';
       }
       flagParts.addAll(['--device', selected.id]);
       if (supportedDevices(attached).length > 1) {
@@ -370,6 +380,7 @@ final class PatrolSession {
     _quitRequested = false;
     _finishWarning = null;
     _outputs.clear();
+    _errorDetails.clear();
     // Create the completer eagerly so callbacks can signal it even if
     // test completion happens before _waitForFinish is called.
     _finishCompleter = Completer<void>();
@@ -431,7 +442,7 @@ final class PatrolSession {
   /// torn down. Safe to call when idle or repeatedly.
   Future<void> dispose() async {
     if (_isRunning) {
-      sendCommand(PatrolCommand.quit);
+      unawaited(sendCommand(PatrolCommand.quit));
     }
     // Await any in-flight teardown -- the quit above, or one the session
     // already started on its own -- so children are reaped before we exit.
@@ -483,9 +494,18 @@ final class PatrolSession {
   /// Structured signal from patrol framework (via PATROL_LOG ConfigEntry) that
   /// all tests were executed in develop mode.
   void _handleEntry(Entry entry) {
+    // Collect error details from ErrorEntry messages.
+    if (entry is ErrorEntry) {
+      _errorDetails.add(entry.message);
+      return;
+    }
+
     if (entry is TestEntry &&
         entry.status == TestEntryStatus.failure &&
         _testState == TestState.running) {
+      if (entry.error != null) {
+        _errorDetails.add(entry.error!);
+      }
       _testState = TestState.finishedFailed;
       _completeFinish();
       return;
@@ -501,9 +521,10 @@ final class PatrolSession {
 
   /// Backend exit signal from [DevelopService].
   ///
-  /// In develop mode runs stay alive for hot restart, so a backend exit while
-  /// running means the app shut down early -- report it as a failure. Our own
-  /// quit also exits it but flips to idle first; [_quitRequested] covers the race.
+  /// Develop sessions stay alive across hot restarts on every platform, so a
+  /// backend exit while running means the app shut down early -- report it as a
+  /// failure. Our own quit also exits it but flips to idle first;
+  /// [_quitRequested] covers the race.
   void _handleTestsCompleted(TestCompletionResult result) {
     if (_quitRequested || _testState != TestState.running) {
       return;
@@ -528,7 +549,7 @@ final class PatrolSession {
     return line.replaceAll(RegExp(r'\x1B\[[0-9;?]*[ -/]*[@-~]'), '').trim();
   }
 
-  String sendCommand(PatrolCommand command) {
+  Future<String> sendCommand(PatrolCommand command) async {
     final logger = Logger('PatrolSession');
 
     if (command == PatrolCommand.quit) {
@@ -560,6 +581,7 @@ final class PatrolSession {
       }
 
       _outputs.clear();
+      _errorDetails.clear();
       _testState = TestState.running;
       _finishWarning = null;
       // Complete the old completer so any previous waiters are unblocked, then
@@ -568,7 +590,7 @@ final class PatrolSession {
       _completeFinish();
       _finishCompleter = Completer<void>();
 
-      return 'Hot restart sent to patrol session';
+      return 'Restart sent to patrol session';
     }
 
     throw StateError('Unknown command: ${command.value}');
@@ -583,6 +605,7 @@ final class PatrolSession {
       currentTestFile: _currentTestFile,
       warning: overrideWarning ?? _finishWarning,
       deviceSelectionNote: _deviceSelectionNote,
+      error: _errorDetails.isNotEmpty ? _errorDetails.join('\n') : null,
       deviceName: dev?.name,
       deviceId: dev?.id,
       devicePlatform: dev?.targetPlatform.name,

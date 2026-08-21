@@ -1,3 +1,8 @@
+## Unreleased
+
+- Support web develop sessions: the `devices` tool now lists browsers (e.g. `chrome`) and `run` accepts them as `device`. Web is still never auto-selected, since a browser is rarely what "run the test" means when a phone is attached, so pass it explicitly. `screenshot` already worked on web via CDP; `native-tree` remains Android/iOS only.
+- Drop the web-specific session handling that existed only because `patrol develop` on web restarted cold: web sessions now stay alive across hot restarts like mobile ones, so there are no stale completion callbacks to suppress and no orphaned Flutter/Chrome process to force-kill. Requires the first `patrol_cli` release after 4.7.0.
+
 ## 0.2.0
 
 - Multi-device support: `run` auto-selects a device (Android before iOS, real before emulator/simulator) or targets one you pass as `device`, and a new `devices` tool lists what's attached. A `--device` in `PATROL_FLAGS` still wins.

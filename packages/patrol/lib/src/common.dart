@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol/src/binding.dart';
+import 'package:patrol/src/develop_generation.dart';
 import 'package:patrol/src/global_state.dart' as global_state;
 import 'package:patrol/src/native/native_automator_config.dart';
 import 'package:patrol/src/platform/contracts/contracts.dart';
@@ -179,6 +180,13 @@ void patrolTest(
         web: platformAutomator.web.configure,
       );
 
+      // Claim the app for this run. On web a hot restart re-runs main() in the
+      // same page, so this invalidates the idle loop left behind by the
+      // previous generation. No-op off the web.
+      final generation = constants.hotRestartEnabled
+          ? claimDevelopGeneration()
+          : 0;
+
       patrolLog.log(
         TestEntry(
           name: global_state.currentTestFullName,
@@ -192,7 +200,7 @@ void patrolTest(
       );
       try {
         await callback(patrolTester);
-      } catch (_) {
+      } catch (err, st) {
         if (constants.hotRestartEnabled) {
           patrolLog.log(
             TestEntry(
@@ -200,6 +208,13 @@ void patrolTest(
               status: TestEntryStatus.failure,
             ),
           );
+          final details = switch (err) {
+            TestFailure(:final message?) => message,
+            _ => '$err\n$st',
+          };
+          details
+              .split('\n')
+              .forEach((line) => patrolLog.log(ErrorEntry(message: line)));
         }
         rethrow;
       }
@@ -250,10 +265,13 @@ void patrolTest(
           ..log(
             ConfigEntry(config: const {ConfigEntry.developCompletedKey: true}),
           );
-        // Wait indefinitely in develop mode after the last test. The app stays
-        // interactive here, so keep reporting exceptions (e.g. from manual taps
-        // while iterating) as they happen instead of losing them.
-        while (true) {
+        // Wait indefinitely in develop mode after the last test, reporting
+        // exceptions from manual interactions as they happen. On web, bail out
+        // once a newer hot-restart generation claims the app or the engine
+        // starts tearing the view down, or this loop keeps pumping frames into
+        // a disposed EngineFlutterView and floods the console with assertions.
+        while (isCurrentDevelopGeneration(generation) &&
+            patrolBinding.platformDispatcher.implicitView != null) {
           await widgetTester.pump();
           reportDevelopException();
           await Future<void>.delayed(const Duration(milliseconds: 10));
