@@ -1,3 +1,4 @@
+import { AppFeatureFlagsProvider } from "@/components/FeatureFlagsProvider"
 import { config } from "@fortawesome/fontawesome-svg-core"
 import { GoogleTagManager } from "@next/third-parties/google"
 import { Banner } from "fumadocs-ui/components/banner"
@@ -32,7 +33,7 @@ export default function Layout({ children }: LayoutProps<"/">) {
               </a>
             </span>
           </Banner>
-          {children}
+          <AppFeatureFlagsProvider>{children}</AppFeatureFlagsProvider>
         </RootProvider>
       </body>
       <GoogleTagManager gtmId="GTM-PBMQJ8GM" />
