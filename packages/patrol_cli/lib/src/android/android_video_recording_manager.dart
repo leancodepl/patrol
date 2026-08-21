@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:adb/adb.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
-import 'package:patrol_cli/src/android/adb_commands.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
 import 'package:patrol_cli/src/crossplatform/video_recording_manager.dart';
@@ -15,12 +15,14 @@ import 'package:process/process.dart';
 class AndroidVideoRecordingManager extends VideoRecordingManager {
   AndroidVideoRecordingManager({
     required ProcessManager processManager,
+    required Adb adb,
     required Directory rootDirectory,
     required Logger logger,
     required VideoRecordingConfig config,
     required Device device,
     required DisposeScope scope,
   }) : _processManager = processManager,
+       _adb = adb,
        _rootDirectory = rootDirectory,
        _logger = logger,
        _config = config,
@@ -28,6 +30,7 @@ class AndroidVideoRecordingManager extends VideoRecordingManager {
        _scope = scope;
 
   final ProcessManager _processManager;
+  final Adb _adb;
   final Directory _rootDirectory;
   final Logger _logger;
   final VideoRecordingConfig _config;
@@ -179,11 +182,10 @@ class AndroidVideoRecordingManager extends VideoRecordingManager {
 
       // Pull the video file from device
       final localVideoPath = outputDir.childFile(_currentVideoFilename!).path;
-      final pullResult = await adbPull(
-        _processManager,
+      final pullResult = await _adb.pull(
         source: _currentDeviceVideoPath!,
         destination: localVideoPath,
-        deviceId: _device.id,
+        device: _device.id,
       );
 
       if (pullResult.exitCode != 0) {
@@ -192,10 +194,9 @@ class AndroidVideoRecordingManager extends VideoRecordingManager {
 
       // Clean up the file from device
       try {
-        final removeResult = await adbRemove(
-          _processManager,
-          path: _currentDeviceVideoPath!,
-          deviceId: _device.id,
+        final removeResult = await _adb.remove(
+          _currentDeviceVideoPath!,
+          device: _device.id,
         );
 
         if (removeResult.exitCode != 0) {

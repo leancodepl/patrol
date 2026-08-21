@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add `pull` and `remove` methods to `Adb`, so callers use one place for adb resolution and device handling instead of raw `adb` invocations. (#3222)
+
 ## 0.6.0
 
 - Bump `custom_lint` to `0.7.0` and `leancode_lint` to `14.3.0`. (#2574)

@@ -14,7 +14,7 @@
   without rebuilding, optionally just one of them with `--only`. Requires build-time test
   discovery. (#3197)
 - Add `--record-video` flag to `patrol test` and `patrol develop` to record a video per test case (Android and iOS simulators). (#2741)
-- Add `screenshot_on_failure` option to the pubspec's `patrol` section, forwarded to the app (via a dart-define) across `build`, `test`, and `develop` so patrol can capture native failure screenshots on Android device farms (e.g. BrowserStack, Firebase Test Lab). Off by default. (#3222)
+- Add `screenshot_on_failure` option to the pubspec's `patrol` section, forwarded to the app (via a dart-define) for `build` and `test` so patrol can capture native failure screenshots on Android device farms (e.g. BrowserStack, Firebase Test Lab). Not collected by `patrol develop`. Off by default. (#3222)
 - `patrol test` (Android) now pulls native screenshots (failure and on-demand) from the device into `<test-directory>/screenshots` after the run (override with `--screenshots-output-dir`), so they are available from local/emulator runs, not only device farms. (#3222)
 - Fix `patrol test`/`patrol develop` not reading logs from iOS simulators, by streaming the simulator's log via `simctl spawn`. (#3198)
 

@@ -6,7 +6,6 @@ import 'package:adb/adb.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:meta/meta.dart';
-import 'package:patrol_cli/src/android/adb_commands.dart';
 import 'package:patrol_cli/src/android/android_test_codegen.dart';
 import 'package:patrol_cli/src/android/android_video_recording_manager.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
@@ -377,7 +376,7 @@ class AndroidTestBackend {
     void Function(Entry entry)? onLogEntry,
     VideoRecordingConfig? videoConfig,
     bool pullScreenshots = false,
-    String screenshotsOutputDir = 'screenshots',
+    String? screenshotsOutputDir,
   }) async {
     await _disposeScope.run((scope) async {
       // Create video recording manager if enabled
@@ -385,6 +384,7 @@ class AndroidTestBackend {
       if (videoConfig?.enabled ?? false) {
         videoRecordingManager = AndroidVideoRecordingManager(
           processManager: _processManager,
+          adb: _adb,
           rootDirectory: _rootDirectory,
           logger: _logger,
           config: videoConfig!,
@@ -439,6 +439,17 @@ class AndroidTestBackend {
             ).findGeneratedClassName(_rootDirectory.childDirectory('android'))
           : null;
 
+      // Start from a clean slate so the screenshots pulled after this run
+      // belong to it. Leftovers from an aborted run or from `develop` (which
+      // captures but never pulls) would otherwise land in its artifacts.
+      if (pullScreenshots) {
+        await _adb.remove(
+          _deviceScreenshotsDir,
+          device: device.id,
+          recursive: true,
+        );
+      }
+
       final process =
           await _processManager.start(
               options.toGradleConnectedTestInvocation(
@@ -476,7 +487,7 @@ class AndroidTestBackend {
       // Pull native screenshots (failure and on-demand) off the device.
       // Runs whether tests passed or failed - before the exit-code check below
       // that throws on failure - so failing runs still yield their screenshots.
-      if (pullScreenshots) {
+      if (pullScreenshots && screenshotsOutputDir != null) {
         await pullDeviceScreenshots(device, screenshotsOutputDir);
       }
 
@@ -841,17 +852,19 @@ class AndroidTestBackend {
   @visibleForTesting
   Future<void> pullDeviceScreenshots(Device device, String outputDir) async {
     try {
-      // adb pull recreates the `screenshots` basename under [parent].
-      final parent = _rootDirectory.childDirectory(outputDir).parent;
-      if (!parent.existsSync()) {
-        parent.createSync(recursive: true);
+      final destination = _rootDirectory.childDirectory(outputDir);
+      // `adb pull` renames the pulled dir to [destination] only when it doesn't
+      // exist; otherwise it nests under it. Start clean so the caller's chosen
+      // basename is honored (e.g. `--screenshots-output-dir=my_shots`).
+      if (destination.existsSync()) {
+        destination.deleteSync(recursive: true);
       }
+      destination.parent.createSync(recursive: true);
 
-      final pullResult = await adbPull(
-        _processManager,
+      final pullResult = await _adb.pull(
         source: _deviceScreenshotsDir,
-        destination: parent.path,
-        deviceId: device.id,
+        destination: destination.path,
+        device: device.id,
       );
 
       if (pullResult.exitCode != 0) {
@@ -859,16 +872,13 @@ class AndroidTestBackend {
         return;
       }
 
-      _logger.info(
-        'Screenshots saved to ${parent.childDirectory('screenshots').path}',
-      );
+      _logger.info('Screenshots saved to ${destination.path}');
 
       // Remove them so the next run doesn't re-pull stale files.
       try {
-        await adbRemove(
-          _processManager,
-          path: _deviceScreenshotsDir,
-          deviceId: device.id,
+        await _adb.remove(
+          _deviceScreenshotsDir,
+          device: device.id,
           recursive: true,
         );
       } catch (err) {

@@ -18,6 +18,7 @@ import '../src/mocks.dart';
 void main() {
   group('AndroidTestBackend', () {
     late AndroidTestBackend androidTestBackend;
+    late MockAdb adb;
     late MockProcessManager processManager;
     late MockProcess process;
     late MockLogger logger;
@@ -25,6 +26,7 @@ void main() {
     late Directory rootDirectory;
 
     setUp(() {
+      adb = MockAdb();
       processManager = MockProcessManager();
       process = MockProcess();
       logger = MockLogger();
@@ -32,7 +34,7 @@ void main() {
       rootDirectory = fs.currentDirectory;
 
       androidTestBackend = AndroidTestBackend(
-        adb: MockAdb(),
+        adb: adb,
         processManager: processManager,
         platform: FakePlatform(),
         rootDirectory: rootDirectory,
@@ -54,55 +56,47 @@ void main() {
     });
 
     group('pullDeviceScreenshots', () {
-      setUp(() {
-        when(
-          () => processManager.run(any(), runInShell: any(named: 'runInShell')),
-        ).thenAnswer((_) async => ProcessResult(0, 0, '', ''));
-      });
-
       test(
-        'pulls the device screenshots dir and removes it on success',
+        'pulls the device screenshots dir into the output dir and removes it '
+        'on success',
         () async {
+          when(
+            () => adb.pull(
+              source: any(named: 'source'),
+              destination: any(named: 'destination'),
+              device: any(named: 'device'),
+            ),
+          ).thenAnswer((_) async => ProcessResult(0, 0, '', ''));
+          when(
+            () => adb.remove(
+              any(),
+              device: any(named: 'device'),
+              recursive: any(named: 'recursive'),
+            ),
+          ).thenAnswer((_) async => ProcessResult(0, 0, '', ''));
+
           await androidTestBackend.pullDeviceScreenshots(
             androidDevice,
-            'screenshots',
+            'my_shots',
           );
 
-          final expectedParent = rootDirectory
-              .childDirectory('screenshots')
-              .parent
-              .path;
-          final captured = verify(
-            () => processManager.run(
-              captureAny(),
-              runInShell: any(named: 'runInShell'),
+          // Pulled straight into the requested output dir (not its parent), so
+          // a custom basename is honored.
+          final expectedDest = rootDirectory.childDirectory('my_shots').path;
+          verify(
+            () => adb.pull(
+              source: '/sdcard/Download/screenshots',
+              destination: expectedDest,
+              device: androidDeviceId,
             ),
-          ).captured;
-
-          expect(captured, hasLength(2)); // pull + rm
-          expect(
-            captured.first,
-            equals([
-              'adb',
-              '-s',
-              androidDeviceId,
-              'pull',
+          ).called(1);
+          verify(
+            () => adb.remove(
               '/sdcard/Download/screenshots',
-              expectedParent,
-            ]),
-          );
-          expect(
-            captured.last,
-            equals([
-              'adb',
-              '-s',
-              androidDeviceId,
-              'shell',
-              'rm',
-              '-rf',
-              '/sdcard/Download/screenshots',
-            ]),
-          );
+              device: androidDeviceId,
+              recursive: true,
+            ),
+          ).called(1);
         },
       );
 
@@ -110,8 +104,11 @@ void main() {
         'does not throw and skips removal when nothing was captured',
         () async {
           when(
-            () =>
-                processManager.run(any(), runInShell: any(named: 'runInShell')),
+            () => adb.pull(
+              source: any(named: 'source'),
+              destination: any(named: 'destination'),
+              device: any(named: 'device'),
+            ),
           ).thenAnswer((_) async => ProcessResult(0, 1, '', 'No such file'));
 
           await androidTestBackend.pullDeviceScreenshots(
@@ -119,15 +116,21 @@ void main() {
             'screenshots',
           );
 
-          // Only the pull was attempted; no `rm` after a failed pull.
-          final captured = verify(
-            () => processManager.run(
-              captureAny(),
-              runInShell: any(named: 'runInShell'),
+          // No `rm` after a failed pull (nothing to clean up).
+          verify(
+            () => adb.pull(
+              source: any(named: 'source'),
+              destination: any(named: 'destination'),
+              device: any(named: 'device'),
             ),
-          ).captured;
-          expect(captured, hasLength(1));
-          expect(captured.first, contains('pull'));
+          ).called(1);
+          verifyNever(
+            () => adb.remove(
+              any(),
+              device: any(named: 'device'),
+              recursive: any(named: 'recursive'),
+            ),
+          );
         },
       );
     });

@@ -133,42 +133,11 @@ Check out our video version of this tutorial on YouTube!
     </Info>
 
     <Info>
-        **Native failure screenshots (device farms)**: Set
-        `screenshot_on_failure: true` to make Patrol capture a native screenshot
-        of the failing screen when a test fails. Patrol only writes the PNG on
-        the device, to `/sdcard/Download/screenshots/<class>/<method>/`. How it
-        reaches your run's artifacts depends on the farm:
-
-        - **Local runs (`patrol test`)**: Patrol pulls them into
-          `<test-directory>/screenshots` after the run (override with
-          `--screenshots-output-dir`; works with emulators too).
-        - **BrowserStack App Automate**: enable the Espresso
-          `debugscreenshots: true` capability; images appear in the Screenshots
-          tab. Also enable build-time test discovery (`emit_test_manifest`) so
-          each test reports a URL-safe name. On the default path the folder is
-          named from the raw Dart test name (`runDartTest[...]`), which
-          BrowserStack can't render when it has spaces/commas — and characters
-          like `:`/`/` are rewritten by Android's `MediaStore` (API 29+) so the
-          folder no longer matches the reported test. `emit_test_manifest`
-          avoids both (its generated names are identifiers).
-        - **Firebase Test Lab**: pass
-          `--directories-to-pull=/sdcard/Download/screenshots` so the files are
-          copied to the results bucket.
-        - **Other farms**: use the farm's file-collection mechanism, or pull them
-          yourself with `adb pull /sdcard/Download/screenshots`.
-
-        It is off by default and currently applies to Android only (a no-op on
-        iOS). It works in the `patrol build android` APK as well as
-        `patrol test`/`develop`. You can also capture on demand from a test with
-        `await $.takeNativeScreenshot('tag')`.
-
-        ```yaml title="pubspec.yaml (optional)"
-        patrol:
-          app_name: My App
-          screenshot_on_failure: true
-          android:
-            package_name: com.example.myapp
-        ```
+        **Native failure screenshots (device farms)**: set
+        `screenshot_on_failure: true` to capture the failing screen and collect
+        it from your device-farm run (Android only, off by default). See
+        [Screenshots](/cli-commands/test#screenshots) for setup and the per-farm
+        details.
     </Info>
 
     <Warning>
