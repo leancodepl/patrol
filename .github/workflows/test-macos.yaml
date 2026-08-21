@@ -95,6 +95,12 @@ jobs:
         working-directory: packages/patrol_cli
         run: dart pub global activate --source path . && patrol
 
+      - name: Pre-grant screen recording permission
+        run: |
+          sqlite3 "$HOME/Library/Application Support/com.apple.TCC/TCC.db" \
+            "INSERT OR REPLACE INTO access (service, client, client_type, auth_value, auth_reason, auth_version, flags) VALUES ('kTCCServiceScreenCapture','/usr/sbin/screencapture',1,2,4,1,0);"
+          sudo pkill tccd || true
+
       - name: Start screen recording
         run: |
           screencapture -v macos_screen_recording.mov &
