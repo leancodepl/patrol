@@ -101,9 +101,7 @@ jobs:
           sqlite3 "$HOME/Library/Application Support/com.apple.TCC/TCC.db" \
             "INSERT OR REPLACE INTO access (service, client, client_type, auth_value, auth_reason, auth_version, flags) VALUES ('kTCCServiceScreenCapture','/usr/sbin/screencapture',1,2,4,1,0);"
           sqlite3 "$HOME/Library/Application Support/com.apple.TCC/TCC.db" \
-            "INSERT OR REPLACE INTO access (service, client, client_type, auth_value, auth_reason, auth_version, flags) VALUES ('kTCCServiceAccessibility','/usr/bin/osascript',1,2,4,1,0);"
-          sqlite3 "$HOME/Library/Application Support/com.apple.TCC/TCC.db" \
-            "INSERT OR REPLACE INTO access (service, client, client_type, auth_value, auth_reason, auth_version, indirect_object_identifier_type, indirect_object_identifier, flags) VALUES ('kTCCServiceAppleEvents','/usr/bin/osascript',1,2,4,1,0,'com.apple.systemevents',0);"
+            "INSERT OR REPLACE INTO access (service, client, client_type, auth_value, auth_reason, auth_version, flags) VALUES ('kTCCServiceLocalNetwork','/opt/hca/hosted-compute-agent',1,2,4,1,0);"
           sudo pkill tccd || true
 
       - name: Pre-approve screencapture window picker bypass
@@ -116,33 +114,6 @@ jobs:
           killall replayd 2>/dev/null || true
           echo "--- plist after ---"
           plutil -p "$PLIST" 2>&1 || true
-
-      - name: Start permission dialog auto-clicker
-        run: |
-          cat > /tmp/click_allow.sh << 'EOF'
-          for i in $(seq 1 120); do
-            osascript -e '
-              tell application "System Events"
-                repeat with p in application processes
-                  try
-                    repeat with w in windows of p
-                      try
-                        if exists button "Allow" of w then
-                          click button "Allow" of w
-                          log "clicked Allow in process: " & (name of p as text)
-                        end if
-                      end try
-                    end repeat
-                  end try
-                end repeat
-              end tell' 2>> /tmp/click_allow.log || true
-            sleep 5
-          done
-          EOF
-          chmod +x /tmp/click_allow.sh
-          nohup /tmp/click_allow.sh > /dev/null 2>&1 &
-          echo $! > /tmp/clicker_pid
-          echo "Dialog auto-clicker started (PID: $(cat /tmp/clicker_pid))"
 
       - name: Start screen recording
         run: |
@@ -183,16 +154,14 @@ jobs:
             kill -9 $(cat /tmp/logstream_pid) 2>/dev/null || true
           fi
 
-      - name: Dump dialog auto-clicker diagnostics
+      - name: Dump permission diagnostics
         if: always()
         run: |
-          if [ -f /tmp/clicker_pid ]; then
-            kill -9 $(cat /tmp/clicker_pid) 2>/dev/null || true
-          fi
-          echo "--- click_allow.log ---"
-          cat /tmp/click_allow.log 2>&1 || true
           echo "--- ScreenCaptureApprovals.plist after tests ---"
           plutil -p "$HOME/Library/Group Containers/group.com.apple.replayd/ScreenCaptureApprovals.plist" 2>&1 || true
+          echo "--- LocalNetwork rows in TCC.db after tests ---"
+          sqlite3 "$HOME/Library/Application Support/com.apple.TCC/TCC.db" \
+            "SELECT service, client, auth_value FROM access WHERE service LIKE '%LocalNetwork%';" 2>&1 || true
 
       - name: Check if something went wrong
         id: status_step
