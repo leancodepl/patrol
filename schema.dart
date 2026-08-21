@@ -39,6 +39,9 @@ abstract class PatrolAppService<IOSClient, AndroidClient, DartServer> {
 
 class ConfigureRequest {
   late int findTimeoutMillis;
+  // Android only. true (default) keeps third-party AccessibilityServices running
+  // (FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES); false suppresses them.
+  bool? androidDontSuppressAccessibilityServices;
 }
 
 class OpenAppRequest {

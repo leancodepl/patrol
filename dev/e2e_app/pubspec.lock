@@ -870,14 +870,14 @@ packages:
       path: "../../packages/patrol"
       relative: true
     source: path
-    version: "4.8.0"
+    version: "4.9.0"
   patrol_cli:
     dependency: "direct dev"
     description:
       path: "../../packages/patrol_cli"
       relative: true
     source: path
-    version: "4.6.1"
+    version: "4.7.0"
   patrol_finders:
     dependency: transitive
     description:
@@ -890,17 +890,17 @@ packages:
     dependency: transitive
     description:
       name: patrol_log
-      sha256: "1f5b6f7e1d9feaab7a60eef31e34a83a6168d754e5c0336006a4f50fb5f27526"
+      sha256: "3d91c93e8d0ed19cb12d4b27aa24eca7294e0a48d9d8445505c9775feb5fde2d"
       url: "https://pub.dev"
     source: hosted
-    version: "0.10.0"
+    version: "0.10.1"
   patrol_mcp:
     dependency: "direct dev"
     description:
       path: "../../packages/patrol_mcp"
       relative: true
     source: path
-    version: "0.1.4"
+    version: "0.2.0"
   permission_handler:
     dependency: "direct main"
     description:

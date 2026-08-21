@@ -92,6 +92,14 @@ abstract class NativeMobileAutomator implements MobileAutomator {
     }
   }
 
+  /// Builds the request sent to the native automator's `configure` endpoint.
+  ///
+  /// Platform-specific automators override this to send extra, platform-only
+  /// options (e.g. Android accessibility flags).
+  @protected
+  ConfigureRequest buildConfigureRequest() =>
+      ConfigureRequest(findTimeoutMillis: _config.findTimeout.inMilliseconds);
+
   /// Configures the native automator.
   ///
   /// Must be called before using any native features.
@@ -104,11 +112,7 @@ abstract class NativeMobileAutomator implements MobileAutomator {
       try {
         await wrapRequest(
           'configure',
-          () => _client.configure(
-            ConfigureRequest(
-              findTimeoutMillis: _config.findTimeout.inMilliseconds,
-            ),
-          ),
+          () => _client.configure(buildConfigureRequest()),
           enablePatrolLog: false,
         );
         exception = null;

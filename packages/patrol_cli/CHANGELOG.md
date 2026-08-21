@@ -1,10 +1,12 @@
-## 4.6.1
-
-- Fix `patrol develop` printing "You must specify a --flavor option" on iOS/macOS projects with schemes, by passing the flavor to `flutter attach`.
-- Fail fast with a clear error instead of hanging on gradlew when the Android SDK can't be located (`sdk.dir` missing from `android/local.properties` after the config-only build). (#3168)
-
 ## Unreleased
 
+- Add `screenshot_on_failure` option to the pubspec's `patrol` section, forwarded to the app (via a dart-define) for `build` and `test` so patrol can capture native failure screenshots on Android device farms (e.g. BrowserStack, Firebase Test Lab). Not collected by `patrol develop`. Off by default. (#3222)
+- `patrol test` (Android) now pulls native screenshots (failure and on-demand) from the device into `<test-directory>/screenshots` after the run (override with `--screenshots-output-dir`), so they are available from local/emulator runs, not only device farms. (#3222)
+
+## 4.7.0
+
+- **Requires `patrol` 4.9.0 or newer.**
+- Pass `-Ppatrol-enabled=true` to Android Gradle builds so apps can detect a Patrol build.
 - Support running Patrol tests on multiple iOS simulators in parallel, by reading the native automation ports at runtime in the generated test bundle. See the [Marathon integration guide](https://patrol.leancode.co/documentation/integrations/marathon).
 - Add experimental build-time test discovery, enabled with `patrol.emit_test_manifest` in
   pubspec.yaml (or `--emit-test-manifest`): Dart tests are discovered while building and each
@@ -14,9 +16,12 @@
   without rebuilding, optionally just one of them with `--only`. Requires build-time test
   discovery. (#3197)
 - Add `--record-video` flag to `patrol test` and `patrol develop` to record a video per test case (Android and iOS simulators). (#2741)
-- Add `screenshot_on_failure` option to the pubspec's `patrol` section, forwarded to the app (via a dart-define) for `build` and `test` so patrol can capture native failure screenshots on Android device farms (e.g. BrowserStack, Firebase Test Lab). Not collected by `patrol develop`. Off by default. (#3222)
-- `patrol test` (Android) now pulls native screenshots (failure and on-demand) from the device into `<test-directory>/screenshots` after the run (override with `--screenshots-output-dir`), so they are available from local/emulator runs, not only device farms. (#3222)
 - Fix `patrol test`/`patrol develop` not reading logs from iOS simulators, by streaming the simulator's log via `simctl spawn`. (#3198)
+
+## 4.6.1
+
+- Fix `patrol develop` printing "You must specify a --flavor option" on iOS/macOS projects with schemes, by passing the flavor to `flutter attach`.
+- Fail fast with a clear error instead of hanging on gradlew when the Android SDK can't be located (`sdk.dir` missing from `android/local.properties` after the config-only build). (#3168)
 
 ## 4.6.0
 

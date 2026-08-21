@@ -113,16 +113,19 @@ class Automator private constructor() {
         if (!this::uiDevice.isInitialized) {
             uiDevice = UiDevice.getInstance(instrumentation)
         }
-        if (!this::uiAutomation.isInitialized) {
-            uiAutomation = instrumentation.uiAutomation
-        }
+        // Acquired in configure() with the requested flags (#3201), not here with flags=0.
     }
 
-    fun configure(waitForSelectorTimeout: Long) {
+    fun configure(
+        waitForSelectorTimeout: Long,
+        dontSuppressAccessibilityServices: Boolean = true
+    ) {
         timeoutMillis = waitForSelectorTimeout
         configurator.waitForSelectorTimeout = waitForSelectorTimeout
         configurator.waitForIdleTimeout = 5000
         configurator.keyInjectionDelay = 50
+
+        applyDontSuppressAccessibilityServices(dontSuppressAccessibilityServices)
 
         Logger.i("Timeout: $timeoutMillis ms")
         Logger.i("Android UiAutomator configuration:")
@@ -132,6 +135,25 @@ class Automator private constructor() {
         Logger.i("\tactionAcknowledgmentTimeout: ${configurator.actionAcknowledgmentTimeout} ms")
         Logger.i("\tscrollAcknowledgmentTimeout: ${configurator.scrollAcknowledgmentTimeout} ms")
         Logger.i("\ttoolType: ${configurator.toolType}")
+        Logger.i("\tuiAutomationFlags: ${configurator.uiAutomationFlags}")
+        Logger.i("\tdontSuppressAccessibilityServices: $dontSuppressAccessibilityServices")
+    }
+
+    // Applied for both values every configure(): the Configurator persists across a test
+    // bundle, so a later opt-out must flip the flag back. Requires API 24+.
+    private fun applyDontSuppressAccessibilityServices(dontSuppress: Boolean) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            if (!this::uiAutomation.isInitialized) {
+                uiAutomation = instrumentation.uiAutomation
+            }
+            if (dontSuppress) Logger.i("dontSuppressAccessibilityServices requires API 24+, ignoring")
+            return
+        }
+
+        val flags = if (dontSuppress) UiAutomation.FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES else 0
+        configurator.uiAutomationFlags = flags
+        uiAutomation = instrumentation.getUiAutomation(flags)
+        Logger.i("Acquired UiAutomation with uiAutomationFlags=$flags")
     }
 
     private fun executeShellCommand(cmd: String) {
