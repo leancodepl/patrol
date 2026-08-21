@@ -31,9 +31,37 @@ class TestEntry extends Entry {
     return '${status.name} $nameWithPath${error != null ? '\n$error' : ''}';
   }
 
+  /// The test name with its file path rendered next to it, e.g.
+  /// `signs in (patrol_test/app_test.dart)`.
+  ///
+  /// Falls back to the raw [name] when it has no file prefix, so the
+  /// description is preserved intact instead of losing its first word to
+  /// [_filePath].
   String get nameWithPath {
+    if (!_hasFilePathPrefix) {
+      return name;
+    }
     const testDirectory = String.fromEnvironment('PATROL_TEST_DIRECTORY');
     return '$_testName ${AnsiCodes.gray}($testDirectory/$_filePath.dart)${AnsiCodes.reset}';
+  }
+
+  /// Whether [name] starts with a test file prefix, e.g. `example_test` or
+  /// `permissions.permissions_location_test`, followed by the test
+  /// description.
+  ///
+  /// By default Patrol test files match `*_test.dart`, so a prefix ends with
+  /// `_test`, also for nested paths (`.` separates directory names). Without
+  /// this guard, a name logged without the prefix would lose the first word
+  /// of its description to [_filePath]. Projects that override
+  /// `patrol.test_file_suffix` are not covered yet — see
+  /// https://github.com/leancodepl/patrol/issues/3171.
+  bool get _hasFilePathPrefix {
+    final firstSpace = name.indexOf(' ');
+    if (firstSpace == -1) {
+      return false;
+    }
+    final firstToken = name.substring(0, firstSpace);
+    return firstToken.endsWith('_test');
   }
 
   /// Returns the file path of the test.

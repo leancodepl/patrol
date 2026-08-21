@@ -1,4 +1,4 @@
-import { docs } from "@/.source"
+import { docs } from "@/.source/server"
 import { fab, faDiscord, faXTwitter } from "@fortawesome/free-brands-svg-icons"
 import { faCode, fas } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"

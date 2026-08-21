@@ -1,0 +1,163 @@
+// This file is a one giant macro to make the setup as easy as possible for the developer.
+// To edit it:
+//  1. Remove the trailing backslashes: $ sed 's/\\$//' PatrolIntegrationTestMacosRunner.h
+//  2. Paste its contents into the RunnerUITests.m in the RunnerUITests target
+//  3. Make the changes, make sure it works
+//  4. Re-add trailing backslashes: $ sed 's/$/\\/' PatrolIntegrationTestMacosRunner.h
+//  5. Copy the contents from RunnerUITests.m back here
+//  6. Go back to using a macro in RunnerUITests.m
+
+// For every Flutter dart test, dynamically generate an Objective-C method mirroring the test results
+// so it is reported as a native XCTest run result.
+#define PATROL_INTEGRATION_TEST_MACOS_RUNNER(__test_class)                                                    \
+  @interface __test_class : XCTestCase                                                                        \
+  @end                                                                                                        \
+                                                                                                              \
+  @implementation __test_class                                                                                \
+                                                                                                              \
+  +(void)launchPatrolAppWithServer : (PatrolServer *)server {                                                 \
+    server.appReady = NO;                                                                                     \
+    XCUIApplication *app = [[XCUIApplication alloc] init];                                                    \
+    NSMutableDictionary<NSString *, NSString *> *environment =                                                \
+        [app.launchEnvironment mutableCopy] ?: [NSMutableDictionary dictionary];                              \
+    environment[@"PATROL_TEST_SERVER_PORT"] = [NSString stringWithFormat:@"%ld", (long)server.boundTestPort]; \
+    environment[@"PATROL_APP_SERVER_PORT"] = [NSString stringWithFormat:@"%ld", (long)server.boundAppPort];   \
+    app.launchEnvironment = environment;                                                                      \
+    [app launch];                                                                                             \
+  }                                                                                                           \
+  +(BOOL)waitForPatrolAppReadyWithServer : (PatrolServer *)server {                                           \
+    NSDate *deadline = [NSDate dateWithTimeIntervalSinceNow:60.0];                                            \
+    while (!server.appReady && deadline.timeIntervalSinceNow > 0) {                                           \
+      [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                      \
+    }                                                                                                         \
+    return server.appReady;                                                                                   \
+  }                                                                                                           \
+                                                                                                              \
+  +(NSArray<NSInvocation *> *)testInvocations {                                                               \
+    /* Start native automation gRPC server */                                                                 \
+    PatrolServer *server = [[PatrolServer alloc] init];                                                       \
+    NSError *err = nil;                                                                                       \
+    [server startAndReturnError:&err];                                                                        \
+    if (err != nil) {                                                                                         \
+      NSLog(@"patrolServer.start(): failed, err: %@", err);                                                   \
+      XCTFail(@"patrolServer.start() failed: %@", err);                                                       \
+      return @[];                                                                                             \
+    }                                                                                                         \
+                                                                                                              \
+    NSLog(@"Create PatrolAppServiceClient");                                                                  \
+                                                                                                              \
+    /* Create a client for PatrolAppService, which lets us list and run Dart tests */                         \
+    __block ObjCPatrolAppServiceClient *appServiceClient =                                                    \
+        [[ObjCPatrolAppServiceClient alloc] initWithPort:server.boundAppPort];                                \
+                                                                                                              \
+    NSLog(@"Run the app for the first time");                                                                 \
+                                                                                                              \
+    /* Run the app for the first time to gather Dart tests */                                                 \
+    [__test_class launchPatrolAppWithServer:server];                                                          \
+                                                                                                              \
+    NSLog(@"Waiting until the app reports that it is ready");                                                 \
+                                                                                                              \
+    /* Spin the runloop waiting until the app reports that it is ready to report Dart tests */                \
+    if (![__test_class waitForPatrolAppReadyWithServer:server]) {                                             \
+      XCTFail(@"Patrol app did not become ready on port %ld", (long)server.boundAppPort);                     \
+      return @[];                                                                                             \
+    }                                                                                                         \
+                                                                                                              \
+    NSLog(@"listDartTests");                                                                                  \
+                                                                                                              \
+    __block NSArray<NSDictionary *> *dartTests = NULL;                                                        \
+    __block NSError *listError = nil;                                                                         \
+    __block BOOL listCompleted = NO;                                                                          \
+    [appServiceClient                                                                                         \
+        listDartTestsWithCompletion:^(NSArray<NSDictionary *> *_Nullable tests, NSError *_Nullable err) {     \
+          if (err != NULL) {                                                                                  \
+            NSLog(@"listDartTests(): failed, err: %@", err);                                                  \
+            listError = err;                                                                                  \
+          }                                                                                                   \
+                                                                                                              \
+          dartTests = tests;                                                                                  \
+          listCompleted = YES;                                                                                \
+        }];                                                                                                   \
+                                                                                                              \
+    NSLog(@"Spin the runloop waiting");                                                                       \
+                                                                                                              \
+    /* Spin the runloop waiting until the app reports the Dart tests it contains */                           \
+    while (!listCompleted) {                                                                                  \
+      [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:5.0]];                      \
+    }                                                                                                         \
+                                                                                                              \
+    if (listError != nil || dartTests == nil) {                                                               \
+      XCTFail(@"listDartTests() failed: %@", listError);                                                      \
+      return @[];                                                                                             \
+    }                                                                                                         \
+                                                                                                              \
+    NSLog(@"Got %lu Dart tests: %@", dartTests.count, dartTests);                                             \
+                                                                                                              \
+    NSMutableArray<NSInvocation *> *invocations = [[NSMutableArray alloc] init];                              \
+                                                                                                              \
+    /**                                                                                                       \
+     * Once Dart tests are available, we:                                                                     \
+     *                                                                                                        \
+     *  Step 1. Dynamically add test case methods that request execution of an individual Dart test file.     \
+     *                                                                                                        \
+     *  Step 2. Create invocations to the generated methods and return them                                   \
+     */                                                                                                       \
+                                                                                                              \
+    for (NSDictionary * dartTest in dartTests) {                                                              \
+      /* Step 1 - dynamically create test cases */                                                            \
+      NSString *dartTestName = dartTest[@"name"];                                                             \
+      BOOL skip = [dartTest[@"skip"] boolValue];                                                              \
+                                                                                                              \
+      IMP implementation = imp_implementationWithBlock(^(id _self) {                                          \
+        if (skip) {                                                                                           \
+          XCTSkip(@"Skip that test \"%@\"", dartTestName);                                                    \
+        }                                                                                                     \
+                                                                                                              \
+        [__test_class launchPatrolAppWithServer:server];                                                      \
+        BOOL appReady = [__test_class waitForPatrolAppReadyWithServer:server];                                \
+        XCTAssertTrue(appReady, @"Patrol app did not become ready on port %ld", (long)server.boundAppPort);   \
+        if (!appReady) {                                                                                      \
+          return;                                                                                             \
+        }                                                                                                     \
+                                                                                                              \
+        __block ObjCRunDartTestResponse *response = NULL;                                                     \
+        __block NSError *error;                                                                               \
+        [appServiceClient                                                                                     \
+            runDartTestWithName:dartTestName                                                                  \
+                     completion:^(ObjCRunDartTestResponse *_Nullable r, NSError *_Nullable err) {             \
+                       NSString *status;                                                                      \
+                       if (err != NULL) {                                                                     \
+                         error = err;                                                                         \
+                         status = @"CRASHED";                                                                 \
+                       } else {                                                                               \
+                         response = r;                                                                        \
+                         status = response.passed ? @"PASSED" : @"FAILED";                                    \
+                       }                                                                                      \
+                       NSLog(@"runDartTest(\"%@\"): call finished, test result: %@", dartTestName, status);   \
+                     }];                                                                                      \
+                                                                                                              \
+        /* Wait until Dart test finishes (either fails or passes) or crashes */                               \
+        while (!response && !error) {                                                                         \
+          [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                  \
+        }                                                                                                     \
+        BOOL passed = response ? response.passed : NO;                                                        \
+        NSString *details = response ? response.details : @"(no details - app likely crashed)";               \
+        XCTAssertTrue(passed, @"%@", details);                                                                \
+      });                                                                                                     \
+      SEL selector = NSSelectorFromString(dartTestName);                                                      \
+      class_addMethod(self, selector, implementation, "v@:");                                                 \
+                                                                                                              \
+      /* Step 2 – create invocations to the dynamically created methods */                                    \
+      NSMethodSignature *signature = [self instanceMethodSignatureForSelector:selector];                      \
+      NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];                      \
+      invocation.selector = selector;                                                                         \
+                                                                                                              \
+      NSLog(@"RunnerUITests.testInvocations(): selectorName = %@, signature: %@", dartTestName, signature);   \
+                                                                                                              \
+      [invocations addObject:invocation];                                                                     \
+    }                                                                                                         \
+                                                                                                              \
+    return invocations;                                                                                       \
+  }                                                                                                           \
+                                                                                                              \
+  @end\

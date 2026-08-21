@@ -52,6 +52,7 @@ class BuildIOSCommand extends PatrolCommand {
       'simulator',
       help: 'Build for simulator instead of real device.',
     );
+    usesEmitTestManifestOption();
   }
 
   final TestFinderFactory _testFinderFactory;
@@ -95,12 +96,13 @@ class BuildIOSCommand extends PatrolCommand {
     }
 
     final testFinder = _testFinderFactory.create(testDirectory);
+    final excludes = stringsArg('exclude').toSet();
 
     final target = stringsArg('target');
     final targets = target.isNotEmpty
-        ? testFinder.findTests(target, testFileSuffix)
+        ? testFinder.findTests(target, testFileSuffix, excludes)
         : testFinder.findAllTests(
-            excludes: stringsArg('exclude').toSet(),
+            excludes: excludes,
             testFileSuffix: testFileSuffix,
           );
 
@@ -196,6 +198,9 @@ class BuildIOSCommand extends PatrolCommand {
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       fullIsolation: boolArg('full-isolation'),
+      clearIOSPermissions: boolArg('clear-permissions'),
+      emitTestManifest:
+          optionalBoolArg('emit-test-manifest') ?? config.emitTestManifest,
     );
 
     if (!iosOpts.simulator && iosOpts.fullIsolation) {

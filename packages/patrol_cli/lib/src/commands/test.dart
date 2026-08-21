@@ -7,8 +7,11 @@ import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/commands/dart_define_utils.dart';
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
+import 'package:patrol_cli/src/coverage/coverage_mode.dart';
 import 'package:patrol_cli/src/coverage/coverage_tool.dart';
+import 'package:patrol_cli/src/coverage/web_coverage_tool.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
+import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
@@ -32,6 +35,7 @@ class TestCommand extends PatrolCommand {
     required MacOSTestBackend macOSTestBackend,
     required WebTestBackend webTestBackend,
     required CoverageTool coverageTool,
+    required WebCoverageTool webCoverageTool,
     required Analytics analytics,
     required Logger logger,
   }) : _deviceFinder = deviceFinder,
@@ -45,6 +49,7 @@ class TestCommand extends PatrolCommand {
        _macosTestBackend = macOSTestBackend,
        _webTestBackend = webTestBackend,
        _coverageTool = coverageTool,
+       _webCoverageTool = webCoverageTool,
        _analytics = analytics,
        _logger = logger {
     usesTargetOption();
@@ -70,6 +75,8 @@ class TestCommand extends PatrolCommand {
     usesAppNameOption();
     usesAndroidOptions();
     usesIOSOptions();
+    usesVideoRecordingOptions();
+    usesEmitTestManifestOption();
 
     usesWeb();
   }
@@ -85,6 +92,7 @@ class TestCommand extends PatrolCommand {
   final MacOSTestBackend _macosTestBackend;
   final WebTestBackend _webTestBackend;
   final CoverageTool _coverageTool;
+  final WebCoverageTool _webCoverageTool;
 
   final Analytics _analytics;
   final Logger _logger;
@@ -106,12 +114,13 @@ class TestCommand extends PatrolCommand {
     final testFileSuffix = config.testFileSuffix;
 
     final testFinder = _testFinderFactory.create(testDirectory);
+    final excludes = stringsArg('exclude').toSet();
 
     final target = stringsArg('target');
     final targets = target.isNotEmpty
-        ? testFinder.findTests(target, testFileSuffix)
+        ? testFinder.findTests(target, testFileSuffix, excludes)
         : testFinder.findAllTests(
-            excludes: stringsArg('exclude').toSet(),
+            excludes: excludes,
             testFileSuffix: testFileSuffix,
           );
 
@@ -152,10 +161,16 @@ class TestCommand extends PatrolCommand {
       _logger.detail('Received build number: $buildNumber');
     }
 
-    final devices = await _deviceFinder.find(
-      stringsArg('device'),
-      flutterCommand: flutterCommand,
-    );
+    final wantDevices = stringsArg('device');
+    final bundledDevice = switch (wantDevices) {
+      [final name] => Device.bundledForTest(name),
+      _ => null,
+    };
+
+    final devices = bundledDevice != null
+        ? [bundledDevice]
+        : await _deviceFinder.find(wantDevices, flutterCommand: flutterCommand);
+
     _logger.detail('Received ${devices.length} device(s) to run on');
     for (final device in devices) {
       _logger.detail('Received device: ${device.name} (${device.id})');
@@ -171,6 +186,9 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
 
     final device = devices.single;
     final isWeb = device.targetPlatform == TargetPlatform.web;
+
+    final emitTestManifest =
+        optionalBoolArg('emit-test-manifest') ?? config.emitTestManifest;
 
     // Validate that flavors are not used with web platform
     if (isWeb && stringArg('flavor') != null) {
@@ -213,9 +231,35 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     final uninstall = boolArg('uninstall');
     final noTreeShakeIcons = boolArg('no-tree-shake-icons');
     final coverageEnabled = boolArg('coverage');
+
+    final coverageMode = switch ((coverageEnabled, isWeb)) {
+      (false, _) => CoverageMode.none,
+      (true, false) => CoverageMode.vm,
+      (true, true) => CoverageMode.web,
+    };
+
+    if (coverageMode != CoverageMode.none && buildMode.name != 'debug') {
+      _logger.err(
+        'Coverage requires a debug build. '
+        'Please remove the --${buildMode.name} flag.',
+      );
+      return 1;
+    }
+
     final coverageWorkspace = boolArg('coverage-workspace');
     final ignoreGlobs = stringsArg('coverage-ignore').map(Glob.new).toSet();
     final coveragePackagesRegExps = stringsArg('coverage-package');
+    final coveragePackages = switch ((
+      coveragePackagesRegExps.length,
+      coverageWorkspace,
+    )) {
+      // No --coverage-package and no --coverage-workspace: fall back to
+      // the current package only.
+      (0, false) => {RegExp(config.flutterPackageName)},
+      // --coverage-workspace alone: rely entirely on workspace members.
+      (0, true) => const <RegExp>{},
+      _ => coveragePackagesRegExps.map(RegExp.new).toSet(),
+    };
 
     final customDartDefines = {
       ..._dartDefinesReader.fromFile(),
@@ -235,7 +279,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
         'PATROL_TEST_SERVER_PORT': super.testServerPort.toString(),
         'PATROL_APP_SERVER_PORT': super.appServerPort.toString(),
       },
-      'COVERAGE_ENABLED': coverageEnabled.toString(),
+      'COVERAGE_ENABLED': (coverageMode == CoverageMode.vm).toString(),
     }.withNullsRemoved();
 
     final dartDefines = {...customDartDefines, ...internalDartDefines};
@@ -261,10 +305,17 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       _dartDefinesReader,
     );
 
+    final flavor = switch (device.targetPlatform) {
+      TargetPlatform.android => androidFlavor,
+      TargetPlatform.iOS => iosFlavor,
+      TargetPlatform.macOS => macosFlavor,
+      _ => null,
+    };
+
     final flutterOpts = FlutterAppOptions(
       command: flutterCommand,
       target: entrypoint.path,
-      flavor: androidFlavor,
+      flavor: flavor,
       buildMode: buildMode,
       dartDefines: mergedDartDefines,
       dartDefineFromFilePaths: dartDefineFromFilePaths,
@@ -279,6 +330,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       uninstall: uninstall,
+      emitTestManifest: emitTestManifest,
     );
 
     final iosOpts = IOSAppOptions(
@@ -292,6 +344,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       testServerPort: super.testServerPort,
       fullIsolation: boolArg('full-isolation'),
       clearIOSPermissions: boolArg('clear-permissions'),
+      emitTestManifest: emitTestManifest,
     );
 
     final macosOpts = MacOSAppOptions(
@@ -301,6 +354,10 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
     );
+
+    final webCoverageDataDir = coverageMode == CoverageMode.web
+        ? (await _webCoverageTool.prepareDataDirectory()).path
+        : null;
 
     final webOpts = WebAppOptions(
       flutter: flutterOpts,
@@ -320,10 +377,29 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       viewport: stringArg('web-viewport'),
       globalTimeout: intArg('web-global-timeout'),
       shard: stringArg('web-shard'),
-      headless: stringArg('web-headless'),
+      headless: optionalBoolArg('web-headless'),
       webPort: intArg('web-port'),
       serverTimeout: intArg('web-server-timeout'),
       browserArgs: stringArg('web-browser-args'),
+      channel: stringArg('web-channel'),
+      executablePath: stringArg('web-executable-path'),
+      slowMo: intArg('web-slow-mo'),
+      chromiumSandbox: optionalBoolArg('web-chromium-sandbox'),
+      downloadsPath: stringArg('web-downloads-path'),
+      ignoreDefaultArgs: stringArg('web-ignore-default-args'),
+      proxy: stringArg('web-proxy'),
+      browserTimeout: intArg('web-browser-timeout'),
+      tracesDir: stringArg('web-traces-dir'),
+      bypassCsp: optionalBoolArg('web-bypass-csp'),
+      ignoreHttpsErrors: optionalBoolArg('web-ignore-https-errors'),
+      offline: optionalBoolArg('web-offline'),
+      httpCredentials: stringArg('web-http-credentials'),
+      extraHttpHeaders: stringArg('web-extra-http-headers'),
+      screenshot: stringArg('web-screenshot'),
+      trace: stringArg('web-trace'),
+      storageState: stringArg('web-storage-state'),
+      acceptDownloads: optionalBoolArg('web-accept-downloads'),
+      coverageDir: webCoverageDataDir,
     );
 
     // No need to build web app for testing. It's done in the execute method.
@@ -333,7 +409,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
 
     await _preExecute(androidOpts, iosOpts, macosOpts, device, uninstall);
 
-    if (coverageEnabled) {
+    if (coverageMode == CoverageMode.vm) {
       unawaited(
         _coverageTool.run(
           device: device,
@@ -342,17 +418,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
           ignoreGlobs: ignoreGlobs,
           flutterCommand: flutterCommand,
           includeWorkspacePackages: coverageWorkspace,
-          packagesRegExps: switch ((
-            coveragePackagesRegExps.length,
-            coverageWorkspace,
-          )) {
-            // No --coverage-package and no --coverage-workspace: fall back to
-            // the current package only.
-            (0, false) => {RegExp(config.flutterPackageName)},
-            // --coverage-workspace alone: rely entirely on workspace members.
-            (0, true) => const <RegExp>{},
-            _ => coveragePackagesRegExps.map(RegExp.new).toSet(),
-          },
+          packagesRegExps: coveragePackages,
         ),
       );
     }
@@ -368,7 +434,20 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       showFlutterLogs: boolArg('show-flutter-logs'),
       hideTestSteps: boolArg('hide-test-steps'),
       clearTestSteps: boolArg('clear-test-steps'),
+      testDirectory: testDirectory,
     );
+
+    // Converted after the run, once the runner has written the raw JS coverage.
+    // _execute signals failures via its return value, so failed runs still
+    // produce a report.
+    if (coverageMode == CoverageMode.web) {
+      await _webCoverageTool.run(
+        flutterPackageName: config.flutterPackageName,
+        packagesRegExps: coveragePackages,
+        includeWorkspacePackages: coverageWorkspace,
+        ignoreGlobs: ignoreGlobs,
+      );
+    }
 
     return allPassed ? 0 : 1;
   }
@@ -450,9 +529,17 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     required bool showFlutterLogs,
     required bool hideTestSteps,
     required bool clearTestSteps,
+    required String testDirectory,
   }) async {
     Future<void> Function() action;
     Future<void> Function()? finalizer;
+
+    final videoConfig = VideoRecordingConfig(
+      enabled: boolArg('record-video'),
+      outputDirectory: stringArg('video-output-dir') ?? '$testDirectory/videos',
+      size: stringArg('video-size'),
+      bitRate: int.tryParse(stringArg('video-bit-rate') ?? ''),
+    );
 
     switch (device.targetPlatform) {
       case TargetPlatform.android:
@@ -463,6 +550,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
           hideTestSteps: hideTestSteps,
           flavor: flutterOpts.flavor,
           clearTestSteps: clearTestSteps,
+          videoConfig: videoConfig,
         );
         final package = android.packageName;
         if (package != null && uninstall) {
@@ -477,6 +565,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
           showFlutterLogs: showFlutterLogs,
           hideTestSteps: hideTestSteps,
           clearTestSteps: clearTestSteps,
+          videoConfig: videoConfig,
         );
         final bundleId = ios.bundleId;
         if (bundleId != null && uninstall) {
@@ -519,7 +608,13 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
 
   void useCoverageOptions() {
     argParser
-      ..addFlag('coverage', help: 'Generate coverage.')
+      ..addFlag(
+        'coverage',
+        help:
+            'Generate coverage. On the web, reports only covered/uncovered '
+            'lines, without the per-line hit counts available on other '
+            'platforms.',
+      )
       ..addFlag(
         'coverage-workspace',
         help:

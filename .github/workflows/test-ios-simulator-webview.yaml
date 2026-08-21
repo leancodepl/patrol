@@ -26,7 +26,7 @@ jobs:
         flutter-version: ["3.38.x"]
         flutter-channel: ["stable"]
         device_model: [iPhone 17 Pro]
-        os_version: ["26.0"]
+        os_version: ["26.2"]
         os: [iOS]
 
     defaults:
@@ -68,35 +68,25 @@ jobs:
       - name: Run tests
         id: tests_step
         run: |
-          xcrun simctl io booted recordVideo --codec=h264 --force "${{ matrix.device_model }}_raw.mp4" &
-          recordingpid="$!"
-
           xcrun simctl spawn booted log stream --type log --color none > all_simulator_logs.txt &
           logpid="$!"
 
           sleep 10 # See https://github.com/leancodepl/patrol/issues/1282
 
+          # Patrol records one MP4 per test case via --record-video (iOS simulator).
+          # Videos are written to dev/e2e_app/videos and uploaded as artifacts below.
           TESTS_EXIT_CODE=0
-          patrol test --tags='webview && ios' --exclude=patrol_test/web_example_test.dart,patrol_test/native_tests/volume_test.dart,patrol_test/volume_test.dart --verbose || TESTS_EXIT_CODE=$?
+          patrol test \
+            --tags='webview && ios' \
+            --exclude=patrol_test/web/,patrol_test/native_tests/volume_test.dart,patrol_test/volume_test.dart \
+            --ios 26.2 \
+            --verbose \
+            --record-video \
+            --video-output-dir videos || TESTS_EXIT_CODE=$?
 
-          kill -SIGINT $recordingpid
-          kill -SIGINT $logpid
-
-          # Wait for processes to finish
-          wait $recordingpid 2>/dev/null || true
-          wait $logpid 2>/dev/null || true
-
-          # Use ffmpeg to fix the MP4 file (re-encode to ensure proper MP4 structure)
-          if [ -f "${{ matrix.device_model }}_raw.mp4" ]; then
-            ffmpeg -i "${{ matrix.device_model }}_raw.mp4" \
-              -c copy -movflags faststart \
-              "${{ matrix.device_model }}.mp4" \
-              -y 2>/dev/null || \
-            ffmpeg -i "${{ matrix.device_model }}_raw.mp4" \
-              -c:v libx264 -preset ultrafast \
-              "${{ matrix.device_model }}.mp4" \
-              -y 2>/dev/null || true
-          fi
+          kill -SIGINT $logpid 2>/dev/null || true
+          sleep 1
+          kill -9 $logpid 2>/dev/null || true
 
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
           exit $TESTS_EXIT_CODE
@@ -162,12 +152,25 @@ jobs:
           path: |
             ${{ github.workspace }}/dev/e2e_app/all_simulator_logs.txt
 
-      - name: Upload captured video to artifacts
+      - name: Upload recorded videos to artifacts
+        id: upload_videos
         if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
         uses: actions/upload-artifact@v4
         with:
-          name: Captured video from ${{ matrix.device_model }}.mp4
-          path: ${{ github.workspace }}/dev/e2e_app/${{ matrix.device_model }}.mp4
+          name: Recorded videos from ${{ matrix.device_model }}
+          path: ${{ github.workspace }}/dev/e2e_app/videos/
+          if-no-files-found: warn
+
+      - name: Add recordings link to job summary
+        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) && steps.upload_videos.outputs.artifact-url }}
+        run: |
+          {
+            echo "### 📹 Test recordings (${{ matrix.device_model }})";
+            echo "";
+            echo "One MP4 per test case, recorded with \`patrol test --record-video\`.";
+            echo "";
+            echo "[⬇️ Download recorded videos](${{ steps.upload_videos.outputs.artifact-url }})";
+          } >> "$GITHUB_STEP_SUMMARY"
 
   call_send_slack_message:
     name: Notify on Slack

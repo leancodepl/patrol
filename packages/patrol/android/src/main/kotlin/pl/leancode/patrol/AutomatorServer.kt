@@ -40,7 +40,10 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
     }
 
     override fun configure(request: ConfigureRequest) {
-        automation.configure(waitForSelectorTimeout = request.findTimeoutMillis)
+        automation.configure(
+            waitForSelectorTimeout = request.findTimeoutMillis,
+            dontSuppressAccessibilityServices = request.androidDontSuppressAccessibilityServices ?: true
+        )
     }
 
     override fun pressHome() {
@@ -81,6 +84,10 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
 
     override fun openUrl(request: Contracts.OpenUrlRequest) {
         automation.openUrl(request.url)
+    }
+
+    override fun sendKeyboardEnter() {
+        automation.sendKeyboardEnter()
     }
 
     override fun pressVolumeUp() {

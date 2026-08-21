@@ -1,7 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:patrol/src/platform/contracts/contracts.dart';
+import 'package:patrol/src/platform/contracts/contracts.dart'
+    show AppleApp, IOSGetNativeViewsResponse, KeyboardBehavior;
 import 'package:patrol/src/platform/ios/ios_automator_config.dart';
 import 'package:patrol/src/platform/mobile/mobile_automator.dart';
+import 'package:patrol/src/platform/selector.dart' show IOSSelector;
 
 /// Provides functionality to interact with the OS that the app under test is
 /// running on.
@@ -34,6 +36,18 @@ abstract interface class IOSAutomator implements MobileAutomator {
   ///
   /// If no heads up notification is visible, the behavior is undefined.
   Future<void> closeHeadsUpNotification();
+
+  /// Taps on the iOS "back to previous app" breadcrumb button.
+  ///
+  /// This button is visible in the status bar after opening another app and
+  /// has identifier `breadcrumb` with button trait.
+  ///
+  /// If the breadcrumb is not visible immediately, this method waits for the
+  /// button to become visible for [timeout] duration. If [timeout] is not
+  /// specified, it utilizes the [IOSAutomatorConfig.findTimeout] duration
+  /// from the configuration.
+  ///
+  Future<void> tapBackToPreviousAppButton({Duration? timeout});
 
   /// Taps on the visible notification using [selector].
   ///

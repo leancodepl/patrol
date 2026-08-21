@@ -34,11 +34,11 @@ void _defaultPrintLogger(String message) {
 /// that is executed after each test. Inside that callback, the name of the Dart
 /// test file being currently executed is retrieved.
 ///
-/// At this point, the [PatrolAppService] is handling the gRPC `runDartTest()`
+/// At this point, the `PatrolAppService` is handling the gRPC `runDartTest()`
 /// called by the native side.
 ///
 /// [PatrolBinding] submits the Dart test file name that is being currently
-/// executed to [PatrolAppService]. Once the name is submitted to it, that
+/// executed to `PatrolAppService`. Once the name is submitted to it, that
 /// pending `runDartTest()` method returns.
 class PatrolBinding extends LiveTestWidgetsFlutterBinding {
   /// Creates a new [PatrolBinding].
@@ -138,11 +138,7 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
   /// Logger used by this binding.
   void Function(String message) logger = _defaultPrintLogger;
 
-  /// The [PatrolAppService] used by this binding to report tests to the native
-  /// side.
-  ///
-  /// It's only for test reporting purposes and should not be used for anything
-  /// else.
+  /// @nodoc
   late PatrolAppService patrolAppService;
 
   /// The singleton instance of this object.
@@ -311,6 +307,15 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
     // be not needed.
     //
     // See: https://github.com/flutter/flutter/issues/81534
+
+    // In develop (Hot Restart) mode the exception gatherer is off and the test
+    // never completes, so exceptions the framework catches - e.g. thrown from a
+    // widget's `onPressed` - would otherwise be printed nowhere. Dump them to
+    // the console like a normal test failure, so `patrol develop` forwards the
+    // full stack trace (file and line) instead of swallowing it.
+    if (_isDevelopMode) {
+      FlutterError.dumpErrorToConsole(exception, forceReport: true);
+    }
   }
 }
 

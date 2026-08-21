@@ -1,12 +1,12 @@
-import { FrameLocator, Page } from "playwright"
-import { EnterTextRequest } from "../contracts"
+import type { FrameLocator, Page } from "playwright"
+import type { ActionParams, EnterTextRequest } from "../contracts"
 import { parseWebSelector } from "../parseWebSelector"
 
-export async function enterText(page: Page, params: EnterTextRequest["params"]) {
-  let context: FrameLocator | Page = page
+export async function enterText({ pageManager, params }: ActionParams<EnterTextRequest>) {
+  let context: FrameLocator | Page = pageManager.activePage
 
   if (params.iframeSelector) {
-    const iframeLocator = parseWebSelector(page, params.iframeSelector)
+    const iframeLocator = parseWebSelector(context, params.iframeSelector)
     context = iframeLocator.contentFrame()
     if (!context) throw new Error("Iframe not found")
   }

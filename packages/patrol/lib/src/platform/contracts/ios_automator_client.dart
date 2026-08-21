@@ -82,6 +82,12 @@ class IosAutomatorClient {
     return _sendRequest('tapOnNotification', request.toJson());
   }
 
+  Future<void> tapBackToPreviousAppButton(
+    IOSTapBackToPreviousAppButtonRequest request,
+  ) {
+    return _sendRequest('tapBackToPreviousAppButton', request.toJson());
+  }
+
   Future<PermissionDialogVisibleResponse> isPermissionDialogVisible(
     PermissionDialogVisibleRequest request,
   ) async {

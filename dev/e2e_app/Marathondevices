@@ -1,0 +1,8 @@
+workers:
+  - transport:
+      type: local
+    devices:
+      - type: simulatorProfile
+        deviceType: com.apple.CoreSimulator.SimDeviceType.iPhone-17
+      - type: simulatorProfile
+        deviceType: com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro
