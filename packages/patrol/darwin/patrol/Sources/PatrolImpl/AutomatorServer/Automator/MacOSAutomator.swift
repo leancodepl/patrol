@@ -39,11 +39,10 @@
     }
 
     private func getApp(withBundleId bundleId: String) throws -> XCUIApplication {
-      // UI tests always drive the app under test. Looking up by bundle id via
-      // XCUIApplication(bundleIdentifier:) asserts when XCTest hasn't registered
-      // that process yet (common on local unsigned macOS builds).
-      _ = bundleId
-      return XCUIApplication()
+      if bundleId.isEmpty {
+        return XCUIApplication()
+      }
+      return XCUIApplication(bundleIdentifier: bundleId)
     }
 
     func pressHome() throws {
