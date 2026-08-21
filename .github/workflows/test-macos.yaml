@@ -101,6 +101,12 @@ jobs:
             "INSERT OR REPLACE INTO access (service, client, client_type, auth_value, auth_reason, auth_version, flags) VALUES ('kTCCServiceScreenCapture','/usr/sbin/screencapture',1,2,4,1,0);"
           sudo pkill tccd || true
 
+      - name: Pre-approve screencapture window picker bypass
+        run: |
+          defaults write "$HOME/Library/Group Containers/group.com.apple.replayd/ScreenCaptureApprovals.plist" \
+            "/usr/sbin/screencapture" -date "2100-01-01 12:00:00 +0000"
+          killall replayd 2>/dev/null || true
+
       - name: Start screen recording
         run: |
           screencapture -v macos_screen_recording.mov &
