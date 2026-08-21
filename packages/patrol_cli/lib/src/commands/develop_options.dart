@@ -35,6 +35,7 @@ class DevelopOptions {
     this.checkCompatibility = true,
     this.iosVersion,
     this.videoConfig,
+    this.emitTestManifest,
   });
 
   factory DevelopOptions.fromArgResults(
@@ -86,6 +87,7 @@ class DevelopOptions {
         size: results['video-size'] as String?,
         bitRate: int.tryParse(results['video-bit-rate'] as String? ?? ''),
       ),
+      emitTestManifest: results['emit-test-manifest'] as bool?,
     );
   }
 
@@ -168,6 +170,11 @@ class DevelopOptions {
 
   /// Video recording configuration. `null` means video recording is disabled.
   final VideoRecordingConfig? videoConfig;
+
+  /// Whether to discover Dart tests at build time and generate static native
+  /// tests. `null` means the flag wasn't passed, so the `patrol.emit_test_manifest`
+  /// pubspec value applies.
+  final bool? emitTestManifest;
 }
 
 class _DevelopOptionsParserCommand extends PatrolCommand {

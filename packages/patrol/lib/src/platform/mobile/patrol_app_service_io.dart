@@ -152,6 +152,34 @@ class PatrolAppService extends PatrolAppServiceServer {
     return true;
   }
 
+  /// Finds the test the native side asked for by its flattened name (group
+  /// names joined with spaces), the same shape the native runners build from
+  /// [listDartTests]. Returns `null` when this app registered no such test.
+  DartGroupEntry? _findTest(
+    String flatName, {
+    DartGroupEntry? group,
+    String parentName = '',
+  }) {
+    for (final entry in (group ?? topLevelDartTestGroup).entries) {
+      final name = parentName.isEmpty
+          ? entry.name
+          : '$parentName ${entry.name}';
+
+      if (entry.type == GroupEntryType.test) {
+        if (name == flatName) {
+          return entry;
+        }
+      } else {
+        final found = _findTest(flatName, group: entry, parentName: name);
+        if (found != null) {
+          return found;
+        }
+      }
+    }
+
+    return null;
+  }
+
   @override
   Future<ListDartTestsResponse> listDartTests() async {
     print('PatrolAppService.listDartTests() called');
@@ -164,6 +192,36 @@ class PatrolAppService extends PatrolAppServiceServer {
     // patrolTest() always calls this method.
 
     print('PatrolAppService.runDartTest(${request.name}) called');
+
+    // With build-time test discovery the native side asks by a name taken from a
+    // manifest built on the host, which can disagree with what this app
+    // registered (a `skip:` that depends on the platform, for example). Such a
+    // test never runs, so nothing would ever complete the request and the native
+    // runner would wait for it forever.
+    final requestedTest = _findTest(request.name);
+    if (requestedTest == null) {
+      const hint =
+          'Use patrolTargetPlatform for anything that decides whether a test '
+          'is registered.';
+      _patrolLog.log(
+        TestEntry(name: request.name, status: TestEntryStatus.failure),
+      );
+      return RunDartTestResponse(
+        result: RunDartTestResponseResult.failure,
+        details: 'This app has no test named "${request.name}". $hint',
+      );
+    }
+    if (requestedTest.skip) {
+      print('PatrolAppService.runDartTest(${request.name}): skipped');
+      _patrolLog.log(
+        TestEntry(name: request.name, status: TestEntryStatus.skip),
+      );
+      return RunDartTestResponse(
+        result: RunDartTestResponseResult.skipped,
+        details: 'Test "${request.name}" is skipped in this app build',
+      );
+    }
+
     _testExecutionRequested.complete(request.name);
 
     final testExecutionResult = await testExecutionCompleted;

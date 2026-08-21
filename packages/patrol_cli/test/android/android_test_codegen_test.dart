@@ -1,9 +1,19 @@
+import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:patrol_cli/src/android/android_test_codegen.dart';
 import 'package:test/test.dart';
 
 void main() {
   late MemoryFileSystem fs;
+
+  /// Reads one generated per-file test class out of [result]'s directory.
+  String sourceOf(
+    FileSystem fs,
+    AndroidCodegenResult result, [
+    String className = 'PatrolGeneratedTests_example_test',
+  ]) => fs
+      .file(fs.path.join(result.directoryPath, '$className.java'))
+      .readAsStringSync();
 
   const manifest = r'''
 {"group":{"name":"","type":"group","skip":false,"entries":[
@@ -43,19 +53,26 @@ public class MainActivityTest {}
     );
 
     expect(result, isNotNull);
-    expect(
-      result!.fullyQualifiedClassName,
-      'pl.leancode.patrol.e2e_app.PatrolGeneratedTests',
-    );
+    // One class per Dart test file, named after the file.
+    expect(result!.fullyQualifiedClassNames, [
+      'pl.leancode.patrol.e2e_app.PatrolGeneratedTests_example_test',
+    ]);
     expect(result.testCount, 3);
 
-    final source = fs.file(result.outputPath).readAsStringSync();
+    final source = sourceOf(fs, result);
     expect(source, contains('package pl.leancode.patrol.e2e_app;'));
     // @RunWith is required for AndroidJUnitRunner to enumerate the @Test methods.
     expect(source, contains('@RunWith(AndroidJUnit4.class)'));
     expect(source, contains('import androidx.test.runner.AndroidJUnit4;'));
-    expect(source, contains('public class PatrolGeneratedTests {'));
-    expect(source, contains('instrumentation.setUp(MainActivity.class);'));
+    expect(
+      source,
+      contains('public class PatrolGeneratedTests_example_test {'),
+    );
+    // setUpGenerated: the generated class must not stand down for the host.
+    expect(
+      source,
+      contains('instrumentation.setUpGenerated(MainActivity.class);'),
+    );
 
     // The flattened Dart name (group + test, space-joined) is embedded verbatim.
     expect(
@@ -73,7 +90,7 @@ public class MainActivityTest {}
       manifestPath: '/manifest.json',
       androidDir: fs.directory('/android'),
     );
-    final source = fs.file(result!.outputPath).readAsStringSync();
+    final source = sourceOf(fs, result!);
 
     // Two tests both named "tap once shows one" -> two distinct method names.
     final methodDecls = RegExp(
@@ -82,19 +99,46 @@ public class MainActivityTest {}
     expect(methodDecls.toSet().length, methodDecls.length);
   });
 
-  test('findGeneratedClassName returns the FQN only after generation', () {
+  test('findGeneratedClassNames returns the FQNs only after generation', () {
     final codegen = AndroidTestCodegen(fs);
-    expect(codegen.findGeneratedClassName(fs.directory('/android')), isNull);
+    expect(codegen.findGeneratedClassNames(fs.directory('/android')), isEmpty);
 
     codegen.generate(
       manifestPath: '/manifest.json',
       androidDir: fs.directory('/android'),
     );
 
-    expect(
-      codegen.findGeneratedClassName(fs.directory('/android')),
-      'pl.leancode.patrol.e2e_app.PatrolGeneratedTests',
+    expect(codegen.findGeneratedClassNames(fs.directory('/android')), [
+      'pl.leancode.patrol.e2e_app.PatrolGeneratedTests_example_test',
+    ]);
+  });
+
+  test('method names drop the file prefix the class already carries', () {
+    final result = AndroidTestCodegen(fs).generate(
+      manifestPath: '/manifest.json',
+      androidDir: fs.directory('/android'),
     );
+
+    expect(
+      sourceOf(fs, result!),
+      contains('public void test_tap_once_shows_one()'),
+    );
+  });
+
+  test('the marker class holds no tests, so only per-file classes run', () {
+    final result = AndroidTestCodegen(fs).generate(
+      manifestPath: '/manifest.json',
+      androidDir: fs.directory('/android'),
+    );
+    final marker = sourceOf(fs, result!, 'PatrolGeneratedTests');
+
+    expect(marker, contains('public final class PatrolGeneratedTests {'));
+    expect(marker, isNot(contains('@Test')));
+    expect(marker, isNot(contains('@RunWith')));
+    // It is not reported as a runnable class either.
+    expect(result.fullyQualifiedClassNames, [
+      'pl.leancode.patrol.e2e_app.PatrolGeneratedTests_example_test',
+    ]);
   });
 
   test('uses a non-default activity from the host and replicates its import', () {
@@ -123,10 +167,13 @@ public class MainActivityTest {
       androidDir: customFs.directory('/android'),
     );
 
-    final source = customFs.file(result!.outputPath).readAsStringSync();
+    final source = sourceOf(customFs, result!);
     // The generated class references the host's activity, not the default.
-    expect(source, contains('instrumentation.setUp(FlutterActivity.class);'));
-    expect(source, isNot(contains('setUp(MainActivity.class)')));
+    expect(
+      source,
+      contains('instrumentation.setUpGenerated(FlutterActivity.class);'),
+    );
+    expect(source, isNot(contains('setUpGenerated(MainActivity.class)')));
     // And replicates the host's import so it compiles.
     expect(
       source,
@@ -174,9 +221,12 @@ public class MainActivityTest {
     );
 
     expect(result, isNotNull);
-    final source = fs2.file(result!.outputPath).readAsStringSync();
+    final source = sourceOf(fs2, result!);
     // The host's activity was used, i.e. the host (not the runner) was located.
-    expect(source, contains('instrumentation.setUp(FlutterActivity.class);'));
+    expect(
+      source,
+      contains('instrumentation.setUpGenerated(FlutterActivity.class);'),
+    );
   });
 
   test('works on a Windows-style filesystem', () {
@@ -201,25 +251,23 @@ public class MainActivityTest {}
     final codegen = AndroidTestCodegen(winFs);
     final androidDir = winFs.directory(r'C:\android');
 
-    expect(codegen.findGeneratedClassName(androidDir), isNull);
+    expect(codegen.findGeneratedClassNames(androidDir), isEmpty);
 
     final result = codegen.generate(
       manifestPath: r'C:\manifest.json',
       androidDir: androidDir,
     );
     expect(result, isNotNull);
-    expect(
-      result!.fullyQualifiedClassName,
-      'pl.leancode.patrol.e2e_app.PatrolGeneratedTests',
-    );
+    expect(result!.fullyQualifiedClassNames, [
+      'pl.leancode.patrol.e2e_app.PatrolGeneratedTests_example_test',
+    ]);
 
-    // The generated file must be found again from the same host directory.
-    expect(
-      codegen.findGeneratedClassName(androidDir),
-      'pl.leancode.patrol.e2e_app.PatrolGeneratedTests',
-    );
+    // The generated files must be found again from the same host directory.
+    expect(codegen.findGeneratedClassNames(androidDir), [
+      'pl.leancode.patrol.e2e_app.PatrolGeneratedTests_example_test',
+    ]);
     expect(codegen.deleteGenerated(androidDir), isTrue);
-    expect(codegen.findGeneratedClassName(androidDir), isNull);
+    expect(codegen.findGeneratedClassNames(androidDir), isEmpty);
   });
 
   test('returns null when no androidTest host class is present', () {

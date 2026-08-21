@@ -80,11 +80,16 @@ class AndroidTestBackend {
       codegen.deleteGenerated(androidDir);
 
       if (options.emitTestManifest) {
-        final manifestPath = await TestManifestGenerator(
-          processManager: _processManager,
-          rootDirectory: _rootDirectory,
-          logger: _logger,
-        ).generate(options.flutter, scope);
+        final manifestPath =
+            await TestManifestGenerator(
+              processManager: _processManager,
+              rootDirectory: _rootDirectory,
+              logger: _logger,
+            ).generate(
+              options.flutter,
+              scope,
+              targetPlatform: TargetPlatform.android,
+            );
         if (manifestPath == null) {
           throwToolExit(
             'Build-time test discovery failed; fix the errors above or disable '
@@ -97,8 +102,9 @@ class AndroidTestBackend {
         );
         if (result != null) {
           _logger.info(
-            'Generated ${result.testCount} static JUnit test method(s) → '
-            '${result.outputPath}',
+            'Generated ${result.testCount} static JUnit test method(s) in '
+            '${result.fullyQualifiedClassNames.length} class(es) → '
+            '${result.directoryPath}',
           );
         } else {
           _logger.warn(
@@ -430,11 +436,14 @@ class AndroidTestBackend {
       // When static codegen ran, restrict the run to the generated class so the
       // parameterized host class doesn't also perform its runtime-discovery
       // launch (which would run every test a second time).
-      final onlyTestClass = options.emitTestManifest
+      final generatedClasses = options.emitTestManifest
           ? AndroidTestCodegen(
               _rootDirectory.fileSystem,
-            ).findGeneratedClassName(_rootDirectory.childDirectory('android'))
-          : null;
+            ).findGeneratedClassNames(_rootDirectory.childDirectory('android'))
+          : const <String>[];
+      final onlyTestClass = generatedClasses.isEmpty
+          ? null
+          : generatedClasses.join(',');
 
       final process =
           await _processManager.start(
@@ -520,10 +529,10 @@ class AndroidTestBackend {
       );
     }
 
-    final fqcn = AndroidTestCodegen(
+    final fqcns = AndroidTestCodegen(
       _rootDirectory.fileSystem,
-    ).findGeneratedClassName(_rootDirectory.childDirectory('android'));
-    if (fqcn == null) {
+    ).findGeneratedClassNames(_rootDirectory.childDirectory('android'));
+    if (fqcns.isEmpty) {
       throwToolExit(
         'No generated test class found. Run `patrol build android '
         '--emit-test-manifest` (or set patrol.emit_test_manifest in pubspec) '
@@ -531,7 +540,7 @@ class AndroidTestBackend {
       );
     }
 
-    final classArg = _resolveClassArg(fqcn, onlyTests);
+    final classArg = _resolveClassArg(fqcns, onlyTests);
 
     // `patrol build android` only ASSEMBLES the app + androidTest APKs; it does
     // not install them. Install both now so a clean device works with the
@@ -616,13 +625,16 @@ class AndroidTestBackend {
     });
   }
 
-  /// Builds the `-e class` value for `am instrument`: the bare [fqcn] to run the
-  /// whole generated class, or a comma-separated `<fqcn>#<method>` list mapped
-  /// from the requested [onlyTests] Dart names via the build-time manifest.
-  String _resolveClassArg(String fqcn, List<String> onlyTests) {
+  /// Builds the `-e class` value for `am instrument`: the generated classes
+  /// ([fqcns]) to run all of them, or a comma-separated selection mapped from the
+  /// requested [onlyTests] entries via the build-time manifest. A Dart test name
+  /// becomes `<fqcn>#<method>`, a test file path becomes the bare `<fqcn>` so the
+  /// whole file costs one entry.
+  String _resolveClassArg(List<String> fqcns, List<String> onlyTests) {
     if (onlyTests.isEmpty) {
-      return fqcn;
+      return fqcns.join(',');
     }
+    final package = fqcns.first.substring(0, fqcns.first.lastIndexOf('.'));
     final manifest = TestManifest.loadFromBuild(_rootDirectory);
     if (manifest == null) {
       throwToolExit(
@@ -631,20 +643,24 @@ class AndroidTestBackend {
       );
     }
     final tests = manifest.tests;
-    final methods = generateAndroidMethodNames(tests);
-    final out = <String>[];
-    for (var i = 0; i < tests.length; i++) {
-      if (onlyTests.contains(tests[i].dartName)) {
-        out.add('$fqcn#${methods[i]}');
-      }
-    }
-    if (out.isEmpty) {
+    final selection = resolveOnlySelection(tests, onlyTests);
+    if (selection.isEmpty) {
       throwToolExit(
         'None of the requested --only test(s) were found in the manifest.\n'
+        'Pass an exact Dart test name or a test file path.\n'
         'Available tests:\n${tests.map((t) => '  ${t.dartName}').join('\n')}',
       );
     }
-    return out.join(',');
+    if (selection.unmatched.isNotEmpty) {
+      _logger.warn(
+        'Ignoring --only ${selection.unmatched.join(', ')}: no such Dart test '
+        'or test file in the manifest.',
+      );
+    }
+    return [
+      ...selection.classNames.map((name) => '$package.$name'),
+      ...selection.tests.map((name) => '$package.${name.qualified}'),
+    ].join(',');
   }
 
   /// Installs the app + androidTest APKs produced by `patrol build android`
