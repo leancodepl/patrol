@@ -1,0 +1,79 @@
+---
+title: Test execution order
+---
+
+When you run `patrol test` (or `patrol build`) against a directory, Patrol
+collects every test file and bundles them into a single entrypoint. This page
+explains the order in which those tests run.
+
+### Order across test files
+
+Patrol finds every file ending with `_test.dart` (or your custom
+[`test_file_suffix`](/documentation/write-your-first-test)) under the test
+directory, **recursively**, and sorts them **alphabetically by their full
+path**. Tests then run file by file in that order.
+
+For example, given this layout:
+
+```
+patrol_test/
+├── auth/
+│   ├── sign_in_test.dart
+│   └── sign_up_test.dart
+├── home_test.dart
+└── settings_test.dart
+```
+
+the files execute in this order:
+
+```
+patrol_test/auth/sign_in_test.dart
+patrol_test/auth/sign_up_test.dart
+patrol_test/home_test.dart
+patrol_test/settings_test.dart
+```
+
+Because the sort is over the whole path, files in subdirectories are grouped
+with their directory, not interleaved with top-level files.
+
+### Order within a single test file
+
+Within a file, tests run **in the order they are declared** — top to bottom —
+just like in `package:flutter_test`. `group`s run in declaration order too, and
+the tests inside a group run before Patrol moves on to whatever is declared
+after the group.
+
+```dart
+void main() {
+  patrolTest('runs first', ($) async {});
+
+  group('a group', () {
+    patrolTest('runs second', ($) async {});
+    patrolTest('runs third', ($) async {});
+  });
+
+  patrolTest('runs fourth', ($) async {});
+}
+```
+
+### Selecting and skipping tests
+
+Running a single file targets just that file:
+
+```
+patrol test --target patrol_test/auth/sign_in_test.dart
+```
+
+You can exclude files or whole directories with `--exclude`, which does not
+change the relative order of the tests that remain:
+
+```
+patrol test --exclude patrol_test/auth
+```
+
+<Info>
+  Patrol does not run tests in parallel or in a randomized order. The order
+  described above is deterministic, so tests that depend on running after one
+  another (though we recommend keeping tests independent) will behave
+  consistently across machines and CI.
+</Info>
