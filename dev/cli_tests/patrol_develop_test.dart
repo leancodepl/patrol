@@ -93,6 +93,7 @@ void main(List<String> args) async {
 
   var isFirstTestPassed = false;
   var isBrokenVersionStarted = false;
+  var isBrokenRestartCompleted = false;
   var isBrokenVersionFailed = false;
   var isRestoredVersionStarted = false;
   Timer? inactivityTimer;
@@ -154,11 +155,21 @@ void main(List<String> args) async {
         isBrokenVersionStarted = true;
       }
 
+      // The previous run's teardown can dump exception reports while the
+      // restart is still compiling; only the restarted run's output counts.
+      if (isBrokenVersionStarted &&
+          !isBrokenRestartCompleted &&
+          stringOutput.contains('Restarted application')) {
+        isBrokenRestartCompleted = true;
+        output.clear();
+        return;
+      }
+
       final hasFailed =
           stringOutput.contains('When the exception was thrown') ||
           stringOutput.contains('Expected: exactly one matching candidate');
 
-      if (isBrokenVersionStarted && !isBrokenVersionFailed && hasFailed) {
+      if (isBrokenRestartCompleted && !isBrokenVersionFailed && hasFailed) {
         print('[test] broken version failed as expected');
         isBrokenVersionFailed = true;
 
@@ -195,6 +206,7 @@ void main(List<String> args) async {
           );
           print('isFirstTestPassed: $isFirstTestPassed');
           print('isBrokenVersionStarted: $isBrokenVersionStarted');
+          print('isBrokenRestartCompleted: $isBrokenRestartCompleted');
           print('isBrokenVersionFailed: $isBrokenVersionFailed');
           print('isRestoredVersionStarted: $isRestoredVersionStarted');
           print('Running file:');

@@ -267,9 +267,11 @@ void patrolTest(
           );
         // Wait indefinitely in develop mode after the last test, reporting
         // exceptions from manual interactions as they happen. On web, bail out
-        // once a newer hot-restart generation claims the app, or this loop
-        // keeps rendering into the previous run's disposed EngineFlutterView.
-        while (isCurrentDevelopGeneration(generation)) {
+        // once a newer hot-restart generation claims the app or the engine
+        // starts tearing the view down, or this loop keeps pumping frames into
+        // a disposed EngineFlutterView and floods the console with assertions.
+        while (isCurrentDevelopGeneration(generation) &&
+            patrolBinding.platformDispatcher.implicitView != null) {
           await widgetTester.pump();
           reportDevelopException();
           await Future<void>.delayed(const Duration(milliseconds: 10));
