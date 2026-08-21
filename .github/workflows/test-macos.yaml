@@ -112,6 +112,7 @@ jobs:
           echo "--- plist before ---"
           plutil -p "$PLIST" 2>&1 || true
           defaults write "$PLIST" "/usr/sbin/screencapture" -date "2100-01-01 12:00:00 +0000"
+          defaults write "$PLIST" "/opt/hca/hosted-compute-agent" -date "2100-01-01 12:00:00 +0000"
           killall replayd 2>/dev/null || true
           echo "--- plist after ---"
           plutil -p "$PLIST" 2>&1 || true
