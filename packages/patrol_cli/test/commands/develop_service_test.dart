@@ -244,6 +244,78 @@ void main() {
         expect(_lastResult!.error, isA<Exception>());
       },
     );
+
+    test(
+      'stops the app and its instrumentation on the device on quit',
+      () async {
+        // Otherwise the process Gradle spawned to drive the instrumentation
+        // keeps running and holds onto the test results directory. (#3209)
+        final backendNeverExits = Completer<void>();
+        when(
+          () => androidTestBackend.execute(
+            any(),
+            any(),
+            interruptible: any(named: 'interruptible'),
+            showFlutterLogs: any(named: 'showFlutterLogs'),
+            hideTestSteps: any(named: 'hideTestSteps'),
+            flavor: any(named: 'flavor'),
+            clearTestSteps: any(named: 'clearTestSteps'),
+            onLogEntry: any(named: 'onLogEntry'),
+          ),
+        ).thenAnswer((_) => backendNeverExits.future);
+
+        when(
+          () => androidTestBackend.stopInstrumentation(any(), any()),
+        ).thenAnswer((_) async {});
+
+        // onQuit is what pressing "q" ends up running.
+        Future<void> Function()? onQuit;
+        final attachNeverCompletes = Completer<void>();
+        when(
+          () => flutterTool.attachForHotRestart(
+            flutterCommand: any(named: 'flutterCommand'),
+            deviceId: any(named: 'deviceId'),
+            target: any(named: 'target'),
+            appId: any(named: 'appId'),
+            dartDefines: any(named: 'dartDefines'),
+            openDevtools: any(named: 'openDevtools'),
+            attachUsingUrl: any(named: 'attachUsingUrl'),
+            onQuit: any(named: 'onQuit'),
+          ),
+        ).thenAnswer((invocation) {
+          onQuit =
+              invocation.namedArguments[const Symbol('onQuit')]
+                  as Future<void> Function()?;
+          return attachNeverCompletes.future;
+        });
+
+        unawaited(
+          buildService().run(
+            const DevelopOptions(
+              target: 'onboarding_test.dart',
+              flutterCommand: FlutterCommand('flutter'),
+              buildMode: BuildMode.debug,
+              testServerPort: 8081,
+              appServerPort: 8080,
+              generateBundle: false,
+              uninstall: false,
+              checkCompatibility: false,
+              packageName: 'com.example.app',
+            ),
+          ),
+        );
+
+        await _waitFor(() => onQuit != null);
+        await onQuit!();
+
+        verify(
+          () => androidTestBackend.stopInstrumentation(
+            'com.example.app',
+            androidDevice,
+          ),
+        ).called(1);
+      },
+    );
   });
 }
 

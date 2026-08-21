@@ -1,5 +1,5 @@
 import 'dart:io' as p show Platform;
-import 'dart:io' show ProcessSignal, stdin;
+import 'dart:io' show ProcessSignal, exit, stdin;
 
 import 'package:adb/adb.dart';
 import 'package:args/args.dart';
@@ -214,6 +214,13 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
           platform: _platform,
           parentDisposeScope: _disposeScope,
           logger: _logger,
+          // Without this, "q" falls back to a bare exit(0) and we terminate
+          // before the dispose scope runs, leaving the Gradle and logcat
+          // processes behind. (#3209)
+          onExit: () async {
+            await dispose();
+            exit(0);
+          },
         ),
         androidTestBackend: androidTestBackend,
         iosTestBackend: iosTestBackend,

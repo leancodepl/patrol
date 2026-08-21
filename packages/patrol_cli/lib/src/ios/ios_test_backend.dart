@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io' show Process;
 
-import 'package:dispose_scope/dispose_scope.dart';
+import 'package:dispose_scope/dispose_scope.dart' hide ProcessDisposed;
 import 'package:file/file.dart';
 import 'package:glob/glob.dart';
 import 'package:meta/meta.dart';
