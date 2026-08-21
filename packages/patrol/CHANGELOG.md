@@ -4,6 +4,7 @@
 - The Patrol DevTools extension's inspector now works on web. On web the page's DOM is the view hierarchy web selectors resolve against, so `patrol.getNativeUITree` returns it: with semantics enabled you see the `<flt-semantics>` elements carrying the roles, labels and text that `$('Go to Page 1')` and friends match. Previously the extension reported "Unsupported platform" there.
 - Fix the develop-mode idle loop leaking across hot restarts on web. A web hot restart re-runs `main()` in the same page, and pumping frames goes through `requestAnimationFrame`, which DDC does not invalidate per program generation, so the previous run's loop kept rendering into a disposed `EngineFlutterView` and flooded the console with assertions. The loop now stops as soon as a newer run claims the app.
 - Exit the Playwright develop driver when the browser disconnects, instead of idling forever after `flutter run` closes Chrome.
+- Report uncaught exceptions (e.g. from `onPressed`) in `patrol develop` instead of silently passing. (#3200)
 
 ## 4.9.0
 

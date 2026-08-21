@@ -219,6 +219,32 @@ void patrolTest(
         rethrow;
       }
 
+      // In develop mode the exception gatherer is off, so exceptions the
+      // framework catches (e.g. from `onPressed`) are never reported. The full
+      // stack is dumped to the console by `PatrolBinding.reportExceptionNoticed`
+      // (forwarded by `patrol develop`); log a short failure entry here for the
+      // structured status, without ending the Hot Restart session.
+      void reportDevelopException() {
+        final caughtException = patrolBinding.takeException();
+        if (caughtException == null) {
+          return;
+        }
+        patrolLog.log(
+          TestEntry(
+            name: global_state.currentTestFullName,
+            status: TestEntryStatus.failure,
+            error: caughtException.toString(),
+          ),
+        );
+      }
+
+      if (constants.hotRestartEnabled) {
+        // Pump once so exceptions from in-flight gesture callbacks are recorded
+        // by the framework before we read them.
+        await widgetTester.pump();
+        reportDevelopException();
+      }
+
       if (debugDefaultTargetPlatformOverride !=
           patrolBinding.workaroundDebugDefaultTargetPlatformOverride) {
         debugDefaultTargetPlatformOverride =
@@ -239,15 +265,13 @@ void patrolTest(
           ..log(
             ConfigEntry(config: const {ConfigEntry.developCompletedKey: true}),
           );
-        // Wait indefinitely in develop mode after the last test.
-        //
-        // On web a hot restart neither kills this frame nor reloads the page,
-        // and pumping drives frames through requestAnimationFrame, which DDC
-        // does not generation-gate. Bail out as soon as a newer generation has
-        // claimed the app, or this loop keeps rendering into the disposed
-        // EngineFlutterView of the previous run.
+        // Wait indefinitely in develop mode after the last test, reporting
+        // exceptions from manual interactions as they happen. On web, bail out
+        // once a newer hot-restart generation claims the app, or this loop
+        // keeps rendering into the previous run's disposed EngineFlutterView.
         while (isCurrentDevelopGeneration(generation)) {
           await widgetTester.pump();
+          reportDevelopException();
           await Future<void>.delayed(const Duration(milliseconds: 10));
         }
       }
