@@ -144,7 +144,7 @@ class MacOSAutomator implements macos_automator.MacOSAutomator {
 
     if (exception != null) {
       throw PatrolActionException(
-        'configure() failed after $retries retries (${exception.message}',
+        'configure() failed after $retries retries (${exception.message})',
       );
     }
   }
@@ -220,11 +220,17 @@ class MacOSAutomator implements macos_automator.MacOSAutomator {
     String label, {
     String? appId,
     Duration? timeout,
-  }) {
+  }) async {
+    final effectiveTimeout = timeout ?? _config.findTimeout;
+    if (!await isAlertVisible(timeout: effectiveTimeout)) {
+      throw PatrolActionException(
+        'tapAlertButton() failed: no native alert, dialog, or sheet is visible',
+      );
+    }
     return tap(
       IOSSelector(text: label, elementType: IOSElementType.button),
       appId: appId,
-      timeout: timeout,
+      timeout: effectiveTimeout,
     );
   }
 

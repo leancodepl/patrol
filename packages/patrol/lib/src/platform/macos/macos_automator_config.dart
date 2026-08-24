@@ -1,3 +1,4 @@
+import 'package:patrol/src/platform/ios/ios_automator_config.dart';
 import 'package:patrol/src/platform/macos/macos_automator.dart';
 import 'package:patrol/src/platform/mobile/mobile_automator_config.dart';
 
@@ -17,6 +18,25 @@ class MacOSAutomatorConfig extends MobileAutomatorConfig {
            const String.fromEnvironment('PATROL_MACOS_APP_BUNDLE_ID'),
        appName =
            appName ?? const String.fromEnvironment('PATROL_MACOS_APP_NAME');
+
+  /// Creates a [MacOSAutomatorConfig] that talks to the same automation server
+  /// as [ios].
+  ///
+  /// Used when callers enable native automation with only `iosConfig`, which is
+  /// how macOS was configured before a dedicated macOS automator existed.
+  ///
+  /// [bundleId] and [appName] are deliberately not inherited: the CLI passes a
+  /// separate bundle id for macOS, so they must resolve from the macOS
+  /// dart-defines.
+  factory MacOSAutomatorConfig.fromIOSTransport(IOSAutomatorConfig ios) {
+    return MacOSAutomatorConfig(
+      host: ios.host,
+      port: ios.portOverride,
+      connectionTimeout: ios.connectionTimeout,
+      findTimeout: ios.findTimeout,
+      logger: ios.logger,
+    );
+  }
 
   /// Bundle identifier of the application under test.
   final String bundleId;

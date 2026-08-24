@@ -1,4 +1,5 @@
-import 'package:patrol/src/platform/macos/macos_automator.dart' as macos_automator;
+import 'package:patrol/src/platform/macos/macos_automator.dart'
+    as macos_automator;
 import 'package:patrol/src/platform/macos/macos_automator_config.dart';
 
 /// An empty implementation of [macos_automator.MacOSAutomator] for unsupported

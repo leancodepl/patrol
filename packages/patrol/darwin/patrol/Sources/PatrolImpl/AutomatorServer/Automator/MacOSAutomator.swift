@@ -96,12 +96,14 @@
           app.activate()
         }
 
-        let query = app.descendants(matching: .any).matching(selector.toNSPredicate())
-
         Logger.shared.i("waiting for existence of \(view)")
         guard
-          let element = self.waitFor(
-            query: query, index: selector.instance ?? 0, timeout: timeout ?? self.timeout)
+          let element = self.waitForTapTarget(
+            app: app,
+            selector: selector,
+            index: selector.instance ?? 0,
+            timeout: timeout ?? self.timeout,
+            requireHittable: true)
         else {
           throw PatrolError.viewNotExists(view)
         }
@@ -385,12 +387,49 @@
     private func waitFor(query: XCUIElementQuery, index: Int, timeout: TimeInterval)
       -> XCUIElement?
     {
+      waitFor(
+        index: index,
+        timeout: timeout,
+        requireHittable: false
+      ) {
+        query
+      }
+    }
+
+    /// Resolves the tap target, re-evaluating the query each poll so newly
+    /// opened menus and alerts are picked up.
+    @discardableResult
+    private func waitForTapTarget(
+      app: XCUIApplication,
+      selector: IOSSelector,
+      index: Int,
+      timeout: TimeInterval,
+      requireHittable: Bool
+    ) -> XCUIElement? {
+      waitFor(
+        index: index,
+        timeout: timeout,
+        requireHittable: requireHittable
+      ) {
+        self.queryForTap(app: app, selector: selector)
+      }
+    }
+
+    @discardableResult
+    private func waitFor(
+      index: Int,
+      timeout: TimeInterval,
+      requireHittable: Bool,
+      query: () -> XCUIElementQuery
+    ) -> XCUIElement? {
       var foundElement: XCUIElement?
       let startTime = Date()
 
       while Date().timeIntervalSince(startTime) < timeout {
-        let elements = query.allElementsBoundByIndex
-        if index < elements.count && elements[index].exists {
+        let elements = query().allElementsBoundByIndex.filter { element in
+          element.exists && (!requireHittable || element.isHittable)
+        }
+        if index < elements.count {
           foundElement = elements[index]
           break
         }
@@ -398,6 +437,47 @@
       }
 
       return foundElement
+    }
+
+    /// Scopes menu-item lookups to the currently open menu and button lookups
+    /// to a visible alert / dialog / sheet when one is present.
+    private func queryForTap(app: XCUIApplication, selector: IOSSelector) -> XCUIElementQuery {
+      let predicate = selector.toNSPredicate()
+
+      if selector.elementType == .menuBarItem {
+        return app.menuBars.menuBarItems.matching(predicate)
+      }
+
+      if selector.elementType == .menuItem {
+        let openMenus = app.descendants(matching: .menu).allElementsBoundByIndex.filter {
+          $0.exists && $0.isHittable
+        }
+        // Prefer the deepest open menu so `tapMenu` follows the path instead of
+        // matching a duplicate label in another (closed) menu.
+        if let menu = openMenus.last {
+          return menu.menuItems.matching(predicate)
+        }
+        // No open menu yet; keep the query empty-ish so waitFor keeps polling.
+        return app.menuBars.menuItems.matching(NSPredicate(value: false))
+      }
+
+      if selector.elementType == .button, let container = visibleAlertContainer(in: app) {
+        return container.descendants(matching: .button).matching(predicate)
+      }
+
+      return app.descendants(matching: .any).matching(predicate)
+    }
+
+    private func visibleAlertContainer(in app: XCUIApplication) -> XCUIElement? {
+      let types: [XCUIElement.ElementType] = [.dialog, .sheet, .alert]
+      for type in types {
+        if let element = app.descendants(matching: type).allElementsBoundByIndex.first(where: {
+          $0.exists
+        }) {
+          return element
+        }
+      }
+      return nil
     }
 
     private func createLogMessage(element: String, from selector: IOSSelector) -> String {
