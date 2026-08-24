@@ -97,41 +97,45 @@ extension ProcessListeners on Process {
   }
 }
 
-extension ProcessDisposers on Process {
-  void disposed(DisposeScope disposeScope) {
-    disposeScope.addDispose(kill);
-  }
-}
-
-/// Shadows `dispose_scope`'s `ProcessDisposed.disposedBy`, which kills only the
-/// process itself. Import `dispose_scope` with `hide ProcessDisposed` to use it.
+/// Import `dispose_scope` with `hide ProcessDisposed`, so that a `Process`
+/// cannot be registered with the single-process `disposedBy` by accident.
 extension ProcessTreeDisposers on Process {
   /// Adds this process to [disposeScope], to be killed together with any
   /// processes it spawned.
   ///
-  /// On Windows `runInShell: true` means `cmd.exe /c <command>`, so killing the
-  /// process we hold orphans the rest of the tree instead of ending it. There
-  /// are no process groups to signal, hence `taskkill /T`. Elsewhere `sh -c`
-  /// execs into the command, so our PID is already the real process. (#3209)
-  void disposedBy(DisposeScope disposeScope, {Platform? platform}) {
-    final isWindows = (platform ?? const LocalPlatform()).isWindows;
+  /// The process we hold is often a wrapper - `cmd.exe /c` on Windows, `fvm` or
+  /// a `flutter` shell script elsewhere - and its children outlive it. There is
+  /// no process group to signal, so the descendants have to be named: `taskkill
+  /// /T` walks them on Windows, `pgrep -P` elsewhere.
+  void disposedByTree(DisposeScope disposeScope) {
+    var exited = false;
+    unawaited(exitCode.then((_) => exited = true));
 
     disposeScope.addDispose(() async {
-      if (!isWindows) {
+      // A dead PID may already belong to another process; taskkill would
+      // escalate that into killing an unrelated tree.
+      if (exited) {
+        return;
+      }
+
+      if (!const LocalPlatform().isWindows) {
+        // Collected before anything dies; once the parent is gone its children
+        // are reparented and `pgrep -P` no longer reports them.
+        (await _descendants(pid)).forEach(Process.killPid);
         kill();
         return;
       }
 
       // /F because gradlew.bat and friends ignore the graceful request.
-      // taskkill reports refusals (e.g. access denied) through its exit code
-      // rather than by throwing, so fall back on those too.
+      // taskkill reports refusals (e.g. access denied) through its exit code,
+      // so fall back on those too.
       var killedTree = false;
       try {
         final result = await Process.run('taskkill', [
           ...['/PID', '$pid'],
           '/T',
           '/F',
-        ]);
+        ]).timeout(const Duration(seconds: 10));
         killedTree = result.exitCode == 0;
       } catch (_) {}
 
@@ -140,6 +144,35 @@ extension ProcessTreeDisposers on Process {
       }
     });
   }
+}
+
+/// PIDs spawned below [pid], deepest first.
+Future<List<int>> _descendants(int pid) async {
+  final found = <int>[];
+  final pending = <int>[pid];
+
+  while (pending.isNotEmpty) {
+    final parent = pending.removeLast();
+    final ProcessResult result;
+    try {
+      result = await Process.run('pgrep', [
+        ...['-P', '$parent'],
+      ]).timeout(const Duration(seconds: 5));
+    } catch (_) {
+      continue;
+    }
+    if (result.exitCode != 0) {
+      continue;
+    }
+
+    final children = LineSplitter.split(
+      result.stdout as String,
+    ).map((line) => int.tryParse(line.trim())).nonNulls;
+    found.addAll(children);
+    pending.addAll(children);
+  }
+
+  return found.reversed.toList();
 }
 
 extension ProcessResultX on ProcessResult {

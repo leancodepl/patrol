@@ -103,15 +103,18 @@ class FlutterTool {
     }
 
     Future<void> onQuitWithRevertInteractiveMode() async {
-      if (previousStdinModes != null) {
-        try {
-          revertInteractiveMode(previousStdinModes);
-        } on io.StdinException catch (err) {
-          _logger.detail('Could not restore terminal modes: $err');
+      try {
+        if (previousStdinModes != null) {
+          try {
+            revertInteractiveMode(previousStdinModes);
+          } on io.StdinException catch (err) {
+            _logger.detail('Could not restore terminal modes: $err');
+          }
         }
-      }
-      if (onQuit != null) {
-        await onQuit();
+      } finally {
+        if (onQuit != null) {
+          await onQuit();
+        }
       }
     }
 
@@ -197,7 +200,7 @@ class FlutterTool {
                 '${dartDefine.key}=${dartDefine.value}',
               ],
             ])
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
       _attachProcess = process;
 
       final completer = Completer<void>();
@@ -242,7 +245,6 @@ class FlutterTool {
               _logger.success(helpText.toString());
             } else if (char == 'q' || char == 'Q') {
               _logger.success('Quitting process...');
-              process.kill();
               if (!completer.isCompleted) {
                 completer.complete();
               }
@@ -345,7 +347,7 @@ class FlutterTool {
               '--device-id',
               deviceId,
             ], runInShell: true)
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
 
       final completer = Completer<void>();
       scope.addDispose(() {
@@ -433,7 +435,9 @@ class FlutterTool {
   }
 
   void revertInteractiveMode(StdinModes stdinModes) {
-    // stdin may already be closed (e.g. after Ctrl+C).
+    // Windows allows setting echoMode only while lineMode is enabled.
+    // stdin may already be closed (e.g. after Ctrl+C); the terminal is going
+    // away anyway, so a failure here is harmless.
     try {
       io.stdin.lineMode = stdinModes.lineMode;
     } on io.StdinException catch (err) {
