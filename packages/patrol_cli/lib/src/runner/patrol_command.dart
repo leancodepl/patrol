@@ -546,6 +546,14 @@ abstract class PatrolCommand extends Command<int> {
         'video-bit-rate',
         help: 'Video recording bit rate in bits per second. Android only.',
         valueHelp: '4000000',
+      )
+      ..addOption(
+        'screenshots-output-dir',
+        help:
+            'Directory to save native screenshots pulled from the device '
+            'after an Android `patrol test` run. Defaults to '
+            '<test-directory>/screenshots.',
+        valueHelp: 'path/to/screenshots',
       );
   }
 

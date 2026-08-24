@@ -174,6 +174,13 @@ class DevelopService {
           .getInstalledAppsEnvVariable(device.id);
     }
 
+    if (config.screenshotOnFailure) {
+      _logger.warn(
+        "screenshot_on_failure is not supported in 'patrol develop'; native "
+        "screenshots are only collected by 'patrol test'.",
+      );
+    }
+
     final customDartDefines = {
       ..._dartDefinesReader.fromFile(),
       ..._dartDefinesReader.fromCli(args: options.dartDefines),
@@ -188,6 +195,9 @@ class DevelopService {
       'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
       'PATROL_TEST_LABEL_ENABLED': options.displayLabel.toString(),
       'PATROL_TEST_DIRECTORY': config.testDirectory,
+      // Collected only by `patrol test`; `develop` never pulls them, so don't
+      // capture on the device here (warned about above).
+      'PATROL_SCREENSHOT_ON_FAILURE': 'false',
       // develop-specific
       ...{
         'PATROL_HOT_RESTART': 'true',

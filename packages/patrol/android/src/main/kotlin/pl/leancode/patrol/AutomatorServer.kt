@@ -265,6 +265,10 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
         }
     }
 
+    override fun takeNativeScreenshot(request: Contracts.AndroidTakeNativeScreenshotRequest) {
+        automation.takeNativeScreenshot(request.tag)
+    }
+
     override fun takeCameraPhoto(request: Contracts.AndroidTakeCameraPhotoRequest) {
         val isEmulator = isVirtualDevice().isVirtualDevice
 
