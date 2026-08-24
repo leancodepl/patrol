@@ -112,8 +112,8 @@ extension ProcessTreeDisposers on Process {
     unawaited(exitCode.then((_) => exited = true));
 
     disposeScope.addDispose(() async {
-      // A dead PID may already belong to another process; taskkill would
-      // escalate that into killing an unrelated tree.
+      // A PID is reused once its process is gone, so killing by PID after that
+      // can hit an unrelated process - and `taskkill /T` its whole tree.
       if (exited) {
         return;
       }
