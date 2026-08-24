@@ -103,18 +103,17 @@ class FlutterTool {
     }
 
     Future<void> onQuitWithRevertInteractiveMode() async {
-      try {
-        if (previousStdinModes != null) {
-          try {
-            revertInteractiveMode(previousStdinModes);
-          } on io.StdinException catch (err) {
-            _logger.detail('Could not restore terminal modes: $err');
-          }
+      if (previousStdinModes != null) {
+        try {
+          revertInteractiveMode(previousStdinModes);
+        } catch (err) {
+          // The terminal outlives us; failing to restore it must not stop the
+          // cleanup below, nor be reported as the cleanup failing.
+          _logger.detail('Could not restore the terminal: $err');
         }
-      } finally {
-        if (onQuit != null) {
-          await onQuit();
-        }
+      }
+      if (onQuit != null) {
+        await onQuit();
       }
     }
 
