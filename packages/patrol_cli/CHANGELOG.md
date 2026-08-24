@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Fix `patrol develop` leaving processes behind after quitting with `q`: the session now stops the instrumentation on the device and disposes what it started, instead of exiting straight away. On Windows the leftover Gradle Test Platform process used to keep holding `utp.0.log.lck`, which made the next run fail on `:app:connectedAndroidTest`. (#3209)
+- Fix `patrol develop` leaving Gradle and logcat processes behind after quitting with `q` (#3249)
 
 ## 4.7.0
 

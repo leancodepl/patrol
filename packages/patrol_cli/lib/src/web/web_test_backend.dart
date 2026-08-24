@@ -458,7 +458,7 @@ class WebTestBackend {
               },
               runInShell: true,
             )
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
 
       final isShardedRun = (options.workers ?? 0) > 1;
       if (isShardedRun) {

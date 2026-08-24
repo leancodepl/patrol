@@ -373,7 +373,7 @@ class DevelopService {
     Future<void> Function() action;
     Future<void> Function()? finalizer;
 
-    // Ends what is still running on the device when the user quits. (#3209)
+    // Ends what is still running on the device when the user quits.
     Future<void> Function()? stopOnDevice;
     String? appId;
 
@@ -470,11 +470,14 @@ class DevelopService {
           openDevtools: openDevtools,
           flavor: flutterOpts.flavor,
           attachUsingUrl: device.targetPlatform == TargetPlatform.macOS,
-          // Stop the device side first, so the processes running the tests can
-          // finish on their own before the backend is torn down.
+          // Stop the device side first, so the Gradle process waiting on
+          // `am instrument` can end before the backend is torn down.
           onQuit: () async {
-            await onQuitCleanup();
-            await stopOnDevice?.call();
+            try {
+              await stopOnDevice?.call();
+            } finally {
+              await onQuitCleanup();
+            }
           },
         );
       }

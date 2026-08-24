@@ -122,7 +122,7 @@ class AndroidTestBackend {
                 _ => {},
               },
             )
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
       process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
       exitCode = await process.exitCode;
@@ -150,7 +150,7 @@ class AndroidTestBackend {
                 _ => {},
               },
             )
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
       process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
 
@@ -256,7 +256,7 @@ class AndroidTestBackend {
               'doctor',
               '--verbose',
             ], runInShell: true)
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
 
       process
           .listenStdOut(
@@ -312,7 +312,7 @@ class AndroidTestBackend {
               '-t',
               options.target,
             ], runInShell: true)
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
 
       process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
@@ -340,7 +340,7 @@ class AndroidTestBackend {
                 _ => {},
               },
             )
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
       process
           .listenStdOut((l) {
             if (l.contains('androidx.test:orchestrator:1.5.0')) {
@@ -397,7 +397,7 @@ class AndroidTestBackend {
               arguments: {'-T': '1'},
               filter: 'PatrolServer:I Patrol:I flutter:I *:S',
             )
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
 
       final path = generateTestReportPath(
         rootPath: _rootDirectory.path,
@@ -449,7 +449,7 @@ class AndroidTestBackend {
               },
               workingDirectory: _rootDirectory.childDirectory('android').path,
             )
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
       process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
       process
           .listenStdErr((l) {
@@ -550,7 +550,7 @@ class AndroidTestBackend {
               arguments: {'-T': '1'},
               filter: 'PatrolServer:I Patrol:I flutter:I *:S',
             )
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
 
       final path = generateTestReportPath(
         rootPath: _rootDirectory.path,
@@ -588,7 +588,7 @@ class AndroidTestBackend {
               device: device.id,
               arguments: {'class': classArg},
             )
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
       process
           .listenStdOut((l) {
             if (l.contains('FAILURES!!!') ||
@@ -825,22 +825,18 @@ class AndroidTestBackend {
 
   /// Stops [appId] and its instrumentation on [device].
   ///
-  /// The Gradle Test Platform process waits for `am instrument` to return, and
-  /// in develop mode the instrumentation stays alive on purpose so Hot Restart
-  /// has something to restart. Quitting therefore has to end it explicitly, or
-  /// that process outlives the session - on Windows holding `utp.0.log.lck` and
-  /// failing the next `connectedAndroidTest`. (#3209)
+  /// In develop mode the instrumentation stays alive so Hot Restart has
+  /// something to restart, and the Gradle Test Platform waits for it to
+  /// return - so quitting has to end it explicitly.
   Future<void> stopInstrumentation(String appId, Device device) async {
-    // Resolved rather than assumed to be `$appId.test`, so a custom
-    // testApplicationId is stopped too - otherwise the instrumentation keeps
-    // running in exactly the setups that need this most. Never let the lookup
-    // itself abort the shutdown; the conventional name is a good enough guess.
+    // A custom `testApplicationId` changes the test package name. The lookup
+    // must not abort the shutdown; the conventional name is the fallback.
     var testPackageName = '$appId.test';
     try {
       (testPackageName, _) = await _resolveInstrumentationComponent(
         appId,
         device,
-      );
+      ).timeout(const Duration(seconds: 10));
     } catch (err) {
       _logger.detail('Could not resolve the instrumentation package: $err');
     }
@@ -848,15 +844,17 @@ class AndroidTestBackend {
     for (final packageName in {appId, testPackageName}) {
       _logger.detail('Stopping $packageName on ${device.name}');
       try {
-        await _processManager.run([
-          'adb',
-          '-s',
-          device.id,
-          'shell',
-          'am',
-          'force-stop',
-          packageName,
-        ], runInShell: true);
+        await _processManager
+            .run([
+              'adb',
+              '-s',
+              device.id,
+              'shell',
+              'am',
+              'force-stop',
+              packageName,
+            ], runInShell: true)
+            .timeout(const Duration(seconds: 10));
       } catch (err) {
         // Best effort - the app or the device may already be gone.
         _logger.detail('Failed to stop $packageName: $err');

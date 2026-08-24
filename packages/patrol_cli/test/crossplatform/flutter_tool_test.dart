@@ -40,6 +40,7 @@ void main() {
       when(
         () => process.stderr,
       ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
+      when(() => process.exitCode).thenAnswer((_) => Completer<int>().future);
       when(() => processManager.start(any())).thenAnswer((_) async => process);
 
       flutterTool.attach(
@@ -62,6 +63,7 @@ void main() {
       when(
         () => process.stderr,
       ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
+      when(() => process.exitCode).thenAnswer((_) => Completer<int>().future);
       when(() => processManager.start(any())).thenAnswer((_) async => process);
 
       flutterTool.attach(
@@ -89,6 +91,7 @@ void main() {
       when(
         () => process.stderr,
       ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
+      when(() => process.exitCode).thenAnswer((_) => Completer<int>().future);
       when(() => processManager.start(any())).thenAnswer((_) async => process);
 
       flutterTool.attach(

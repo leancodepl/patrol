@@ -56,7 +56,7 @@ class TestManifestGenerator {
             runInShell: true,
             workingDirectory: _rootDirectory.path,
           )
-          ..disposedBy(scope);
+          ..disposedByTree(scope);
     process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
     process.listenStdErr((l) => _logger.detail('\t$l')).disposedBy(scope);
     final exitCode = await process.exitCode;

@@ -248,8 +248,6 @@ void main() {
     test(
       'stops the app and its instrumentation on the device on quit',
       () async {
-        // Otherwise the process Gradle spawned to drive the instrumentation
-        // keeps running and holds onto the test results directory. (#3209)
         final backendNeverExits = Completer<void>();
         when(
           () => androidTestBackend.execute(

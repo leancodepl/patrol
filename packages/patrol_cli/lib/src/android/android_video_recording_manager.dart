@@ -78,7 +78,7 @@ class AndroidVideoRecordingManager extends VideoRecordingManager {
         ],
         _currentDeviceVideoPath!,
       ], runInShell: true);
-      _currentRecordingProcess!.disposedBy(_scope);
+      _currentRecordingProcess!.disposedByTree(_scope);
 
       // Capture screenrecord output so startup failures surface instead of
       // silently producing no file (later failing on `adb pull`).

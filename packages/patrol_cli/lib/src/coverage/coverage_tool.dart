@@ -81,7 +81,7 @@ class CoverageTool {
               workingDirectory: homeDirectory,
               runInShell: true,
             )
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
 
       final vmConnectionDetailsStream = logsProcess.stdout
           .transform(utf8.decoder)
