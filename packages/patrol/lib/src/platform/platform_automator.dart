@@ -180,7 +180,17 @@ class PlatformAutomator {
     final androidConfig =
         config?.androidConfig ?? const AndroidAutomatorConfig();
     final iosConfig = config?.iosConfig ?? const IOSAutomatorConfig();
-    final macosConfig = config?.macosConfig ?? const MacOSAutomatorConfig();
+    // Before this API existed, macOS native automation was enabled via
+    // `iosConfig`. Keep that working when `macosConfig` is omitted.
+    final inheritMacosFromIos =
+        config != null &&
+        config.macosConfig == null &&
+        config.iosConfig != null;
+    final macosConfig =
+        config?.macosConfig ??
+        (inheritMacosFromIos
+            ? MacOSAutomatorConfig.fromIOSTransport(config.iosConfig!)
+            : const MacOSAutomatorConfig());
     final webConfig = config?.webConfig ?? const WebAutomatorConfig();
 
     android = action.fallback(
@@ -200,7 +210,7 @@ class PlatformAutomator {
     );
 
     macos = action.fallback(
-      macos: (config?.macosEnabled ?? false)
+      macos: ((config?.macosEnabled ?? false) || inheritMacosFromIos)
           ? () => native_macos_automator.MacOSAutomator(config: macosConfig)
           : null,
       fallback: () => empty_macos_automator.MacOSAutomator(config: macosConfig),
@@ -244,8 +254,8 @@ class PlatformAutomator {
   /// It waits for the view to become visible for [timeout] duration.
   /// If the native view is not found, an exception is thrown.
   ///
-  /// [appId] is only used on iOS, where native queries must be scoped to a
-  /// single application. If not provided, defaults to the bundle id of the
+  /// [appId] is used on iOS and macOS, where native queries must be scoped to
+  /// a single application. If not provided, defaults to the bundle id of the
   /// app under test.
   Future<void> tap(
     CompoundSelector selector, {
