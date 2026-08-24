@@ -122,7 +122,7 @@ class IOSVideoRecordingManager extends VideoRecordingManager {
     try {
       // No shell: the stop SIGINT must reach `simctl` directly, not a wrapper.
       _currentRecordingProcess = await _processManager.start(command);
-      _currentRecordingProcess!.disposedBy(_scope);
+      _currentRecordingProcess!.disposedByTree(_scope);
 
       // Listen to stderr for any errors
       _currentRecordingProcess!.stderr.listen((data) {

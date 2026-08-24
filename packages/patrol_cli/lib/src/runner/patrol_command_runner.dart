@@ -214,9 +214,8 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
           platform: _platform,
           parentDisposeScope: _disposeScope,
           logger: _logger,
-          // Without this, "q" falls back to a bare exit(0) and we terminate
-          // before the dispose scope runs, leaving the Gradle and logcat
-          // processes behind. (#3209)
+          // The dispose scope has to run before the process exits, so the
+          // processes it started die with it.
           onExit: () async {
             await dispose();
             exit(0);

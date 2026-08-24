@@ -62,11 +62,14 @@ class FlutterTool {
     }
 
     Future<void> onQuitWithRevertInteractiveMode() async {
-      if (previousStdinModes != null) {
-        revertInteractiveMode(previousStdinModes);
-      }
-      if (onQuit != null) {
-        await onQuit();
+      try {
+        if (previousStdinModes != null) {
+          revertInteractiveMode(previousStdinModes);
+        }
+      } finally {
+        if (onQuit != null) {
+          await onQuit();
+        }
       }
     }
 
@@ -138,7 +141,7 @@ class FlutterTool {
                 '${dartDefine.key}=${dartDefine.value}',
               ],
             ])
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
 
       final completer = Completer<void>();
       scope.addDispose(() {
@@ -178,7 +181,6 @@ class FlutterTool {
               _logger.success(helpText.toString());
             } else if (char == 'q' || char == 'Q') {
               _logger.success('Quitting process...');
-              process.kill();
               if (!completer.isCompleted) {
                 completer.complete();
               }
@@ -268,7 +270,7 @@ class FlutterTool {
               '--device-id',
               deviceId,
             ], runInShell: true)
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
 
       final completer = Completer<void>();
       scope.addDispose(() {
@@ -343,8 +345,9 @@ class FlutterTool {
   }
 
   void revertInteractiveMode(StdinModes stdinModes) {
-    io.stdin.echoMode = stdinModes.echoMode;
+    // Windows allows setting echoMode only while lineMode is enabled.
     io.stdin.lineMode = stdinModes.lineMode;
+    io.stdin.echoMode = stdinModes.echoMode;
 
     _logger.detail('Interactive shell mode disabled.');
   }

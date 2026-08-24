@@ -87,7 +87,7 @@ Check the compatibility table at: https://patrol.leancode.co/documentation/compa
               workingDirectory: _projectRoot.path,
               runInShell: true,
             )
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
 
       process
           .listenStdOut(
@@ -182,7 +182,7 @@ Future<void> _checkJavaVersion(
             workingDirectory: projectRoot.path,
             runInShell: true,
           )
-          ..disposedBy(scope);
+          ..disposedByTree(scope);
 
     processFlutter
         .listenStdOut(
@@ -200,7 +200,7 @@ Future<void> _checkJavaVersion(
                       workingDirectory: projectRoot.path,
                       runInShell: true,
                     )
-                    ..disposedBy(scope);
+                    ..disposedByTree(scope);
 
               processJava
                   .listenStdOut(
