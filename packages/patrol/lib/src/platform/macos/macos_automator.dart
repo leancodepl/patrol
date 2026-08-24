@@ -46,11 +46,7 @@ abstract interface class MacOSAutomator {
   /// Taps a button on the currently visible native alert / dialog / sheet.
   ///
   /// [label] is the button title, e.g. `OK` or `Cancel`.
-  Future<void> tapAlertButton(
-    String label, {
-    String? appId,
-    Duration? timeout,
-  });
+  Future<void> tapAlertButton(String label, {String? appId, Duration? timeout});
 
   /// Taps a native application menu item identified by [path].
   ///
