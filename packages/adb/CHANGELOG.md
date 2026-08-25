@@ -1,4 +1,4 @@
-## Unreleased
+## 0.6.1
 
 - Add `pull` and `remove` methods to `Adb`, so callers use one place for adb resolution and device handling instead of raw `adb` invocations. (#3222)
 
