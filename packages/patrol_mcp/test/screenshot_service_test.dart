@@ -6,35 +6,24 @@ Device _device(TargetPlatform platform) =>
     Device(name: 'id', id: 'id', targetPlatform: platform, real: false);
 
 void main() {
-  group('ScreenshotPlatform.argsFor', () {
-    test('android captures via adb exec-out screencap', () {
-      final args = ScreenshotPlatform.android.argsFor(
-        _device(TargetPlatform.android),
-      );
-      expect(args, ['-s', 'id', 'exec-out', 'screencap', '-p']);
-    });
+  test('androidScreenshotArgs captures via adb exec-out screencap', () {
+    final args = androidScreenshotArgs(_device(TargetPlatform.android));
+    expect(args, ['-s', 'id', 'exec-out', 'screencap', '-p']);
+  });
 
-    test('ios writes to the given outputPath, not /dev/stdout', () {
-      final args = ScreenshotPlatform.ios.argsFor(
-        _device(TargetPlatform.iOS),
-        outputPath: '/tmp/shot.png',
-      );
-      expect(args, [
-        'simctl',
-        'io',
-        'id',
-        'screenshot',
-        '--type=png',
-        '/tmp/shot.png',
-      ]);
-    });
-
-    test('ios requires an outputPath', () {
-      expect(
-        () => ScreenshotPlatform.ios.argsFor(_device(TargetPlatform.iOS)),
-        throwsA(isA<TypeError>()),
-      );
-    });
+  test('iosScreenshotArgs writes to the given outputPath, not /dev/stdout', () {
+    final args = iosScreenshotArgs(
+      _device(TargetPlatform.iOS),
+      '/tmp/shot.png',
+    );
+    expect(args, [
+      'simctl',
+      'io',
+      'id',
+      'screenshot',
+      '--type=png',
+      '/tmp/shot.png',
+    ]);
   });
 
   group('ScreenshotPlatform.fromDevice', () {

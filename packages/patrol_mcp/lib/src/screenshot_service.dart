@@ -14,31 +14,6 @@ enum ScreenshotPlatform {
 
   final String command;
 
-  /// Builds the command arguments that target [device] specifically, so
-  /// the capture doesn't fail (or silently hit the wrong device) when
-  /// multiple devices/simulators are attached.
-  ///
-  /// [outputPath] is required for [ios]: `simctl io screenshot` writes
-  /// atomically (temp file + rename) in the destination directory, so
-  /// pointing it at `/dev/stdout` fails with a permission error there.
-  List<String> argsFor(Device device, {String? outputPath}) => switch (this) {
-    ScreenshotPlatform.android => [
-      '-s',
-      device.id,
-      'exec-out',
-      'screencap',
-      '-p',
-    ],
-    ScreenshotPlatform.ios => [
-      'simctl',
-      'io',
-      device.id,
-      'screenshot',
-      '--type=png',
-      outputPath!,
-    ],
-  };
-
   static ScreenshotPlatform fromDevice(Device device) =>
       switch (device.targetPlatform) {
         TargetPlatform.android => ScreenshotPlatform.android,
@@ -49,6 +24,31 @@ enum ScreenshotPlatform {
         ),
       };
 }
+
+/// Builds the `adb` args that target [device] specifically, so the capture
+/// doesn't fail (or silently hit the wrong device) when multiple
+/// devices/emulators are attached.
+List<String> androidScreenshotArgs(Device device) => [
+  '-s',
+  device.id,
+  'exec-out',
+  'screencap',
+  '-p',
+];
+
+/// Builds the `simctl` args that target [device] and write to [outputPath].
+///
+/// `simctl io screenshot` writes atomically (temp file + rename) in the
+/// destination directory, so `outputPath` must be a real, writable path —
+/// not `/dev/stdout`, which fails there with a permission error.
+List<String> iosScreenshotArgs(Device device, String outputPath) => [
+  'simctl',
+  'io',
+  device.id,
+  'screenshot',
+  '--type=png',
+  outputPath,
+];
 
 abstract final class ScreenshotService {
   static const _maxHeight = 800;
@@ -90,21 +90,18 @@ abstract final class ScreenshotService {
     Device device,
   ) async {
     final rawBytes = switch (platform) {
-      ScreenshotPlatform.android => await _captureFromStdout(platform, device),
-      ScreenshotPlatform.ios => await _captureViaTempFile(platform, device),
+      ScreenshotPlatform.android => await _captureFromStdout(device),
+      ScreenshotPlatform.ios => await _captureViaTempFile(device),
     };
 
     _validatePng(rawBytes);
     return _resizeImage(rawBytes);
   }
 
-  static Future<Uint8List> _captureFromStdout(
-    ScreenshotPlatform platform,
-    Device device,
-  ) async {
+  static Future<Uint8List> _captureFromStdout(Device device) async {
     final process = await Process.start(
-      platform.command,
-      platform.argsFor(device),
+      ScreenshotPlatform.android.command,
+      androidScreenshotArgs(device),
     );
 
     final bytes = await process.stdout.expand((chunk) => chunk).toList();
@@ -118,10 +115,7 @@ abstract final class ScreenshotService {
     return Uint8List.fromList(bytes);
   }
 
-  static Future<Uint8List> _captureViaTempFile(
-    ScreenshotPlatform platform,
-    Device device,
-  ) async {
+  static Future<Uint8List> _captureViaTempFile(Device device) async {
     final tempFile = File(
       '${Directory.systemTemp.path}/patrol_mcp_screenshot_'
       '${DateTime.now().microsecondsSinceEpoch}.png',
@@ -129,8 +123,8 @@ abstract final class ScreenshotService {
 
     try {
       final process = await Process.start(
-        platform.command,
-        platform.argsFor(device, outputPath: tempFile.path),
+        ScreenshotPlatform.ios.command,
+        iosScreenshotArgs(device, tempFile.path),
       );
 
       final stderrFuture = process.stderr.transform(utf8.decoder).join();
