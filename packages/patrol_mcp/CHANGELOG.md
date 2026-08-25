@@ -2,7 +2,7 @@
 
 - Fix the `screenshot` tool on iOS: it now captures to a temp file instead of
   `/dev/stdout`, since `simctl io screenshot` writes atomically and can't
-  create its temp file inside `/dev` (#TBD).
+  create its temp file inside `/dev` (#3257).
 
 ## 0.2.0
 
