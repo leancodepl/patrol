@@ -1,3 +1,9 @@
+## Unreleased
+
+- Fix the `screenshot` tool on iOS: it now captures to a temp file instead of
+  `/dev/stdout`, since `simctl io screenshot` writes atomically and can't
+  create its temp file inside `/dev` (#TBD).
+
 ## 0.2.0
 
 - Multi-device support: `run` auto-selects a device (Android before iOS, real before emulator/simulator) or targets one you pass as `device`, and a new `devices` tool lists what's attached. A `--device` in `PATROL_FLAGS` still wins.

@@ -17,7 +17,11 @@ enum ScreenshotPlatform {
   /// Builds the command arguments that target [device] specifically, so
   /// the capture doesn't fail (or silently hit the wrong device) when
   /// multiple devices/simulators are attached.
-  List<String> argsFor(Device device) => switch (this) {
+  ///
+  /// [outputPath] is required for [ios]: `simctl io screenshot` writes
+  /// atomically (temp file + rename) in the destination directory, so
+  /// pointing it at `/dev/stdout` fails with a permission error there.
+  List<String> argsFor(Device device, {String? outputPath}) => switch (this) {
     ScreenshotPlatform.android => [
       '-s',
       device.id,
@@ -31,7 +35,7 @@ enum ScreenshotPlatform {
       device.id,
       'screenshot',
       '--type=png',
-      '/dev/stdout',
+      outputPath!,
     ],
   };
 
@@ -85,6 +89,19 @@ abstract final class ScreenshotService {
     ScreenshotPlatform platform,
     Device device,
   ) async {
+    final rawBytes = switch (platform) {
+      ScreenshotPlatform.android => await _captureFromStdout(platform, device),
+      ScreenshotPlatform.ios => await _captureViaTempFile(platform, device),
+    };
+
+    _validatePng(rawBytes);
+    return _resizeImage(rawBytes);
+  }
+
+  static Future<Uint8List> _captureFromStdout(
+    ScreenshotPlatform platform,
+    Device device,
+  ) async {
     final process = await Process.start(
       platform.command,
       platform.argsFor(device),
@@ -98,14 +115,41 @@ abstract final class ScreenshotService {
       throw Exception('Failed to capture screenshot: $stderr');
     }
 
-    final rawBytes = Uint8List.fromList(bytes);
-    _validatePng(rawBytes);
-    return _resizeImage(rawBytes);
+    return Uint8List.fromList(bytes);
+  }
+
+  static Future<Uint8List> _captureViaTempFile(
+    ScreenshotPlatform platform,
+    Device device,
+  ) async {
+    final tempFile = File(
+      '${Directory.systemTemp.path}/patrol_mcp_screenshot_'
+      '${DateTime.now().microsecondsSinceEpoch}.png',
+    );
+
+    try {
+      final process = await Process.start(
+        platform.command,
+        platform.argsFor(device, outputPath: tempFile.path),
+      );
+
+      final stderrFuture = process.stderr.transform(utf8.decoder).join();
+      final exitCode = await process.exitCode;
+      if (exitCode != 0) {
+        throw Exception('Failed to capture screenshot: ${await stderrFuture}');
+      }
+
+      return await tempFile.readAsBytes();
+    } finally {
+      if (tempFile.existsSync()) {
+        await tempFile.delete();
+      }
+    }
   }
 
   /// Throws if the captured bytes don't start with a valid PNG header.
-  /// Any text that `screencap` printed to stdout before the image data
-  /// is included in the exception message so users can diagnose the issue.
+  /// Any text the capture command printed in place of image data is
+  /// included in the exception message so users can diagnose the issue.
   static void _validatePng(Uint8List bytes) {
     const pngSignature = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
 
@@ -120,7 +164,7 @@ abstract final class ScreenshotService {
     );
 
     throw Exception(
-      'screencap returned invalid image data.\n'
+      'Screenshot capture returned invalid image data.\n'
       'Output prefix: $prefix',
     );
   }
