@@ -1,7 +1,7 @@
 ## Unreleased
 
 - Require `adb ^0.6.1`: earlier versions don't have `Adb.pull`/`Adb.remove`,
-  which the `patrol_cli` dependency uses (#TBD).
+  which the `patrol_cli` dependency uses (#3258).
 
 ## 0.2.0
 
