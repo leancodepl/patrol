@@ -1,3 +1,8 @@
+## Unreleased
+
+- Require `adb ^0.6.1`: earlier versions don't have `Adb.pull`/`Adb.remove`,
+  which the `patrol_cli` dependency uses (#TBD).
+
 ## 0.2.0
 
 - Multi-device support: `run` auto-selects a device (Android before iOS, real before emulator/simulator) or targets one you pass as `device`, and a new `devices` tool lists what's attached. A `--device` in `PATROL_FLAGS` still wins.
