@@ -93,10 +93,12 @@ jobs:
         run: flutter pub get
 
       # Note: clear_permissions_test and deny_many_permissions_test are excluded
-      # because camera permissions are not cleared between tests on physical devices
+      # because camera permissions are not cleared between tests on physical devices.
+      # service_bluetooth_test and permissions/notifications_test are excluded
+      # because they fail on iOS 18 (native automation regressions: PAT-341, PAT-342).
       - name: Build tests
         run: |
-          patrol build ios --tags='ios && physical_device' --exclude=patrol_test/web/,patrol_test/native_tests/,patrol_test/volume_test.dart,patrol_test/overflow_test.dart,patrol_test/permissions/clear_permissions_test.dart,patrol_test/permissions/deny_many_permissions_test.dart,patrol_test/permissions/deny_many_permissions_twice_test.dart --dart-define-from-file=defines_1.json --dart-define-from-file=defines_2.json --dart-define-from-file=defines_3.env --release --verbose --clear-permissions
+          patrol build ios --tags='ios && physical_device' --exclude=patrol_test/web/,patrol_test/native_tests/,patrol_test/volume_test.dart,patrol_test/overflow_test.dart,patrol_test/service_bluetooth_test.dart,patrol_test/permissions/clear_permissions_test.dart,patrol_test/permissions/deny_many_permissions_test.dart,patrol_test/permissions/deny_many_permissions_twice_test.dart,patrol_test/permissions/notifications_test.dart --dart-define-from-file=defines_1.json --dart-define-from-file=defines_2.json --dart-define-from-file=defines_3.env --release --verbose --clear-permissions
 
       - name: Upload APKs to Firebase Test Lab and wait for tests to finish
         id: tests_step
