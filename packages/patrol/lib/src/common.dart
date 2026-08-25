@@ -359,6 +359,60 @@ DartGroupEntry createDartTestGroup(
   return groupDTO;
 }
 
+/// The character Android Test Orchestrator refuses to see in a test name.
+///
+/// It is the platform path separator on the device, so a literal slash.
+const _pathSeparator = '/';
+
+/// Full names in [group] that Android Test Orchestrator cannot run.
+///
+/// The orchestrator writes one output file per test case, named after the test,
+/// and rejects a name containing a path separator - by crashing the whole
+/// instrumentation before the first test runs. That surfaces as a run of 0 tests
+/// with no indication of which name caused it, so the names are collected here
+/// while they can still be reported.
+///
+/// The names are flattened the way the native side flattens them, so they read
+/// exactly as they would in a test report. A separator anywhere in the hierarchy
+/// counts: a `group()` name carries into every test under it.
+@internal
+List<String> namesUnrunnableByOrchestrator(
+  DartGroupEntry group, {
+  String parentName = '',
+}) {
+  final unrunnable = <String>[];
+
+  for (final entry in group.entries) {
+    final fullName = parentName.isEmpty
+        ? entry.name
+        : '$parentName ${entry.name}';
+
+    switch (entry.type) {
+      case GroupEntryType.test:
+        if (fullName.contains(_pathSeparator)) {
+          unrunnable.add(fullName);
+        }
+      case GroupEntryType.group:
+        unrunnable.addAll(
+          namesUnrunnableByOrchestrator(entry, parentName: fullName),
+        );
+    }
+  }
+
+  return unrunnable;
+}
+
+/// The message reported for [invalidNames], as returned by
+/// [namesUnrunnableByOrchestrator].
+@internal
+String orchestratorNameError(List<String> invalidNames) =>
+    "Test names must not contain '$_pathSeparator', but these do:\n"
+    '${invalidNames.map((e) => '  \u2022 $e').join('\n')}'
+    '\n\nAndroid Test Orchestrator creates one output file per test case and '
+    'refuses a file name containing a path separator, so it crashes before any '
+    "test runs. Remove '$_pathSeparator' from the patrolTest() description or "
+    'from the group() name it sits in.';
+
 /// Allows for retrieving the name of a GroupEntry by stripping the names of all ancestor groups.
 ///
 /// Example:

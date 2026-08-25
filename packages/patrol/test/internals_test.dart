@@ -1,6 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/src/common.dart'
-    show createDartTestGroup, deduplicateGroupEntryName;
+    show
+        createDartTestGroup,
+        deduplicateGroupEntryName,
+        namesUnrunnableByOrchestrator,
+        orchestratorNameError;
 import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:test_api/backend.dart';
 import 'package:test_api/src/backend/group.dart';
@@ -459,6 +463,97 @@ void main() {
       );
     });
   });
+
+  group('namesUnrunnableByOrchestrator()', () {
+    test('accepts a hierarchy without a path separator', () {
+      // given
+      final group = _group('', [
+        _group('example_test', [_testEntry('alpha'), _testEntry('bravo')]),
+      ]);
+
+      // when
+      final unrunnable = namesUnrunnableByOrchestrator(group);
+
+      // then
+      expect(unrunnable, isEmpty);
+    });
+
+    test('catches a slash in a test description, reporting the full name', () {
+      // given
+      final group = _group('', [
+        _group('example_test', [
+          _testEntry('alpha'),
+          _testEntry('testing forward slash / breaking execution'),
+        ]),
+      ]);
+
+      // when
+      final unrunnable = namesUnrunnableByOrchestrator(group);
+
+      // then
+      expect(
+        unrunnable,
+        equals(['example_test testing forward slash / breaking execution']),
+      );
+    });
+
+    test('catches a slash in a group name, which every test inherits', () {
+      // given
+      final group = _group('', [
+        _group('example_test', [
+          _group('group with / slash', [
+            _testEntry('first'),
+            _testEntry('second'),
+          ]),
+          _testEntry('outside the group'),
+        ]),
+      ]);
+
+      // when
+      final unrunnable = namesUnrunnableByOrchestrator(group);
+
+      // then
+      expect(
+        unrunnable,
+        equals([
+          'example_test group with / slash first',
+          'example_test group with / slash second',
+        ]),
+      );
+    });
+
+    test('catches every offending test, not just the first', () {
+      // given
+      final group = _group('', [
+        _group('example_test', [
+          _testEntry('a / b'),
+          _testEntry('fine'),
+          _testEntry('c / d'),
+        ]),
+      ]);
+
+      // when
+      final unrunnable = namesUnrunnableByOrchestrator(group);
+
+      // then
+      expect(unrunnable, equals(['example_test a / b', 'example_test c / d']));
+    });
+  });
+
+  group('orchestratorNameError()', () {
+    test('names every offending test', () {
+      // when
+      final message = orchestratorNameError([
+        'example_test a / b',
+        'example_test c / d',
+      ]);
+
+      // then
+      expect(message, contains('example_test a / b'));
+      expect(message, contains('example_test c / d'));
+      expect(message, contains("must not contain '/'"));
+    });
+  });
 }
 
 LocalTest _localTest(String name, {Metadata? metadata}) =>
@@ -477,3 +572,12 @@ DartGroupEntry _testEntry(
     tags: tags,
   );
 }
+
+DartGroupEntry _group(String name, List<DartGroupEntry> entries) =>
+    DartGroupEntry(
+      name: name,
+      type: GroupEntryType.group,
+      entries: entries,
+      skip: false,
+      tags: const [],
+    );
