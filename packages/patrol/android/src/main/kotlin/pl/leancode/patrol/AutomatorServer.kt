@@ -315,13 +315,18 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
         } else {
             null
         }
-        val androidActionMenuSelector = if (apiLvl < 34) {
-            AndroidSelector(
+        // On API 36 the photo picker keeps the picker open after selecting and
+        // requires tapping "Done" to confirm, so we need an action menu selector.
+        val androidActionMenuSelector = when {
+            apiLvl >= 36 -> AndroidSelector(
+                text = AutomatorConstants.GALLERY_DONE_BUTTON_TEXT,
+                instance = 0
+            )
+            apiLvl < 34 -> AndroidSelector(
                 resourceName = AutomatorConstants.GALLERY_SELECT_BUTTON_RES_ID,
                 instance = 0
             )
-        } else {
-            null
+            else -> null
         }
 
         // Remove instance before creating bySelector, as it's not supported
@@ -337,6 +342,9 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
             androidActionMenuSelector2?.toUiSelector(),
             androidActionMenuSelector2?.toBySelector(),
             androidImageSelector.instance!!.toInt(),
+            // On API 36 the "Done" button may be absent when the picker auto-confirms,
+            // so treat the confirmation tap as best-effort.
+            apiLvl >= 36,
             request.timeoutMillis
         )
     }

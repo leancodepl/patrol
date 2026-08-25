@@ -907,13 +907,26 @@ class Automator private constructor() {
         }
     }
 
-    fun pickImageFromGallery(imageUiSelector: UiSelector, imageBySelector: BySelector, subMenuUiSelector: UiSelector?, subMenuBySelector: BySelector?, actionMenuUiSelector: UiSelector?, actionMenuBySelector: BySelector?, instance: Int, timeout: Long? = null) {
+    fun pickImageFromGallery(imageUiSelector: UiSelector, imageBySelector: BySelector, subMenuUiSelector: UiSelector?, subMenuBySelector: BySelector?, actionMenuUiSelector: UiSelector?, actionMenuBySelector: BySelector?, instance: Int, actionMenuOptional: Boolean = false, timeout: Long? = null) {
         if (subMenuBySelector != null && subMenuUiSelector != null) {
             tap(subMenuUiSelector, subMenuBySelector, 0)
         }
         tap(imageUiSelector, imageBySelector, instance.toInt())
         if (actionMenuBySelector != null && actionMenuUiSelector != null) {
-            tap(actionMenuUiSelector, actionMenuBySelector, 0)
+            if (actionMenuOptional) {
+                // Some devices (e.g. certain API 36 pickers) auto-confirm on a single
+                // tap and have no confirmation button, so tap it only when present.
+                val actionMenu = waitForView(actionMenuBySelector, 0, AutomatorConstants.GALLERY_CONFIRM_BUTTON_WAIT_TIMEOUT)
+                if (actionMenu != null) {
+                    Logger.d("pickImageFromGallery(): confirmation button found, tapping it")
+                    actionMenu.click()
+                    delay()
+                } else {
+                    Logger.d("pickImageFromGallery(): no confirmation button found, assuming picker auto-confirmed")
+                }
+            } else {
+                tap(actionMenuUiSelector, actionMenuBySelector, 0)
+            }
         }
     }
 
