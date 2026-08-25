@@ -31,11 +31,8 @@ void main() {
   }, tags: ['android', 'emulator', 'ios', 'simulator']);
 }
 
-// The permission_handler plugin keeps a single in-flight request, so requesting
-// the next permission before the previous one finishes throws "a request is
-// already running" (flaky on slower emulators, e.g. API 32). Pumping a single
-// frame after granting isn't enough because the native result may not have
-// propagated yet, so we wait until the tile reports 'Granted' before returning.
+// Wait for 'Granted' before the next request; permission_handler rejects a new
+// request while the previous one is still in flight.
 Future<void> _requestAndGrantCameraPermission(PatrolIntegrationTester $) async {
   expect($(K.cameraPermissionTile).$(K.statusText).text, 'Not granted');
   await $(K.requestCameraPermissionButton).tap();

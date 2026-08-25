@@ -64,13 +64,6 @@ object AutomatorConstants {
     const val GALLERY_DONE_BUTTON_TEXT = "Done"
 
     /**
-     * Timeout for waiting for the optional gallery confirmation button (in milliseconds)
-     * Some API 36 devices auto-confirm on a single tap and have no "Done" button,
-     * so we only wait briefly before assuming the picker already closed.
-     */
-    const val GALLERY_CONFIRM_BUTTON_WAIT_TIMEOUT = 2000L
-
-    /**
      * Resource ID for the "Add" button in gallery on Android API 34-35
      * Used to confirm selection when picking images from gallery
      */

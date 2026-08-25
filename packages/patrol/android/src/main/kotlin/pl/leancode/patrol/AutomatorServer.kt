@@ -315,8 +315,7 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
         } else {
             null
         }
-        // On API 36 the photo picker keeps the picker open after selecting and
-        // requires tapping "Done" to confirm, so we need an action menu selector.
+        // API 36 keeps the picker open and needs a "Done" tap to confirm.
         val androidActionMenuSelector = when {
             apiLvl >= 36 -> AndroidSelector(
                 text = AutomatorConstants.GALLERY_DONE_BUTTON_TEXT,
@@ -342,8 +341,7 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
             androidActionMenuSelector2?.toUiSelector(),
             androidActionMenuSelector2?.toBySelector(),
             androidImageSelector.instance!!.toInt(),
-            // On API 36 the "Done" button may be absent when the picker auto-confirms,
-            // so treat the confirmation tap as best-effort.
+            // API 36 may auto-confirm without a "Done" button, so tap it best-effort.
             apiLvl >= 36,
             request.timeoutMillis
         )
