@@ -31,12 +31,17 @@ void main() {
   }, tags: ['android', 'emulator', 'ios', 'simulator']);
 }
 
+// The permission_handler plugin keeps a single in-flight request, so requesting
+// the next permission before the previous one finishes throws "a request is
+// already running" (flaky on slower emulators, e.g. API 32). Pumping a single
+// frame after granting isn't enough because the native result may not have
+// propagated yet, so we wait until the tile reports 'Granted' before returning.
 Future<void> _requestAndGrantCameraPermission(PatrolIntegrationTester $) async {
   expect($(K.cameraPermissionTile).$(K.statusText).text, 'Not granted');
   await $(K.requestCameraPermissionButton).tap();
   if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
     await $.native.grantPermissionWhenInUse();
-    await $.pump();
+    await $(K.cameraPermissionTile).$('Granted').waitUntilVisible();
   }
 }
 
@@ -47,7 +52,7 @@ Future<void> _requestAndGrantMicrophonePermission(
   await $(K.requestMicrophonePermissionButton).tap();
   if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
     await $.native.grantPermissionOnlyThisTime();
-    await $.pump();
+    await $(K.microphonePermissionTile).$('Granted').waitUntilVisible();
   }
 }
 
@@ -58,7 +63,7 @@ Future<void> _requestAndGrantLocationPermission(
   await $(K.requestLocationPermissionButton).tap();
   if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
     await $.native.grantPermissionOnlyThisTime();
-    await $.pump();
+    await $(K.locationPermissionTile).$('Granted').waitUntilVisible();
   }
 }
 
@@ -69,6 +74,6 @@ Future<void> _requestAndGrantGalleryPermission(
   await $(K.requestGalleryPermissionButton).tap();
   if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
     await $.native.grantPermissionWhenInUse();
-    await $.pump();
+    await $(K.galleryPermissionTile).$('Granted').waitUntilVisible();
   }
 }
