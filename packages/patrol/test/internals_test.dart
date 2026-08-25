@@ -3,8 +3,8 @@ import 'package:patrol/src/common.dart'
     show
         createDartTestGroup,
         deduplicateGroupEntryName,
-        namesUnrunnableByOrchestrator,
-        orchestratorNameError;
+        namesWithPathSeparator,
+        pathSeparatorNameError;
 import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:test_api/backend.dart';
 import 'package:test_api/src/backend/group.dart';
@@ -464,7 +464,7 @@ void main() {
     });
   });
 
-  group('namesUnrunnableByOrchestrator()', () {
+  group('namesWithPathSeparator()', () {
     test('accepts a hierarchy without a path separator', () {
       // given
       final group = _group('', [
@@ -472,10 +472,10 @@ void main() {
       ]);
 
       // when
-      final unrunnable = namesUnrunnableByOrchestrator(group);
+      final invalid = namesWithPathSeparator(group);
 
       // then
-      expect(unrunnable, isEmpty);
+      expect(invalid, isEmpty);
     });
 
     test('catches a slash in a test description, reporting the full name', () {
@@ -488,11 +488,11 @@ void main() {
       ]);
 
       // when
-      final unrunnable = namesUnrunnableByOrchestrator(group);
+      final invalid = namesWithPathSeparator(group);
 
       // then
       expect(
-        unrunnable,
+        invalid,
         equals(['example_test testing forward slash / breaking execution']),
       );
     });
@@ -510,11 +510,11 @@ void main() {
       ]);
 
       // when
-      final unrunnable = namesUnrunnableByOrchestrator(group);
+      final invalid = namesWithPathSeparator(group);
 
       // then
       expect(
-        unrunnable,
+        invalid,
         equals([
           'example_test group with / slash first',
           'example_test group with / slash second',
@@ -533,25 +533,10 @@ void main() {
       ]);
 
       // when
-      final unrunnable = namesUnrunnableByOrchestrator(group);
+      final invalid = namesWithPathSeparator(group);
 
       // then
-      expect(unrunnable, equals(['example_test a / b', 'example_test c / d']));
-    });
-  });
-
-  group('orchestratorNameError()', () {
-    test('names every offending test', () {
-      // when
-      final message = orchestratorNameError([
-        'example_test a / b',
-        'example_test c / d',
-      ]);
-
-      // then
-      expect(message, contains('example_test a / b'));
-      expect(message, contains('example_test c / d'));
-      expect(message, contains("must not contain '/'"));
+      expect(invalid, equals(['example_test a / b', 'example_test c / d']));
     });
   });
 }

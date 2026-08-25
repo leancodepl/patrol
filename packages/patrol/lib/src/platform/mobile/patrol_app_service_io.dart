@@ -2,7 +2,6 @@
 // ignore_for_file: avoid_print
 
 import 'dart:async';
-import 'dart:io';
 
 import 'package:http_multi_server/http_multi_server.dart';
 import 'package:patrol/patrol.dart';
@@ -157,22 +156,16 @@ class PatrolAppService extends PatrolAppServiceServer {
   Future<ListDartTestsResponse> listDartTests() async {
     print('PatrolAppService.listDartTests() called');
 
-    // Only runtime discovery gets here, and only it hands the orchestrator the
-    // Dart names: with build-time discovery (`patrol.emit_test_manifest`) the
-    // native side runs generated methods with sanitized names and never calls
-    // this. Checking here therefore can't reject a name that would have worked.
-    if (Platform.isAndroid) {
-      final unrunnableNames = namesUnrunnableByOrchestrator(
-        topLevelDartTestGroup,
-      );
-      if (unrunnableNames.isNotEmpty) {
-        final message = orchestratorNameError(unrunnableNames);
-        // The thrown error only reaches the device log, via the native side's
-        // 500. This is what puts the reason on the console.
-        _patrolLog.log(ErrorEntry(message: message));
+    // A name is rejected on every platform, not only where it breaks today.
+    // Only Android Test Orchestrator chokes on it, but a test name is a
+    // cross-platform artifact: letting it pass on iOS just moves the failure to
+    // whoever runs the suite on Android next.
+    final invalidNames = namesWithPathSeparator(topLevelDartTestGroup);
+    if (invalidNames.isNotEmpty) {
+      final message = pathSeparatorNameError(invalidNames);
+      _patrolLog.log(ErrorEntry(message: message));
 
-        throw StateError(message);
-      }
+      throw StateError(message);
     }
 
     return ListDartTestsResponse(group: topLevelDartTestGroup);

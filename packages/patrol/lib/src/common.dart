@@ -359,28 +359,24 @@ DartGroupEntry createDartTestGroup(
   return groupDTO;
 }
 
-/// The character Android Test Orchestrator refuses to see in a test name.
+/// The character that must not appear in a test name.
 ///
-/// It is the platform path separator on the device, so a literal slash.
+/// It is the path separator on the device, where the name becomes a file name.
 const _pathSeparator = '/';
 
-/// Full names in [group] that Android Test Orchestrator cannot run.
-///
-/// The orchestrator writes one output file per test case, named after the test,
-/// and rejects a name containing a path separator - by crashing the whole
-/// instrumentation before the first test runs. That surfaces as a run of 0 tests
-/// with no indication of which name caused it, so the names are collected here
-/// while they can still be reported.
-///
-/// The names are flattened the way the native side flattens them, so they read
-/// exactly as they would in a test report. A separator anywhere in the hierarchy
-/// counts: a `group()` name carries into every test under it.
+/// Android Test Orchestrator writes one output file per test case, named after
+/// the test, and rejects a name containing a path separator - by crashing the
+/// whole instrumentation before the first test runs. That surfaces as a run of
+/// 0 tests with no indication of which name caused it, so the names are
+/// collected here while they can still be reported.
 @internal
-List<String> namesUnrunnableByOrchestrator(
-  DartGroupEntry group, {
-  String parentName = '',
-}) {
-  final unrunnable = <String>[];
+List<String> namesWithPathSeparator(DartGroupEntry group) =>
+    _namesWithPathSeparator(group, '');
+
+/// Walks [group], prefixing each entry with [parentName] the way the native side
+/// joins a hierarchy into one name.
+List<String> _namesWithPathSeparator(DartGroupEntry group, String parentName) {
+  final invalidNames = <String>[];
 
   for (final entry in group.entries) {
     final fullName = parentName.isEmpty
@@ -390,28 +386,24 @@ List<String> namesUnrunnableByOrchestrator(
     switch (entry.type) {
       case GroupEntryType.test:
         if (fullName.contains(_pathSeparator)) {
-          unrunnable.add(fullName);
+          invalidNames.add(fullName);
         }
       case GroupEntryType.group:
-        unrunnable.addAll(
-          namesUnrunnableByOrchestrator(entry, parentName: fullName),
-        );
+        invalidNames.addAll(_namesWithPathSeparator(entry, fullName));
     }
   }
 
-  return unrunnable;
+  return invalidNames;
 }
 
 /// The message reported for [invalidNames], as returned by
-/// [namesUnrunnableByOrchestrator].
+/// [namesWithPathSeparator].
 @internal
-String orchestratorNameError(List<String> invalidNames) =>
+String pathSeparatorNameError(List<String> invalidNames) =>
     "Test names must not contain '$_pathSeparator', but these do:\n"
     '${invalidNames.map((e) => '  \u2022 $e').join('\n')}'
-    '\n\nAndroid Test Orchestrator creates one output file per test case and '
-    'refuses a file name containing a path separator, so it crashes before any '
-    "test runs. Remove '$_pathSeparator' from the patrolTest() description or "
-    'from the group() name it sits in.';
+    "\n\nRemove '$_pathSeparator' from the patrolTest() description or from the "
+    'group() name it sits in.';
 
 /// Allows for retrieving the name of a GroupEntry by stripping the names of all ancestor groups.
 ///
