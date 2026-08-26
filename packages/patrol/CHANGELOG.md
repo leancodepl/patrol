@@ -11,7 +11,7 @@
 
 - Report a failing test's exception on the test's own log entry (`TestEntry.error`) instead of
   sending it as a separate entry per line. The CLI now shows the exception attached to the test
-  that failed, both in the console and in `patrol test --html-report`.
+  that failed, both in the console and in `patrol test --html-report`. (#3265)
 
 ## 4.12.0
 
