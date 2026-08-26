@@ -155,6 +155,19 @@ class PatrolAppService extends PatrolAppServiceServer {
   @override
   Future<ListDartTestsResponse> listDartTests() async {
     print('PatrolAppService.listDartTests() called');
+
+    // A name is rejected on every platform, not only where it breaks today.
+    // Only Android Test Orchestrator chokes on it, but a test name is a
+    // cross-platform artifact: letting it pass on iOS just moves the failure to
+    // whoever runs the suite on Android next.
+    final invalidNames = namesWithPathSeparator(topLevelDartTestGroup);
+    if (invalidNames.isNotEmpty) {
+      final message = pathSeparatorNameError(invalidNames);
+      _patrolLog.log(ErrorEntry(message: message));
+
+      throw StateError(message);
+    }
+
     return ListDartTestsResponse(group: topLevelDartTestGroup);
   }
 

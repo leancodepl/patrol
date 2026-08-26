@@ -359,6 +359,52 @@ DartGroupEntry createDartTestGroup(
   return groupDTO;
 }
 
+/// The character that must not appear in a test name.
+///
+/// It is the path separator on the device, where the name becomes a file name.
+const _pathSeparator = '/';
+
+/// Android Test Orchestrator writes one output file per test case, named after
+/// the test, and rejects a name containing a path separator - by crashing the
+/// whole instrumentation before the first test runs. That surfaces as a run of
+/// 0 tests with no indication of which name caused it, so the names are
+/// collected here while they can still be reported.
+@internal
+List<String> namesWithPathSeparator(DartGroupEntry group) =>
+    _namesWithPathSeparator(group, '');
+
+/// Walks [group], prefixing each entry with [parentName] the way the native side
+/// joins a hierarchy into one name.
+List<String> _namesWithPathSeparator(DartGroupEntry group, String parentName) {
+  final invalidNames = <String>[];
+
+  for (final entry in group.entries) {
+    final fullName = parentName.isEmpty
+        ? entry.name
+        : '$parentName ${entry.name}';
+
+    switch (entry.type) {
+      case GroupEntryType.test:
+        if (fullName.contains(_pathSeparator)) {
+          invalidNames.add(fullName);
+        }
+      case GroupEntryType.group:
+        invalidNames.addAll(_namesWithPathSeparator(entry, fullName));
+    }
+  }
+
+  return invalidNames;
+}
+
+/// The message reported for [invalidNames], as returned by
+/// [namesWithPathSeparator].
+@internal
+String pathSeparatorNameError(List<String> invalidNames) =>
+    "Test names must not contain '$_pathSeparator', but these do:\n"
+    '${invalidNames.map((e) => '  \u2022 $e').join('\n')}'
+    "\n\nRemove '$_pathSeparator' from the patrolTest() description or from the "
+    'group() name it sits in.';
+
 /// Allows for retrieving the name of a GroupEntry by stripping the names of all ancestor groups.
 ///
 /// Example:
