@@ -185,7 +185,7 @@ class PubspecReader {
 
     final dynamic testDirectory = patrol['test_directory'];
     if (testDirectory != null && testDirectory is String) {
-      config.testDirectory = testDirectory;
+      config.testDirectory = _fs.path.normalize(testDirectory);
     }
 
     final dynamic testFileSuffix = patrol['test_file_suffix'];

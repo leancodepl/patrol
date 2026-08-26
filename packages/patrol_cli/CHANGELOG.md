@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Normalize `test_directory` from the pubspec's `patrol` section to the host's path convention, so a nested path spelled with forward slashes (`test/integration_test`) resolves the same on Windows as it does on macOS and Linux. (#2896)
 - Add `screenshot_on_failure` option to the pubspec's `patrol` section, forwarded to the app (via a dart-define) for `build` and `test` so patrol can capture native failure screenshots on Android device farms (e.g. BrowserStack, Firebase Test Lab). Not collected by `patrol develop`. Off by default. (#3222)
 - `patrol test` (Android) now pulls native screenshots (failure and on-demand) from the device into `<test-directory>/screenshots` after the run (override with `--screenshots-output-dir`), so they are available from local/emulator runs, not only device farms. (#3222)
 
