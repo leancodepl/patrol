@@ -38,7 +38,7 @@ Future<void> _requestAndGrantCameraPermission(PatrolIntegrationTester $) async {
     await $(K.requestCameraPermissionButton).tap();
     if (await $.platform.mobile.isPermissionDialogVisible(timeout: _timeout)) {
       await $.platform.mobile.grantPermissionWhenInUse();
-      await $.pump();
+      await $(K.cameraPermissionTile).$('Granted').waitUntilVisible();
     }
   }
 
@@ -53,7 +53,7 @@ Future<void> _requestAndGrantMicrophonePermission(
     await $(K.requestMicrophonePermissionButton).tap();
     if (await $.platform.mobile.isPermissionDialogVisible(timeout: _timeout)) {
       await $.platform.mobile.grantPermissionOnlyThisTime();
-      await $.pump();
+      await $(K.microphonePermissionTile).$('Granted').waitUntilVisible();
     }
   }
 
@@ -102,7 +102,9 @@ Future<void> _requestAndGrantBatteryPermission(
       expect($(K.batteryPermissionTile).$(#statusText).text, 'Not granted');
       await $(K.requestBatteryPermissionButton).tap();
       await $.platform.android.allowPermission();
-      await $.pump();
+      // Wait for the request to finish; a single pump can return before the
+      // status updates, so the tile still reads 'Not granted' (flaky on API 33).
+      await $(K.batteryPermissionTile).$('Granted').waitUntilVisible();
     }
 
     expect($(K.batteryPermissionTile).$(#statusText).text, 'Granted');
