@@ -13,6 +13,6 @@ void main() {
     },
     // TODO(PAT-341): skipped on iOS — Control Center bluetooth toggle automation
     // is broken on iOS 18. https://leancode.atlassian.net/browse/PAT-341
-    tags: ['android', 'emulator'],
+    tags: ['android', 'emulator', 'physical_device']
   );
 }
