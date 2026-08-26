@@ -2,6 +2,13 @@
 
 - Add `screenshot_on_failure` option to the pubspec's `patrol` section, forwarded to the app (via a dart-define) for `build` and `test` so patrol can capture native failure screenshots on Android device farms (e.g. BrowserStack, Firebase Test Lab). Not collected by `patrol develop`. Off by default. (#3222)
 - `patrol test` (Android) now pulls native screenshots (failure and on-demand) from the device into `<test-directory>/screenshots` after the run (override with `--screenshots-output-dir`), so they are available from local/emulator runs, not only device farms. (#3222)
+- Add `--html-report` to `patrol test`, which writes a self-contained HTML dashboard of the run:
+  per-test status and duration, expandable Patrol steps with their own durations and logs, the
+  exception of each failure folded into the step that broke, and the videos recorded with
+  `--record-video`. Set the location with `--html-report-path`. Built from Patrol's log stream,
+  so it is identical on Android and iOS.
+- Support `--html-report` in `patrol test-without-building` and on the web, so every platform that
+  produces a Patrol log stream can produce a report. (#3265)
 
 ## 4.7.0
 

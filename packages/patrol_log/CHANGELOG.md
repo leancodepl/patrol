@@ -1,3 +1,8 @@
+## Unreleased
+
+- Print a failed test's exception below its summary line, in red, so the test duration stays on
+  the summary line instead of trailing the last line of the stack trace. (#3265)
+
 ## 0.10.1
 
 - Fix first word of a test description being displayed as the test file name when the finished test entry name has no file prefix. (#3167)

@@ -239,6 +239,47 @@ collects them:
     they are both filesystem- and URL-safe.
 </Warning>
 
+
+### HTML report
+
+Generate a dashboard summarizing the run with `--html-report`:
+
+```bash
+patrol test --html-report
+```
+
+The report is written to `<test-directory>/reports/patrol_report.html` (override
+with `--html-report-path`, which implies `--html-report`). It is a single
+self-contained file – styles, scripts and icons are inlined – so you can open it
+straight from disk or upload it as a CI artifact.
+
+The report shows:
+
+- the run's verdict, pass rate and total duration, plus the device, build mode and flavor,
+- every test with its status and duration, expandable to reveal its Patrol steps
+  (each with its own duration) and the logs printed from each step,
+- for a failure, the exception folded into the step that broke: the row shows the
+  first line, and clicking it unfolds the full message and the stack trace,
+- filtering by status and a search box over test names, files and steps.
+
+Failing tests start expanded, so a red run opens on what broke.
+
+Combine it with `--record-video` to get each test's recording embedded next to
+its steps:
+
+```bash
+patrol test --record-video --html-report
+```
+
+Videos are linked relatively, so keep the `videos` and `reports` directories
+together when you move or archive the report.
+
+<Info>
+    The report is built from Patrol's own log stream, so it looks and works the
+    same on Android, iOS and web. `patrol test-without-building` accepts the same
+    two flags.
+</Info>
+
 ### Web Platform
 
 Patrol supports running tests on Flutter web using Playwright. To run tests on web:

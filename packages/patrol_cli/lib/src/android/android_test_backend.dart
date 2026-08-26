@@ -13,9 +13,12 @@ import 'package:patrol_cli/src/base/extensions/completer.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
+import 'package:patrol_cli/src/crossplatform/log_entry_observers.dart';
 import 'package:patrol_cli/src/crossplatform/test_manifest.dart';
 import 'package:patrol_cli/src/crossplatform/test_manifest_generator.dart';
 import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
+import 'package:patrol_cli/src/dashboard/dashboard_config.dart';
+import 'package:patrol_cli/src/dashboard/dashboard_reporter.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
@@ -377,8 +380,15 @@ class AndroidTestBackend {
     VideoRecordingConfig? videoConfig,
     bool pullScreenshots = false,
     String? screenshotsOutputDir,
+    DashboardConfig? dashboardConfig,
   }) async {
     await _disposeScope.run((scope) async {
+      final dashboardReporter = DashboardReporter.maybe(
+        rootDirectory: _rootDirectory,
+        logger: _logger,
+        config: dashboardConfig,
+      );
+
       // Create video recording manager if enabled
       AndroidVideoRecordingManager? videoRecordingManager;
       if (videoConfig?.enabled ?? false) {
@@ -390,7 +400,7 @@ class AndroidTestBackend {
           config: videoConfig!,
           device: device,
           scope: scope,
-        );
+        )..onVideoSaved = dashboardReporter?.registerVideo;
       }
 
       // Read patrol logs from logcat
@@ -420,9 +430,11 @@ class AndroidTestBackend {
               showFlutterLogs: showFlutterLogs,
               hideTestSteps: hideTestSteps,
               clearTestSteps: clearTestSteps,
-              onLogEntry:
-                  videoRecordingManager?.wrapOnLogEntry(onLogEntry) ??
-                  onLogEntry,
+              onLogEntry: observeLogEntries(
+                onLogEntry,
+                dashboard: dashboardReporter,
+                videos: videoRecordingManager,
+              ),
             )
             ..listen()
             ..startTimer();
@@ -498,6 +510,14 @@ class AndroidTestBackend {
         if (recordingSummary != null) {
           _logger.info(recordingSummary);
         }
+        dashboardReporter?.writeAndLog(
+          platform: 'Android',
+          device: device,
+          buildMode: options.flutter.buildMode.name,
+          appDescription: options.description,
+          flavor: flavor,
+          nativeReportPath: reportPath,
+        );
       }
 
       if (exitCode == 0) {
@@ -532,6 +552,7 @@ class AndroidTestBackend {
     required bool clearTestSteps,
     List<String> onlyTests = const [],
     void Function(Entry entry)? onLogEntry,
+    DashboardConfig? dashboardConfig,
   }) async {
     final packageName = options.packageName;
     if (packageName == null) {
@@ -582,6 +603,12 @@ class AndroidTestBackend {
           ? path.replaceAll(r'\', '/')
           : path;
 
+      final dashboardReporter = DashboardReporter.maybe(
+        rootDirectory: _rootDirectory,
+        logger: _logger,
+        config: dashboardConfig,
+      );
+
       final patrolLogReader =
           PatrolLogReader(
               listenStdOut: processLogcat.listenStdOut,
@@ -591,7 +618,10 @@ class AndroidTestBackend {
               showFlutterLogs: showFlutterLogs,
               hideTestSteps: hideTestSteps,
               clearTestSteps: clearTestSteps,
-              onLogEntry: onLogEntry,
+              onLogEntry: observeLogEntries(
+                onLogEntry,
+                dashboard: dashboardReporter,
+              ),
             )
             ..listen()
             ..startTimer();
@@ -626,6 +656,14 @@ class AndroidTestBackend {
       patrolLogReader.stopTimer();
       processLogcat.kill();
       _logger.info(patrolLogReader.summary);
+      dashboardReporter?.writeAndLog(
+        platform: 'Android',
+        device: device,
+        buildMode: options.flutter.buildMode.name,
+        appDescription: options.description,
+        flavor: flavor,
+        nativeReportPath: reportPath,
+      );
 
       if (exitCode == 0 && !failed) {
         task.complete('Completed executing $subject');

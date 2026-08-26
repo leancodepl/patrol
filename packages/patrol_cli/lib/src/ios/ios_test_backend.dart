@@ -10,10 +10,13 @@ import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
+import 'package:patrol_cli/src/crossplatform/log_entry_observers.dart';
 import 'package:patrol_cli/src/crossplatform/patrol_build_environment.dart';
 import 'package:patrol_cli/src/crossplatform/test_manifest.dart';
 import 'package:patrol_cli/src/crossplatform/test_manifest_generator.dart';
 import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
+import 'package:patrol_cli/src/dashboard/dashboard_config.dart';
+import 'package:patrol_cli/src/dashboard/dashboard_reporter.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_video_recording_manager.dart';
 import 'package:patrol_cli/src/ios/xcode_test_codegen.dart';
@@ -305,9 +308,16 @@ class IOSTestBackend {
     List<String> onlyTests = const [],
     void Function(Entry entry)? onLogEntry,
     VideoRecordingConfig? videoConfig,
+    DashboardConfig? dashboardConfig,
   }) async {
     final onlyTesting = _resolveOnlyTesting(onlyTests);
     await _disposeScope.run((scope) async {
+      final dashboardReporter = DashboardReporter.maybe(
+        rootDirectory: _rootDirectory,
+        logger: _logger,
+        config: dashboardConfig,
+      );
+
       // Create video recording manager if enabled
       IOSVideoRecordingManager? videoRecordingManager;
       if (videoConfig?.enabled ?? false) {
@@ -318,7 +328,7 @@ class IOSTestBackend {
           config: videoConfig!,
           device: device,
           scope: scope,
-        );
+        )..onVideoSaved = dashboardReporter?.registerVideo;
       }
 
       final patrolLogCommand = device.real
@@ -354,9 +364,11 @@ class IOSTestBackend {
               showFlutterLogs: showFlutterLogs,
               hideTestSteps: hideTestSteps,
               clearTestSteps: clearTestSteps,
-              onLogEntry:
-                  videoRecordingManager?.wrapOnLogEntry(onLogEntry) ??
-                  onLogEntry,
+              onLogEntry: observeLogEntries(
+                onLogEntry,
+                dashboard: dashboardReporter,
+                videos: videoRecordingManager,
+              ),
             )
             ..listen()
             ..startTimer();
@@ -405,6 +417,14 @@ class IOSTestBackend {
         if (recordingSummary != null) {
           _logger.info(recordingSummary);
         }
+        dashboardReporter?.writeAndLog(
+          platform: 'iOS',
+          device: device,
+          buildMode: options.flutter.buildMode.name,
+          appDescription: options.description,
+          nativeReportPath: reportPath,
+          flavor: options.flutter.flavor,
+        );
       }
 
       if (exitCode == 0) {

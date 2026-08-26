@@ -105,6 +105,7 @@ class DevelopSessionFactory {
       webTestBackend: WebTestBackend(
         processManager: processManager,
         parentDisposeScope: disposeScope,
+        rootDirectory: rootDirectory,
         logger: logger,
       ),
       flutterTool: flutterTool,

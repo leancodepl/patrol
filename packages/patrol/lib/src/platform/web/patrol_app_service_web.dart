@@ -196,12 +196,15 @@ class PatrolAppService {
     _testExecutionRequested.complete(request.name);
     final result = await testExecutionCompleted;
     if (!result.passed) {
+      // The details go on the entry itself, so whoever reads the log gets the
+      // exception attached to the test it belongs to.
       _patrolLog.log(
-        TestEntry(name: request.name, status: TestEntryStatus.failure),
+        TestEntry(
+          name: request.name,
+          status: TestEntryStatus.failure,
+          error: result.details,
+        ),
       );
-      result.details
-          ?.split('\n')
-          .forEach((e) => _patrolLog.log(ErrorEntry(message: e)));
     } else {
       _patrolLog.log(
         TestEntry(name: request.name, status: TestEntryStatus.success),
