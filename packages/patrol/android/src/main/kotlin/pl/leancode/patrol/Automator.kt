@@ -907,6 +907,10 @@ class Automator private constructor() {
         }
     }
 
+    // Localized label of the photo picker confirm button (Android API 36+).
+    fun getGalleryDoneButtonText(): String =
+        Localization.getLocalizedString(targetContext, s.gallery_done_button)
+
     fun pickImageFromGallery(imageUiSelector: UiSelector, imageBySelector: BySelector, subMenuUiSelector: UiSelector?, subMenuBySelector: BySelector?, actionMenuUiSelector: UiSelector?, actionMenuBySelector: BySelector?, instance: Int, actionMenuOptional: Boolean = false, timeout: Long? = null) {
         if (subMenuBySelector != null && subMenuUiSelector != null) {
             tap(subMenuUiSelector, subMenuBySelector, 0)

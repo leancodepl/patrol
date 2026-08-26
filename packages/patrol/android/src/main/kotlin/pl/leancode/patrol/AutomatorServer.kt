@@ -318,7 +318,7 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
         // API 36 keeps the picker open and needs a "Done" tap to confirm.
         val androidActionMenuSelector = when {
             apiLvl >= 36 -> AndroidSelector(
-                text = AutomatorConstants.GALLERY_DONE_BUTTON_TEXT,
+                text = automation.getGalleryDoneButtonText(),
                 instance = 0
             )
             apiLvl < 34 -> AndroidSelector(
@@ -373,7 +373,7 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
         }
         val androidActionMenuSelector = run {
             val (resourceName, text) = when {
-                apiLvl >= 36 -> null to AutomatorConstants.GALLERY_DONE_BUTTON_TEXT
+                apiLvl >= 36 -> null to automation.getGalleryDoneButtonText()
                 apiLvl >= 34 -> AutomatorConstants.GALLERY_ADD_BUTTON_RES_ID to null
                 else -> AutomatorConstants.GALLERY_SELECT_BUTTON_RES_ID to null
             }

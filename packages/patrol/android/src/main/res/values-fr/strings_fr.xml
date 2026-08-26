@@ -5,4 +5,7 @@
     
     <!-- Location settings -->
     <string name="use_location">Utiliser la localisation</string>
+
+    <!-- Photo picker confirm button (Android API 36+) -->
+    <string name="gallery_done_button">OK</string>
 </resources> 
