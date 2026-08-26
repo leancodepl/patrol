@@ -1,7 +1,7 @@
 ## Unreleased
 
 - Print a failed test's exception below its summary line, in red, so the test duration stays on
-  the summary line instead of trailing the last line of the stack trace.
+  the summary line instead of trailing the last line of the stack trace. (#3265)
 
 ## 0.10.1
 
