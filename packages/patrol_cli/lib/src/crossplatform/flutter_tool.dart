@@ -280,9 +280,11 @@ class FlutterTool {
 
       process
           .listenStdOut((line) {
-            if (line.contains('Dart VM service')) {
-              final url = getObservationUrl(line);
-              observationUrlCompleter?.complete(url);
+            final urlCompleter = observationUrlCompleter;
+            if (line.contains('Dart VM service') &&
+                urlCompleter != null &&
+                !urlCompleter.isCompleted) {
+              urlCompleter.complete(getObservationUrl(line));
             }
             if (line.startsWith('Showing ') && line.endsWith('logs:')) {
               _logger.success('Hot Restart: logs connected');
