@@ -197,6 +197,48 @@ Videos are saved as `.mp4` files in `<test-directory>/videos` (override with
     [Playwright videos docs](https://playwright.dev/docs/videos).
 </Info>
 
+### Screenshots
+
+Patrol can capture native screenshots on Android — automatically on test
+failure (opt-in) and on demand from a test:
+
+- Enable failure screenshots by adding `screenshot_on_failure: true` to the
+  `patrol` section of your `pubspec.yaml`.
+- Capture on demand with `await $.takeNativeScreenshot('tag')` inside a test.
+
+The capture happens natively (via `androidx.test`) at the moment of failure,
+before teardown, so it shows the actual failing screen. Patrol writes the PNG on
+the device to `/sdcard/Download/screenshots/<class>/<method>/`.
+
+On `patrol test`, screenshots are pulled to `<test-directory>/screenshots` after
+the run (override with `--screenshots-output-dir`). On device farms the farm
+collects them:
+
+- **BrowserStack App Automate**: enable the Espresso `debugscreenshots: true`
+  capability; images appear in the Screenshots tab. Also enable build-time test
+  discovery (`emit_test_manifest`) so each test reports a URL-safe name —
+  BrowserStack can't render screenshot URLs with spaces/commas, which the
+  default `runDartTest[...]` names contain.
+- **Firebase Test Lab**: pass `--directories-to-pull=/sdcard/Download/screenshots`.
+
+<Info>
+    Android only for now (a no-op on iOS). Works in the `patrol build android`
+    APK as well as `patrol test`.
+</Info>
+
+<Warning>
+    **Default-path naming limitation.** On the default (runtime-discovery) path
+    each test reports `runDartTest[<dart test name>]`, so the screenshot folder
+    is named from the raw Dart test name. That name may contain spaces/commas
+    (BrowserStack can't render such URLs) or characters like `:` and `/` that
+    Android's `MediaStore` rewrites to `_` on API 29+, which then no longer
+    matches the name the farm reports — so the screenshot isn't associated with
+    the test. Locally (`patrol test`) this is harmless: the files are still
+    pulled to `<test-directory>/screenshots`. For reliable **farm** screenshots,
+    use `emit_test_manifest`: its generated per-test names are identifiers, so
+    they are both filesystem- and URL-safe.
+</Warning>
+
 ### Web Platform
 
 Patrol supports running tests on Flutter web using Playwright. To run tests on web:

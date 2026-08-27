@@ -40,7 +40,7 @@ void main() {
       name: 'iPhone 17 Pro',
       id: 'iphone-17-pro',
       targetPlatform: TargetPlatform.iOS,
-      real: false,
+      real: true,
     );
 
     setUpAll(() {
@@ -276,7 +276,8 @@ void main() {
 
     group('iOS logs', () {
       /// Runs a develop session on [iosDevice] and reports where the app's
-      /// logs were routed.
+      /// logs were routed. The simulator keeps `flutter logs` whatever the
+      /// flavor, because attach reads the VM service URL from them.
       Future<({bool fromFlutterLogs, bool fromPatrol})> runOnIos({
         required String? flavor,
       }) async {
@@ -370,6 +371,7 @@ void main() {
           targetPlatform: TargetPlatform.iOS,
           flavor: 'dev',
           showFlutterLogs: false,
+          attachUsingUrl: false,
         );
 
         expect(result.showFlutterLogs, isTrue);
@@ -381,6 +383,7 @@ void main() {
           targetPlatform: TargetPlatform.iOS,
           flavor: null,
           showFlutterLogs: false,
+          attachUsingUrl: false,
         );
 
         expect(result.showFlutterLogs, isFalse);
@@ -392,9 +395,23 @@ void main() {
           targetPlatform: TargetPlatform.android,
           flavor: 'dev',
           showFlutterLogs: false,
+          attachUsingUrl: false,
         );
 
         expect(result.showFlutterLogs, isFalse);
+        expect(result.forwardFlutterLogs, isTrue);
+      });
+
+      // `flutter attach` reads the Dart VM service URL from `flutter logs`, so
+      // a flavored iOS simulator cannot drop it.
+      test('keeps flutter logs when attach reads the URL from them', () {
+        final result = DevelopService.resolveFlutterLogs(
+          targetPlatform: TargetPlatform.iOS,
+          flavor: 'dev',
+          showFlutterLogs: false,
+          attachUsingUrl: true,
+        );
+
         expect(result.forwardFlutterLogs, isTrue);
       });
 
@@ -403,11 +420,56 @@ void main() {
           targetPlatform: TargetPlatform.android,
           flavor: null,
           showFlutterLogs: true,
+          attachUsingUrl: false,
         );
 
         expect(result.showFlutterLogs, isTrue);
         expect(result.forwardFlutterLogs, isTrue);
       });
+    });
+  });
+
+  group('shouldAttachUsingUrl', () {
+    Device device(TargetPlatform platform, {required bool real}) => Device(
+      name: 'device',
+      id: 'device',
+      targetPlatform: platform,
+      real: real,
+    );
+
+    test('is true on macOS', () {
+      expect(
+        shouldAttachUsingUrl(device(TargetPlatform.macOS, real: true)),
+        isTrue,
+      );
+    });
+
+    test('is true on the iOS simulator', () {
+      expect(
+        shouldAttachUsingUrl(device(TargetPlatform.iOS, real: false)),
+        isTrue,
+      );
+    });
+
+    test('is false on a physical iOS device', () {
+      expect(
+        shouldAttachUsingUrl(device(TargetPlatform.iOS, real: true)),
+        isFalse,
+      );
+    });
+
+    test('is false on Android', () {
+      expect(
+        shouldAttachUsingUrl(device(TargetPlatform.android, real: false)),
+        isFalse,
+      );
+    });
+
+    test('is false on web', () {
+      expect(
+        shouldAttachUsingUrl(device(TargetPlatform.web, real: false)),
+        isFalse,
+      );
     });
   });
 }

@@ -193,6 +193,10 @@ void patrolTest(
       try {
         await callback(patrolTester);
       } catch (_) {
+        // Capture the failing screen before teardown pumps the next frame.
+        if (constants.screenshotOnFailureEnabled) {
+          await patrolTester.takeNativeScreenshot('failure');
+        }
         if (constants.hotRestartEnabled) {
           patrolLog.log(
             TestEntry(
@@ -202,6 +206,32 @@ void patrolTest(
           );
         }
         rethrow;
+      }
+
+      // In develop mode the exception gatherer is off, so exceptions the
+      // framework catches (e.g. from `onPressed`) are never reported. The full
+      // stack is dumped to the console by `PatrolBinding.reportExceptionNoticed`
+      // (forwarded by `patrol develop`); log a short failure entry here for the
+      // structured status, without ending the Hot Restart session.
+      void reportDevelopException() {
+        final caughtException = patrolBinding.takeException();
+        if (caughtException == null) {
+          return;
+        }
+        patrolLog.log(
+          TestEntry(
+            name: global_state.currentTestFullName,
+            status: TestEntryStatus.failure,
+            error: caughtException.toString(),
+          ),
+        );
+      }
+
+      if (constants.hotRestartEnabled) {
+        // Pump once so exceptions from in-flight gesture callbacks are recorded
+        // by the framework before we read them.
+        await widgetTester.pump();
+        reportDevelopException();
       }
 
       if (debugDefaultTargetPlatformOverride !=
@@ -224,9 +254,12 @@ void patrolTest(
           ..log(
             ConfigEntry(config: const {ConfigEntry.developCompletedKey: true}),
           );
-        // Wait indefinitely in develop mode after the last test
+        // Wait indefinitely in develop mode after the last test. The app stays
+        // interactive here, so keep reporting exceptions (e.g. from manual taps
+        // while iterating) as they happen instead of losing them.
         while (true) {
           await widgetTester.pump();
+          reportDevelopException();
           await Future<void>.delayed(const Duration(milliseconds: 10));
         }
       }

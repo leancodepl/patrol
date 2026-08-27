@@ -2,21 +2,26 @@ package pl.leancode.patrol
 
 import android.app.Instrumentation
 import android.app.UiAutomation
+import android.content.ContentValues
 import android.content.Context
 import android.content.Context.LOCATION_SERVICE
 import android.content.Intent
+import android.graphics.Bitmap
 import android.location.Location
 import android.location.LocationManager
 import android.location.provider.ProviderProperties
 import android.net.Uri
 import android.os.Build
+import android.os.Environment
 import android.os.SystemClock
+import android.provider.MediaStore
 import android.provider.Settings
 import android.view.KeyEvent.KEYCODE_VOLUME_DOWN
 import android.view.KeyEvent.KEYCODE_VOLUME_UP
 import android.widget.AutoCompleteTextView
 import android.widget.EditText
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.runner.screenshot.Screenshot
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.BySelector
 import androidx.test.uiautomator.Configurator
@@ -31,6 +36,9 @@ import pl.leancode.patrol.contracts.Contracts.KeyboardBehavior
 import pl.leancode.patrol.contracts.Contracts.Notification
 import pl.leancode.patrol.contracts.Contracts.Point2D
 import pl.leancode.patrol.contracts.Contracts.Rectangle
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
@@ -87,6 +95,11 @@ class Automator private constructor() {
 
     @Volatile private var currentLongitude: Double = 0.0
 
+    // Set by PatrolTestNameListener; the JUnit identity used to name screenshots.
+    @Volatile var screenshotClassName: String? = null
+
+    @Volatile var screenshotMethodName: String? = null
+
     fun initialize() {
         if (!this::instrumentation.isInitialized) {
             instrumentation = InstrumentationRegistry.getInstrumentation()
@@ -100,16 +113,19 @@ class Automator private constructor() {
         if (!this::uiDevice.isInitialized) {
             uiDevice = UiDevice.getInstance(instrumentation)
         }
-        if (!this::uiAutomation.isInitialized) {
-            uiAutomation = instrumentation.uiAutomation
-        }
+        // Acquired in configure() with the requested flags (#3201), not here with flags=0.
     }
 
-    fun configure(waitForSelectorTimeout: Long) {
+    fun configure(
+        waitForSelectorTimeout: Long,
+        dontSuppressAccessibilityServices: Boolean = true
+    ) {
         timeoutMillis = waitForSelectorTimeout
         configurator.waitForSelectorTimeout = waitForSelectorTimeout
         configurator.waitForIdleTimeout = 5000
         configurator.keyInjectionDelay = 50
+
+        applyDontSuppressAccessibilityServices(dontSuppressAccessibilityServices)
 
         Logger.i("Timeout: $timeoutMillis ms")
         Logger.i("Android UiAutomator configuration:")
@@ -119,6 +135,25 @@ class Automator private constructor() {
         Logger.i("\tactionAcknowledgmentTimeout: ${configurator.actionAcknowledgmentTimeout} ms")
         Logger.i("\tscrollAcknowledgmentTimeout: ${configurator.scrollAcknowledgmentTimeout} ms")
         Logger.i("\ttoolType: ${configurator.toolType}")
+        Logger.i("\tuiAutomationFlags: ${configurator.uiAutomationFlags}")
+        Logger.i("\tdontSuppressAccessibilityServices: $dontSuppressAccessibilityServices")
+    }
+
+    // Applied for both values every configure(): the Configurator persists across a test
+    // bundle, so a later opt-out must flip the flag back. Requires API 24+.
+    private fun applyDontSuppressAccessibilityServices(dontSuppress: Boolean) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            if (!this::uiAutomation.isInitialized) {
+                uiAutomation = instrumentation.uiAutomation
+            }
+            if (dontSuppress) Logger.i("dontSuppressAccessibilityServices requires API 24+, ignoring")
+            return
+        }
+
+        val flags = if (dontSuppress) UiAutomation.FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES else 0
+        configurator.uiAutomationFlags = flags
+        uiAutomation = instrumentation.getUiAutomation(flags)
+        Logger.i("Acquired UiAutomation with uiAutomationFlags=$flags")
     }
 
     private fun executeShellCommand(cmd: String) {
@@ -127,6 +162,59 @@ class Automator private constructor() {
     }
 
     private fun delay(ms: Long = 1000) = SystemClock.sleep(ms)
+
+    // Never throws into the test - a failed screenshot must not flake the test.
+    fun takeNativeScreenshot(tag: String) {
+        try {
+            val className = screenshotClassName
+            val methodName = screenshotMethodName
+            if (className == null || methodName == null) {
+                Logger.e("Native screenshot skipped: no running JUnit test recorded")
+                return
+            }
+            // Sanitize the caller-supplied tag so it can't escape the directory.
+            val safeTag = tag.replace(Regex("[^A-Za-z0-9._-]"), "_")
+            val relativeDir = "screenshots/$className/$methodName"
+            val fileName = "${System.currentTimeMillis()}_$safeTag.png"
+
+            val bitmap = Screenshot.capture().bitmap
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                // Scoped storage blocks raw writes to Downloads on API 29+; use MediaStore.
+                val values = ContentValues().apply {
+                    put(MediaStore.Downloads.DISPLAY_NAME, fileName)
+                    put(MediaStore.Downloads.MIME_TYPE, "image/png")
+                    put(
+                        MediaStore.Downloads.RELATIVE_PATH,
+                        "${Environment.DIRECTORY_DOWNLOADS}/$relativeDir"
+                    )
+                }
+                val resolver = targetContext.contentResolver
+                val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
+                    ?: throw IOException("MediaStore insert returned null")
+                resolver.openOutputStream(uri).use { out ->
+                    if (out == null) throw IOException("Null output stream for $uri")
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+                }
+                Logger.i("Native screenshot saved to Download/$relativeDir/$fileName")
+            } else {
+                val dir = File(
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                    relativeDir
+                )
+                if (!dir.exists()) {
+                    dir.mkdirs()
+                }
+                val file = File(dir, fileName)
+                FileOutputStream(file).use { out ->
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+                }
+                Logger.i("Native screenshot saved to ${file.absolutePath}")
+            }
+        } catch (e: Throwable) {
+            Logger.e("Failed to take native screenshot (tag=$tag)", e)
+        }
+    }
 
     fun openApp(packageName: String) {
         val intent = targetContext.packageManager!!.getLaunchIntentForPackage(packageName)
@@ -819,13 +907,25 @@ class Automator private constructor() {
         }
     }
 
-    fun pickImageFromGallery(imageUiSelector: UiSelector, imageBySelector: BySelector, subMenuUiSelector: UiSelector?, subMenuBySelector: BySelector?, actionMenuUiSelector: UiSelector?, actionMenuBySelector: BySelector?, instance: Int, timeout: Long? = null) {
+    // Localized label of the photo picker confirm button (Android API 36+).
+    fun getGalleryDoneButtonText(): String =
+        Localization.getLocalizedString(targetContext, s.gallery_done_button)
+
+    fun pickImageFromGallery(imageUiSelector: UiSelector, imageBySelector: BySelector, subMenuUiSelector: UiSelector?, subMenuBySelector: BySelector?, actionMenuUiSelector: UiSelector?, actionMenuBySelector: BySelector?, instance: Int, actionMenuOptional: Boolean = false, timeout: Long? = null) {
         if (subMenuBySelector != null && subMenuUiSelector != null) {
             tap(subMenuUiSelector, subMenuBySelector, 0)
         }
         tap(imageUiSelector, imageBySelector, instance.toInt())
         if (actionMenuBySelector != null && actionMenuUiSelector != null) {
-            tap(actionMenuUiSelector, actionMenuBySelector, 0)
+            if (actionMenuOptional) {
+                // Some pickers auto-confirm on tap and have no confirmation button.
+                waitForView(actionMenuBySelector, 0, timeout)?.let {
+                    it.click()
+                    delay()
+                }
+            } else {
+                tap(actionMenuUiSelector, actionMenuBySelector, 0)
+            }
         }
     }
 

@@ -1,3 +1,10 @@
+## Unreleased
+
+- Fix `pickImageFromGallery` on Android API 36: when the photo picker keeps the picker open after selecting a single image, tap the confirm button to finish. The tap is best-effort, so devices/emulators whose picker auto-confirms (no confirm button) keep working. The button label is resolved per device language (en/de/fr/pl/ja) so it works beyond English. (#3254)
+- Android: keep third-party `AccessibilityService`s running during the test session again. `AndroidAutomatorConfig.dontSuppressAccessibilityServices` now defaults to `true` (it was effectively `false` since 4.8.0) and is configurable, also via the `PATROL_ANDROID_DONT_SUPPRESS_ACCESSIBILITY_SERVICES` dart-define. (#3227)
+- Report uncaught exceptions (e.g. from `onPressed`) in `patrol develop` instead of silently passing. (#3200)
+- Add opt-in native failure screenshots on Android for device farms (e.g. BrowserStack, Firebase Test Lab): set `screenshot_on_failure: true` in the pubspec's `patrol` section to capture the failing screen from the Dart failure path (before teardown). The screenshot is written to the folder named after the running JUnit test (read from its `Description`), so it matches what the farm reports. Also adds `$.takeNativeScreenshot('tag')` for on-demand captures. Off by default; iOS is a no-op for now. (#3222)
+
 ## 4.9.0
 
 - Fix macOS builds failing with `module 'PatrolImpl' not found` under Swift Package Manager (#3177). The public `patrol` module no longer `@import`s the Swift implementation; `PatrolPlugin` is ObjC and macro-facing types are declared as ObjC interfaces in the umbrella, so app builds and RunnerUITests keep working with a single `@import patrol` / `import patrol`.

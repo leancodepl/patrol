@@ -66,6 +66,13 @@ class PlatformAutomatorConfig {
     /// Name of the application under test on iOS.
     String? iosAppName,
 
+    /// Whether Patrol should keep third-party `AccessibilityService`s running
+    /// during the test session.
+    ///
+    /// Android only. See
+    /// [AndroidAutomatorConfig.dontSuppressAccessibilityServices].
+    bool? androidDontSuppressAccessibilityServices,
+
     /// Called when a native action is performed.
     void Function(String)? logger,
 
@@ -80,6 +87,8 @@ class PlatformAutomatorConfig {
         packageName: packageName,
         appName: androidAppName,
         keyboardBehavior: keyboardBehavior,
+        dontSuppressAccessibilityServices:
+            androidDontSuppressAccessibilityServices,
         connectionTimeout: connectionTimeout,
         findTimeout: findTimeout,
         logger: logger,
@@ -223,6 +232,12 @@ class PlatformAutomator {
       // The reason is that the only native interaction on MacOS is marking the app service ready
       macos: () async => {await ios.markPatrolAppServiceReady()},
     );
+  }
+
+  /// Captures a native screenshot (for a device farm to collect). Android only;
+  /// a no-op elsewhere.
+  Future<void> takeNativeScreenshot(String tag) async {
+    await action.maybe(android: () => android.takeNativeScreenshot(tag));
   }
 
   /// None of the native actions are supported on MacOS, so we will just always throw.
