@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:meta/meta.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
@@ -31,6 +32,19 @@ class TestCompletionResult {
   /// The error if the test backend failed, or `null` on success.
   final Object? error;
 }
+
+/// Whether `flutter attach` should connect to the Dart VM service URL read from
+/// the device logs instead of relying on its own discovery.
+///
+/// xcodebuild launches the app, so discovery is unreliable on the iOS
+/// simulator; physical iOS devices keep discovery. macOS always uses the URL,
+/// Android and web use discovery.
+@visibleForTesting
+bool shouldAttachUsingUrl(Device device) => switch (device.targetPlatform) {
+  TargetPlatform.macOS => true,
+  TargetPlatform.iOS => !device.real,
+  TargetPlatform.android || TargetPlatform.web => false,
+};
 
 /// Orchestrates a patrol develop session.
 ///
@@ -472,13 +486,7 @@ class DevelopService {
           dartDefines: flutterOpts.dartDefines,
           openDevtools: openDevtools,
           flavor: flutterOpts.flavor,
-          // xcodebuild launches the app, so `flutter attach` discovery is
-          // unreliable on the simulator. Physical devices keep using discovery.
-          attachUsingUrl: switch (device.targetPlatform) {
-            TargetPlatform.macOS => true,
-            TargetPlatform.iOS => !device.real,
-            TargetPlatform.android || TargetPlatform.web => false,
-          },
+          attachUsingUrl: shouldAttachUsingUrl(device),
           onQuit: onQuitCleanup,
         );
       }
