@@ -258,7 +258,6 @@ class BuildIOSCommand extends PatrolCommand {
       real: !simulator,
       scheme: scheme,
       sdkVersion: sdkVersion,
-      absolutePath: false,
     );
 
     _logger.info('$xcTestRunPath (xctestrun file)');

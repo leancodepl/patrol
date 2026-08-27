@@ -174,6 +174,42 @@ void main() {
         scheme: 'dev',
         testPlan: 'SomeTestPlan',
       );
+
+      test(
+        'finds xctestrun with absolutePath when cwd is the ios directory',
+        () async {
+          const name = 'Runner_iphoneos16.2.xctestrun';
+          fs
+              .file('build/ios_integ/Build/Products/$name')
+              .createSync(recursive: true);
+          fs.directory('ios').createSync();
+          fs.currentDirectory = 'ios';
+
+          final found = await iosTestBackend.xcTestRunPath(
+            real: true,
+            scheme: 'Runner',
+            sdkVersion: '16.2',
+          );
+
+          expect(found, '/example_app/build/ios_integ/Build/Products/$name');
+        },
+      );
+
+      test('returns a CWD-relative path when absolutePath is false', () async {
+        const name = 'Runner_iphoneos16.2.xctestrun';
+        fs
+            .file('build/ios_integ/Build/Products/$name')
+            .createSync(recursive: true);
+
+        final found = await iosTestBackend.xcTestRunPath(
+          real: true,
+          scheme: 'Runner',
+          sdkVersion: '16.2',
+          absolutePath: false,
+        );
+
+        expect(found, 'build/ios_integ/Build/Products/$name');
+      });
     });
 
     group('stripFlavorFromAppId', () {
