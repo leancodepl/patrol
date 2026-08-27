@@ -24,6 +24,7 @@ internal object BrowserStackCoverage {
 
     // JaCoCo binary format constants (see ExecutionDataWriter).
     private const val BLOCK_SESSIONINFO: Byte = 0x10
+
     // DataOutputStream.writeUTF uses a 2-byte length prefix → max 65535 bytes
     // for the modified-UTF-8 encoding. Base64 expands ~4/3, and we add a
     // ~30-byte id prefix. Chunk raw payload to keep encoded length comfortably
@@ -61,7 +62,7 @@ internal object BrowserStackCoverage {
             // and bail loudly so the misconfig is obvious.
             Logger.e(
                 "$TAG: ${coverageFile.absolutePath} is missing or empty. Is testCoverageEnabled=true on the app under test?",
-                null,
+                null
             )
             return
         }
@@ -83,7 +84,7 @@ internal object BrowserStackCoverage {
                 chunks.forEachIndexed { index, chunk ->
                     val b64 = android.util.Base64.encodeToString(
                         chunk,
-                        android.util.Base64.NO_WRAP,
+                        android.util.Base64.NO_WRAP
                     )
                     val id = "$ID_PREFIX${index + 1}:${chunks.size}:$b64"
                     out.writeByte(BLOCK_SESSIONINFO.toInt())
