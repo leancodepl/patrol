@@ -363,6 +363,52 @@ void main() {
         expect(routing.fromPatrol, isFalse);
       });
     });
+
+    group('resolveFlutterLogs', () {
+      test('falls back to Patrol on a flavored iOS project', () {
+        final result = DevelopService.resolveFlutterLogs(
+          targetPlatform: TargetPlatform.iOS,
+          flavor: 'dev',
+          showFlutterLogs: false,
+        );
+
+        expect(result.showFlutterLogs, isTrue);
+        expect(result.forwardFlutterLogs, isFalse);
+      });
+
+      test('uses flutter logs on a flavorless iOS project', () {
+        final result = DevelopService.resolveFlutterLogs(
+          targetPlatform: TargetPlatform.iOS,
+          flavor: null,
+          showFlutterLogs: false,
+        );
+
+        expect(result.showFlutterLogs, isFalse);
+        expect(result.forwardFlutterLogs, isTrue);
+      });
+
+      test('uses flutter logs on a flavored Android project', () {
+        final result = DevelopService.resolveFlutterLogs(
+          targetPlatform: TargetPlatform.android,
+          flavor: 'dev',
+          showFlutterLogs: false,
+        );
+
+        expect(result.showFlutterLogs, isFalse);
+        expect(result.forwardFlutterLogs, isTrue);
+      });
+
+      test('honors an explicit request on a flavorless Android project', () {
+        final result = DevelopService.resolveFlutterLogs(
+          targetPlatform: TargetPlatform.android,
+          flavor: null,
+          showFlutterLogs: true,
+        );
+
+        expect(result.showFlutterLogs, isTrue);
+        expect(result.forwardFlutterLogs, isTrue);
+      });
+    });
   });
 }
 

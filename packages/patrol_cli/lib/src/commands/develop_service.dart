@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:meta/meta.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
@@ -355,6 +356,24 @@ class DevelopService {
     }
   }
 
+  /// `flutter logs` resolves the iOS app package without a build
+  /// configuration, so it needs a scheme named Runner and takes no option to
+  /// pick another: `showFlutterLogs` falls back to Patrol's own log stream,
+  /// and `forwardFlutterLogs` tells `flutter attach` not to open its own.
+  @visibleForTesting
+  static ({bool showFlutterLogs, bool forwardFlutterLogs}) resolveFlutterLogs({
+    required TargetPlatform targetPlatform,
+    required String? flavor,
+    required bool showFlutterLogs,
+  }) {
+    final flutterLogsUnavailable =
+        targetPlatform == TargetPlatform.iOS && flavor != null;
+    return (
+      showFlutterLogs: showFlutterLogs || flutterLogsUnavailable,
+      forwardFlutterLogs: !flutterLogsUnavailable,
+    );
+  }
+
   Future<void> _execute(
     FlutterAppOptions flutterOpts,
     AndroidAppOptions android,
@@ -374,13 +393,11 @@ class DevelopService {
     Future<void> Function()? finalizer;
     String? appId;
 
-    // `flutter logs` resolves the iOS app package without a build
-    // configuration, so it needs a scheme named Runner and takes no option to
-    // pick another.
-    final flutterLogsUnavailable =
-        device.targetPlatform == TargetPlatform.iOS &&
-        flutterOpts.flavor != null;
-    final effectiveShowFlutterLogs = showFlutterLogs || flutterLogsUnavailable;
+    final flutterLogs = resolveFlutterLogs(
+      targetPlatform: device.targetPlatform,
+      flavor: flutterOpts.flavor,
+      showFlutterLogs: showFlutterLogs,
+    );
 
     switch (device.targetPlatform) {
       case TargetPlatform.android:
@@ -410,7 +427,7 @@ class DevelopService {
           iosOpts,
           device,
           interruptible: true,
-          showFlutterLogs: effectiveShowFlutterLogs,
+          showFlutterLogs: flutterLogs.showFlutterLogs,
           hideTestSteps: hideTestSteps,
           clearTestSteps: clearTestSteps,
           onLogEntry: onLogEntry,
@@ -470,7 +487,7 @@ class DevelopService {
           dartDefines: flutterOpts.dartDefines,
           openDevtools: openDevtools,
           attachUsingUrl: device.targetPlatform == TargetPlatform.macOS,
-          forwardFlutterLogs: !flutterLogsUnavailable,
+          forwardFlutterLogs: flutterLogs.forwardFlutterLogs,
           onQuit: onQuitCleanup,
         );
       }
