@@ -76,7 +76,7 @@ void main() {
     },
     // TODO(PAT-342): skipped on iOS — tapOnNotificationByIndex fails on iOS 18
     // (notification at index 0 not found). https://leancode.atlassian.net/browse/PAT-342
-    tags: ['android', 'physical_device']
+    tags: ['android', 'physical_device'],
   );
 }
 
