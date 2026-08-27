@@ -3,7 +3,7 @@ import 'dart:convert' show LineSplitter;
 import 'dart:io' show Process;
 
 import 'package:adb/adb.dart';
-import 'package:dispose_scope/dispose_scope.dart';
+import 'package:dispose_scope/dispose_scope.dart' hide ProcessDisposed;
 import 'package:file/file.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol_cli/src/android/android_test_codegen.dart';
@@ -122,7 +122,7 @@ class AndroidTestBackend {
                 _ => {},
               },
             )
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
       process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
       exitCode = await process.exitCode;
@@ -150,7 +150,7 @@ class AndroidTestBackend {
                 _ => {},
               },
             )
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
       process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
 
@@ -256,7 +256,7 @@ class AndroidTestBackend {
               'doctor',
               '--verbose',
             ], runInShell: true)
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
 
       process
           .listenStdOut(
@@ -312,7 +312,7 @@ class AndroidTestBackend {
               '-t',
               options.target,
             ], runInShell: true)
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
 
       process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
@@ -340,7 +340,7 @@ class AndroidTestBackend {
                 _ => {},
               },
             )
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
       process
           .listenStdOut((l) {
             if (l.contains('androidx.test:orchestrator:1.5.0')) {
@@ -400,7 +400,7 @@ class AndroidTestBackend {
               arguments: {'-T': '1'},
               filter: 'PatrolServer:I Patrol:I flutter:I *:S',
             )
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
 
       final path = generateTestReportPath(
         rootPath: _rootDirectory.path,
@@ -463,7 +463,7 @@ class AndroidTestBackend {
               },
               workingDirectory: _rootDirectory.childDirectory('android').path,
             )
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
       process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
       process
           .listenStdErr((l) {
@@ -571,7 +571,7 @@ class AndroidTestBackend {
               arguments: {'-T': '1'},
               filter: 'PatrolServer:I Patrol:I flutter:I *:S',
             )
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
 
       final path = generateTestReportPath(
         rootPath: _rootDirectory.path,
@@ -609,7 +609,7 @@ class AndroidTestBackend {
               device: device.id,
               arguments: {'class': classArg},
             )
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
       process
           .listenStdOut((l) {
             if (l.contains('FAILURES!!!') ||
@@ -842,6 +842,45 @@ class AndroidTestBackend {
     await _adb.uninstall(appId, device: device.id);
     _logger.detail('Uninstalling $appId.test from ${device.name}');
     await _adb.uninstall('$appId.test', device: device.id);
+  }
+
+  /// Stops [appId] and its instrumentation on [device].
+  ///
+  /// In develop mode the instrumentation stays alive so Hot Restart has
+  /// something to restart, and the Gradle Test Platform waits for it to
+  /// return - so quitting has to end it explicitly.
+  Future<void> stopInstrumentation(String appId, Device device) async {
+    // A custom `testApplicationId` changes the test package name. The lookup
+    // must not abort the shutdown; the conventional name is the fallback.
+    var testPackageName = '$appId.test';
+    try {
+      (testPackageName, _) = await _resolveInstrumentationComponent(
+        appId,
+        device,
+      ).timeout(const Duration(seconds: 10));
+    } catch (err) {
+      _logger.detail('Could not resolve the instrumentation package: $err');
+    }
+
+    for (final packageName in {appId, testPackageName}) {
+      _logger.detail('Stopping $packageName on ${device.name}');
+      try {
+        await _processManager
+            .run([
+              'adb',
+              '-s',
+              device.id,
+              'shell',
+              'am',
+              'force-stop',
+              packageName,
+            ], runInShell: true)
+            .timeout(const Duration(seconds: 10));
+      } catch (err) {
+        // Best effort - the app or the device may already be gone.
+        _logger.detail('Failed to stop $packageName: $err');
+      }
+    }
   }
 
   /// Where patrol writes native screenshots on the device.

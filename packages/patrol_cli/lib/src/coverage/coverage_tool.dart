@@ -4,10 +4,11 @@ import 'dart:io' as io;
 
 import 'package:adb/adb.dart';
 import 'package:coverage/coverage.dart' as coverage;
-import 'package:dispose_scope/dispose_scope.dart';
+import 'package:dispose_scope/dispose_scope.dart' hide ProcessDisposed;
 import 'package:file/file.dart';
 import 'package:glob/glob.dart';
 import 'package:patrol_cli/src/base/logger.dart';
+import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/coverage/coverage_common.dart';
 import 'package:patrol_cli/src/coverage/device_to_host_port_transformer.dart';
 import 'package:patrol_cli/src/coverage/vm_connection_details.dart';
@@ -80,7 +81,7 @@ class CoverageTool {
               workingDirectory: homeDirectory,
               runInShell: true,
             )
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
 
       final vmConnectionDetailsStream = logsProcess.stdout
           .transform(utf8.decoder)

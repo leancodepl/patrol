@@ -1,4 +1,4 @@
-import 'package:dispose_scope/dispose_scope.dart';
+import 'package:dispose_scope/dispose_scope.dart' hide ProcessDisposed;
 import 'package:file/file.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
@@ -56,7 +56,7 @@ class TestManifestGenerator {
             runInShell: true,
             workingDirectory: _rootDirectory.path,
           )
-          ..disposedBy(scope);
+          ..disposedByTree(scope);
     process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
     process.listenStdErr((l) => _logger.detail('\t$l')).disposedBy(scope);
     final exitCode = await process.exitCode;
