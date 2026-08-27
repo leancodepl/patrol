@@ -245,6 +245,50 @@ void main() {
       },
     );
   });
+
+  group('shouldAttachUsingUrl', () {
+    Device device(TargetPlatform platform, {required bool real}) => Device(
+      name: 'device',
+      id: 'device',
+      targetPlatform: platform,
+      real: real,
+    );
+
+    test('is true on macOS', () {
+      expect(
+        shouldAttachUsingUrl(device(TargetPlatform.macOS, real: true)),
+        isTrue,
+      );
+    });
+
+    test('is true on the iOS simulator', () {
+      expect(
+        shouldAttachUsingUrl(device(TargetPlatform.iOS, real: false)),
+        isTrue,
+      );
+    });
+
+    test('is false on a physical iOS device', () {
+      expect(
+        shouldAttachUsingUrl(device(TargetPlatform.iOS, real: true)),
+        isFalse,
+      );
+    });
+
+    test('is false on Android', () {
+      expect(
+        shouldAttachUsingUrl(device(TargetPlatform.android, real: false)),
+        isFalse,
+      );
+    });
+
+    test('is false on web', () {
+      expect(
+        shouldAttachUsingUrl(device(TargetPlatform.web, real: false)),
+        isFalse,
+      );
+    });
+  });
 }
 
 TestCompletionResult? _lastResult;
