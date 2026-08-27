@@ -42,6 +42,16 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
 
     @Override
     public void onCreate(Bundle arguments) {
+        // Register the listener that records each test's JUnit name for screenshots.
+        String listeners = arguments.getString("listener");
+        String patrolListener = PatrolTestNameListener.class.getName();
+        arguments.putString(
+                "listener",
+                listeners == null || listeners.isEmpty()
+                        ? patrolListener
+                        : listeners + "," + patrolListener
+        );
+
         super.onCreate(arguments);
 
         // This is only true when the ATO requests a list of tests from the app during the initial run.
