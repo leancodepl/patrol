@@ -95,6 +95,40 @@ See [Build-time test discovery][discovery] for setup (including the required iOS
 
 [discovery]: /documentation/ci/build-time-test-discovery
 
+### Building for a `patrol develop` session on another machine
+
+`patrol develop` normally builds the app itself. With `--develop`, `patrol build
+android` produces the same two APKs `patrol develop` would build (the app and the
+androidTest APK) for a single `--target`, with Hot Restart enabled. That lets you
+build once — for example on CI — and iterate elsewhere without Gradle:
+
+```
+patrol build android --develop --target patrol_test/example_test.dart
+```
+
+Then, on a checkout of the **same commit** using the **same Flutter version**,
+point `patrol develop` at a directory that contains the two APKs:
+
+```
+patrol develop --use-prebuilt-apks path/to/apks --target patrol_test/example_test.dart
+```
+
+Nothing is built on that machine: the APKs are installed with `adb`, the Patrol
+instrumentation is started with `am instrument`, `flutter attach` connects, and
+the requested target is hot restarted in place of the test that was bundled at
+build time. From there the session behaves exactly like a regular `patrol
+develop` — edit the test (or Dart app code), press `r`, repeat. Also works from
+[Patrol MCP](/documentation/other/patrol-mcp) via
+`PATROL_FLAGS=--use-prebuilt-apks=<dir>`.
+
+<Info>
+  Hot Restart only replaces Dart code, so the sources must otherwise match the
+  build: same Flutter/Dart SDK (a different one fails on the device with
+  `Invalid kernel binary format version`), same `--dart-define`s and `--flavor`,
+  same Patrol server ports. Native changes (plugins, manifest, permissions)
+  still require a new build. Android only.
+</Info>
+
 ### Under the hood
 
 The `patrol build` command walks through hierarchy of the `patrol_test`

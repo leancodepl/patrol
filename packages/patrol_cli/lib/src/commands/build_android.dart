@@ -4,6 +4,7 @@ import 'package:meta/meta.dart';
 import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
+import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/commands/dart_define_utils.dart';
@@ -51,6 +52,17 @@ class BuildAndroidCommand extends PatrolCommand {
     usesAndroidOptions();
     usesAppNameOption();
     usesEmitTestManifestOption();
+
+    argParser.addFlag(
+      'develop',
+      negatable: false,
+      help:
+          'Build the APKs for a `patrol develop --use-prebuilt-apks` session '
+          'on another machine: bundles only the single --target in develop '
+          'mode (Hot Restart enabled) instead of the full test bundle. The '
+          'bundled test is a placeholder - it is replaced on the first Hot '
+          'Restart.',
+    );
   }
 
   final TestFinderFactory _testFinderFactory;
@@ -117,10 +129,28 @@ class BuildAndroidCommand extends PatrolCommand {
     if (excludeTags != null) {
       _logger.detail('Received exclude tag(s): $excludeTags');
     }
-    if (boolArg('generate-bundle')) {
-      _testBundler.createTestBundle(testDirectory, targets, tags, excludeTags);
+    final develop = boolArg('develop');
+    if (develop && targets.length != 1) {
+      throwToolExit('--develop requires exactly one --target');
     }
-    final entrypoint = _testBundler.getBundledTestFile(testDirectory);
+    if (boolArg('generate-bundle')) {
+      if (develop) {
+        _testBundler.createDevelopTestBundle(testDirectory, targets.single);
+      } else {
+        _testBundler.createTestBundle(
+          testDirectory,
+          targets,
+          tags,
+          excludeTags,
+        );
+      }
+    }
+    if (develop) {
+      _testBundler.ensureEntrypoint(testDirectory);
+    }
+    final entrypoint = develop
+        ? _testBundler.getEntrypointFile(testDirectory)
+        : _testBundler.getBundledTestFile(testDirectory);
 
     final flavor = stringArg('flavor') ?? config.android.flavor;
     if (flavor != null) {
@@ -148,15 +178,31 @@ class BuildAndroidCommand extends PatrolCommand {
       ..._dartDefinesReader.fromFile(),
       ..._dartDefinesReader.fromCli(args: stringsArg('dart-define')),
     };
-    final internalDartDefines = {
-      'PATROL_WAIT': defaultWait.toString(),
-      'PATROL_APP_PACKAGE_NAME': packageName,
-      'PATROL_ANDROID_APP_NAME': appName,
-      'PATROL_TEST_LABEL_ENABLED': displayLabel.toString(),
-      'PATROL_TEST_DIRECTORY': config.testDirectory,
-      'PATROL_SCREENSHOT_ON_FAILURE': config.screenshotOnFailure.toString(),
-      'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
-    }.withNullsRemoved();
+    // In develop mode mirror DevelopService's internal defines: the baked
+    // kernel must run in Hot Restart mode so the native runner keeps the app
+    // alive for `flutter attach` instead of driving tests over RPC.
+    final internalDartDefines = develop
+        ? {
+            'PATROL_APP_PACKAGE_NAME': packageName,
+            'PATROL_ANDROID_APP_NAME': appName,
+            'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
+            'PATROL_TEST_LABEL_ENABLED': displayLabel.toString(),
+            'PATROL_TEST_DIRECTORY': config.testDirectory,
+            'PATROL_SCREENSHOT_ON_FAILURE': 'false',
+            'PATROL_HOT_RESTART': 'true',
+            'PATROL_TEST_SERVER_PORT': super.testServerPort.toString(),
+            'PATROL_APP_SERVER_PORT': super.appServerPort.toString(),
+          }.withNullsRemoved()
+        : {
+            'PATROL_WAIT': defaultWait.toString(),
+            'PATROL_APP_PACKAGE_NAME': packageName,
+            'PATROL_ANDROID_APP_NAME': appName,
+            'PATROL_TEST_LABEL_ENABLED': displayLabel.toString(),
+            'PATROL_TEST_DIRECTORY': config.testDirectory,
+            'PATROL_SCREENSHOT_ON_FAILURE': config.screenshotOnFailure
+                .toString(),
+            'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
+          }.withNullsRemoved();
 
     final dartDefines = {...customDartDefines, ...internalDartDefines};
     _logger.detail(
@@ -211,6 +257,10 @@ class BuildAndroidCommand extends PatrolCommand {
         ..detail('$st')
         ..err(defaultFailureMessage);
       rethrow;
+    } finally {
+      if (develop) {
+        _testBundler.deleteEntrypointProxy(testDirectory);
+      }
     }
 
     return 0;
