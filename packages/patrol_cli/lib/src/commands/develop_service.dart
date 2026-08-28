@@ -176,6 +176,12 @@ class DevelopService {
 
     _logger.detail('Received device: ${device.name} (${device.id})');
 
+    final prebuiltApksDir = options.prebuiltApksDir;
+    if (prebuiltApksDir != null &&
+        device.targetPlatform != TargetPlatform.android) {
+      throwToolExit('--use-prebuilt-apks is supported on Android only');
+    }
+
     final packageName = options.packageName ?? config.android.packageName;
     final bundleId = options.bundleId ?? config.ios.bundleId;
     final androidAppName = options.appName ?? config.android.appName;
@@ -291,7 +297,14 @@ class DevelopService {
     final webOpts = WebAppOptions(flutter: flutterOpts);
 
     try {
-      await _build(androidOpts, iosOpts, macosOpts, webOpts, device);
+      if (prebuiltApksDir == null) {
+        await _build(androidOpts, iosOpts, macosOpts, webOpts, device);
+      } else {
+        _logger.info(
+          'Skipping build, using prebuilt APKs from $prebuiltApksDir',
+        );
+        await _androidTestBackend.prepareSourcesForAttach(flutterOpts);
+      }
       await _preExecute(androidOpts, iosOpts, device, options.uninstall);
       await _execute(
         flutterOpts,
@@ -307,6 +320,7 @@ class DevelopService {
         hideTestSteps: options.hideTestSteps,
         clearTestSteps: options.clearTestSteps,
         videoConfig: options.videoConfig,
+        prebuiltApksDir: prebuiltApksDir,
       );
     } finally {
       for (final sub in signalSubscriptions) {
@@ -415,6 +429,7 @@ class DevelopService {
     required bool hideTestSteps,
     required bool clearTestSteps,
     VideoRecordingConfig? videoConfig,
+    String? prebuiltApksDir,
   }) async {
     Future<void> Function() action;
     Future<void> Function()? finalizer;
@@ -427,20 +442,43 @@ class DevelopService {
       attachUsingUrl: shouldAttachUsingUrl(device),
     );
 
+    // Prebuilt APKs carry a placeholder test baked in at build time, which
+    // runs as soon as the app launches. Until we've attached and hot
+    // restarted with the real target, its log entries would be mistaken for
+    // results of *our* test (e.g. by patrol_mcp), so hold them back.
+    var prebuiltRestartSent = prebuiltApksDir == null;
+    final void Function(Entry entry)? gatedOnLogEntry = onLogEntry == null
+        ? null
+        : (entry) {
+            if (prebuiltRestartSent) {
+              onLogEntry?.call(entry);
+            }
+          };
+
     switch (device.targetPlatform) {
       case TargetPlatform.android:
         appId = android.packageName;
-        action = () => _androidTestBackend.execute(
-          android,
-          device,
-          interruptible: true,
-          showFlutterLogs: showFlutterLogs,
-          hideTestSteps: hideTestSteps,
-          flavor: flutterOpts.flavor,
-          clearTestSteps: clearTestSteps,
-          onLogEntry: onLogEntry,
-          videoConfig: videoConfig,
-        );
+        action = prebuiltApksDir != null
+            ? () => _androidTestBackend.executePrebuilt(
+                android,
+                device,
+                apksDir: prebuiltApksDir,
+                showFlutterLogs: showFlutterLogs,
+                hideTestSteps: hideTestSteps,
+                clearTestSteps: clearTestSteps,
+                onLogEntry: gatedOnLogEntry,
+              )
+            : () => _androidTestBackend.execute(
+                android,
+                device,
+                interruptible: true,
+                showFlutterLogs: showFlutterLogs,
+                hideTestSteps: hideTestSteps,
+                flavor: flutterOpts.flavor,
+                clearTestSteps: clearTestSteps,
+                onLogEntry: onLogEntry,
+                videoConfig: videoConfig,
+              );
         final package = android.packageName;
         if (package != null && uninstall) {
           finalizer = () => _androidTestBackend.uninstall(package, device);
@@ -518,6 +556,14 @@ class DevelopService {
           forwardFlutterLogs: flutterLogs.forwardFlutterLogs,
           onQuit: onQuitCleanup,
         );
+        if (prebuiltApksDir != null) {
+          _logger.info(
+            'Prebuilt APKs: the app launched with the placeholder test baked '
+            'in at build time; hot restarting with the requested target...',
+          );
+          prebuiltRestartSent = true;
+          _flutterTool.hotRestart();
+        }
       }
 
       try {

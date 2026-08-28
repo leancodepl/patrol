@@ -35,6 +35,7 @@ class DevelopOptions {
     this.checkCompatibility = true,
     this.iosVersion,
     this.videoConfig,
+    this.prebuiltApksDir,
   });
 
   factory DevelopOptions.fromArgResults(
@@ -78,6 +79,7 @@ class DevelopOptions {
       clearTestSteps: results['clear-test-steps'] as bool,
       checkCompatibility: results['check-compatibility'] as bool,
       iosVersion: results['ios'] as String?,
+      prebuiltApksDir: results['use-prebuilt-apks'] as String?,
       videoConfig: VideoRecordingConfig(
         enabled: results['record-video'] as bool,
         outputDirectory:
@@ -168,6 +170,11 @@ class DevelopOptions {
 
   /// Video recording configuration. `null` means video recording is disabled.
   final VideoRecordingConfig? videoConfig;
+
+  /// Directory with prebuilt app + androidTest APKs (Android only). When set,
+  /// the Gradle build is skipped and the session is started from these
+  /// artifacts (`adb install` + `am instrument`). See `--use-prebuilt-apks`.
+  final String? prebuiltApksDir;
 }
 
 class _DevelopOptionsParserCommand extends PatrolCommand {

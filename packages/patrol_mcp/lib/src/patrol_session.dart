@@ -211,6 +211,11 @@ final class PatrolSession {
   String? _finishWarning;
 
   Completer<void>? _finishCompleter;
+
+  /// The previous session's `DevelopService.run()`; it keeps running past
+  /// quit (finalizer uninstall, entrypoint proxy cleanup) and must finish
+  /// before a new session generates its own entrypoint.
+  Future<void>? _runFuture;
   DisposeScope? _disposeScope;
   StreamController<List<int>>? _stdinController;
   DevelopService? _developService;
@@ -247,6 +252,18 @@ final class PatrolSession {
     }
 
     final logger = Logger('PatrolSession');
+
+    final previousRun = _runFuture;
+    if (previousRun != null) {
+      logger.fine('Waiting for the previous develop session to finish');
+      await previousRun.timeout(
+        const Duration(seconds: 30),
+        onTimeout: () => logger.warning(
+          'Previous develop session did not finish in 30 s; continuing',
+        ),
+      );
+      _runFuture = null;
+    }
 
     await _startLogStreamingAndTerminal();
 
@@ -401,8 +418,11 @@ final class PatrolSession {
       // session (gradle/xcodebuild + flutter attach stay alive for hot
       // restart). Test completion is detected by callbacks, not by run()
       // returning.
+      final runFuture = developService.run(options);
+      // Swallow errors here; they are reported by the chain below.
+      _runFuture = runFuture.then<void>((_) {}, onError: (Object _) {});
       unawaited(
-        Future.any([developService.run(options), exitCompleter.future])
+        Future.any([runFuture, exitCompleter.future])
             .then((_) {
               // Session ended (e.g. user sent quit). If tests haven't already
               // been marked as done by callbacks, mark idle.

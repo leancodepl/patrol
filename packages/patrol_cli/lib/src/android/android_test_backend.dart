@@ -516,6 +516,181 @@ class AndroidTestBackend {
     });
   }
 
+  /// Makes a checkout that was never built ready for `flutter attach`.
+  ///
+  /// `flutter attach` starts the frontend_server (initial compile) before it
+  /// runs the source generators, and passes `-Dflutter.dart_plugin_registrant`
+  /// only if `.dart_tool/flutter_build/dart_plugin_registrant.dart` already
+  /// exists. On a fresh checkout it doesn't, so every Dart-registered plugin
+  /// (e.g. `shared_preferences_android`) throws `MissingPluginException` after
+  /// the first Hot Restart. A normal `patrol develop` never hits this because
+  /// the Gradle build generates the file first. Here no Gradle runs, so run a
+  /// one-off `flutter build bundle --debug` (Dart-only compile, ~20 s) instead;
+  /// it also leaves an `app.dill` the attach compiler can initialize from.
+  Future<void> prepareSourcesForAttach(FlutterAppOptions options) async {
+    final registrant = _rootDirectory
+        .childDirectory('.dart_tool')
+        .childDirectory('flutter_build')
+        .childFile('dart_plugin_registrant.dart');
+    if (registrant.existsSync()) {
+      _logger.detail('Dart plugin registrant already generated, skipping');
+      return;
+    }
+    await _disposeScope.run((scope) async {
+      final task = _logger.task(
+        'Preparing sources for attach (flutter build bundle)',
+      );
+      final process =
+          await _processManager.start([
+              options.command.executable,
+              ...options.command.arguments,
+              'build',
+              'bundle',
+              '--debug',
+              if (options.flavor case final flavor?) ...['--flavor', flavor],
+              ...['-t', options.target],
+              for (final dartDefine in options.dartDefines.entries) ...[
+                '--dart-define',
+                '${dartDefine.key}=${dartDefine.value}',
+              ],
+              for (final path in options.dartDefineFromFilePaths) ...[
+                '--dart-define-from-file',
+                path,
+              ],
+            ], runInShell: true)
+            ..disposedBy(scope);
+      process.listenStdOut((l) => _logger.detail('	: $l')).disposedBy(scope);
+      process.listenStdErr((l) => _logger.err('	$l')).disposedBy(scope);
+      final exitCode = await process.exitCode;
+      if (exitCode != 0) {
+        task.fail('Failed to prepare sources for attach (exit code $exitCode)');
+        throw Exception('flutter build bundle failed with code $exitCode');
+      }
+      task.complete('Prepared sources for attach');
+    });
+  }
+
+  /// Develop-mode counterpart of [execute] for APKs built on another machine
+  /// Develop-mode counterpart of [execute] for APKs built on another machine
+  /// (`patrol develop --use-prebuilt-apks`). Installs the app + androidTest
+  /// APKs found in [apksDir] and starts the Patrol instrumentation directly
+  /// with `am instrument -w`, bypassing Gradle entirely.
+  ///
+  /// The APKs must come from a develop-mode build (`patrol build android
+  /// --develop`): with `PATROL_HOT_RESTART=true` baked in, the Dart side never
+  /// reports `PatrolAppService` readiness, so `PatrolJUnitRunner` blocks in
+  /// `waitForPatrolAppService()` and the app process stays alive for
+  /// `flutter attach` + Hot Restart. Test-orchestrator extras (e.g.
+  /// `clearPackageData`) are not applied - they never were in develop mode.
+  Future<void> executePrebuilt(
+    AndroidAppOptions options,
+    Device device, {
+    required String apksDir,
+    required bool showFlutterLogs,
+    required bool hideTestSteps,
+    required bool clearTestSteps,
+    void Function(Entry entry)? onLogEntry,
+  }) async {
+    final packageName = options.packageName;
+    if (packageName == null) {
+      throwToolExit(
+        'Android applicationId is unknown. Set patrol.android.package_name in '
+        'pubspec.yaml or pass --package-name.',
+      );
+    }
+
+    final dir = _rootDirectory.fileSystem.directory(apksDir);
+    if (!dir.existsSync()) {
+      throwToolExit('Prebuilt APK directory does not exist: $apksDir');
+    }
+    File? appApk;
+    File? testApk;
+    for (final entity in dir.listSync(recursive: true)) {
+      if (entity is! File || !entity.path.endsWith('.apk')) {
+        continue;
+      }
+      if (entity.path.endsWith('-androidTest.apk')) {
+        testApk ??= entity;
+      } else {
+        appApk ??= entity;
+      }
+    }
+    if (appApk == null || testApk == null) {
+      throwToolExit(
+        'Expected an app APK and a *-androidTest.apk in $apksDir (got '
+        'app=${appApk?.path}, test=${testApk?.path}).',
+      );
+    }
+
+    _logger.detail('Installing app APK: ${appApk.path}');
+    await _adbInstall(appApk.path, device);
+    _logger.detail('Installing androidTest APK: ${testApk.path}');
+    await _adbInstall(testApk.path, device);
+
+    final (instrumentPackage, instrumentRunner) =
+        await _resolveInstrumentationComponent(packageName, device);
+
+    await _disposeScope.run((scope) async {
+      final processLogcat =
+          await _adb.logcat(
+              device: device.id,
+              arguments: {'-T': '1'},
+              filter: 'PatrolServer:I Patrol:I flutter:I *:S',
+            )
+            ..disposedBy(scope);
+
+      final path = generateTestReportPath(
+        rootPath: _rootDirectory.path,
+        buildMode: options.flutter.buildMode,
+        flavor: options.flutter.flavor,
+      );
+      final reportPath = _platform.isWindows
+          ? path.replaceAll(r'\', '/')
+          : path;
+
+      final patrolLogReader =
+          PatrolLogReader(
+              listenStdOut: processLogcat.listenStdOut,
+              scope: scope,
+              log: _logger.info,
+              reportPath: reportPath,
+              showFlutterLogs: showFlutterLogs,
+              hideTestSteps: hideTestSteps,
+              clearTestSteps: clearTestSteps,
+              onLogEntry: onLogEntry,
+            )
+            ..listen()
+            ..startTimer();
+
+      final subject =
+          'prebuilt ${options.description} on ${device.description}';
+      final task = _logger.task('Executing tests of $subject (no build)');
+
+      // No `-e class`: AndroidJUnitRunner discovers the (single) Patrol host
+      // class in the androidTest APK itself, exactly like Gradle's connected
+      // task does. In develop mode this call blocks until the session quits.
+      final process =
+          await _adb.instrument(
+              packageName: instrumentPackage,
+              intentClass: instrumentRunner,
+              device: device.id,
+            )
+            ..disposedBy(scope);
+      process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
+      process.listenStdErr((l) => _logger.detail('\t$l')).disposedBy(scope);
+
+      final exitCode = await process.exitCode;
+      patrolLogReader.stopTimer();
+      processLogcat.kill();
+
+      if (exitCode == 0) {
+        task.complete('Completed executing $subject');
+      } else {
+        task.complete('App shut down on request');
+      }
+    });
+  }
+
   /// Runs already-built tests without rebuilding, via `adb shell am instrument`
   /// (the true no-rebuild path — no Gradle up-to-date check). Requires a prior
   /// `patrol build android --emit-test-manifest`, whose generated JUnit class

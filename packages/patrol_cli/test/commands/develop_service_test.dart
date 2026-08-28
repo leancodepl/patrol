@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:file/memory.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/commands/develop_options.dart';
 import 'package:patrol_cli/src/commands/develop_service.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
@@ -9,6 +10,7 @@ import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart' show BuildMode;
 import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
+import 'package:patrol_log/patrol_log.dart';
 import 'package:test/test.dart';
 
 import '../src/mocks.dart';
@@ -139,22 +141,24 @@ void main() {
       when(() => androidTestBackend.build(any())).thenAnswer((_) async {});
     });
 
-    DevelopService buildService() => DevelopService(
-      deviceFinder: deviceFinder,
-      testFinderFactory: testFinderFactory,
-      testBundler: testBundler,
-      dartDefinesReader: dartDefinesReader,
-      compatibilityChecker: compatibilityChecker,
-      pubspecReader: pubspecReader,
-      androidTestBackend: androidTestBackend,
-      iosTestBackend: iosTestBackend,
-      macosTestBackend: macosTestBackend,
-      webTestBackend: webTestBackend,
-      flutterTool: flutterTool,
-      logger: logger,
-      stdin: const Stream.empty(),
-      onTestsCompleted: (result) => _lastResult = result,
-    );
+    DevelopService buildService({void Function(Entry entry)? onLogEntry}) =>
+        DevelopService(
+          deviceFinder: deviceFinder,
+          testFinderFactory: testFinderFactory,
+          testBundler: testBundler,
+          dartDefinesReader: dartDefinesReader,
+          compatibilityChecker: compatibilityChecker,
+          pubspecReader: pubspecReader,
+          androidTestBackend: androidTestBackend,
+          iosTestBackend: iosTestBackend,
+          macosTestBackend: macosTestBackend,
+          webTestBackend: webTestBackend,
+          flutterTool: flutterTool,
+          logger: logger,
+          stdin: const Stream.empty(),
+          onTestsCompleted: (result) => _lastResult = result,
+          onLogEntry: onLogEntry,
+        );
 
     const options = DevelopOptions(
       target: 'onboarding_test.dart',
@@ -273,6 +277,160 @@ void main() {
         expect(_lastResult!.error, isA<Exception>());
       },
     );
+
+    group('with prebuilt APKs', () {
+      const prebuiltOptions = DevelopOptions(
+        target: 'onboarding_test.dart',
+        flutterCommand: FlutterCommand('flutter'),
+        buildMode: BuildMode.debug,
+        testServerPort: 8081,
+        appServerPort: 8080,
+        generateBundle: false,
+        uninstall: false,
+        checkCompatibility: false,
+        prebuiltApksDir: '/apks',
+      );
+
+      late Completer<void> attachCompleter;
+      late Completer<void> backendExit;
+      void Function(Entry entry)? backendOnLogEntry;
+      var backendStarted = false;
+      var hotRestarts = 0;
+
+      setUpAll(() {
+        registerFallbackValue(
+          const FlutterAppOptions(
+            command: FlutterCommand('flutter'),
+            target: 'patrol_test/test_bundle.dart',
+            flavor: null,
+            buildMode: BuildMode.debug,
+            dartDefines: <String, String>{},
+            dartDefineFromFilePaths: <String>[],
+            buildName: null,
+            buildNumber: null,
+          ),
+        );
+      });
+
+      setUp(() {
+        attachCompleter = Completer<void>();
+        backendExit = Completer<void>();
+        backendOnLogEntry = null;
+        backendStarted = false;
+        hotRestarts = 0;
+
+        when(
+          () => androidTestBackend.prepareSourcesForAttach(any()),
+        ).thenAnswer((_) async {});
+        when(
+          () => androidTestBackend.executePrebuilt(
+            any(),
+            any(),
+            apksDir: any(named: 'apksDir'),
+            showFlutterLogs: any(named: 'showFlutterLogs'),
+            hideTestSteps: any(named: 'hideTestSteps'),
+            clearTestSteps: any(named: 'clearTestSteps'),
+            onLogEntry: any(named: 'onLogEntry'),
+          ),
+        ).thenAnswer((invocation) {
+          backendOnLogEntry =
+              invocation.namedArguments[#onLogEntry]
+                  as void Function(Entry entry)?;
+          backendStarted = true;
+          return backendExit.future;
+        });
+        when(
+          () => flutterTool.attachForHotRestart(
+            flutterCommand: any(named: 'flutterCommand'),
+            deviceId: any(named: 'deviceId'),
+            target: any(named: 'target'),
+            appId: any(named: 'appId'),
+            dartDefines: any(named: 'dartDefines'),
+            openDevtools: any(named: 'openDevtools'),
+            attachUsingUrl: any(named: 'attachUsingUrl'),
+            forwardFlutterLogs: any(named: 'forwardFlutterLogs'),
+            onQuit: any(named: 'onQuit'),
+          ),
+        ).thenAnswer((_) => attachCompleter.future);
+        when(() => flutterTool.hotRestart()).thenAnswer((_) => hotRestarts++);
+      });
+
+      test(
+        'skips the build, prepares the sources and hot restarts once attached',
+        () async {
+          unawaited(buildService().run(prebuiltOptions));
+          await _waitFor(() => backendStarted);
+
+          verifyNever(() => androidTestBackend.build(any()));
+          verify(
+            () => androidTestBackend.prepareSourcesForAttach(any()),
+          ).called(1);
+          final apksDir = verify(
+            () => androidTestBackend.executePrebuilt(
+              any(),
+              any(),
+              apksDir: captureAny(named: 'apksDir'),
+              showFlutterLogs: any(named: 'showFlutterLogs'),
+              hideTestSteps: any(named: 'hideTestSteps'),
+              clearTestSteps: any(named: 'clearTestSteps'),
+              onLogEntry: any(named: 'onLogEntry'),
+            ),
+          ).captured.single;
+          expect(apksDir, '/apks');
+
+          // The APK runs the test bundled at build time; the requested target
+          // is only hot restarted in once `flutter attach` has connected.
+          expect(hotRestarts, 0);
+          attachCompleter.complete();
+          await _waitFor(() => hotRestarts == 1);
+        },
+      );
+
+      test(
+        'holds back log entries until the requested target is hot restarted',
+        () async {
+          final received = <String>[];
+          unawaited(
+            buildService(
+              onLogEntry: (entry) => received.add((entry as LogEntry).message),
+            ).run(prebuiltOptions),
+          );
+          await _waitFor(() => backendOnLogEntry != null);
+
+          // Emitted by the placeholder test baked into the APK -- must not be
+          // mistaken for a result of the requested target (e.g. by patrol_mcp).
+          backendOnLogEntry!(LogEntry(message: 'placeholder finished'));
+          expect(received, isEmpty);
+
+          attachCompleter.complete();
+          await _waitFor(() => hotRestarts == 1);
+
+          backendOnLogEntry!(LogEntry(message: 'requested target finished'));
+          expect(received, ['requested target finished']);
+        },
+      );
+
+      test('is rejected on non-Android devices', () async {
+        const iosDevice = Device(
+          name: 'iPhone',
+          id: 'ios-sim',
+          targetPlatform: TargetPlatform.iOS,
+          real: false,
+        );
+        when(
+          () => deviceFinder.find(
+            any(),
+            flutterCommand: any(named: 'flutterCommand'),
+          ),
+        ).thenAnswer((_) async => [iosDevice]);
+
+        await expectLater(
+          buildService().run(prebuiltOptions),
+          throwsA(isA<ToolExit>()),
+        );
+        verifyNever(() => androidTestBackend.build(any()));
+      });
+    });
 
     group('iOS logs', () {
       /// Runs a develop session on [iosDevice] and reports where the app's
