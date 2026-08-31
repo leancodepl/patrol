@@ -828,6 +828,18 @@ Check out our video version of this tutorial on YouTube!
 
 <Accordions>
 
+<Accordion id="faq-test-execution-order" title="In what order are patrol tests executed?">
+  Patrol runs tests **one at a time** on the native side (Android Test Orchestrator / iOS XCTest). The native runner requests each test by name via `runDartTest`; the Dart side executes only the test that was requested.
+
+  **Within a single test file**, `patrolTest` callbacks run in **declaration order** (top to bottom in the source file).
+
+  **Across multiple test files**, order follows the order of `--target` / `--targets` flags, or the discovery order from your configured test directory when running the full suite.
+
+  The build-time manifest (`build/patrol/patrol_test_manifest.json`) lists tests in this same declaration order. Native method names and iOS selectors are generated from that manifest, so the order is stable across platforms.
+
+  Patrol does **not** parallelize test execution on a single device.
+</Accordion>
+
 <Accordion id="faq-test-bundle-error" title="Testing fails with error inside 'patrol_test/test_bundle.dart'">
   The reason is probably a mismatch of `patrol` and `patrol_cli` versions. Go to [Compatibility table]
   and make sure that the versions of `patrol` and `patrol_cli` you are using are compatible.
