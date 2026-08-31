@@ -454,19 +454,13 @@ class DevelopService {
 
     // Prebuilt APKs carry a placeholder test baked in at build time, which
     // runs as soon as the app launches. Its log entries would be mistaken for
-    // results of *our* test (e.g. by patrol_mcp), so hold them back until
+    // results of *our* test (e.g. by patrol_mcp) and would start video
+    // recordings of the wrong program, so the backend drops entries until
     // `flutter attach` reports the restart into the requested target as
     // COMPLETED. Logcat delivery is asynchronous, so opening the gate when the
     // restart is merely requested could still let a buffered entry of the
     // placeholder through.
     var prebuiltTargetActive = prebuiltApksDir == null;
-    final void Function(Entry entry)? gatedOnLogEntry = onLogEntry == null
-        ? null
-        : (entry) {
-            if (prebuiltTargetActive) {
-              onLogEntry?.call(entry);
-            }
-          };
 
     switch (device.targetPlatform) {
       case TargetPlatform.android:
@@ -478,7 +472,9 @@ class DevelopService {
                 showFlutterLogs: showFlutterLogs,
                 hideTestSteps: hideTestSteps,
                 clearTestSteps: clearTestSteps,
-                onLogEntry: gatedOnLogEntry,
+                onLogEntry: onLogEntry,
+                videoConfig: videoConfig,
+                acceptLogEntries: () => prebuiltTargetActive,
               )
             : () => _androidTestBackend.execute(
                 android,

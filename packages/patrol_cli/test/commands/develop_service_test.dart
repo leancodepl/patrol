@@ -6,6 +6,7 @@ import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/commands/develop_options.dart';
 import 'package:patrol_cli/src/commands/develop_service.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
+import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart' show BuildMode;
 import 'package:patrol_cli/src/pubspec_reader.dart';
@@ -289,11 +290,15 @@ void main() {
         uninstall: false,
         checkCompatibility: false,
         prebuiltApksDir: '/apks',
+        videoConfig: VideoRecordingConfig(
+          enabled: true,
+          outputDirectory: 'videos',
+        ),
       );
 
       late Completer<void> attachCompleter;
       late Completer<void> backendExit;
-      void Function(Entry entry)? backendOnLogEntry;
+      bool Function()? backendAcceptLogEntries;
       var backendStarted = false;
       var hotRestarts = 0;
 
@@ -315,7 +320,7 @@ void main() {
       setUp(() {
         attachCompleter = Completer<void>();
         backendExit = Completer<void>();
-        backendOnLogEntry = null;
+        backendAcceptLogEntries = null;
         backendStarted = false;
         hotRestarts = 0;
 
@@ -336,11 +341,12 @@ void main() {
             hideTestSteps: any(named: 'hideTestSteps'),
             clearTestSteps: any(named: 'clearTestSteps'),
             onLogEntry: any(named: 'onLogEntry'),
+            videoConfig: any(named: 'videoConfig'),
+            acceptLogEntries: any(named: 'acceptLogEntries'),
           ),
         ).thenAnswer((invocation) {
-          backendOnLogEntry =
-              invocation.namedArguments[#onLogEntry]
-                  as void Function(Entry entry)?;
+          backendAcceptLogEntries =
+              invocation.namedArguments[#acceptLogEntries] as bool Function()?;
           backendStarted = true;
           return backendExit.future;
         });
@@ -384,16 +390,22 @@ void main() {
             ),
           ).captured.single;
           expect(apksDir, '/apks');
-          verify(
-            () => androidTestBackend.executePrebuilt(
-              any(),
-              any(),
-              showFlutterLogs: any(named: 'showFlutterLogs'),
-              hideTestSteps: any(named: 'hideTestSteps'),
-              clearTestSteps: any(named: 'clearTestSteps'),
-              onLogEntry: any(named: 'onLogEntry'),
-            ),
-          ).called(1);
+          final videoConfig =
+              verify(
+                    () => androidTestBackend.executePrebuilt(
+                      any(),
+                      any(),
+                      showFlutterLogs: any(named: 'showFlutterLogs'),
+                      hideTestSteps: any(named: 'hideTestSteps'),
+                      clearTestSteps: any(named: 'clearTestSteps'),
+                      onLogEntry: any(named: 'onLogEntry'),
+                      videoConfig: captureAny(named: 'videoConfig'),
+                      acceptLogEntries: any(named: 'acceptLogEntries'),
+                    ),
+                  ).captured.single
+                  as VideoRecordingConfig?;
+          // --record-video must keep working with prebuilt APKs.
+          expect(videoConfig, same(prebuiltOptions.videoConfig));
 
           // The APK runs the test bundled at build time; the requested target
           // is only hot restarted in once `flutter attach` has connected.
@@ -403,29 +415,21 @@ void main() {
         },
       );
 
-      test(
-        'holds back log entries until the requested target is hot restarted',
-        () async {
-          final received = <String>[];
-          unawaited(
-            buildService(
-              onLogEntry: (entry) => received.add((entry as LogEntry).message),
-            ).run(prebuiltOptions),
-          );
-          await _waitFor(() => backendOnLogEntry != null);
+      test('opens the log-entry gate only once the requested target is hot '
+          'restarted', () async {
+        unawaited(buildService(onLogEntry: (_) {}).run(prebuiltOptions));
+        await _waitFor(() => backendAcceptLogEntries != null);
 
-          // Emitted by the placeholder test baked into the APK -- must not be
-          // mistaken for a result of the requested target (e.g. by patrol_mcp).
-          backendOnLogEntry!(LogEntry(message: 'placeholder finished'));
-          expect(received, isEmpty);
+        // While the gate is closed the backend drops entries (see
+        // AndroidTestBackend.composeLogEntryCallback), so nothing the
+        // placeholder test emits reaches the caller or starts a recording.
+        expect(backendAcceptLogEntries!(), isFalse);
 
-          attachCompleter.complete();
-          await _waitFor(() => hotRestarts == 1);
+        attachCompleter.complete();
+        await _waitFor(() => hotRestarts == 1);
 
-          backendOnLogEntry!(LogEntry(message: 'requested target finished'));
-          expect(received, ['requested target finished']);
-        },
-      );
+        expect(backendAcceptLogEntries!(), isTrue);
+      });
 
       test(
         'fails instead of hanging when the instrumentation exits early',

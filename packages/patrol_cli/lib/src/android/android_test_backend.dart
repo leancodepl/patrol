@@ -16,6 +16,7 @@ import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/crossplatform/test_manifest.dart';
 import 'package:patrol_cli/src/crossplatform/test_manifest_generator.dart';
 import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
+import 'package:patrol_cli/src/crossplatform/video_recording_manager.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
@@ -359,6 +360,32 @@ class AndroidTestBackend {
     });
   }
 
+  /// Builds the `onLogEntry` callback handed to [PatrolLogReader], composing
+  /// (outermost first): an optional [acceptLogEntries] gate that drops entries
+  /// while it returns false, an optional [videoRecordingManager] that starts
+  /// and stops recordings on test lifecycle entries, and the caller's
+  /// [onLogEntry]. The gate must sit OUTSIDE the recording manager: with
+  /// prebuilt APKs, entries emitted by the placeholder test baked into the APK
+  /// at build time must neither reach the caller nor start a recording.
+  @visibleForTesting
+  static void Function(Entry entry)? composeLogEntryCallback({
+    void Function(Entry entry)? onLogEntry,
+    VideoRecordingManager? videoRecordingManager,
+    bool Function()? acceptLogEntries,
+  }) {
+    final withVideo = videoRecordingManager == null
+        ? onLogEntry
+        : videoRecordingManager.wrapOnLogEntry(onLogEntry);
+    if (acceptLogEntries == null || withVideo == null) {
+      return withVideo;
+    }
+    return (entry) {
+      if (acceptLogEntries()) {
+        withVideo(entry);
+      }
+    };
+  }
+
   /// Executes the tests of the given [options] on the given [device].
   ///
   /// [build] must be called before this method.
@@ -420,9 +447,10 @@ class AndroidTestBackend {
               showFlutterLogs: showFlutterLogs,
               hideTestSteps: hideTestSteps,
               clearTestSteps: clearTestSteps,
-              onLogEntry:
-                  videoRecordingManager?.wrapOnLogEntry(onLogEntry) ??
-                  onLogEntry,
+              onLogEntry: composeLogEntryCallback(
+                onLogEntry: onLogEntry,
+                videoRecordingManager: videoRecordingManager,
+              ),
             )
             ..listen()
             ..startTimer();
@@ -628,6 +656,8 @@ class AndroidTestBackend {
     required bool hideTestSteps,
     required bool clearTestSteps,
     void Function(Entry entry)? onLogEntry,
+    VideoRecordingConfig? videoConfig,
+    bool Function()? acceptLogEntries,
   }) async {
     final packageName = options.packageName;
     if (packageName == null) {
@@ -658,6 +688,19 @@ class AndroidTestBackend {
           ? path.replaceAll(r'\', '/')
           : path;
 
+      AndroidVideoRecordingManager? videoRecordingManager;
+      if (videoConfig?.enabled ?? false) {
+        videoRecordingManager = AndroidVideoRecordingManager(
+          processManager: _processManager,
+          adb: _adb,
+          rootDirectory: _rootDirectory,
+          logger: _logger,
+          config: videoConfig!,
+          device: device,
+          scope: scope,
+        );
+      }
+
       final patrolLogReader =
           PatrolLogReader(
               listenStdOut: processLogcat.listenStdOut,
@@ -667,7 +710,11 @@ class AndroidTestBackend {
               showFlutterLogs: showFlutterLogs,
               hideTestSteps: hideTestSteps,
               clearTestSteps: clearTestSteps,
-              onLogEntry: onLogEntry,
+              onLogEntry: composeLogEntryCallback(
+                onLogEntry: onLogEntry,
+                videoRecordingManager: videoRecordingManager,
+                acceptLogEntries: acceptLogEntries,
+              ),
             )
             ..listen()
             ..startTimer();
@@ -692,6 +739,10 @@ class AndroidTestBackend {
       final exitCode = await process.exitCode;
       patrolLogReader.stopTimer();
       processLogcat.kill();
+
+      // Stops and saves any in-flight recording (e.g. the session was quit
+      // mid-test).
+      await videoRecordingManager?.dispose();
 
       if (exitCode == 0) {
         task.complete('Completed executing $subject');

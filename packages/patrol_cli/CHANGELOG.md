@@ -1,7 +1,7 @@
 ## Unreleased
 
 - Add `patrol build android --develop`, which builds the app + androidTest APKs the way `patrol develop` does (single-target develop bundle, Hot Restart enabled), so they can be handed to another machine. (#3266)
-- Add `patrol develop --use-prebuilt-apks <dir>` (Android only): skip the Gradle build, install the APKs from `<dir>`, start the Patrol instrumentation with `am instrument` and attach for Hot Restart. Also usable from `patrol_mcp` via `PATROL_FLAGS=--use-prebuilt-apks=<dir>`. (#3266)
+- Add `patrol develop --use-prebuilt-apks <dir>` (Android only): skip the Gradle build, install the APKs from `<dir>`, start the Patrol instrumentation with `am instrument` and attach for Hot Restart. Supports `--record-video` like a regular develop session (the placeholder test baked into the APKs is never recorded). Also usable from `patrol_mcp` via `PATROL_FLAGS=--use-prebuilt-apks=<dir>`. (#3266)
 - Add `screenshot_on_failure` option to the pubspec's `patrol` section, forwarded to the app (via a dart-define) for `build` and `test` so patrol can capture native failure screenshots on Android device farms (e.g. BrowserStack, Firebase Test Lab). Not collected by `patrol develop`. Off by default. (#3222)
 - `patrol test` (Android) now pulls native screenshots (failure and on-demand) from the device into `<test-directory>/screenshots` after the run (override with `--screenshots-output-dir`), so they are available from local/emulator runs, not only device farms. (#3222)
 - Allow the latest `package_config` (3.x), `cli_completion` (0.6.x) and `pub_updater` (0.6.x), without raising the minimum Dart SDK. (#3225)
