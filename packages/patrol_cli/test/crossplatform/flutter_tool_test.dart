@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:platform/platform.dart';
@@ -156,7 +157,7 @@ void main() {
         observationUrlCompleter: observationUrl,
       );
 
-      await expectLater(observationUrl.future, throwsStateError);
+      await expectLater(observationUrl.future, throwsA(isA<ToolExit>()));
     });
   });
 

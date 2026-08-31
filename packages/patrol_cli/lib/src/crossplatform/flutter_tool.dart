@@ -5,6 +5,7 @@ import 'dart:io' show exit;
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' show basename;
+import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
@@ -328,7 +329,9 @@ class FlutterTool {
           if (observationUrlCompleter case final urlCompleter?
               when !urlCompleter.isCompleted) {
             urlCompleter.completeError(
-              StateError('flutter logs exited before reporting the VM service'),
+              const ToolExit(
+                'flutter logs exited before reporting the Dart VM service URL',
+              ),
             );
           }
         }),
