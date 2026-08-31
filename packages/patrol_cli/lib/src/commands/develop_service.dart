@@ -306,6 +306,16 @@ class DevelopService {
         await _androidTestBackend.prepareSourcesForAttach(flutterOpts);
       }
       await _preExecute(androidOpts, iosOpts, device, options.uninstall);
+      if (prebuiltApksDir != null) {
+        // After _preExecute, so the optional uninstall can't race the install.
+        // Installing here (not inside _execute) makes a bad directory or a
+        // failed install a setup error that aborts the run, instead of an
+        // async failure while the CLI is already waiting on flutter attach.
+        await _androidTestBackend.installPrebuiltApks(
+          apksDir: prebuiltApksDir,
+          device: device,
+        );
+      }
       await _execute(
         flutterOpts,
         androidOpts,
@@ -443,14 +453,17 @@ class DevelopService {
     );
 
     // Prebuilt APKs carry a placeholder test baked in at build time, which
-    // runs as soon as the app launches. Until we've attached and hot
-    // restarted with the real target, its log entries would be mistaken for
-    // results of *our* test (e.g. by patrol_mcp), so hold them back.
-    var prebuiltRestartSent = prebuiltApksDir == null;
+    // runs as soon as the app launches. Its log entries would be mistaken for
+    // results of *our* test (e.g. by patrol_mcp), so hold them back until
+    // `flutter attach` reports the restart into the requested target as
+    // COMPLETED. Logcat delivery is asynchronous, so opening the gate when the
+    // restart is merely requested could still let a buffered entry of the
+    // placeholder through.
+    var prebuiltTargetActive = prebuiltApksDir == null;
     final void Function(Entry entry)? gatedOnLogEntry = onLogEntry == null
         ? null
         : (entry) {
-            if (prebuiltRestartSent) {
+            if (prebuiltTargetActive) {
               onLogEntry?.call(entry);
             }
           };
@@ -462,7 +475,6 @@ class DevelopService {
             ? () => _androidTestBackend.executePrebuilt(
                 android,
                 device,
-                apksDir: prebuiltApksDir,
                 showFlutterLogs: showFlutterLogs,
                 hideTestSteps: hideTestSteps,
                 clearTestSteps: clearTestSteps,
@@ -545,7 +557,7 @@ class DevelopService {
       );
 
       if (device.targetPlatform != TargetPlatform.web) {
-        await _flutterTool.attachForHotRestart(
+        final attached = _flutterTool.attachForHotRestart(
           flutterCommand: flutterOpts.command,
           deviceId: device.id,
           target: flutterOpts.target,
@@ -556,13 +568,30 @@ class DevelopService {
           forwardFlutterLogs: flutterLogs.forwardFlutterLogs,
           onQuit: onQuitCleanup,
         );
-        if (prebuiltApksDir != null) {
+        if (prebuiltApksDir == null) {
+          await attached;
+        } else {
+          // No Gradle ran before this point, so nothing has verified that the
+          // instrumentation actually came up. If the backend settles before
+          // attach connects (instrumentation not found, app crash on launch),
+          // fail instead of waiting forever for an attach that can't succeed.
+          final backendExitedFirst = await Future.any<bool>([
+            attached.then((_) => false),
+            future.then((_) => true, onError: (Object _) => true),
+          ]);
+          if (backendExitedFirst) {
+            throwToolExit(
+              'The instrumentation exited before `flutter attach` could '
+              'connect - the app never came up. See the logs above.',
+            );
+          }
           _logger.info(
             'Prebuilt APKs: the app launched with the placeholder test baked '
             'in at build time; hot restarting with the requested target...',
           );
-          prebuiltRestartSent = true;
-          _flutterTool.hotRestart();
+          _flutterTool.hotRestart(
+            onCompleted: () => prebuiltTargetActive = true,
+          );
         }
       }
 

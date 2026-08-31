@@ -113,10 +113,12 @@ point `patrol develop` at a directory that contains the two APKs:
 patrol develop --use-prebuilt-apks path/to/apks --target patrol_test/example_test.dart
 ```
 
-Nothing is built on that machine: the APKs are installed with `adb`, the Patrol
-instrumentation is started with `am instrument`, `flutter attach` connects, and
-the requested target is hot restarted in place of the test that was bundled at
-build time. From there the session behaves exactly like a regular `patrol
+No Gradle or APK build runs on that machine. Patrol compiles the Dart bundle
+once with `flutter build bundle --debug` (which also generates the Dart plugin
+registrant that `flutter attach` needs on a never-built checkout), installs the
+APKs with `adb`, starts the Patrol instrumentation with `am instrument`,
+connects `flutter attach`, and hot restarts the requested target in place of
+the test that was bundled at build time. From there the session behaves exactly like a regular `patrol
 develop` — edit the test (or Dart app code), press `r`, repeat. Also works from
 [Patrol MCP](/documentation/other/patrol-mcp) via
 `PATROL_FLAGS=--use-prebuilt-apks=<dir>`.

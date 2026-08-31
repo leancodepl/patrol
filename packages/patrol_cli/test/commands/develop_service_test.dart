@@ -323,10 +323,15 @@ void main() {
           () => androidTestBackend.prepareSourcesForAttach(any()),
         ).thenAnswer((_) async {});
         when(
+          () => androidTestBackend.installPrebuiltApks(
+            apksDir: any(named: 'apksDir'),
+            device: any(named: 'device'),
+          ),
+        ).thenAnswer((_) async {});
+        when(
           () => androidTestBackend.executePrebuilt(
             any(),
             any(),
-            apksDir: any(named: 'apksDir'),
             showFlutterLogs: any(named: 'showFlutterLogs'),
             hideTestSteps: any(named: 'hideTestSteps'),
             clearTestSteps: any(named: 'clearTestSteps'),
@@ -352,7 +357,14 @@ void main() {
             onQuit: any(named: 'onQuit'),
           ),
         ).thenAnswer((_) => attachCompleter.future);
-        when(() => flutterTool.hotRestart()).thenAnswer((_) => hotRestarts++);
+        when(
+          () => flutterTool.hotRestart(onCompleted: any(named: 'onCompleted')),
+        ).thenAnswer((invocation) {
+          hotRestarts++;
+          // The real FlutterTool fires this once `flutter attach` reports
+          // 'Restarted application ...'.
+          (invocation.namedArguments[#onCompleted] as void Function()?)?.call();
+        });
       });
 
       test(
@@ -366,17 +378,22 @@ void main() {
             () => androidTestBackend.prepareSourcesForAttach(any()),
           ).called(1);
           final apksDir = verify(
+            () => androidTestBackend.installPrebuiltApks(
+              apksDir: captureAny(named: 'apksDir'),
+              device: any(named: 'device'),
+            ),
+          ).captured.single;
+          expect(apksDir, '/apks');
+          verify(
             () => androidTestBackend.executePrebuilt(
               any(),
               any(),
-              apksDir: captureAny(named: 'apksDir'),
               showFlutterLogs: any(named: 'showFlutterLogs'),
               hideTestSteps: any(named: 'hideTestSteps'),
               clearTestSteps: any(named: 'clearTestSteps'),
               onLogEntry: any(named: 'onLogEntry'),
             ),
-          ).captured.single;
-          expect(apksDir, '/apks');
+          ).called(1);
 
           // The APK runs the test bundled at build time; the requested target
           // is only hot restarted in once `flutter attach` has connected.
@@ -407,6 +424,25 @@ void main() {
 
           backendOnLogEntry!(LogEntry(message: 'requested target finished'));
           expect(received, ['requested target finished']);
+        },
+      );
+
+      test(
+        'fails instead of hanging when the instrumentation exits early',
+        () async {
+          // The backend settles immediately (e.g. `am instrument` printed an
+          // error and returned) while attach never connects. Previously the
+          // CLI would sit on `flutter attach` forever.
+          backendExit.complete();
+
+          await expectLater(
+            buildService().run(prebuiltOptions),
+            throwsA(isA<ToolExit>()),
+          );
+          verifyNever(
+            () =>
+                flutterTool.hotRestart(onCompleted: any(named: 'onCompleted')),
+          );
         },
       );
 

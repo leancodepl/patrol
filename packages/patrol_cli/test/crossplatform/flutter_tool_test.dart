@@ -75,6 +75,45 @@ void main() {
         await processStdout.close();
       },
     );
+
+    test(
+      'hotRestart onCompleted fires when the restart completes, not sooner',
+      () async {
+        final process = MockProcess();
+        final processStdin = _MockIOSink();
+        final processStdout = StreamController<List<int>>();
+        when(() => process.stdout).thenAnswer((_) => processStdout.stream);
+        when(
+          () => process.stderr,
+        ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
+        when(() => process.stdin).thenReturn(processStdin);
+        when(() => processStdin.add(any())).thenReturn(null);
+        when(
+          () => processManager.start(any()),
+        ).thenAnswer((_) async => process);
+
+        final attach = flutterTool.attach(
+          flutterCommand: flutterCommand,
+          deviceId: 'testDeviceId',
+          target: 'target',
+          appId: 'appId',
+          dartDefines: {},
+          openBrowser: false,
+        );
+        processStdout.add(utf8.encode('Flutter run key commands.\n'));
+        await attach;
+
+        var completed = false;
+        flutterTool.hotRestart(onCompleted: () => completed = true);
+        verify(() => processStdin.add('R'.codeUnits)).called(1);
+        expect(completed, isFalse);
+
+        processStdout.add(utf8.encode('Restarted application in 1,234ms.\n'));
+        await Future<void>.delayed(const Duration(milliseconds: 10));
+        expect(completed, isTrue);
+        await processStdout.close();
+      },
+    );
     test('attach passes deviceId correctly', () {
       final process = MockProcess();
       when(

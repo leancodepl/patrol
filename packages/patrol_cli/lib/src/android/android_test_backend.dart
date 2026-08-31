@@ -570,35 +570,17 @@ class AndroidTestBackend {
     });
   }
 
-  /// Develop-mode counterpart of [execute] for APKs built on another machine
-  /// Develop-mode counterpart of [execute] for APKs built on another machine
-  /// (`patrol develop --use-prebuilt-apks`). Installs the app + androidTest
-  /// APKs found in [apksDir] and starts the Patrol instrumentation directly
-  /// with `am instrument -w`, bypassing Gradle entirely.
+  /// Installs the prebuilt app + androidTest APKs found in [apksDir] onto
+  /// [device] with `adb install -r -t`, without Gradle.
   ///
-  /// The APKs must come from a develop-mode build (`patrol build android
-  /// --develop`): with `PATROL_HOT_RESTART=true` baked in, the Dart side never
-  /// reports `PatrolAppService` readiness, so `PatrolJUnitRunner` blocks in
-  /// `waitForPatrolAppService()` and the app process stays alive for
-  /// `flutter attach` + Hot Restart. Test-orchestrator extras (e.g.
-  /// `clearPackageData`) are not applied - they never were in develop mode.
-  Future<void> executePrebuilt(
-    AndroidAppOptions options,
-    Device device, {
+  /// Runs before [executePrebuilt] so that a bad directory or a failed install
+  /// surfaces as a [ToolExit] from the setup phase - the way a Gradle build
+  /// failure would - instead of leaving `flutter attach` waiting for an app
+  /// that was never installed.
+  Future<void> installPrebuiltApks({
     required String apksDir,
-    required bool showFlutterLogs,
-    required bool hideTestSteps,
-    required bool clearTestSteps,
-    void Function(Entry entry)? onLogEntry,
+    required Device device,
   }) async {
-    final packageName = options.packageName;
-    if (packageName == null) {
-      throwToolExit(
-        'Android applicationId is unknown. Set patrol.android.package_name in '
-        'pubspec.yaml or pass --package-name.',
-      );
-    }
-
     final dir = _rootDirectory.fileSystem.directory(apksDir);
     if (!dir.existsSync()) {
       throwToolExit('Prebuilt APK directory does not exist: $apksDir');
@@ -626,6 +608,34 @@ class AndroidTestBackend {
     await _adbInstall(appApk.path, device);
     _logger.detail('Installing androidTest APK: ${testApk.path}');
     await _adbInstall(testApk.path, device);
+  }
+
+  /// Develop-mode counterpart of [execute] for APKs built on another machine
+  /// (`patrol develop --use-prebuilt-apks`): starts the Patrol instrumentation
+  /// directly with `am instrument -w`, bypassing Gradle entirely. The APKs
+  /// must already be installed - see [installPrebuiltApks].
+  ///
+  /// They must come from a develop-mode build (`patrol build android
+  /// --develop`): with `PATROL_HOT_RESTART=true` baked in, the Dart side never
+  /// reports `PatrolAppService` readiness, so `PatrolJUnitRunner` blocks in
+  /// `waitForPatrolAppService()` and the app process stays alive for
+  /// `flutter attach` + Hot Restart. Test-orchestrator extras (e.g.
+  /// `clearPackageData`) are not applied - they never were in develop mode.
+  Future<void> executePrebuilt(
+    AndroidAppOptions options,
+    Device device, {
+    required bool showFlutterLogs,
+    required bool hideTestSteps,
+    required bool clearTestSteps,
+    void Function(Entry entry)? onLogEntry,
+  }) async {
+    final packageName = options.packageName;
+    if (packageName == null) {
+      throwToolExit(
+        'Android applicationId is unknown. Set patrol.android.package_name in '
+        'pubspec.yaml or pass --package-name.',
+      );
+    }
 
     final (instrumentPackage, instrumentRunner) =
         await _resolveInstrumentationComponent(packageName, device);
