@@ -73,6 +73,12 @@ class PlatformAutomatorConfig {
     /// [AndroidAutomatorConfig.dontSuppressAccessibilityServices].
     bool? androidDontSuppressAccessibilityServices,
 
+    /// Whether Patrol keeps `FLAG_RETRIEVE_INTERACTIVE_WINDOWS` on its
+    /// `UiAutomation`.
+    ///
+    /// Android only. See [AndroidAutomatorConfig.retrieveInteractiveWindows].
+    bool? androidRetrieveInteractiveWindows,
+
     /// Called when a native action is performed.
     void Function(String)? logger,
 
@@ -89,6 +95,7 @@ class PlatformAutomatorConfig {
         keyboardBehavior: keyboardBehavior,
         dontSuppressAccessibilityServices:
             androidDontSuppressAccessibilityServices,
+        retrieveInteractiveWindows: androidRetrieveInteractiveWindows,
         connectionTimeout: connectionTimeout,
         findTimeout: findTimeout,
         logger: logger,
