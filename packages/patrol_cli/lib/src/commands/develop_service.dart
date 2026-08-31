@@ -379,6 +379,28 @@ class DevelopService {
     }
   }
 
+  /// `flutter logs` resolves the iOS app package without a build
+  /// configuration, so it needs a scheme named Runner and takes no option to
+  /// pick another: `showFlutterLogs` falls back to Patrol's own log stream,
+  /// and `forwardFlutterLogs` tells `flutter attach` not to open its own.
+  ///
+  /// Attaching by URL reads that URL from `flutter logs`, so it has to stay on.
+  @visibleForTesting
+  static ({bool showFlutterLogs, bool forwardFlutterLogs}) resolveFlutterLogs({
+    required TargetPlatform targetPlatform,
+    required String? flavor,
+    required bool showFlutterLogs,
+    required bool attachUsingUrl,
+  }) {
+    final flutterLogsUnavailable =
+        targetPlatform == TargetPlatform.iOS && flavor != null;
+    final skipFlutterLogs = flutterLogsUnavailable && !attachUsingUrl;
+    return (
+      showFlutterLogs: showFlutterLogs || skipFlutterLogs,
+      forwardFlutterLogs: !skipFlutterLogs,
+    );
+  }
+
   Future<void> _execute(
     FlutterAppOptions flutterOpts,
     AndroidAppOptions android,
@@ -397,6 +419,13 @@ class DevelopService {
     Future<void> Function() action;
     Future<void> Function()? finalizer;
     String? appId;
+
+    final flutterLogs = resolveFlutterLogs(
+      targetPlatform: device.targetPlatform,
+      flavor: flutterOpts.flavor,
+      showFlutterLogs: showFlutterLogs,
+      attachUsingUrl: shouldAttachUsingUrl(device),
+    );
 
     switch (device.targetPlatform) {
       case TargetPlatform.android:
@@ -426,7 +455,7 @@ class DevelopService {
           iosOpts,
           device,
           interruptible: true,
-          showFlutterLogs: showFlutterLogs,
+          showFlutterLogs: flutterLogs.showFlutterLogs,
           hideTestSteps: hideTestSteps,
           clearTestSteps: clearTestSteps,
           onLogEntry: onLogEntry,
@@ -485,8 +514,8 @@ class DevelopService {
           appId: appId,
           dartDefines: flutterOpts.dartDefines,
           openDevtools: openDevtools,
-          flavor: flutterOpts.flavor,
           attachUsingUrl: shouldAttachUsingUrl(device),
+          forwardFlutterLogs: flutterLogs.forwardFlutterLogs,
           onQuit: onQuitCleanup,
         );
       }
