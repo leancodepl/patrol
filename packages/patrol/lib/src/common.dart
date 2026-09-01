@@ -23,6 +23,37 @@ import 'package:test_api/src/backend/test.dart';
 import 'constants.dart' as constants;
 import 'custom_finders/patrol_integration_tester.dart';
 
+/// Characters that cannot appear in [patrolTest] descriptions.
+///
+/// Native test runners (e.g. Android Test Orchestrator) derive file names from
+/// test names. A `/` in the description breaks execution silently.
+/// See https://github.com/leancodepl/patrol/issues/1839.
+const _invalidPatrolTestDescriptionCharacters = {'/'};
+
+/// Whether [description] contains characters invalid for native test runners.
+@visibleForTesting
+bool patrolTestDescriptionContainsInvalidCharacters(String description) {
+  return _invalidPatrolTestDescriptionCharacters
+      .any(description.contains);
+}
+
+/// Registers a safe test name when [description] contains `/`.
+///
+/// Must not throw during test declaration — that would escape [main] before
+/// [markPatrolAppServiceReady] is called.
+@visibleForTesting
+String patrolTestSafeRegistrationName(String description) {
+  return 'invalid patrolTest description: '
+      '${description.replaceAll('/', ' slash ')}';
+}
+
+@visibleForTesting
+String patrolTestInvalidDescriptionFailureMessage(String description) {
+  return 'patrolTest description cannot contain "/" because native test '
+      'runners use the name in file paths. Invalid description: "$description". '
+      'See https://github.com/leancodepl/patrol/issues/1839';
+}
+
 /// Signature for callback to [patrolTest].
 typedef PatrolTesterCallback = Future<void> Function(PatrolIntegrationTester $);
 
@@ -110,19 +141,29 @@ void patrolTest(
   LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
       LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
 }) {
+  final invalidDescription =
+      patrolTestDescriptionContainsInvalidCharacters(description);
+  final registeredDescription = invalidDescription
+      ? patrolTestSafeRegistrationName(description)
+      : description;
+
   if (constants.testDiscoveryEnabled) {
     // Build-time discovery (host `flutter test`): only register the test so it
     // shows up in the group tree. Do NOT initialize PatrolBinding (Live binding,
     // incompatible with the host automated binding) and do NOT run the body
     // (it would block on waitForExecutionRequest()).
     testWidgets(
-      description,
+      registeredDescription,
       skip: skip,
       timeout: timeout,
       semanticsEnabled: semanticsEnabled,
       variant: variant,
       tags: tags,
-      (_) async {},
+      (_) async {
+        if (invalidDescription) {
+          fail(patrolTestInvalidDescriptionFailureMessage(description));
+        }
+      },
     );
     return;
   }
@@ -146,13 +187,17 @@ void patrolTest(
     patrolLog.log(TestEntry(name: description, status: TestEntryStatus.skip));
   }
   testWidgets(
-    description,
+    registeredDescription,
     skip: skip,
     timeout: timeout,
     semanticsEnabled: semanticsEnabled,
     variant: variant,
     tags: tags,
     (widgetTester) async {
+      if (invalidDescription) {
+        fail(patrolTestInvalidDescriptionFailureMessage(description));
+      }
+
       widgetTester.binding.platformDispatcher.onSemanticsEnabledChanged = () {
         // This callback is empty on purpose. It's a workaround for tests
         // failing on iOS and (from Flutter 3.29.0) on Android.
