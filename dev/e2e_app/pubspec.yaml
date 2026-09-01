@@ -54,6 +54,7 @@ flutter:
 
 patrol:
   app_name: Patrol example
+  screenshot_on_failure: true
   android:
     package_name: pl.leancode.patrol.e2e_app
   ios:

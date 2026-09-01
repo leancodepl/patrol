@@ -119,6 +119,57 @@ jobs:
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
           exit $TESTS_EXIT_CODE
 
+      # Patrol screenshots (failure + on-demand) and failure recordings that
+      # run_ios_testlab pulled from the .xcresult in the FTL result bundle. Run
+      # even when tests fail, so failure artifacts are always collected.
+      - name: Upload Patrol screenshots to artifacts
+        id: upload_screenshots
+        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: iOS Patrol screenshots from ${{ matrix.device_model }}
+          path: dev/e2e_app/ios_screenshots/
+          if-no-files-found: warn
+
+      - name: Upload failure recordings to artifacts
+        id: upload_ios_videos
+        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: iOS failure recordings from ${{ matrix.device_model }}
+          path: dev/e2e_app/ios_videos/
+          if-no-files-found: warn
+
+      # GitHub can't preview artifact zips, and its Summary won't render our
+      # screenshots inline (they aren't public and data: URIs / signed <img> URLs
+      # are stripped by the sanitizer), so list them and link the downloadable
+      # artifacts.
+      - name: List screenshots in job summary
+        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
+        working-directory: dev/e2e_app
+        run: |
+          shots_dir="ios_screenshots"
+          echo "### 📸 Patrol screenshots (${{ matrix.device_model }})" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+
+          if [ -d "$shots_dir" ] && [ -n "$(ls -A "$shots_dir" 2>/dev/null)" ]; then
+            for png in "$shots_dir"/*.png; do
+              [ -e "$png" ] || continue
+              echo "- \`$(basename "$png")\`" >> "$GITHUB_STEP_SUMMARY"
+            done
+            if [ -n "${{ steps.upload_screenshots.outputs.artifact-url }}" ]; then
+              echo "" >> "$GITHUB_STEP_SUMMARY"
+              echo "[⬇️ Download screenshots](${{ steps.upload_screenshots.outputs.artifact-url }})" >> "$GITHUB_STEP_SUMMARY"
+            fi
+          else
+            echo "_No Patrol screenshots were captured._" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          if [ -n "${{ steps.upload_ios_videos.outputs.artifact-url }}" ]; then
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "[⬇️ Download failure recordings](${{ steps.upload_ios_videos.outputs.artifact-url }})" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
   call_send_slack_message:
     name: Notify on Slack
     uses: ./.github/workflows/send-slack-message.yaml
