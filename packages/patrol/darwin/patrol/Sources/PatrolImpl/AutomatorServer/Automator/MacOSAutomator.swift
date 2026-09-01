@@ -153,6 +153,13 @@
       }
     }
 
+    // MARK: Screenshots
+    func takeNativeScreenshot(name: String) throws {
+      try runAction("takeNativeScreenshot") {
+        throw PatrolError.methodNotImplemented("takeNativeScreenshot")
+      }
+    }
+
     // MARK: Volume settings
     func pressVolumeUp() throws {
       try runAction("pressing volume up") {

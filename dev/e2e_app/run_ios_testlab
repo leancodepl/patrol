@@ -23,9 +23,100 @@ else
     echo "Using locale: $IOS_DEVICE_LOCALE"
 fi
 
+RESULTS_BUCKET="patrol_runs"
+# A fixed results dir so we can pull the .xcresult back afterwards.
+RESULTS_DIR="${RESULTS_DIR:-ios_run_$(date -u +%Y%m%d_%H%M%S)}"
+
+# Don't let a failing test (gcloud exits non-zero) abort the screenshot pull.
+set +e
 gcloud firebase test ios run \
 	--type xctest \
 	--test "build/ios_integ/Build/Products/ios_tests.zip" \
 	--device model="$IOS_DEVICE_MODEL",version="$IOS_DEVICE_VERSION",locale="$IOS_DEVICE_LOCALE",orientation=portrait \
 	--timeout 30m \
-	--results-bucket="patrol_runs"
+	--results-bucket="$RESULTS_BUCKET" \
+	--results-dir="$RESULTS_DIR"
+TESTS_EXIT_CODE=$?
+set -e
+
+# Pull native artifacts off Firebase Test Lab. On iOS the screenshots are
+# attached to the test's .xcresult, which FTL uploads under
+# <device>/TestLogs/*.xcresult in the results bucket (there is no
+# --directories-to-pull for iOS like on Android). We download the result bundle
+# and export the Patrol screenshots (named `patrol_*`) as PNGs, plus the screen
+# recording (.mp4) for each failing test. Best-effort: never fails the run.
+SCREENSHOTS_DIR="${IOS_SCREENSHOTS_DIR:-ios_screenshots}"
+VIDEOS_DIR="${IOS_VIDEOS_DIR:-ios_videos}"
+pull_artifacts() {
+	command -v xcrun >/dev/null 2>&1 || { echo "xcrun not found; skipping artifact pull"; return 0; }
+
+	local pull_dir attach_dir
+	pull_dir="$(mktemp -d)"
+	rm -rf "$SCREENSHOTS_DIR" "$VIDEOS_DIR"
+	mkdir -p "$SCREENSHOTS_DIR" "$VIDEOS_DIR"
+
+	# Copy the whole results dir; the .xcresult prefix can't be cp'd directly
+	# ("no objects matched"), but its parent recurses fine.
+	if ! gcloud storage cp -r "gs://$RESULTS_BUCKET/$RESULTS_DIR" "$pull_dir" 2>/dev/null; then
+		echo "Could not download results from gs://$RESULTS_BUCKET/$RESULTS_DIR; skipping artifact pull"
+		rm -rf "$pull_dir"
+		return 0
+	fi
+
+	while IFS= read -r xcresult; do
+		attach_dir="$(mktemp -d)"
+		if xcrun xcresulttool export attachments --path "$xcresult" --output-path "$attach_dir" >/dev/null 2>&1; then
+			python3 - "$attach_dir" "$SCREENSHOTS_DIR" "$VIDEOS_DIR" <<'PY'
+import json, os, re, shutil, sys
+attach_dir, shots_dir, videos_dir = sys.argv[1], sys.argv[2], sys.argv[3]
+manifest = os.path.join(attach_dir, "manifest.json")
+
+
+def slug(s):
+    return re.sub(r"[^A-Za-z0-9._-]+", "_", s)[:80]
+
+
+if os.path.exists(manifest):
+    for test in json.load(open(manifest)):
+        tid = slug(test.get("testIdentifier", "unknown").split("/")[-1])
+        atts = test.get("attachments", [])
+        # A screen recording is only interesting for a test that failed.
+        failed = any(
+            a.get("isAssociatedWithFailure")
+            or a.get("suggestedHumanReadableName", "").startswith("patrol_failure")
+            for a in atts
+        )
+        vid_i = 0
+        for a in atts:
+            name = a.get("suggestedHumanReadableName", "")
+            src = os.path.join(attach_dir, a["exportedFileName"])
+            if name.startswith("patrol_"):
+                shutil.copy(src, os.path.join(shots_dir, f"{tid}__{slug(name)}"))
+            elif failed and a["exportedFileName"].lower().endswith(".mp4"):
+                shutil.copy(src, os.path.join(videos_dir, f"{tid}__{vid_i}.mp4"))
+                vid_i += 1
+PY
+		fi
+		rm -rf "$attach_dir"
+	done < <(find "$pull_dir" -type d -name '*.xcresult')
+
+	rm -rf "$pull_dir"
+
+	if [ -n "$(ls -A "$SCREENSHOTS_DIR" 2>/dev/null)" ]; then
+		echo "Patrol screenshots saved to $SCREENSHOTS_DIR:"
+		ls -1 "$SCREENSHOTS_DIR"
+	else
+		echo "No Patrol screenshots found in the result bundle."
+		rmdir "$SCREENSHOTS_DIR" 2>/dev/null || true
+	fi
+	if [ -n "$(ls -A "$VIDEOS_DIR" 2>/dev/null)" ]; then
+		echo "Failure recordings saved to $VIDEOS_DIR:"
+		ls -1 "$VIDEOS_DIR"
+	else
+		rmdir "$VIDEOS_DIR" 2>/dev/null || true
+	fi
+}
+
+pull_artifacts || echo "Artifact pull failed; continuing."
+
+exit "$TESTS_EXIT_CODE"

@@ -858,6 +858,14 @@ Map<String, dynamic> _$AndroidTakeNativeScreenshotRequestToJson(
   AndroidTakeNativeScreenshotRequest instance,
 ) => <String, dynamic>{'tag': instance.tag};
 
+IOSTakeNativeScreenshotRequest _$IOSTakeNativeScreenshotRequestFromJson(
+  Map<String, dynamic> json,
+) => IOSTakeNativeScreenshotRequest(tag: json['tag'] as String);
+
+Map<String, dynamic> _$IOSTakeNativeScreenshotRequestToJson(
+  IOSTakeNativeScreenshotRequest instance,
+) => <String, dynamic>{'tag': instance.tag};
+
 IOSTakeCameraPhotoRequest _$IOSTakeCameraPhotoRequestFromJson(
   Map<String, dynamic> json,
 ) => IOSTakeCameraPhotoRequest(
