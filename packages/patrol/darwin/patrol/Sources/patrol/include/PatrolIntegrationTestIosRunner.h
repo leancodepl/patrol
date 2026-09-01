@@ -40,6 +40,7 @@
   +(BOOL)isPatrolDevelopMode {                                                                                      \
     return [[NSProcessInfo processInfo].environment[@"PATROL_DEVELOP"] isEqualToString:@"1"];                       \
   }                                                                                                                 \
+                                                                                                                    \
   +(void)launchPatrolAppWithServer : (PatrolServer *)server {                                                       \
     server.appReady = NO;                                                                                           \
     XCUIApplication *app = [[XCUIApplication alloc] init];                                                          \
@@ -358,6 +359,7 @@
         }                                                                                                           \
         BOOL passed = response ? response.passed : NO;                                                              \
         NSString *details = response ? response.details : @"(no details - app likely crashed)";                     \
+        [[PatrolScreenshotBuffer sharedBuffer] drainAttachingTo:_self];                                             \
         XCTAssertTrue(passed, @"%@", details);                                                                      \
       });                                                                                                           \
       SEL selector = NSSelectorFromString(selectorName);                                                            \
@@ -577,6 +579,7 @@
     }                                                                                                                  \
     BOOL passed = response ? response.passed : NO;                                                                     \
     NSString *details = response ? response.details : @"(no details - app likely crashed)";                            \
+    [[PatrolScreenshotBuffer sharedBuffer] drainAttachingTo:self];                                                     \
     XCTAssertTrue(passed, @"%@", details);                                                                             \
   }
 

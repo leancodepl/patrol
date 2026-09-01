@@ -749,6 +749,10 @@ class Contracts {
     val tag: String
   )
 
+  data class IOSTakeNativeScreenshotRequest (
+    val tag: String
+  )
+
   data class IOSTakeCameraPhotoRequest (
     val shutterButtonSelector: IOSSelector? = null,
     val doneButtonSelector: IOSSelector? = null,

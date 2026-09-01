@@ -21,6 +21,8 @@
 // Under CocoaPods this file is unused: everything compiles into one `patrol`
 // module and the Swift @objc classes are visible directly.
 
+@class XCTestCase;
+
 NS_ASSUME_NONNULL_BEGIN
 
 /// Implemented in PatrolImpl (Swift). Declared here so runner macros compile
@@ -50,6 +52,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ObjCLocalization : NSObject
 + (NSString *)getLocalizedStringWithKey:(NSString *)key;
+@end
+
+@interface PatrolScreenshotBuffer : NSObject
+@property(class, nonatomic, readonly, strong) PatrolScreenshotBuffer *sharedBuffer;
+- (void)drainAttachingTo:(XCTestCase *)testCase;
 @end
 
 NS_ASSUME_NONNULL_END

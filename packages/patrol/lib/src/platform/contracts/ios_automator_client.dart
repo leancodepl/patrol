@@ -74,6 +74,10 @@ class IosAutomatorClient {
     return _sendRequest('swipe', request.toJson());
   }
 
+  Future<void> takeNativeScreenshot(IOSTakeNativeScreenshotRequest request) {
+    return _sendRequest('takeNativeScreenshot', request.toJson());
+  }
+
   Future<void> closeHeadsUpNotification() {
     return _sendRequest('closeHeadsUpNotification');
   }

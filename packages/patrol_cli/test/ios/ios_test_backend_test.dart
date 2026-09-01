@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io' show ProcessResult;
+
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
@@ -8,6 +11,13 @@ import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 import 'package:test/test.dart';
+
+/// PNG file signature followed by a couple of filler bytes.
+final _pngBytes = <int>[0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0, 0];
+
+/// Binary plist signature - what XCTest's automatic "UI Snapshot" element-tree
+/// attachments look like (not an image).
+final _bplistBytes = <int>[0x62, 0x70, 0x6C, 0x69, 0x73, 0x74, 0x30, 0x30];
 
 void main() {
   group('BuildMode', () {
@@ -244,11 +254,152 @@ void main() {
       });
     });
   });
+
+  group('IOSTestBackend.extractScreenshots', () {
+    late IOSTestBackend iosTestBackend;
+    late MockProcessManager processManager;
+    late FileSystem fs;
+    late Directory rootDirectory;
+
+    setUp(() {
+      processManager = MockProcessManager();
+      fs = MemoryFileSystem.test();
+      rootDirectory = fs.currentDirectory;
+
+      iosTestBackend = IOSTestBackend(
+        processManager: processManager,
+        platform: FakePlatform(),
+        fs: fs,
+        rootDirectory: rootDirectory,
+        parentDisposeScope: DisposeScope(),
+        logger: FakeLogger(),
+      );
+    });
+
+    /// Makes the mocked `xcresulttool export attachments` write [manifest] plus
+    /// the given [files] (name -> bytes) into whatever `--output-path` it is
+    /// given, mimicking the real tool.
+    void stubExport({
+      required List<Map<String, dynamic>> manifest,
+      required Map<String, List<int>> files,
+      int exitCode = 0,
+    }) {
+      when(
+        () => processManager.run(any(), runInShell: any(named: 'runInShell')),
+      ).thenAnswer((invocation) async {
+        final args = (invocation.positionalArguments.first as List)
+            .cast<String>();
+        final outIndex = args.indexOf('--output-path');
+        final outDir = fs.directory(args[outIndex + 1])
+          ..createSync(recursive: true);
+        if (exitCode == 0) {
+          outDir
+              .childFile('manifest.json')
+              .writeAsStringSync(jsonEncode(manifest));
+          files.forEach((name, bytes) {
+            outDir.childFile(name).writeAsBytesSync(bytes);
+          });
+        }
+        return ProcessResult(0, exitCode, '', '');
+      });
+    }
+
+    Map<String, dynamic> attachment(
+      String file,
+      String name, {
+      bool failure = false,
+    }) => {
+      'exportedFileName': file,
+      'suggestedHumanReadableName': name,
+      'isAssociatedWithFailure': failure,
+    };
+
+    test('keeps patrol-named and failure PNGs, drops the rest', () async {
+      fs.directory('build/out.xcresult').createSync(recursive: true);
+      stubExport(
+        manifest: [
+          {
+            'testIdentifier': 'RunnerUITests/RunnerUITests/test_login',
+            'attachments': [
+              attachment('a', 'patrol_failure'),
+              attachment('b', 'patrol_before_tap'),
+              attachment('c', 'UI Snapshot', failure: true),
+              attachment('d', 'UI Snapshot'),
+              attachment('e', 'patrol_broken'),
+            ],
+          },
+        ],
+        files: {
+          'a': _pngBytes,
+          'b': _pngBytes,
+          // Failure-associated but a bplist element tree, not an image - dropped.
+          'c': _bplistBytes,
+          // Not patrol, not a failure - dropped.
+          'd': _pngBytes,
+          // Patrol-named but not a PNG - dropped.
+          'e': _bplistBytes,
+        },
+      );
+
+      await iosTestBackend.extractScreenshots(
+        xcresultPath: 'build/out.xcresult',
+        outputDir: 'screenshots',
+      );
+
+      final testDir = rootDirectory
+          .childDirectory('screenshots')
+          .childDirectory('RunnerUITests_RunnerUITests_test_login');
+      final saved = testDir.listSync().map((e) => e.basename).toList()..sort();
+      expect(saved, ['patrol_before_tap_1.png', 'patrol_failure_0.png']);
+    });
+
+    test(
+      'does not throw and writes nothing when the bundle is missing',
+      () async {
+        await iosTestBackend.extractScreenshots(
+          xcresultPath: 'build/missing.xcresult',
+          outputDir: 'screenshots',
+        );
+
+        verifyNever(
+          () => processManager.run(any(), runInShell: any(named: 'runInShell')),
+        );
+        expect(
+          rootDirectory.childDirectory('screenshots').existsSync(),
+          isFalse,
+        );
+      },
+    );
+
+    test('does not throw when xcresulttool is too old', () async {
+      fs.directory('build/out.xcresult').createSync(recursive: true);
+      stubExport(manifest: [], files: {}, exitCode: 1);
+
+      await iosTestBackend.extractScreenshots(
+        xcresultPath: 'build/out.xcresult',
+        outputDir: 'screenshots',
+      );
+
+      expect(rootDirectory.childDirectory('screenshots').existsSync(), isFalse);
+    });
+  });
 }
 
 class FakeProcessManager extends Fake implements ProcessManager {}
 
+class MockProcessManager extends Mock implements ProcessManager {}
+
 class FakeLogger extends Fake implements Logger {
   @override
   void detail(String? message, {String? Function(String?)? style}) {}
+
+  @override
+  void info(String? message, {String? Function(String?)? style}) {}
+
+  @override
+  void warn(
+    String? message, {
+    String tag = 'WARN',
+    String? Function(String?)? style,
+  }) {}
 }
