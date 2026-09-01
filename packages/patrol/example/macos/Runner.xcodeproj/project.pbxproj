@@ -215,13 +215,11 @@
 			buildConfigurationList = 33CC10FB2044A3C60003C045 /* Build configuration list for PBXNativeTarget "Runner" */;
 			buildPhases = (
 				6EA83E54978260DA823337B5 /* [CP] Check Pods Manifest.lock */,
-				94AA3E082A7BD03700E8815C /* macos_assemble build */,
 				33CC10E92044A3C60003C045 /* Sources */,
 				33CC10EA2044A3C60003C045 /* Frameworks */,
 				33CC10EB2044A3C60003C045 /* Resources */,
 				33CC110E2044A8840003C045 /* Bundle Framework */,
 				3399D490228B24CF009A79C7 /* Run Script */,
-				94AA3E092A7BD06200E8815C /* macos_assemble embed */,
 				D28DBAE5EB03426D2BF2F8E3 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
@@ -423,42 +421,6 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
-		};
-		94AA3E082A7BD03700E8815C /* macos_assemble build */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "macos_assemble build";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "echo \"Runner macos_assemble build\"\n/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/macos_assemble.sh\" build\n";
-		};
-		94AA3E092A7BD06200E8815C /* macos_assemble embed */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "macos_assemble embed";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "echo \"Runner macos_assemble embed\"\n/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/macos_assemble.sh\" embed\n";
 		};
 		D28DBAE5EB03426D2BF2F8E3 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
