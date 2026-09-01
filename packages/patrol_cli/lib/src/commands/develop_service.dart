@@ -176,6 +176,12 @@ class DevelopService {
 
     _logger.detail('Received device: ${device.name} (${device.id})');
 
+    final prebuiltApksDir = options.prebuiltApksDir;
+    if (prebuiltApksDir != null &&
+        device.targetPlatform != TargetPlatform.android) {
+      throwToolExit('--use-prebuilt-apks is supported on Android only');
+    }
+
     final packageName = options.packageName ?? config.android.packageName;
     final bundleId = options.bundleId ?? config.ios.bundleId;
     final androidAppName = options.appName ?? config.android.appName;
@@ -291,8 +297,25 @@ class DevelopService {
     final webOpts = WebAppOptions(flutter: flutterOpts);
 
     try {
-      await _build(androidOpts, iosOpts, macosOpts, webOpts, device);
+      if (prebuiltApksDir == null) {
+        await _build(androidOpts, iosOpts, macosOpts, webOpts, device);
+      } else {
+        _logger.info(
+          'Skipping build, using prebuilt APKs from $prebuiltApksDir',
+        );
+        await _androidTestBackend.prepareSourcesForAttach(flutterOpts);
+      }
       await _preExecute(androidOpts, iosOpts, device, options.uninstall);
+      if (prebuiltApksDir != null) {
+        // After _preExecute, so the optional uninstall can't race the install.
+        // Installing here (not inside _execute) makes a bad directory or a
+        // failed install a setup error that aborts the run, instead of an
+        // async failure while the CLI is already waiting on flutter attach.
+        await _androidTestBackend.installPrebuiltApks(
+          apksDir: prebuiltApksDir,
+          device: device,
+        );
+      }
       await _execute(
         flutterOpts,
         androidOpts,
@@ -307,6 +330,7 @@ class DevelopService {
         hideTestSteps: options.hideTestSteps,
         clearTestSteps: options.clearTestSteps,
         videoConfig: options.videoConfig,
+        prebuiltApksDir: prebuiltApksDir,
       );
     } finally {
       for (final sub in signalSubscriptions) {
@@ -415,6 +439,7 @@ class DevelopService {
     required bool hideTestSteps,
     required bool clearTestSteps,
     VideoRecordingConfig? videoConfig,
+    String? prebuiltApksDir,
   }) async {
     Future<void> Function() action;
     Future<void> Function()? finalizer;
@@ -427,20 +452,41 @@ class DevelopService {
       attachUsingUrl: shouldAttachUsingUrl(device),
     );
 
+    // Prebuilt APKs carry a placeholder test baked in at build time, which
+    // runs as soon as the app launches. Its log entries would be mistaken for
+    // results of *our* test (e.g. by patrol_mcp) and would start video
+    // recordings of the wrong program, so the backend drops entries until
+    // `flutter attach` reports the restart into the requested target as
+    // COMPLETED. Logcat delivery is asynchronous, so opening the gate when the
+    // restart is merely requested could still let a buffered entry of the
+    // placeholder through.
+    var prebuiltTargetActive = prebuiltApksDir == null;
+
     switch (device.targetPlatform) {
       case TargetPlatform.android:
         appId = android.packageName;
-        action = () => _androidTestBackend.execute(
-          android,
-          device,
-          interruptible: true,
-          showFlutterLogs: showFlutterLogs,
-          hideTestSteps: hideTestSteps,
-          flavor: flutterOpts.flavor,
-          clearTestSteps: clearTestSteps,
-          onLogEntry: onLogEntry,
-          videoConfig: videoConfig,
-        );
+        action = prebuiltApksDir != null
+            ? () => _androidTestBackend.executePrebuilt(
+                android,
+                device,
+                showFlutterLogs: showFlutterLogs,
+                hideTestSteps: hideTestSteps,
+                clearTestSteps: clearTestSteps,
+                onLogEntry: onLogEntry,
+                videoConfig: videoConfig,
+                acceptLogEntries: () => prebuiltTargetActive,
+              )
+            : () => _androidTestBackend.execute(
+                android,
+                device,
+                interruptible: true,
+                showFlutterLogs: showFlutterLogs,
+                hideTestSteps: hideTestSteps,
+                flavor: flutterOpts.flavor,
+                clearTestSteps: clearTestSteps,
+                onLogEntry: onLogEntry,
+                videoConfig: videoConfig,
+              );
         final package = android.packageName;
         if (package != null && uninstall) {
           finalizer = () => _androidTestBackend.uninstall(package, device);
@@ -507,7 +553,7 @@ class DevelopService {
       );
 
       if (device.targetPlatform != TargetPlatform.web) {
-        await _flutterTool.attachForHotRestart(
+        final attached = _flutterTool.attachForHotRestart(
           flutterCommand: flutterOpts.command,
           deviceId: device.id,
           target: flutterOpts.target,
@@ -518,6 +564,31 @@ class DevelopService {
           forwardFlutterLogs: flutterLogs.forwardFlutterLogs,
           onQuit: onQuitCleanup,
         );
+        if (prebuiltApksDir == null) {
+          await attached;
+        } else {
+          // No Gradle ran before this point, so nothing has verified that the
+          // instrumentation actually came up. If the backend settles before
+          // attach connects (instrumentation not found, app crash on launch),
+          // fail instead of waiting forever for an attach that can't succeed.
+          final backendExitedFirst = await Future.any<bool>([
+            attached.then((_) => false),
+            future.then((_) => true, onError: (Object _) => true),
+          ]);
+          if (backendExitedFirst) {
+            throwToolExit(
+              'The instrumentation exited before `flutter attach` could '
+              'connect - the app never came up. See the logs above.',
+            );
+          }
+          _logger.info(
+            'Prebuilt APKs: the app launched with the placeholder test baked '
+            'in at build time; hot restarting with the requested target...',
+          );
+          _flutterTool.hotRestart(
+            onCompleted: () => prebuiltTargetActive = true,
+          );
+        }
       }
 
       try {

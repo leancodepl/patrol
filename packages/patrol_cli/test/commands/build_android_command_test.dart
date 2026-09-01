@@ -4,6 +4,7 @@ import 'package:args/command_runner.dart';
 import 'package:file/memory.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:path/path.dart' show join;
+import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/commands/build_android.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
@@ -37,6 +38,8 @@ void main() {
       PatrolPubspecConfig.empty(flutterPackageName: 'test_app'),
     );
     registerFallbackValue(MemoryFileSystem().file('test'));
+    registerFallbackValue(<String>[]);
+    registerFallbackValue(<String>{});
     registerFallbackValue(Directory.current);
   });
 
@@ -133,6 +136,83 @@ void main() {
 
         return result;
       }
+
+      group('--develop', () {
+        setUp(() {
+          when(
+            () => mockTestFinder.findTests(any(), any(), any()),
+          ).thenReturn(['patrol_test/app_test.dart']);
+          when(
+            () => mockTestBundler.createDevelopTestBundle(any(), any()),
+          ).thenReturn(null);
+          when(() => mockTestBundler.ensureEntrypoint(any())).thenReturn(null);
+          when(() => mockTestBundler.getEntrypointFile(any())).thenReturn(
+            MemoryFileSystem().file('integration_test/patrol_test_bundle.dart'),
+          );
+          when(
+            () => mockTestBundler.deleteEntrypointProxy(any()),
+          ).thenReturn(null);
+        });
+
+        test('bundles the single target in develop mode', () async {
+          final result = await runCommand([
+            '--develop',
+            '--target',
+            'patrol_test/app_test.dart',
+          ]);
+
+          expect(result, equals(0));
+          verify(
+            () => mockTestBundler.createDevelopTestBundle(
+              any(),
+              'patrol_test/app_test.dart',
+            ),
+          ).called(1);
+          verifyNever(
+            () => mockTestBundler.createTestBundle(any(), any(), any(), any()),
+          );
+
+          final opts =
+              verify(
+                    () => mockAndroidTestBackend.build(captureAny()),
+                  ).captured.single
+                  as AndroidAppOptions;
+          expect(
+            opts.flutter.target,
+            endsWith('integration_test/patrol_test_bundle.dart'),
+          );
+          expect(
+            opts.flutter.dartDefines,
+            containsPair('PATROL_HOT_RESTART', 'true'),
+          );
+          expect(
+            opts.flutter.dartDefines,
+            containsPair('PATROL_TEST_SERVER_PORT', '8081'),
+          );
+          expect(opts.flutter.dartDefines, isNot(contains('PATROL_WAIT')));
+
+          // The DevTools proxy entrypoint is a build-time artifact only.
+          verify(() => mockTestBundler.deleteEntrypointProxy(any())).called(1);
+        });
+
+        test('requires exactly one target', () async {
+          when(
+            () => mockTestFinder.findTests(any(), any(), any()),
+          ).thenReturn(['patrol_test/a_test.dart', 'patrol_test/b_test.dart']);
+
+          await expectLater(
+            runCommand([
+              '--develop',
+              '--target',
+              'patrol_test/a_test.dart',
+              '--target',
+              'patrol_test/b_test.dart',
+            ]),
+            throwsA(isA<ToolExit>()),
+          );
+          verifyNever(() => mockAndroidTestBackend.build(any()));
+        });
+      });
 
       test('builds Android app with default options', () async {
         final result = await runCommand();

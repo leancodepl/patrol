@@ -16,6 +16,7 @@ import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/crossplatform/test_manifest.dart';
 import 'package:patrol_cli/src/crossplatform/test_manifest_generator.dart';
 import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
+import 'package:patrol_cli/src/crossplatform/video_recording_manager.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
@@ -359,6 +360,32 @@ class AndroidTestBackend {
     });
   }
 
+  /// Builds the `onLogEntry` callback handed to [PatrolLogReader], composing
+  /// (outermost first): an optional [acceptLogEntries] gate that drops entries
+  /// while it returns false, an optional [videoRecordingManager] that starts
+  /// and stops recordings on test lifecycle entries, and the caller's
+  /// [onLogEntry]. The gate must sit OUTSIDE the recording manager: with
+  /// prebuilt APKs, entries emitted by the placeholder test baked into the APK
+  /// at build time must neither reach the caller nor start a recording.
+  @visibleForTesting
+  static void Function(Entry entry)? composeLogEntryCallback({
+    void Function(Entry entry)? onLogEntry,
+    VideoRecordingManager? videoRecordingManager,
+    bool Function()? acceptLogEntries,
+  }) {
+    final withVideo = videoRecordingManager == null
+        ? onLogEntry
+        : videoRecordingManager.wrapOnLogEntry(onLogEntry);
+    if (acceptLogEntries == null || withVideo == null) {
+      return withVideo;
+    }
+    return (entry) {
+      if (acceptLogEntries()) {
+        withVideo(entry);
+      }
+    };
+  }
+
   /// Executes the tests of the given [options] on the given [device].
   ///
   /// [build] must be called before this method.
@@ -420,9 +447,10 @@ class AndroidTestBackend {
               showFlutterLogs: showFlutterLogs,
               hideTestSteps: hideTestSteps,
               clearTestSteps: clearTestSteps,
-              onLogEntry:
-                  videoRecordingManager?.wrapOnLogEntry(onLogEntry) ??
-                  onLogEntry,
+              onLogEntry: composeLogEntryCallback(
+                onLogEntry: onLogEntry,
+                videoRecordingManager: videoRecordingManager,
+              ),
             )
             ..listen()
             ..startTimer();
@@ -512,6 +540,214 @@ class AndroidTestBackend {
         final cause = 'Gradle test execution failed with code $exitCode';
         task.fail('Failed to execute tests of $subject ($cause)');
         throw Exception(cause);
+      }
+    });
+  }
+
+  /// Makes a checkout that was never built ready for `flutter attach`.
+  ///
+  /// `flutter attach` starts the frontend_server (initial compile) before it
+  /// runs the source generators, and passes `-Dflutter.dart_plugin_registrant`
+  /// only if `.dart_tool/flutter_build/dart_plugin_registrant.dart` already
+  /// exists. On a fresh checkout it doesn't, so every Dart-registered plugin
+  /// (e.g. `shared_preferences_android`) throws `MissingPluginException` after
+  /// the first Hot Restart. A normal `patrol develop` never hits this because
+  /// the Gradle build generates the file first. Here no Gradle runs, so run a
+  /// one-off `flutter build bundle --debug` (Dart-only compile, ~20 s) instead;
+  /// it also leaves an `app.dill` the attach compiler can initialize from.
+  Future<void> prepareSourcesForAttach(FlutterAppOptions options) async {
+    final registrant = _rootDirectory
+        .childDirectory('.dart_tool')
+        .childDirectory('flutter_build')
+        .childFile('dart_plugin_registrant.dart');
+    if (registrant.existsSync()) {
+      _logger.detail('Dart plugin registrant already generated, skipping');
+      return;
+    }
+    await _disposeScope.run((scope) async {
+      final task = _logger.task(
+        'Preparing sources for attach (flutter build bundle)',
+      );
+      final process =
+          await _processManager.start([
+              options.command.executable,
+              ...options.command.arguments,
+              'build',
+              'bundle',
+              '--debug',
+              if (options.flavor case final flavor?) ...['--flavor', flavor],
+              ...['-t', options.target],
+              for (final dartDefine in options.dartDefines.entries) ...[
+                '--dart-define',
+                '${dartDefine.key}=${dartDefine.value}',
+              ],
+              for (final path in options.dartDefineFromFilePaths) ...[
+                '--dart-define-from-file',
+                path,
+              ],
+            ], runInShell: true)
+            ..disposedBy(scope);
+      process.listenStdOut((l) => _logger.detail('	: $l')).disposedBy(scope);
+      process.listenStdErr((l) => _logger.err('	$l')).disposedBy(scope);
+      final exitCode = await process.exitCode;
+      if (exitCode != 0) {
+        task.fail('Failed to prepare sources for attach (exit code $exitCode)');
+        throw Exception('flutter build bundle failed with code $exitCode');
+      }
+      task.complete('Prepared sources for attach');
+    });
+  }
+
+  /// Installs the prebuilt app + androidTest APKs found in [apksDir] onto
+  /// [device] with `adb install -r -t`, without Gradle.
+  ///
+  /// Runs before [executePrebuilt] so that a bad directory or a failed install
+  /// surfaces as a [ToolExit] from the setup phase - the way a Gradle build
+  /// failure would - instead of leaving `flutter attach` waiting for an app
+  /// that was never installed.
+  Future<void> installPrebuiltApks({
+    required String apksDir,
+    required Device device,
+  }) async {
+    final dir = _rootDirectory.fileSystem.directory(apksDir);
+    if (!dir.existsSync()) {
+      throwToolExit('Prebuilt APK directory does not exist: $apksDir');
+    }
+    File? appApk;
+    File? testApk;
+    for (final entity in dir.listSync(recursive: true)) {
+      if (entity is! File || !entity.path.endsWith('.apk')) {
+        continue;
+      }
+      if (entity.path.endsWith('-androidTest.apk')) {
+        testApk ??= entity;
+      } else {
+        appApk ??= entity;
+      }
+    }
+    if (appApk == null || testApk == null) {
+      throwToolExit(
+        'Expected an app APK and a *-androidTest.apk in $apksDir (got '
+        'app=${appApk?.path}, test=${testApk?.path}).',
+      );
+    }
+
+    _logger.detail('Installing app APK: ${appApk.path}');
+    await _adbInstall(appApk.path, device);
+    _logger.detail('Installing androidTest APK: ${testApk.path}');
+    await _adbInstall(testApk.path, device);
+  }
+
+  /// Develop-mode counterpart of [execute] for APKs built on another machine
+  /// (`patrol develop --use-prebuilt-apks`): starts the Patrol instrumentation
+  /// directly with `am instrument -w`, bypassing Gradle entirely. The APKs
+  /// must already be installed - see [installPrebuiltApks].
+  ///
+  /// They must come from a develop-mode build (`patrol build android
+  /// --develop`): with `PATROL_HOT_RESTART=true` baked in, the Dart side never
+  /// reports `PatrolAppService` readiness, so `PatrolJUnitRunner` blocks in
+  /// `waitForPatrolAppService()` and the app process stays alive for
+  /// `flutter attach` + Hot Restart. Test-orchestrator extras (e.g.
+  /// `clearPackageData`) are not applied - they never were in develop mode.
+  Future<void> executePrebuilt(
+    AndroidAppOptions options,
+    Device device, {
+    required bool showFlutterLogs,
+    required bool hideTestSteps,
+    required bool clearTestSteps,
+    void Function(Entry entry)? onLogEntry,
+    VideoRecordingConfig? videoConfig,
+    bool Function()? acceptLogEntries,
+  }) async {
+    final packageName = options.packageName;
+    if (packageName == null) {
+      throwToolExit(
+        'Android applicationId is unknown. Set patrol.android.package_name in '
+        'pubspec.yaml or pass --package-name.',
+      );
+    }
+
+    final (instrumentPackage, instrumentRunner) =
+        await _resolveInstrumentationComponent(packageName, device);
+
+    await _disposeScope.run((scope) async {
+      final processLogcat =
+          await _adb.logcat(
+              device: device.id,
+              arguments: {'-T': '1'},
+              filter: 'PatrolServer:I Patrol:I flutter:I *:S',
+            )
+            ..disposedBy(scope);
+
+      final path = generateTestReportPath(
+        rootPath: _rootDirectory.path,
+        buildMode: options.flutter.buildMode,
+        flavor: options.flutter.flavor,
+      );
+      final reportPath = _platform.isWindows
+          ? path.replaceAll(r'\', '/')
+          : path;
+
+      AndroidVideoRecordingManager? videoRecordingManager;
+      if (videoConfig?.enabled ?? false) {
+        videoRecordingManager = AndroidVideoRecordingManager(
+          processManager: _processManager,
+          adb: _adb,
+          rootDirectory: _rootDirectory,
+          logger: _logger,
+          config: videoConfig!,
+          device: device,
+          scope: scope,
+        );
+      }
+
+      final patrolLogReader =
+          PatrolLogReader(
+              listenStdOut: processLogcat.listenStdOut,
+              scope: scope,
+              log: _logger.info,
+              reportPath: reportPath,
+              showFlutterLogs: showFlutterLogs,
+              hideTestSteps: hideTestSteps,
+              clearTestSteps: clearTestSteps,
+              onLogEntry: composeLogEntryCallback(
+                onLogEntry: onLogEntry,
+                videoRecordingManager: videoRecordingManager,
+                acceptLogEntries: acceptLogEntries,
+              ),
+            )
+            ..listen()
+            ..startTimer();
+
+      final subject =
+          'prebuilt ${options.description} on ${device.description}';
+      final task = _logger.task('Executing tests of $subject (no build)');
+
+      // No `-e class`: AndroidJUnitRunner discovers the (single) Patrol host
+      // class in the androidTest APK itself, exactly like Gradle's connected
+      // task does. In develop mode this call blocks until the session quits.
+      final process =
+          await _adb.instrument(
+              packageName: instrumentPackage,
+              intentClass: instrumentRunner,
+              device: device.id,
+            )
+            ..disposedBy(scope);
+      process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
+      process.listenStdErr((l) => _logger.detail('\t$l')).disposedBy(scope);
+
+      final exitCode = await process.exitCode;
+      patrolLogReader.stopTimer();
+      processLogcat.kill();
+
+      // Stops and saves any in-flight recording (e.g. the session was quit
+      // mid-test).
+      await videoRecordingManager?.dispose();
+
+      if (exitCode == 0) {
+        task.complete('Completed executing $subject');
+      } else {
+        task.complete('App shut down on request');
       }
     });
   }

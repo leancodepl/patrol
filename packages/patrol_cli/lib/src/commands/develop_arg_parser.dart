@@ -27,6 +27,16 @@ void configureDevelopArgParser(PatrolCommand command) {
     ..usesIOSOptions()
     ..usesVideoRecordingOptions();
 
+  command.argParser.addOption(
+    'use-prebuilt-apks',
+    help:
+        'Android only. Directory with the app APK and the androidTest APK '
+        'built elsewhere with `patrol build android --develop`. Skips the '
+        'Gradle build entirely: installs both APKs, starts the Patrol '
+        'instrumentation with `am instrument` and attaches for Hot Restart.',
+    valueHelp: 'path/to/apks',
+  );
+
   command.argParser.addFlag(
     'open-devtools',
     help: 'Automatically open Patrol extension in DevTools when ready.',

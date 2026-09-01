@@ -41,6 +41,32 @@ class FlutterTool {
   var _logsActive = false;
   var _logsSkipped = false;
   var _devtoolsUrl = '';
+  io.Process? _attachProcess;
+  var _pendingHotRestart = false;
+  void Function()? _onRestartCompleted;
+
+  /// Sends a Hot Restart to the attached app - the same as pressing `r`.
+  ///
+  /// If `flutter attach` hasn't connected yet the request is queued and sent
+  /// as soon as it does. Dropping it (the previous behaviour) left callers
+  /// such as patrol_mcp waiting for a test run that never started.
+  ///
+  /// [onCompleted] fires once `flutter attach` reports the restart as
+  /// completed ('Restarted application ...'), not when it is requested.
+  /// Callers use it to tell output of the old and the new program apart.
+  void hotRestart({void Function()? onCompleted}) {
+    _onRestartCompleted = onCompleted;
+    final process = _attachProcess;
+    if (process == null || !_hotRestartActive) {
+      _logger.warn(
+        'Hot Restart: not attached to the app yet, will restart once attached',
+      );
+      _pendingHotRestart = true;
+      return;
+    }
+    _logger.success('Hot Restart requested...');
+    process.stdin.add('R'.codeUnits);
+  }
 
   /// Forwards logs and hot restarts the app when "r" is pressed.
   Future<void> attachForHotRestart({
@@ -139,6 +165,7 @@ class FlutterTool {
               ],
             ])
             ..disposedBy(scope);
+      _attachProcess = process;
 
       final completer = Completer<void>();
       scope.addDispose(() {
@@ -153,7 +180,11 @@ class FlutterTool {
             final char = String.fromCharCode(event.first);
             if (char == 'r' || char == 'R') {
               if (!_hotRestartActive) {
-                _logger.warn('Hot Restart: not attached to the app yet!');
+                _logger.warn(
+                  'Hot Restart: not attached to the app yet, will restart once '
+                  'attached',
+                );
+                _pendingHotRestart = true;
                 return;
               }
 
@@ -213,11 +244,22 @@ class FlutterTool {
                 'q Quit (terminate the process and application on the device)',
               );
               _hotRestartActive = true;
+              if (_pendingHotRestart) {
+                _pendingHotRestart = false;
+                _logger.success('Hot Restart: sending the queued restart');
+                process.stdin.add('R'.codeUnits);
+              }
 
               if (!_logsActive && !_logsSkipped) {
                 _logger.warn('Hot Restart: logs are not connected yet');
               }
               completer.complete();
+            }
+
+            if (line.startsWith('Restarted application')) {
+              final onRestartCompleted = _onRestartCompleted;
+              _onRestartCompleted = null;
+              onRestartCompleted?.call();
             }
 
             if (line.startsWith('The Flutter DevTools debugger and profiler')) {

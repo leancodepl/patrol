@@ -1,5 +1,11 @@
 ## Unreleased
 
+- Wait for the previous develop session to finish before starting a new one.
+  `quit` followed quickly by `run` could otherwise let the old session's
+  cleanup delete the entrypoint the new session had just generated
+  ("Target file ... not found"), which is easy to hit with
+  `PATROL_FLAGS=--use-prebuilt-apks=<dir>` where a session starts in seconds
+  instead of minutes (#3266).
 - Fix the `screenshot` tool on iOS: it now captures to a temp file instead of
   `/dev/stdout`, since `simctl io screenshot` writes atomically and can't
   create its temp file inside `/dev` (#3257).
