@@ -187,6 +187,18 @@ Videos are saved as `.mp4` files in `<test-directory>/videos` (override with
 - Physical iOS devices are not supported.
 - `--video-size` and `--video-bit-rate` apply to Android only.
 
+On a device farm like Firebase Test Lab, `--record-video` doesn't apply (the
+tests run via `gcloud`, not `patrol test`), but FTL records its own per-test
+video into the iOS `.xcresult`. Pull it from the native artifacts the same way as
+[screenshots](#screenshots) — the recordings are the `.mp4` attachments:
+
+```bash
+xcrun xcresulttool export attachments \
+  --path "$(find ./ftl_logs -name '*.xcresult' -type d | head -1)" \
+  --output-path ./ios_artifacts
+# the screen recordings are the .mp4 files in ./ios_artifacts
+```
+
 <Warning>
     Recording is skipped on unsupported devices, and the test still runs.
 </Warning>
@@ -199,7 +211,7 @@ Videos are saved as `.mp4` files in `<test-directory>/videos` (override with
 
 ### Screenshots
 
-Patrol can capture native screenshots on Android — automatically on test
+Patrol can capture native screenshots on Android and iOS — automatically on test
 failure (opt-in) and on demand from a test:
 
 - Enable failure screenshots by adding `screenshot_on_failure: true` to the
@@ -222,8 +234,48 @@ collects them:
 - **Firebase Test Lab**: pass `--directories-to-pull=/sdcard/Download/screenshots`.
 
 <Info>
-    Android only for now (a no-op on iOS). Works in the `patrol build android`
-    APK as well as `patrol test`.
+    Works in the `patrol build android` APK as well as `patrol test`.
+</Info>
+
+#### iOS
+
+The same API works on iOS: enable `screenshot_on_failure: true` and/or call
+`await $.takeNativeScreenshot('tag')`. The screenshot is captured natively at the
+failure moment (via the Dart failure hook, before teardown) and attached to the
+test's `.xcresult` bundle, which `xcodebuild` writes on the host — so it works on
+simulators and physical devices alike, with no on-device pull. Requires Xcode 16
+or newer.
+
+On `patrol test`, Patrol extracts the images from the `.xcresult` into
+`<test-directory>/screenshots` after the run (override with
+`--screenshots-output-dir`). On device farms:
+
+- **BrowserStack XCUITest**: enable the result bundle
+  (`"enableResultBundle": true`); the `.xcresult` (with the screenshots) comes
+  back with the session results.
+- **Firebase Test Lab**: FTL uploads the `.xcresult` to the results bucket, nested
+  under `<device>/TestLogs/*.xcresult`. Because the tests run via `gcloud` (not
+  `patrol test`), pull the bundle after the run and export the Patrol attachments
+  — their names start with `patrol_`:
+
+  ```bash
+  # after `gcloud firebase test ios run` finishes, from the results bucket:
+  gcloud storage cp -r "gs://<results-bucket>/<run>/<device>/TestLogs" ./ftl_logs
+  xcrun xcresulttool export attachments \
+    --path "$(find ./ftl_logs -name '*.xcresult' -type d | head -1)" \
+    --output-path ./ios_screenshots
+  # keep the PNGs whose manifest.json `suggestedHumanReadableName` starts with `patrol_`
+  ```
+
+  Patrol's own
+  [`run_ios_testlab`](https://github.com/leancodepl/patrol/blob/master/dev/e2e_app/run_ios_testlab)
+  script and
+  [device workflow](https://github.com/leancodepl/patrol/blob/master/.github/workflows/test-ios-device.yaml)
+  do exactly this and upload the screenshots (and each failing test's screen
+  recording) as CI artifacts — copy them as a starting point.
+
+<Info>
+    iOS requires Xcode 16 or newer (`xcrun xcresulttool export attachments`).
 </Info>
 
 <Warning>
