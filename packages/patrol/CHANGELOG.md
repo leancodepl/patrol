@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Fix `Failure.details` being `null` for tests that fail due to an exception thrown after the test body finishes but before/during teardown (e.g. a widget's `dispose()` throwing). Patrol now keeps gathering exceptions until its own `tearDown()` callback has read the results. (#3252)
 - Fix `pickImageFromGallery` on Android API 36: when the photo picker keeps the picker open after selecting a single image, tap the confirm button to finish. The tap is best-effort, so devices/emulators whose picker auto-confirms (no confirm button) keep working. The button label is resolved per device language (en/de/fr/pl/ja) so it works beyond English. (#3254)
 - Android: keep third-party `AccessibilityService`s running during the test session again. `AndroidAutomatorConfig.dontSuppressAccessibilityServices` now defaults to `true` (it was effectively `false` since 4.8.0) and is configurable, also via the `PATROL_ANDROID_DONT_SUPPRESS_ACCESSIBILITY_SERVICES` dart-define. (#3227)
 - Report uncaught exceptions (e.g. from `onPressed`) in `patrol develop` instead of silently passing. (#3200)
