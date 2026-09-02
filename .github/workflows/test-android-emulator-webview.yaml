@@ -13,10 +13,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Decides whether the heavy emulator.wtf job runs. On a PR it runs only when
-  # the actor has write access (secrets never reach a fork) and the PR touches
-  # relevant paths. An outside contributor's PR skips run_tests, so the gate
-  # still goes green and the PR is not wedged; a maintainer runs it before merge.
+  # Decides whether the heavy emulator.wtf job runs. Its secrets must never reach
+  # fork code, so on a PR it runs only when the branch lives in this repo
+  # (head.repo == this repo, i.e. a trusted author with write access) and the PR
+  # touches relevant paths. A fork PR skips run_tests, so the gate still goes
+  # green and the PR is not wedged; a maintainer tests it from a trusted branch.
+  # We check head.repo, not github.triggering_actor: the actor becomes the
+  # maintainer on a re-run, which would otherwise expose secrets to fork code.
   access:
     name: access
     runs-on: ubuntu-latest
@@ -25,39 +28,23 @@ jobs:
     outputs:
       run: ${{ steps.decide.outputs.run }}
     steps:
-      - name: Check user permission
-        id: perm
-        if: github.event_name == 'pull_request_target'
-        uses: actions-cool/check-user-permission@v2
-        with:
-          require: write
-          username: ${{ github.triggering_actor }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Filter paths
         id: filter
         if: github.event_name == 'pull_request_target'
         uses: dorny/paths-filter@v3
         with:
+          predicate-quantifier: every
           filters: |
             relevant:
-              - 'packages/patrol/**'
-              - 'packages/patrol_finders/**'
-              - 'packages/patrol_log/**'
-              - 'packages/patrol_cli/**'
-              - 'packages/adb/**'
-              - 'packages/patrol_gen/**'
-              - 'dev/e2e_app/**'
-              - 'schema.dart'
-              - 'gen_from_schema'
-              - '!**.md'
-              - '!**.mdx'
+              - '{packages/patrol/**,packages/patrol_finders/**,packages/patrol_log/**,packages/patrol_cli/**,packages/adb/**,packages/patrol_gen/**,dev/e2e_app/**,schema.dart,gen_from_schema}'
+              - '!**/*.md'
+              - '!**/*.mdx'
       - name: Decide whether to run
         id: decide
         run: |
           if [ "${{ github.event_name }}" != "pull_request_target" ]; then
             echo "run=true" >> "$GITHUB_OUTPUT"
-          elif [ "${{ steps.perm.outputs.require-result }}" = "true" ] && [ "${{ steps.filter.outputs.relevant }}" = "true" ]; then
+          elif [ "${{ github.event.pull_request.head.repo.full_name }}" = "${{ github.repository }}" ] && [ "${{ steps.filter.outputs.relevant }}" = "true" ]; then
             echo "run=true" >> "$GITHUB_OUTPUT"
           else
             echo "run=false" >> "$GITHUB_OUTPUT"

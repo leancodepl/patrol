@@ -12,17 +12,12 @@ jobs:
   changes:
     uses: ./.github/workflows/_relevant.yaml
     with:
+      quantifier: every
       filters: |
         relevant:
-          - 'packages/patrol/**'
-          - 'packages/patrol_finders/**'
-          - 'packages/patrol_log/**'
-          - 'packages/patrol_cli/**'
-          - 'packages/adb/**'
-          - 'packages/patrol_gen/**'
-          - 'dev/e2e_app/**'
-          - '!**.md'
-          - '!**.mdx'
+          - '{packages/patrol/**,packages/patrol_finders/**,packages/patrol_log/**,packages/patrol_cli/**,packages/adb/**,packages/patrol_gen/**,dev/e2e_app/**}'
+          - '!**/*.md'
+          - '!**/*.mdx'
 
   run_tests:
     name: Flutter ${{ matrix.flutter-version }} on Web

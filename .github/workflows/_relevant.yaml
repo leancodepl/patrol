@@ -12,6 +12,14 @@ on:
         description: A dorny/paths-filter `filters` block with a `relevant:` filter.
         required: true
         type: string
+      quantifier:
+        # 'every' (a file must match all patterns) is what makes `!**/*.md`
+        # exclusions actually work; combine positives into one `{a,b}` pattern
+        # when using it. 'some' (default) is for a plain list of alternatives.
+        description: dorny/paths-filter predicate-quantifier ('some' or 'every').
+        required: false
+        type: string
+        default: some
     outputs:
       relevant:
         description: "'true' when the PR is relevant or the event is not a PR."
@@ -31,6 +39,7 @@ jobs:
         if: github.event_name == 'pull_request' || github.event_name == 'pull_request_target'
         uses: dorny/paths-filter@v3
         with:
+          predicate-quantifier: ${{ inputs.quantifier }}
           filters: ${{ inputs.filters }}
       - name: Decide whether to run
         id: decide

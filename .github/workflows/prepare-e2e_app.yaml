@@ -8,11 +8,12 @@ jobs:
   changes:
     uses: ./.github/workflows/_relevant.yaml
     with:
+      quantifier: every
       filters: |
         relevant:
           - '**'
-          - '!**.md'
-          - '!**.mdx'
+          - '!**/*.md'
+          - '!**/*.mdx'
 
   prepare-android-on-windows:
     runs-on: ${{ matrix.os }}
