@@ -15,6 +15,13 @@ import 'package:patrol/src/platform/ios/ios_automator_empty.dart'
 import 'package:patrol/src/platform/ios/ios_automator_empty.dart'
     if (dart.library.io) 'package:patrol/src/platform/ios/ios_automator_native.dart'
     as native_ios_automator;
+import 'package:patrol/src/platform/macos/macos_automator.dart';
+import 'package:patrol/src/platform/macos/macos_automator_config.dart';
+import 'package:patrol/src/platform/macos/macos_automator_empty.dart'
+    as empty_macos_automator;
+import 'package:patrol/src/platform/macos/macos_automator_empty.dart'
+    if (dart.library.io) 'package:patrol/src/platform/macos/macos_automator_native.dart'
+    as native_macos_automator;
 import 'package:patrol/src/platform/selector.dart';
 import 'package:patrol/src/platform/web/web_automator.dart';
 import 'package:patrol/src/platform/web/web_automator_config.dart';
@@ -27,7 +34,12 @@ import 'package:patrol/src/platform/web/web_automator_empty.dart'
 /// Configuration for [PlatformAutomator].
 class PlatformAutomatorConfig {
   /// Creates a new [PlatformAutomatorConfig].
-  PlatformAutomatorConfig({this.androidConfig, this.iosConfig, this.webConfig});
+  PlatformAutomatorConfig({
+    this.androidConfig,
+    this.iosConfig,
+    this.macosConfig,
+    this.webConfig,
+  });
 
   /// Creates a new [PlatformAutomatorConfig] from individual options.
   factory PlatformAutomatorConfig.fromOptions({
@@ -57,14 +69,20 @@ class PlatformAutomatorConfig {
 
     /// Bundle identifier name of the application under test.
     ///
-    /// iOS only.
+    /// iOS only. For macOS, prefer `macosBundleId`.
     String? bundleId,
+
+    /// Bundle identifier of the macOS application under test.
+    String? macosBundleId,
 
     /// Name of the application under test on Android.
     String? androidAppName,
 
     /// Name of the application under test on iOS.
     String? iosAppName,
+
+    /// Name of the application under test on macOS.
+    String? macosAppName,
 
     /// Whether Patrol should keep third-party `AccessibilityService`s running
     /// during the test session.
@@ -106,6 +124,15 @@ class PlatformAutomatorConfig {
         host: host,
         port: port,
       ),
+      macosConfig: MacOSAutomatorConfig(
+        bundleId: macosBundleId ?? bundleId,
+        appName: macosAppName,
+        connectionTimeout: connectionTimeout,
+        findTimeout: findTimeout,
+        logger: logger,
+        host: host,
+        port: port,
+      ),
       webConfig: WebAutomatorConfig(logger: logger),
     );
   }
@@ -115,6 +142,7 @@ class PlatformAutomatorConfig {
     return PlatformAutomatorConfig(
       androidConfig: const AndroidAutomatorConfig(),
       iosConfig: const IOSAutomatorConfig(),
+      macosConfig: const MacOSAutomatorConfig(),
       webConfig: const WebAutomatorConfig(),
     );
   }
@@ -125,6 +153,9 @@ class PlatformAutomatorConfig {
   /// Configuration for iOS platform.
   final IOSAutomatorConfig? iosConfig;
 
+  /// Configuration for macOS platform.
+  final MacOSAutomatorConfig? macosConfig;
+
   /// Configuration for Web platform.
   final WebAutomatorConfig? webConfig;
 
@@ -133,6 +164,9 @@ class PlatformAutomatorConfig {
 
   /// Whether iOS platform is enabled.
   bool get iosEnabled => iosConfig != null;
+
+  /// Whether macOS platform is enabled.
+  bool get macosEnabled => macosConfig != null;
 
   /// Whether Web platform is enabled.
   bool get webEnabled => webConfig != null;
@@ -146,6 +180,17 @@ class PlatformAutomator {
     final androidConfig =
         config?.androidConfig ?? const AndroidAutomatorConfig();
     final iosConfig = config?.iosConfig ?? const IOSAutomatorConfig();
+    // Before this API existed, macOS native automation was enabled via
+    // `iosConfig`. Keep that working when `macosConfig` is omitted.
+    final inheritMacosFromIos =
+        config != null &&
+        config.macosConfig == null &&
+        config.iosConfig != null;
+    final macosConfig =
+        config?.macosConfig ??
+        (inheritMacosFromIos
+            ? MacOSAutomatorConfig.fromIOSTransport(config.iosConfig!)
+            : const MacOSAutomatorConfig());
     final webConfig = config?.webConfig ?? const WebAutomatorConfig();
 
     android = action.fallback(
@@ -161,13 +206,14 @@ class PlatformAutomator {
       ios: (config?.iosEnabled ?? false)
           ? () => native_ios_automator.IOSAutomator(config: iosConfig)
           : null,
-      // TODO: Create MacOSAutomator when such class will be implemented
-      // For now we reuse the IOSAutomator for native communication on MacOS
-      // The reason is that the only native interaction on MacOS is marking the app service ready
-      macos: (config?.iosEnabled ?? false)
-          ? () => native_ios_automator.IOSAutomator(config: iosConfig)
-          : null,
       fallback: () => empty_ios_automator.IOSAutomator(config: iosConfig),
+    );
+
+    macos = action.fallback(
+      macos: ((config?.macosEnabled ?? false) || inheritMacosFromIos)
+          ? () => native_macos_automator.MacOSAutomator(config: macosConfig)
+          : null,
+      fallback: () => empty_macos_automator.MacOSAutomator(config: macosConfig),
     );
 
     web = action.fallback(
@@ -189,6 +235,9 @@ class PlatformAutomator {
   /// iOS-specific automator.
   late final IOSAutomator ios;
 
+  /// macOS-specific automator.
+  late final MacOSAutomator macos;
+
   /// Mobile automator that works on both Android and iOS.
   late final MobileAutomator mobile;
 
@@ -205,8 +254,8 @@ class PlatformAutomator {
   /// It waits for the view to become visible for [timeout] duration.
   /// If the native view is not found, an exception is thrown.
   ///
-  /// [appId] is only used on iOS, where native queries must be scoped to a
-  /// single application. If not provided, defaults to the bundle id of the
+  /// [appId] is used on iOS and macOS, where native queries must be scoped to
+  /// a single application. If not provided, defaults to the bundle id of the
   /// app under test.
   Future<void> tap(
     CompoundSelector selector, {
@@ -217,7 +266,7 @@ class PlatformAutomator {
       android: () => android.tap(selector.android, timeout: timeout),
       ios: () => ios.tap(selector.ios, appId: appId, timeout: timeout),
       web: () => web.tap(selector.web),
-      macos: _throwOnMacOS,
+      macos: () => macos.tap(selector.ios, appId: appId, timeout: timeout),
     );
   }
 
@@ -227,10 +276,7 @@ class PlatformAutomator {
     await action.maybe(
       android: () async => {await android.markPatrolAppServiceReady()},
       ios: () async => {await ios.markPatrolAppServiceReady()},
-      // TODO: Use MacOSAutomator when such class will be implemented
-      // For now we reuse the IOSAutomator for native communication on MacOS
-      // The reason is that the only native interaction on MacOS is marking the app service ready
-      macos: () async => {await ios.markPatrolAppServiceReady()},
+      macos: () async => {await macos.markPatrolAppServiceReady()},
     );
   }
 

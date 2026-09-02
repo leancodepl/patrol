@@ -15,7 +15,9 @@ import 'package:e2e_app/overlay_screen.dart';
 import 'package:e2e_app/permissions_screen.dart';
 import 'package:e2e_app/scrolling_screen.dart';
 import 'package:e2e_app/webview_screen.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:timezone/data/latest.dart' as tz_data;
@@ -69,8 +71,11 @@ class ExampleHomePage extends StatefulWidget {
 }
 
 class _ExampleHomePageState extends State<ExampleHomePage> {
+  static const _macosChannel = MethodChannel('pl.leancode.patrol.e2e/macos');
+
   final _appLinks = AppLinks();
   var _counter = 0;
+  String? _nativeAlertResult;
 
   void _incrementCounter([int value = 1]) {
     final newValue = _counter + value;
@@ -83,6 +88,16 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
     final newValue = _counter - value;
     setState(() {
       _counter = newValue;
+    });
+  }
+
+  Future<void> _showNativeAlert() async {
+    final result = await _macosChannel.invokeMethod<String>('showAlert');
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _nativeAlertResult = result;
     });
   }
 
@@ -330,6 +345,17 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             ),
             child: const Text('Open external app screen'),
           ),
+          if (defaultTargetPlatform == TargetPlatform.macOS) ...[
+            TextButton(
+              key: K.showNativeAlertButton,
+              onPressed: _showNativeAlert,
+              child: const Text('Show native NSAlert'),
+            ),
+            Text(
+              key: K.nativeAlertResult,
+              'Native alert result: ${_nativeAlertResult ?? '-'}',
+            ),
+          ],
           Text('EXAMPLE_KEY: ${const String.fromEnvironment('EXAMPLE_KEY')}'),
         ],
       ),

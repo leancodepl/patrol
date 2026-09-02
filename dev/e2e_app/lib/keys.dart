@@ -82,6 +82,10 @@ class Keys {
     'showNotificationLaterButton2',
   );
 
+  // macOS native alert
+  static const showNativeAlertButton = Key('showNativeAlertButton');
+  static const nativeAlertResult = Key('nativeAlertResult');
+
   // camera screen
   static const cameraScaffold = Key('cameraScaffold');
   static const takePhotoButton = Key('takePhotoButton');
