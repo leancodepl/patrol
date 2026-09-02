@@ -3,12 +3,37 @@ name: patrol_gen prepare
 on:
   workflow_dispatch:
   pull_request:
-    paths:
-      - 'packages/patrol_gen/**'
 
 jobs:
+  changes:
+    name: changes
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      relevant: ${{ steps.decide.outputs.relevant }}
+    steps:
+      - name: Filter paths
+        id: filter
+        if: github.event_name == 'pull_request'
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            relevant:
+              - 'packages/patrol_gen/**'
+      - name: Decide whether to run
+        id: decide
+        run: |
+          if [ "${{ github.event_name }}" != "pull_request" ]; then
+            echo "relevant=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "relevant=${{ steps.filter.outputs.relevant }}" >> "$GITHUB_OUTPUT"
+          fi
+
   prepare:
     name: Dart ${{ matrix.dart-version }}
+    needs: changes
+    if: ${{ needs.changes.outputs.relevant == 'true' }}
     runs-on: ubuntu-latest
 
     strategy:
@@ -41,3 +66,17 @@ jobs:
       - name: dart format
         if: success() || failure()
         run: dart format --set-exit-if-changed .
+
+  patrol_gen-prepare-gate:
+    name: patrol_gen prepare gate
+    needs: [changes, prepare]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify required jobs passed
+        run: |
+          if [ "${{ contains(needs.*.result, 'failure') }}" = "true" ] || [ "${{ contains(needs.*.result, 'cancelled') }}" = "true" ]; then
+            echo "A required job did not pass: ${{ join(needs.*.result, ' ') }}"
+            exit 1
+          fi
+          echo "All required jobs passed or were skipped: ${{ join(needs.*.result, ' ') }}"

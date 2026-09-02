@@ -3,12 +3,37 @@ name: adb prepare
 on:
   workflow_dispatch:
   pull_request:
-    paths:
-      - 'packages/adb/**'
 
 jobs:
+  changes:
+    name: changes
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      relevant: ${{ steps.decide.outputs.relevant }}
+    steps:
+      - name: Filter paths
+        id: filter
+        if: github.event_name == 'pull_request'
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            relevant:
+              - 'packages/adb/**'
+      - name: Decide whether to run
+        id: decide
+        run: |
+          if [ "${{ github.event_name }}" != "pull_request" ]; then
+            echo "relevant=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "relevant=${{ steps.filter.outputs.relevant }}" >> "$GITHUB_OUTPUT"
+          fi
+
   main:
     name: Dart ${{ matrix.dart-version }}
+    needs: changes
+    if: ${{ needs.changes.outputs.relevant == 'true' }}
     runs-on: ubuntu-latest
 
     strategy:
@@ -45,10 +70,15 @@ jobs:
         run: dart format --set-exit-if-changed .
 
       - name: dart pub publish --dry-run
+        # Still reports issues, but does not fail the PR on pub's false-positive analyzer warning (exit 65).
+        if: success() || failure()
+        continue-on-error: true
         run: dart pub publish --dry-run
 
   pana-score:
     name: pana score
+    needs: changes
+    if: ${{ needs.changes.outputs.relevant == 'true' }}
     runs-on: ubuntu-latest
 
     permissions:
@@ -64,3 +94,17 @@ jobs:
         uses: leancodepl/mobile-tools/.github/actions/pana-score@e9f138c252f8e2254c88273367958fcc6bb39cad # pana-score-v1.3
         with:
           path: packages/adb
+
+  adb-prepare-gate:
+    name: adb prepare gate
+    needs: [changes, main]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify required jobs passed
+        run: |
+          if [ "${{ contains(needs.*.result, 'failure') }}" = "true" ] || [ "${{ contains(needs.*.result, 'cancelled') }}" = "true" ]; then
+            echo "A required job did not pass: ${{ join(needs.*.result, ' ') }}"
+            exit 1
+          fi
+          echo "All required jobs passed or were skipped: ${{ join(needs.*.result, ' ') }}"

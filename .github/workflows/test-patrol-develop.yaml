@@ -6,26 +6,51 @@ on:
   # checked out the base branch, so every run tested master instead of the PR.
   pull_request:
     types: [opened, synchronize]
-    paths:
-      - 'packages/patrol/**'
-      - 'packages/patrol_finders/**'
-      - 'packages/patrol_log/**'
-      - 'packages/patrol_cli/**'
-      - 'packages/adb/**'
-      - 'packages/patrol_gen/**'
-      - 'dev/e2e_app/**'
-      - 'schema.dart'
-      - 'gen_from_schema'
-      - '!**.md'
-      - '!**.mdx'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
 jobs:
+  changes:
+    name: changes
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      relevant: ${{ steps.decide.outputs.relevant }}
+    steps:
+      - name: Filter paths
+        id: filter
+        if: github.event_name == 'pull_request'
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            relevant:
+              - 'packages/patrol/**'
+              - 'packages/patrol_finders/**'
+              - 'packages/patrol_log/**'
+              - 'packages/patrol_cli/**'
+              - 'packages/adb/**'
+              - 'packages/patrol_gen/**'
+              - 'dev/e2e_app/**'
+              - 'schema.dart'
+              - 'gen_from_schema'
+              - '!**.md'
+              - '!**.mdx'
+      - name: Decide whether to run
+        id: decide
+        run: |
+          if [ "${{ github.event_name }}" != "pull_request" ]; then
+            echo "relevant=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "relevant=${{ steps.filter.outputs.relevant }}" >> "$GITHUB_OUTPUT"
+          fi
+
   test-linux:
     name: Test `patrol develop` on Linux
+    needs: changes
+    if: ${{ needs.changes.outputs.relevant == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -76,6 +101,8 @@ jobs:
 
   test-macos:
     name: Test `patrol develop` on macOS
+    needs: changes
+    if: ${{ needs.changes.outputs.relevant == 'true' }}
     # macos-15 is on macOS 15.7, where simulator mDNS is broken and
     # `flutter attach` cannot discover the app. See flutter#166333.
     runs-on: macos-latest
@@ -119,3 +146,17 @@ jobs:
         run: |
           dart pub get
           dart patrol_develop_test.dart --ios 26.2
+
+  test-patrol-develop-gate:
+    name: test patrol develop gate
+    needs: [changes, test-linux, test-macos]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify required jobs passed
+        run: |
+          if [ "${{ contains(needs.*.result, 'failure') }}" = "true" ] || [ "${{ contains(needs.*.result, 'cancelled') }}" = "true" ]; then
+            echo "A required job did not pass: ${{ join(needs.*.result, ' ') }}"
+            exit 1
+          fi
+          echo "All required jobs passed or were skipped: ${{ join(needs.*.result, ' ') }}"

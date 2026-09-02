@@ -2,6 +2,57 @@
 
 This document describes all GitHub Actions workflows used in the Patrol project. Each workflow is listed with its purpose, trigger conditions, and Flutter/Dart versions.
 
+## Required checks
+
+This is the agreed split of PR checks: what blocks a merge, what only advises, and what never runs on a PR. Enforcement is not on yet, see Rollout at the end of this section.
+
+The last neglect happened because failing workflows were not blocking merges. Required status checks fix that, with one catch we hit head-on (see Why a gate job).
+
+**Mandatory: must be green to merge**
+
+- Package CI: patrol prepare, patrol_cli prepare, patrol_finders prepare, patrol_log prepare, patrol_devtools_extension prepare, patrol_gen prepare, patrol_mcp prepare, adb prepare, prepare e2e_app
+- Fast checks: check changelog, check skills, Verify Version Compatibility
+- Android E2E on emulator.wtf: test android emulator, test android emulator webview
+- Other E2E: test macos, test web, test patrol develop, test ios simulator (keep a retry on the iOS simulator, it is the flakiest of the gates)
+
+**Advisory: read but never block**
+
+- Semver: patrol check semver, patrol_finders check semver, patrol_log check semver. A version bump is the author's call, sometimes breaking on purpose, so we look at these and move on.
+- pana scores: they run `continue-on-error` and sit outside every gate. A pub.dev score is a publish-time concern, not something a PR has to clear.
+- patrol_mcp cli-compat: reports without failing CI by design.
+- `pub publish --dry-run` inside the prepare jobs: set to `continue-on-error`. pub runs its own bundled `dart analyze`, which can lag the SDK version and flag a phantom, unactionable warning (exit 65) even when the job's own `flutter analyze` is clean. The real publish workflow validates at tag-push, so the dry-run stays advisory here.
+
+**Never a PR gate: scheduled only**
+
+- test flutter main channel, test flutter beta channel (they track upstream Flutter, a red there is usually not the PR's fault)
+- test android device, test ios device, test locales on android device, test locales on ios device (Firebase Test Lab, real hardware, slow and paid)
+- test ios simulator webview (monthly)
+
+### Why a gate job
+
+A required check that never reports leaves the PR stuck on "Expected — Waiting for status to be reported". GitHub does this whenever a required workflow is filtered out by `on: paths`: the run never starts, so no status arrives, and no branch-protection or ruleset setting counts a missing check as passed. A job skipped by a job-level `if:` reports success instead, and that does satisfy the check.
+
+So each mandatory workflow drops the `on: paths` filter and gains two jobs:
+
+- a `changes` job that runs dorny/paths-filter and outputs whether the PR touches relevant files,
+- a gate job (named `<workflow> gate`) that `needs` every real job, runs with `if: always()`, and fails only when one of them failed or was cancelled.
+
+The real jobs get `if: needs.changes.outputs.relevant == 'true'`, so a PR that does not touch a package skips its jobs (reported as success) and the gate still goes green. Branch protection requires the gate names, not the individual matrix jobs, so the required list stays short and the matrices can change freely. `pana` and the Slack notifier are left out of the gate, they stay advisory.
+
+emulator.wtf runs on `pull_request_target` and only for users with write access. The gate keeps that: for an outside contributor the heavy job skips (secrets never reach a fork) and the gate passes, so their PR is not wedged. A maintainer runs emulator.wtf before merging such a PR.
+
+### Rollout
+
+1. Land the gate jobs (this change).
+2. Open one throwaway PR and confirm every gate goes green, including a docs-only PR and a single-package PR.
+3. Add the `<workflow> gate` contexts to branch protection or a ruleset as required. This needs repo admin. The API read returned 404 for the current user, so someone with admin has to do this step.
+
+Confirm dorny/paths-filter is allowed by the org action policy before step 2, or the changes jobs will fail.
+
+### Bypass
+
+Not built. Two routes if we want one: a bypass list on the ruleset for maintainers (native, shows in the audit log), or a label the gate reads and turns green on demand (same idea as the existing `skip changelog` label).
+
 ## Testing Workflows
 
 ### Android Testing
