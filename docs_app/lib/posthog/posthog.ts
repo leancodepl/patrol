@@ -1,8 +1,8 @@
 import { mkFeatureFlags } from "@leancodepl/feature-flags-react-client"
 import { OpenFeaturePosthogProvider } from "@leancodepl/openfeature-posthog-provider"
 import { OpenFeature } from "@openfeature/web-sdk"
-import posthog from "posthog-js"
 import type { PostHog } from "posthog-js"
+import { StaticFlagsProvider, type EvaluatedFlags } from "@/lib/posthog/static-flags-provider"
 
 export const featureFlags = {} as const
 
@@ -15,12 +15,16 @@ const allFlags = {
 
 const { FeatureFlagsProvider, useFeatureFlag: useOpenFeatureFlag } = mkFeatureFlags(
   allFlags,
-  new OpenFeaturePosthogProvider(posthog),
+  new StaticFlagsProvider({}),
 )
 
 export { FeatureFlagsProvider }
+export type { EvaluatedFlags }
 
-/** Point OpenFeature at the live PostHog client (GTM/snippet `window.posthog` or npm). */
+export function bindServerFlags(flags: EvaluatedFlags) {
+  OpenFeature.setProvider(new StaticFlagsProvider(flags))
+}
+
 export function bindPostHogClient(client: PostHog) {
   OpenFeature.setProvider(new OpenFeaturePosthogProvider(client))
 }
