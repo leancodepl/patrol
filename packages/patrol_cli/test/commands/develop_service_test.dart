@@ -36,6 +36,13 @@ void main() {
       real: false,
     );
 
+    const iosDevice = Device(
+      name: 'iPhone 17 Pro',
+      id: 'iphone-17-pro',
+      targetPlatform: TargetPlatform.iOS,
+      real: true,
+    );
+
     setUpAll(() {
       registerFallbackValue(
         const AndroidAppOptions(
@@ -53,6 +60,26 @@ void main() {
           appServerPort: 8080,
           testServerPort: 8081,
           uninstall: false,
+        ),
+      );
+      registerFallbackValue(
+        IOSAppOptions(
+          flutter: const FlutterAppOptions(
+            command: FlutterCommand('flutter'),
+            target: 'patrol_test/test_bundle.dart',
+            flavor: null,
+            buildMode: BuildMode.debug,
+            dartDefines: <String, String>{},
+            dartDefineFromFilePaths: <String>[],
+            buildName: null,
+            buildNumber: null,
+          ),
+          scheme: 'Runner',
+          configuration: 'Debug',
+          simulator: true,
+          osVersion: 'latest',
+          appServerPort: 8080,
+          testServerPort: 8081,
         ),
       );
       registerFallbackValue(androidDevice);
@@ -170,6 +197,7 @@ void main() {
             dartDefines: any(named: 'dartDefines'),
             openDevtools: any(named: 'openDevtools'),
             attachUsingUrl: any(named: 'attachUsingUrl'),
+            forwardFlutterLogs: any(named: 'forwardFlutterLogs'),
             onQuit: any(named: 'onQuit'),
           ),
         ).thenAnswer((_) => attachNeverCompletes.future);
@@ -221,6 +249,7 @@ void main() {
             dartDefines: any(named: 'dartDefines'),
             openDevtools: any(named: 'openDevtools'),
             attachUsingUrl: any(named: 'attachUsingUrl'),
+            forwardFlutterLogs: any(named: 'forwardFlutterLogs'),
             onQuit: any(named: 'onQuit'),
           ),
         ).thenAnswer((_) => attachNeverCompletes.future);
@@ -244,6 +273,204 @@ void main() {
         expect(_lastResult!.error, isA<Exception>());
       },
     );
+
+    group('iOS logs', () {
+      /// Runs a develop session on [iosDevice] and reports where the app's
+      /// logs were routed. The simulator keeps `flutter logs` whatever the
+      /// flavor, because attach reads the VM service URL from them.
+      Future<({bool fromFlutterLogs, bool fromPatrol})> runOnIos({
+        required String? flavor,
+      }) async {
+        bool? fromFlutterLogs;
+        bool? fromPatrol;
+
+        when(
+          () => deviceFinder.find(
+            any(),
+            flutterCommand: any(named: 'flutterCommand'),
+          ),
+        ).thenAnswer((_) async => [iosDevice]);
+        when(() => iosTestBackend.build(any())).thenAnswer((_) async {});
+        when(
+          () => iosTestBackend.getInstalledAppsEnvVariable(any()),
+        ).thenAnswer((_) async => '[]');
+        when(
+          () => iosTestBackend.execute(
+            any(),
+            any(),
+            interruptible: any(named: 'interruptible'),
+            showFlutterLogs: any(named: 'showFlutterLogs'),
+            hideTestSteps: any(named: 'hideTestSteps'),
+            clearTestSteps: any(named: 'clearTestSteps'),
+            onLogEntry: any(named: 'onLogEntry'),
+            videoConfig: any(named: 'videoConfig'),
+          ),
+        ).thenAnswer((invocation) {
+          fromPatrol =
+              invocation.namedArguments[#showFlutterLogs] as bool? ?? false;
+          return Completer<void>().future;
+        });
+        when(
+          () => flutterTool.attachForHotRestart(
+            flutterCommand: any(named: 'flutterCommand'),
+            deviceId: any(named: 'deviceId'),
+            target: any(named: 'target'),
+            appId: any(named: 'appId'),
+            dartDefines: any(named: 'dartDefines'),
+            openDevtools: any(named: 'openDevtools'),
+            attachUsingUrl: any(named: 'attachUsingUrl'),
+            forwardFlutterLogs: any(named: 'forwardFlutterLogs'),
+            onQuit: any(named: 'onQuit'),
+          ),
+        ).thenAnswer((invocation) {
+          fromFlutterLogs =
+              invocation.namedArguments[#forwardFlutterLogs] as bool? ?? true;
+          return Completer<void>().future;
+        });
+
+        unawaited(
+          buildService().run(
+            DevelopOptions(
+              target: options.target,
+              flutterCommand: options.flutterCommand,
+              buildMode: options.buildMode,
+              testServerPort: options.testServerPort,
+              appServerPort: options.appServerPort,
+              flavor: flavor,
+              generateBundle: false,
+              uninstall: false,
+              checkCompatibility: false,
+            ),
+          ),
+        );
+
+        await _waitFor(() => fromFlutterLogs != null && fromPatrol != null);
+        return (fromFlutterLogs: fromFlutterLogs!, fromPatrol: fromPatrol!);
+      }
+
+      // `flutter logs` needs a scheme named Runner, which a flavored project
+      // does not have, so the app's logs have to come from Patrol's own stream.
+      test('come from Patrol when a flavor is set', () async {
+        final routing = await runOnIos(flavor: 'dev');
+
+        expect(routing.fromFlutterLogs, isFalse);
+        expect(routing.fromPatrol, isTrue);
+      });
+
+      test('come from flutter logs when no flavor is set', () async {
+        final routing = await runOnIos(flavor: null);
+
+        expect(routing.fromFlutterLogs, isTrue);
+        expect(routing.fromPatrol, isFalse);
+      });
+    });
+
+    group('resolveFlutterLogs', () {
+      test('falls back to Patrol on a flavored iOS project', () {
+        final result = DevelopService.resolveFlutterLogs(
+          targetPlatform: TargetPlatform.iOS,
+          flavor: 'dev',
+          showFlutterLogs: false,
+          attachUsingUrl: false,
+        );
+
+        expect(result.showFlutterLogs, isTrue);
+        expect(result.forwardFlutterLogs, isFalse);
+      });
+
+      test('uses flutter logs on a flavorless iOS project', () {
+        final result = DevelopService.resolveFlutterLogs(
+          targetPlatform: TargetPlatform.iOS,
+          flavor: null,
+          showFlutterLogs: false,
+          attachUsingUrl: false,
+        );
+
+        expect(result.showFlutterLogs, isFalse);
+        expect(result.forwardFlutterLogs, isTrue);
+      });
+
+      test('uses flutter logs on a flavored Android project', () {
+        final result = DevelopService.resolveFlutterLogs(
+          targetPlatform: TargetPlatform.android,
+          flavor: 'dev',
+          showFlutterLogs: false,
+          attachUsingUrl: false,
+        );
+
+        expect(result.showFlutterLogs, isFalse);
+        expect(result.forwardFlutterLogs, isTrue);
+      });
+
+      // `flutter attach` reads the Dart VM service URL from `flutter logs`, so
+      // a flavored iOS simulator cannot drop it.
+      test('keeps flutter logs when attach reads the URL from them', () {
+        final result = DevelopService.resolveFlutterLogs(
+          targetPlatform: TargetPlatform.iOS,
+          flavor: 'dev',
+          showFlutterLogs: false,
+          attachUsingUrl: true,
+        );
+
+        expect(result.forwardFlutterLogs, isTrue);
+      });
+
+      test('honors an explicit request on a flavorless Android project', () {
+        final result = DevelopService.resolveFlutterLogs(
+          targetPlatform: TargetPlatform.android,
+          flavor: null,
+          showFlutterLogs: true,
+          attachUsingUrl: false,
+        );
+
+        expect(result.showFlutterLogs, isTrue);
+        expect(result.forwardFlutterLogs, isTrue);
+      });
+    });
+  });
+
+  group('shouldAttachUsingUrl', () {
+    Device device(TargetPlatform platform, {required bool real}) => Device(
+      name: 'device',
+      id: 'device',
+      targetPlatform: platform,
+      real: real,
+    );
+
+    test('is true on macOS', () {
+      expect(
+        shouldAttachUsingUrl(device(TargetPlatform.macOS, real: true)),
+        isTrue,
+      );
+    });
+
+    test('is true on the iOS simulator', () {
+      expect(
+        shouldAttachUsingUrl(device(TargetPlatform.iOS, real: false)),
+        isTrue,
+      );
+    });
+
+    test('is false on a physical iOS device', () {
+      expect(
+        shouldAttachUsingUrl(device(TargetPlatform.iOS, real: true)),
+        isFalse,
+      );
+    });
+
+    test('is false on Android', () {
+      expect(
+        shouldAttachUsingUrl(device(TargetPlatform.android, real: false)),
+        isFalse,
+      );
+    });
+
+    test('is false on web', () {
+      expect(
+        shouldAttachUsingUrl(device(TargetPlatform.web, real: false)),
+        isFalse,
+      );
+    });
   });
 }
 

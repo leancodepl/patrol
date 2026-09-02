@@ -39,6 +39,7 @@ class FlutterTool {
 
   var _hotRestartActive = false;
   var _logsActive = false;
+  var _logsSkipped = false;
   var _devtoolsUrl = '';
 
   /// Forwards logs and hot restarts the app when "r" is pressed.
@@ -49,10 +50,12 @@ class FlutterTool {
     required String? appId,
     required Map<String, String> dartDefines,
     required bool openDevtools,
-    String? flavor,
     bool attachUsingUrl = false,
+    bool forwardFlutterLogs = true,
     Future<void> Function()? onQuit,
   }) async {
+    _logsSkipped = !forwardFlutterLogs;
+
     StdinModes? previousStdinModes;
     if (io.stdin.hasTerminal) {
       previousStdinModes = enableInteractiveMode();
@@ -83,12 +86,11 @@ class FlutterTool {
         debugUrl: url,
         dartDefines: dartDefines,
         openBrowser: openDevtools,
-        flavor: flavor,
         onQuit: onQuitWithRevertInteractiveMode,
       );
     } else {
       await Future.wait<void>([
-        logs(deviceId, flutterCommand: flutterCommand),
+        if (forwardFlutterLogs) logs(deviceId, flutterCommand: flutterCommand),
         attach(
           flutterCommand: flutterCommand,
           target: target,
@@ -96,7 +98,6 @@ class FlutterTool {
           appId: appId,
           dartDefines: dartDefines,
           openBrowser: openDevtools,
-          flavor: flavor,
           onQuit: onQuitWithRevertInteractiveMode,
         ),
       ]);
@@ -118,7 +119,6 @@ class FlutterTool {
     required String? appId,
     required Map<String, String> dartDefines,
     required bool openBrowser,
-    String? flavor,
     Future<void> Function()? onQuit,
   }) async {
     await _disposeScope.run((scope) async {
@@ -132,7 +132,6 @@ class FlutterTool {
               ...['--device-id', deviceId],
               if (debugUrl != null) ...['--debug-url', debugUrl],
               if (appId != null) ...['--app-id', appId],
-              if (flavor != null) ...['--flavor', flavor],
               ...['--target', target],
               for (final dartDefine in dartDefines.entries) ...[
                 '--dart-define',
@@ -215,7 +214,7 @@ class FlutterTool {
               );
               _hotRestartActive = true;
 
-              if (!_logsActive) {
+              if (!_logsActive && !_logsSkipped) {
                 _logger.warn('Hot Restart: logs are not connected yet');
               }
               completer.complete();
@@ -280,9 +279,11 @@ class FlutterTool {
 
       process
           .listenStdOut((line) {
-            if (line.contains('Dart VM service')) {
-              final url = getObservationUrl(line);
-              observationUrlCompleter?.complete(url);
+            final urlCompleter = observationUrlCompleter;
+            if (line.contains('Dart VM service') &&
+                urlCompleter != null &&
+                !urlCompleter.isCompleted) {
+              urlCompleter.complete(getObservationUrl(line));
             }
             if (line.startsWith('Showing ') && line.endsWith('logs:')) {
               _logger.success('Hot Restart: logs connected');

@@ -194,6 +194,10 @@ void patrolTest(
       try {
         await callback(patrolTester);
       } catch (_) {
+        // Capture the failing screen before teardown pumps the next frame.
+        if (constants.screenshotOnFailureEnabled) {
+          await patrolTester.takeNativeScreenshot('failure');
+        }
         if (constants.hotRestartEnabled) {
           patrolLog.log(
             TestEntry(

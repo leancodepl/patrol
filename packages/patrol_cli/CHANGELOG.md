@@ -1,3 +1,12 @@
+## Unreleased
+
+- Add `screenshot_on_failure` option to the pubspec's `patrol` section, forwarded to the app (via a dart-define) for `build` and `test` so patrol can capture native failure screenshots on Android device farms (e.g. BrowserStack, Firebase Test Lab). Not collected by `patrol develop`. Off by default. (#3222)
+- `patrol test` (Android) now pulls native screenshots (failure and on-demand) from the device into `<test-directory>/screenshots` after the run (override with `--screenshots-output-dir`), so they are available from local/emulator runs, not only device farms. (#3222)
+- Allow the latest `package_config` (3.x), `cli_completion` (0.6.x) and `pub_updater` (0.6.x), without raising the minimum Dart SDK. (#3225)
+- Fix an issue when building iOS tests from different directory than project's root - we were looking in a wrong place for .xctestrun file. (#3250)
+- Fix hot restart dying on flavored `patrol develop` — `flutter attach` has no `--flavor`. Regressed in 4.6.1. (#3223)
+- Fix flavored iOS `patrol develop` losing logs — they now come from Patrol's own stream. Simulator unchanged. (#2465)
+
 ## 4.7.0
 
 - **Requires `patrol` 4.9.0 or newer.**

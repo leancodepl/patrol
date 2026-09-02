@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:meta/meta.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
@@ -31,6 +32,19 @@ class TestCompletionResult {
   /// The error if the test backend failed, or `null` on success.
   final Object? error;
 }
+
+/// Whether `flutter attach` should connect to the Dart VM service URL read from
+/// the device logs instead of relying on its own discovery.
+///
+/// xcodebuild launches the app, so discovery is unreliable on the iOS
+/// simulator; physical iOS devices keep discovery. macOS always uses the URL,
+/// Android and web use discovery.
+@visibleForTesting
+bool shouldAttachUsingUrl(Device device) => switch (device.targetPlatform) {
+  TargetPlatform.macOS => true,
+  TargetPlatform.iOS => !device.real,
+  TargetPlatform.android || TargetPlatform.web => false,
+};
 
 /// Orchestrates a patrol develop session.
 ///
@@ -174,6 +188,13 @@ class DevelopService {
           .getInstalledAppsEnvVariable(device.id);
     }
 
+    if (config.screenshotOnFailure) {
+      _logger.warn(
+        "screenshot_on_failure is not supported in 'patrol develop'; native "
+        "screenshots are only collected by 'patrol test'.",
+      );
+    }
+
     final customDartDefines = {
       ..._dartDefinesReader.fromFile(),
       ..._dartDefinesReader.fromCli(args: options.dartDefines),
@@ -188,6 +209,9 @@ class DevelopService {
       'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
       'PATROL_TEST_LABEL_ENABLED': options.displayLabel.toString(),
       'PATROL_TEST_DIRECTORY': config.testDirectory,
+      // Collected only by `patrol test`; `develop` never pulls them, so don't
+      // capture on the device here (warned about above).
+      'PATROL_SCREENSHOT_ON_FAILURE': 'false',
       // develop-specific
       ...{
         'PATROL_HOT_RESTART': 'true',
@@ -355,6 +379,28 @@ class DevelopService {
     }
   }
 
+  /// `flutter logs` resolves the iOS app package without a build
+  /// configuration, so it needs a scheme named Runner and takes no option to
+  /// pick another: `showFlutterLogs` falls back to Patrol's own log stream,
+  /// and `forwardFlutterLogs` tells `flutter attach` not to open its own.
+  ///
+  /// Attaching by URL reads that URL from `flutter logs`, so it has to stay on.
+  @visibleForTesting
+  static ({bool showFlutterLogs, bool forwardFlutterLogs}) resolveFlutterLogs({
+    required TargetPlatform targetPlatform,
+    required String? flavor,
+    required bool showFlutterLogs,
+    required bool attachUsingUrl,
+  }) {
+    final flutterLogsUnavailable =
+        targetPlatform == TargetPlatform.iOS && flavor != null;
+    final skipFlutterLogs = flutterLogsUnavailable && !attachUsingUrl;
+    return (
+      showFlutterLogs: showFlutterLogs || skipFlutterLogs,
+      forwardFlutterLogs: !skipFlutterLogs,
+    );
+  }
+
   Future<void> _execute(
     FlutterAppOptions flutterOpts,
     AndroidAppOptions android,
@@ -373,6 +419,13 @@ class DevelopService {
     Future<void> Function() action;
     Future<void> Function()? finalizer;
     String? appId;
+
+    final flutterLogs = resolveFlutterLogs(
+      targetPlatform: device.targetPlatform,
+      flavor: flutterOpts.flavor,
+      showFlutterLogs: showFlutterLogs,
+      attachUsingUrl: shouldAttachUsingUrl(device),
+    );
 
     switch (device.targetPlatform) {
       case TargetPlatform.android:
@@ -402,7 +455,7 @@ class DevelopService {
           iosOpts,
           device,
           interruptible: true,
-          showFlutterLogs: showFlutterLogs,
+          showFlutterLogs: flutterLogs.showFlutterLogs,
           hideTestSteps: hideTestSteps,
           clearTestSteps: clearTestSteps,
           onLogEntry: onLogEntry,
@@ -461,8 +514,8 @@ class DevelopService {
           appId: appId,
           dartDefines: flutterOpts.dartDefines,
           openDevtools: openDevtools,
-          flavor: flutterOpts.flavor,
-          attachUsingUrl: device.targetPlatform == TargetPlatform.macOS,
+          attachUsingUrl: shouldAttachUsingUrl(device),
+          forwardFlutterLogs: flutterLogs.forwardFlutterLogs,
           onQuit: onQuitCleanup,
         );
       }

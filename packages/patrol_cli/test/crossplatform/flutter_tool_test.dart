@@ -54,7 +54,9 @@ void main() {
       verify(() => processManager.start(any(that: contains('testDeviceId'))));
     });
 
-    test('attach passes --flavor when a flavor is provided', () {
+    // `flutter attach` exits with a usage error on an option it does not
+    // define. Check `flutter attach --help` before extending this set.
+    test('attach passes only options flutter attach defines', () {
       final process = MockProcess();
       when(
         () => process.stdout,
@@ -69,40 +71,26 @@ void main() {
         deviceId: 'testDeviceId',
         target: 'target',
         appId: 'appId',
-        dartDefines: {},
-        openBrowser: false,
-        flavor: 'dev',
-      );
-
-      verify(
-        () => processManager.start(
-          any(that: containsAllInOrder(['attach', '--flavor', 'dev'])),
-        ),
-      );
-    });
-
-    test('attach omits --flavor when no flavor is provided', () {
-      final process = MockProcess();
-      when(
-        () => process.stdout,
-      ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
-      when(
-        () => process.stderr,
-      ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
-      when(() => processManager.start(any())).thenAnswer((_) async => process);
-
-      flutterTool.attach(
-        flutterCommand: flutterCommand,
-        deviceId: 'testDeviceId',
-        target: 'target',
-        appId: 'appId',
-        dartDefines: {},
+        debugUrl: 'http://127.0.0.1:1234/abc=/',
+        dartDefines: {'key': 'value'},
         openBrowser: false,
       );
 
-      verify(
-        () => processManager.start(any(that: isNot(contains('--flavor')))),
-      );
+      final args =
+          (verify(() => processManager.start(captureAny())).captured.single
+                  as List<Object>)
+              .map((arg) => arg.toString());
+
+      expect(args.where((arg) => arg.startsWith('--')).toSet(), {
+        '--no-version-check',
+        '--suppress-analytics',
+        '--debug',
+        '--device-id',
+        '--debug-url',
+        '--app-id',
+        '--target',
+        '--dart-define',
+      });
     });
   });
 
