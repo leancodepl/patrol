@@ -39,7 +39,7 @@ So each mandatory workflow drops the `on: paths` filter and gains two jobs:
 
 The real jobs get `if: needs.changes.outputs.relevant == 'true'`, so a PR that does not touch a package skips its jobs (reported as success) and the gate still goes green. Branch protection requires the gate names, not the individual matrix jobs, so the required list stays short and the matrices can change freely. `pana` and the Slack notifier are left out of the gate, they stay advisory.
 
-emulator.wtf runs on `pull_request_target` and only for users with write access. The gate keeps that: for an outside contributor the heavy job skips (secrets never reach a fork) and the gate passes, so their PR is not wedged. A maintainer runs emulator.wtf before merging such a PR.
+emulator.wtf runs on `pull_request_target`, so it has the base repo's secrets. Its inline `access` job lets `run_tests` run only when the PR branch lives in this repository (`head.repo == github.repository`, i.e. a trusted author with write access pushed it) and the paths are relevant. A fork PR skips `run_tests`, so fork code never sees the secrets and the gate still passes (the PR is not wedged). It checks `head.repo`, not `github.triggering_actor`: the actor becomes the maintainer on a re-run, which would otherwise hand fork code the secrets. A maintainer tests a fork PR from a trusted in-repo branch.
 
 ### Rollout
 
@@ -110,13 +110,13 @@ Package-level `pana` scoring only runs for packages published to pub.dev (`patro
 | [patrol_log publish][patrol_log-publish] | Tag push (`patrol_log-v*`) | Publishes `patrol_log` package to pub.dev. Sends Slack notification for releases. |
 | [adb publish][adb-publish] | Tag push (`adb-v*`) | Publishes `adb` package to pub.dev. |
 
-### PR-Triggered Workflows with Permission Checks
+### PR-Triggered Workflows with Secrets
 
-Some workflows run on `pull_request_target` (which has access to secrets) require repository write permission:
-- [test android emulator][test-android-emulator] - Requires repository write permission
-- [test android emulator webview][test-android-emulator-webview] - Requires repository write permission
+These workflows run on `pull_request_target`, which has access to secrets:
+- [test android emulator][test-android-emulator]
+- [test android emulator webview][test-android-emulator-webview]
 
-These workflows verify the user has write access before running. If you don't have write access, the workflow will fail with a permission error. Contact a Patrol team member to run these workflows on your PR.
+Their `access` job runs the emulator job only for PRs whose branch lives in this repository (`head.repo == github.repository`). A fork PR does not fail: its `run_tests` is skipped and the gate passes, so the PR is not blocked. To exercise a fork PR on emulator.wtf, a maintainer runs it from an in-repo branch. Re-running the fork PR does not help, because the trust check is on the head repository, not on the actor who triggered the run.
 
 ## Semver Check Workflows
 
@@ -140,7 +140,7 @@ These workflows verify the user has write access before running. If you don't ha
 | [Verify Version Compatibility][verify_compatibility] | PR/push (on compatibility checker changes) | Runs compatibility tests and verifies compatibility tables are up-to-date. |
 | [check skills][check-skills] | PR (on `skills/`, `.agents/skills/`, `.claude/skills`, or script changes), manual | Validates the agent-skills setup via `tool/check_skills.sh`: the `.claude/skills` symlink resolves to `.agents/skills`, and every `SKILL.md` has valid frontmatter (`name` matches its folder and is kebab-case, plus a non-empty `description`). |
 | [send slack message][send-slack-message] | Reusable workflow | Reusable workflow for sending test results notifications to Slack. Invoked by test workflows; the Slack step runs only when `github.event_name == 'schedule'` in the **caller** workflow (so scheduled cron runs notify; PR, push, `workflow_dispatch`, and other triggers do not). |
-| [_relevant][_relevant] | Reusable workflow | Reusable `changes` job. Takes a dorny/paths-filter `filters` block and outputs `relevant` ('true' when a PR touches those paths, or on any non-PR event). Used by every mandatory workflow's `changes` job so the paths-filter logic is defined once. The two emulator.wtf workflows keep an inline `access` job instead (it also runs the write-permission check). |
+| [_relevant][_relevant] | Reusable workflow | Reusable `changes` job. Takes a dorny/paths-filter `filters` block and outputs `relevant` ('true' when a PR touches those paths, or on any non-PR event). Used by every mandatory workflow's `changes` job so the paths-filter logic is defined once. The two emulator.wtf workflows keep an inline `access` job instead (it also enforces the fork trust boundary, running the emulator job only for in-repo branches so secrets never reach fork code). |
 | [label pull request][label_pull_request] | All PRs | Automatically labels PRs based on changed files. |
 | [Add prioritized issues to project][add-to-project] | Issue labeled (P0, P1, P2) | Automatically adds prioritized issues to GitHub project board. |
 | [Potential Duplicates][potential-duplicates] | Issue opened/edited | Automatically detects and labels potential duplicate issues using similarity threshold. |
