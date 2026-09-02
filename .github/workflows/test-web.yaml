@@ -10,37 +10,19 @@ concurrency:
 
 jobs:
   changes:
-    name: changes
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: read
-    outputs:
-      relevant: ${{ steps.decide.outputs.relevant }}
-    steps:
-      - name: Filter paths
-        id: filter
-        if: github.event_name == 'pull_request'
-        uses: dorny/paths-filter@v3
-        with:
-          filters: |
-            relevant:
-              - 'packages/patrol/**'
-              - 'packages/patrol_finders/**'
-              - 'packages/patrol_log/**'
-              - 'packages/patrol_cli/**'
-              - 'packages/adb/**'
-              - 'packages/patrol_gen/**'
-              - 'dev/e2e_app/**'
-              - '!**.md'
-              - '!**.mdx'
-      - name: Decide whether to run
-        id: decide
-        run: |
-          if [ "${{ github.event_name }}" != "pull_request" ]; then
-            echo "relevant=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "relevant=${{ steps.filter.outputs.relevant }}" >> "$GITHUB_OUTPUT"
-          fi
+    uses: ./.github/workflows/_relevant.yaml
+    with:
+      filters: |
+        relevant:
+          - 'packages/patrol/**'
+          - 'packages/patrol_finders/**'
+          - 'packages/patrol_log/**'
+          - 'packages/patrol_cli/**'
+          - 'packages/adb/**'
+          - 'packages/patrol_gen/**'
+          - 'dev/e2e_app/**'
+          - '!**.md'
+          - '!**.mdx'
 
   run_tests:
     name: Flutter ${{ matrix.flutter-version }} on Web

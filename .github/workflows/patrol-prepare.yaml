@@ -6,29 +6,11 @@ on:
 
 jobs:
   changes:
-    name: changes
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: read
-    outputs:
-      relevant: ${{ steps.decide.outputs.relevant }}
-    steps:
-      - name: Filter paths
-        id: filter
-        if: github.event_name == 'pull_request'
-        uses: dorny/paths-filter@v3
-        with:
-          filters: |
-            relevant:
-              - 'packages/patrol/**'
-      - name: Decide whether to run
-        id: decide
-        run: |
-          if [ "${{ github.event_name }}" != "pull_request" ]; then
-            echo "relevant=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "relevant=${{ steps.filter.outputs.relevant }}" >> "$GITHUB_OUTPUT"
-          fi
+    uses: ./.github/workflows/_relevant.yaml
+    with:
+      filters: |
+        relevant:
+          - 'packages/patrol/**'
 
   prepare-android-on-windows:
     runs-on: ${{ matrix.os }}

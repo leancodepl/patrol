@@ -34,7 +34,7 @@ A required check that never reports leaves the PR stuck on "Expected — Waiting
 
 So each mandatory workflow drops the `on: paths` filter and gains two jobs:
 
-- a `changes` job that runs dorny/paths-filter and outputs whether the PR touches relevant files,
+- a `changes` job that calls the reusable [_relevant][_relevant] workflow with its filter globs and outputs whether the PR touches relevant files (the paths-filter + decide logic lives in one place instead of being copy-pasted per workflow),
 - a gate job (named `<workflow> gate`) that `needs` every real job, runs with `if: always()`, and fails only when one of them failed or was cancelled.
 
 The real jobs get `if: needs.changes.outputs.relevant == 'true'`, so a PR that does not touch a package skips its jobs (reported as success) and the gate still goes green. Branch protection requires the gate names, not the individual matrix jobs, so the required list stays short and the matrices can change freely. `pana` and the Slack notifier are left out of the gate, they stay advisory.
@@ -140,6 +140,7 @@ These workflows verify the user has write access before running. If you don't ha
 | [Verify Version Compatibility][verify_compatibility] | PR/push (on compatibility checker changes) | Runs compatibility tests and verifies compatibility tables are up-to-date. |
 | [check skills][check-skills] | PR (on `skills/`, `.agents/skills/`, `.claude/skills`, or script changes), manual | Validates the agent-skills setup via `tool/check_skills.sh`: the `.claude/skills` symlink resolves to `.agents/skills`, and every `SKILL.md` has valid frontmatter (`name` matches its folder and is kebab-case, plus a non-empty `description`). |
 | [send slack message][send-slack-message] | Reusable workflow | Reusable workflow for sending test results notifications to Slack. Invoked by test workflows; the Slack step runs only when `github.event_name == 'schedule'` in the **caller** workflow (so scheduled cron runs notify; PR, push, `workflow_dispatch`, and other triggers do not). |
+| [_relevant][_relevant] | Reusable workflow | Reusable `changes` job. Takes a dorny/paths-filter `filters` block and outputs `relevant` ('true' when a PR touches those paths, or on any non-PR event). Used by every mandatory workflow's `changes` job so the paths-filter logic is defined once. The two emulator.wtf workflows keep an inline `access` job instead (it also runs the write-permission check). |
 | [label pull request][label_pull_request] | All PRs | Automatically labels PRs based on changed files. |
 | [Add prioritized issues to project][add-to-project] | Issue labeled (P0, P1, P2) | Automatically adds prioritized issues to GitHub project board. |
 | [Potential Duplicates][potential-duplicates] | Issue opened/edited | Automatically detects and labels potential duplicate issues using similarity threshold. |
@@ -235,6 +236,7 @@ A test is selected if it matches ALL conditions in the boolean expression (AND o
 [docs-preview]: workflows/docs-preview.yaml
 [verify_compatibility]: workflows/verify_compatibility.yml
 [send-slack-message]: workflows/send-slack-message.yaml
+[_relevant]: workflows/_relevant.yaml
 [label_pull_request]: workflows/label_pull_request.yaml
 [add-to-project]: workflows/add-to-project.yaml
 [potential-duplicates]: workflows/potential-duplicates.yaml
