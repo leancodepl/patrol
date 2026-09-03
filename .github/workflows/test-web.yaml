@@ -3,26 +3,26 @@ name: test web
 on:
   workflow_dispatch:
   pull_request:
-    paths:
-      - 'packages/patrol/**'
-      - 'packages/patrol_finders/**'
-      - 'packages/patrol_log/**'
-      - 'packages/patrol_cli/**'
-      - 'packages/adb/**'
-      - 'packages/patrol_gen/**'
-      - 'dev/e2e_app/**'
-      - 'packages/patrol/web_runner/**'
-      - '!**.md'
-      - '!**.mdx'
-      - 'dev/e2e_app/patrol_test/web/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
 jobs:
+  changes:
+    uses: ./.github/workflows/_relevant.yaml
+    with:
+      quantifier: every
+      filters: |
+        relevant:
+          - '{packages/patrol/**,packages/patrol_finders/**,packages/patrol_log/**,packages/patrol_cli/**,packages/adb/**,packages/patrol_gen/**,dev/e2e_app/**}'
+          - '!**/*.md'
+          - '!**/*.mdx'
+
   run_tests:
     name: Flutter ${{ matrix.flutter-version }} on Web
+    needs: changes
+    if: ${{ needs.changes.outputs.relevant == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
   
@@ -76,3 +76,17 @@ jobs:
           name: playwright-report-${{ matrix.flutter-version }}
           path: dev/e2e_app/playwright-report/
           retention-days: 7
+
+  test-web-gate:
+    name: test web gate
+    needs: [changes, run_tests]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify required jobs passed
+        run: |
+          if [ "${{ contains(needs.*.result, 'failure') }}" = "true" ] || [ "${{ contains(needs.*.result, 'cancelled') }}" = "true" ]; then
+            echo "A required job did not pass: ${{ join(needs.*.result, ' ') }}"
+            exit 1
+          fi
+          echo "All required jobs passed or were skipped: ${{ join(needs.*.result, ' ') }}"
