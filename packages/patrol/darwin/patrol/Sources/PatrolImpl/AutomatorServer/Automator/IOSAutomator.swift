@@ -24,6 +24,11 @@
 
     private var timeout: TimeInterval = 10
 
+    /// Bundle ids that already passed the accessibility check in
+    /// `getRunningApp(withBundleId:)`. Only touched on the main queue
+    /// (all actions run through `runAction`).
+    private var automatableApps = Set<String>()
+
     func configure(timeout: TimeInterval) {
       self.timeout = timeout
     }
@@ -95,7 +100,7 @@
       view += " in app \(bundleId)"
 
       try runAction("tapping on \(view)") {
-        let app = try self.getApp(withBundleId: bundleId)
+        let app = try self.getRunningApp(withBundleId: bundleId)
 
         let query = app.descendants(matching: .any).matching(selector.toNSPredicate())
 
@@ -120,7 +125,7 @@
       view += " in app \(bundleId)"
 
       try runAction("double tapping on \(view)") {
-        let app = try self.getApp(withBundleId: bundleId)
+        let app = try self.getRunningApp(withBundleId: bundleId)
         let query = app.descendants(matching: .any).matching(selector.toNSPredicate())
 
         Logger.shared.i("waiting for existence of \(view)")
@@ -137,7 +142,7 @@
 
     func tapAt(coordinate vector: CGVector, inApp bundleId: String) throws {
       try runAction("tapping at coordinate \(vector) in app \(bundleId)") {
-        let app = try self.getApp(withBundleId: bundleId)
+        let app = try self.getRunningApp(withBundleId: bundleId)
 
         let coordinate = app.coordinate(withNormalizedOffset: vector)
 
@@ -163,7 +168,7 @@
       view += " in app \(bundleId)"
 
       try runAction("entering text \(format: data) into \(view)") {
-        let app = try self.getApp(withBundleId: bundleId)
+        let app = try self.getRunningApp(withBundleId: bundleId)
 
         // elementType must be specified as integer
         // See:
@@ -218,7 +223,7 @@
       }
 
       try runAction("entering text \(format: data) by index \(index) in app \(bundleId)") {
-        let app = try self.getApp(withBundleId: bundleId)
+        let app = try self.getRunningApp(withBundleId: bundleId)
 
         // elementType must be specified as integer
         // See:
@@ -250,7 +255,7 @@
 
     func swipe(from start: CGVector, to end: CGVector, inApp bundleId: String) throws {
       try runAction("swiping from \(start) to \(end) in app \(bundleId)") {
-        let app = try self.getApp(withBundleId: bundleId)
+        let app = try self.getRunningApp(withBundleId: bundleId)
 
         let startCoordinate = app.coordinate(
           withNormalizedOffset: CGVector(dx: start.dx, dy: start.dy))
@@ -268,7 +273,7 @@
       try runAction(
         "waiting until \(view) in app \(bundleId) becomes visible"
       ) {
-        let app = try self.getApp(withBundleId: bundleId)
+        let app = try self.getRunningApp(withBundleId: bundleId)
         let query = app.descendants(matching: .any).containing(selector.toNSPredicate())
         guard
           let element = self.waitFor(
@@ -543,7 +548,7 @@
     ) throws -> [IOSNativeView] {
       let view = createLogMessage(element: "views", from: selector)
       return try runAction("getting native \(view)") {
-        let app = try self.getApp(withBundleId: bundleId)
+        let app = try self.getRunningApp(withBundleId: bundleId)
 
         // TODO: We should consider more view properties. See #1554
         let query = app.descendants(matching: .any).matching(selector.toNSPredicate())
@@ -1074,6 +1079,84 @@
       // }
 
       return app
+    }
+
+    /// Explains which appId to target instead when the requested one can't be
+    /// automated. Appended to the errors thrown by `getRunningApp(withBundleId:)`.
+    private static let appIdHint =
+      "System views presented over the app under test (like the file picker "
+      + "or the share sheet) belong to the app under test, so interact with them "
+      + "using the default appId. System alerts (like permission dialogs) belong "
+      + "to \"com.apple.springboard\""
+
+    /// Like `getApp(withBundleId:)`, but requires the app to be running and
+    /// automatable.
+    ///
+    /// Querying an XCUIApplication that XCTest can't automate - one that isn't
+    /// running, or isn't an app at all, e.g. a file provider extension like
+    /// com.apple.FileProvider.LocalStorage (its id shows up in the file
+    /// picker's element identifiers, so users mistake it for the picker's
+    /// owner) - stalls inside XCTest for minutes and then fails with a cryptic
+    /// kAXErrorServerNotFound error. Interactions fail fast with an
+    /// explanation instead. See https://github.com/leancodepl/patrol/issues/2790
+    private func getRunningApp(withBundleId bundleId: String) throws -> XCUIApplication {
+      let app = XCUIApplication(bundleIdentifier: bundleId)
+
+      guard app.state != .notRunning, app.state != .unknown else {
+        throw PatrolError.internal(
+          "app \(format: bundleId) is not running, so it cannot be interacted with. "
+            + Self.appIdHint
+        )
+      }
+
+      // The app under test is in the foreground and gets queried all the
+      // time, so skip the accessibility check for it to avoid the overhead.
+      // Apps that passed the check once stay automatable, so cache them too.
+      if app.state != .runningForeground, !automatableApps.contains(bundleId) {
+        try assertRespondsToAccessibility(app: app, bundleId: bundleId)
+        automatableApps.insert(bundleId)
+      }
+
+      return app
+    }
+
+    /// Throws if the running process behind `app` doesn't expose an
+    /// accessibility server, which means XCTest cannot automate it.
+    ///
+    /// `snapshot()` is the only XCTest API that reports this as a catchable
+    /// error, but on a non-automatable process it internally retries for
+    /// minutes, so it runs off the main thread bounded by our own deadline.
+    private func assertRespondsToAccessibility(
+      app: XCUIApplication, bundleId: String
+    ) throws {
+      let deadline: TimeInterval = 10
+      var snapshotError: Error?
+
+      let group = DispatchGroup()
+      group.enter()
+      DispatchQueue.global().async {
+        do {
+          _ = try app.snapshot()
+        } catch {
+          snapshotError = error
+        }
+        group.leave()
+      }
+
+      guard group.wait(timeout: .now() + deadline) == .success else {
+        throw PatrolError.internal(
+          "app \(format: bundleId) is running, but did not respond to accessibility "
+            + "queries within \(Int(deadline)) seconds, so it cannot be interacted with. "
+            + Self.appIdHint
+        )
+      }
+
+      if snapshotError != nil {
+        throw PatrolError.internal(
+          "app \(format: bundleId) is running, but does not respond to accessibility "
+            + "queries, so it cannot be interacted with. " + Self.appIdHint
+        )
+      }
     }
 
     private func swipeToOpenControlCenter() {
