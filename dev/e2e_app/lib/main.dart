@@ -3,6 +3,7 @@ import 'package:e2e_app/applink_screen.dart';
 import 'package:e2e_app/at_finder_screen.dart';
 import 'package:e2e_app/camera_screen.dart';
 import 'package:e2e_app/external_app_screen.dart';
+import 'package:e2e_app/file_picker_screen.dart';
 import 'package:e2e_app/keys.dart';
 import 'package:e2e_app/loading_screen.dart';
 import 'package:e2e_app/location_screen.dart';
@@ -320,6 +321,13 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
               MaterialPageRoute<void>(builder: (_) => const TextfieldsScreen()),
             ),
             child: const Text('Open many textfields screen'),
+          ),
+          TextButton(
+            key: K.filePickerScreenButton,
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const FilePickerScreen()),
+            ),
+            child: const Text('Open file picker screen'),
           ),
           TextButton(
             key: K.openExternalAppScreenButton,
