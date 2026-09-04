@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Add `patrol bs pull-coverage` subcommand. Downloads a BrowserStack Espresso coverage `.ec` and splits it into a standard JaCoCo `jacoco.exec` plus a Dart `patrol_lcov.info` produced by patrol's BS coverage hook. (#3066)
 - Add `screenshot_on_failure` option to the pubspec's `patrol` section, forwarded to the app (via a dart-define) for `build` and `test` so patrol can capture native failure screenshots on Android device farms (e.g. BrowserStack, Firebase Test Lab). Not collected by `patrol develop`. Off by default. (#3222)
 - `patrol test` (Android) now pulls native screenshots (failure and on-demand) from the device into `<test-directory>/screenshots` after the run (override with `--screenshots-output-dir`), so they are available from local/emulator runs, not only device farms. (#3222)
 - Allow the latest `package_config` (3.x), `cli_completion` (0.6.x) and `pub_updater` (0.6.x), without raising the minimum Dart SDK. (#3225)
