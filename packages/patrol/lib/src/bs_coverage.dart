@@ -32,6 +32,14 @@ class BrowserStackCoverage {
     'PATROL_BS_COVERAGE_PACKAGES',
   );
 
+  /// Package-name regexps from [_packagesEnv], compiled once (this is consulted
+  /// for every source range in every report).
+  static final List<RegExp> _packagePatterns = _packagesEnv
+      .split(',')
+      .where((s) => s.isNotEmpty)
+      .map(RegExp.new)
+      .toList();
+
   static String? _cachedDir;
   static vms.VmService? _service;
   static Future<vms.VmService>? _serviceFuture;
@@ -160,13 +168,8 @@ class BrowserStackCoverage {
   }
 
   static bool _shouldInclude(String uri) {
-    if (_packagesEnv.isNotEmpty) {
-      final patterns = _packagesEnv
-          .split(',')
-          .where((s) => s.isNotEmpty)
-          .map(RegExp.new)
-          .toList();
-      return patterns.any((p) => p.hasMatch(uri));
+    if (_packagePatterns.isNotEmpty) {
+      return _packagePatterns.any((p) => p.hasMatch(uri));
     }
     // Default: skip SDK/flutter framework noise.
     if (uri.startsWith('dart:')) {
