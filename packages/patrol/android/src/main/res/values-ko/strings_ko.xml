@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Airplane mode toggle -->
+    <string name="airplane_mode">비행기 모드</string>
+
+    <!-- Location settings -->
+    <string name="use_location">위치 사용</string>
+
+    <!-- Photo picker confirm button (Android API 36+) -->
+    <string name="gallery_done_button">완료</string>
+</resources>

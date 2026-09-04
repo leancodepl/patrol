@@ -1,0 +1,30 @@
+/* Permission dialog buttons */
+"ok" = "확인";
+"allow" = "허용";
+"allow_once" = "이번만 허용";
+"allow_while_using_app" = "앱을 사용하는 동안 허용";
+"dont_allow" = "허용 안 함";
+"limit_access" = "접근 제한…";
+"allow_full_access" = "전체 접근 허용";
+
+/* Notification identifiers */
+"open" = "열기";
+
+/* Settings navigation */
+"developer" = "개발자";
+"dark_appearance" = "다크 모드";
+"display_brightness" = "화면 및 밝기";
+"dark" = "다크";
+"light" = "라이트";
+
+/* Location precision */
+"precise_off" = "정확한 위치: 끔";
+"precise_on" = "정확한 위치: 켬";
+
+/* Gallery */
+"add" = "추가";
+
+/* Uninstall app */
+"remove_app" = "앱 제거";
+"delete_app" = "앱 삭제";
+"delete" = "삭제";
