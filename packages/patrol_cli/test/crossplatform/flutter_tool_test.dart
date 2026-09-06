@@ -38,15 +38,21 @@ void main() {
 
   /// Defaults to a process that neither prints anything nor exits.
   MockProcess stubProcess({
+    List<String> stdout = const [],
     List<String> stderr = const [],
     Future<int>? exitCode,
   }) {
     final process = MockProcess();
-    when(
-      () => process.stdout,
-    ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
-    // Emitted late on purpose: a process that has already exited still has
-    // its last stderr lines in flight.
+    when(() => process.stdout).thenAnswer(
+      (_) =>
+          Stream<List<int>>.fromIterable(
+            stdout.map((line) => utf8.encode('$line\n')),
+          ).asyncMap((chunk) async {
+            await Future<void>.delayed(const Duration(milliseconds: 40));
+            return chunk;
+          }),
+    );
+    // A process that has already exited still has its last lines in flight.
     when(() => process.stderr).thenAnswer(
       (_) =>
           Stream<List<int>>.fromIterable(
@@ -177,6 +183,13 @@ void main() {
       ).captured.map((message) => message.toString()).join('\n');
       expect(warned, contains('Hot Restart is not available'));
       expect(warned, isNot(contains('not attached to the app yet')));
+    });
+
+    test('logs survives stdout arriving after the process exits', () async {
+      stubProcess(stdout: ['Showing logs:'], exitCode: Future.value(1));
+
+      await flutterTool.logs('testDeviceId', flutterCommand: flutterCommand);
+      await Future<void>.delayed(const Duration(milliseconds: 80));
     });
 
     test('logs does not leave the observation URL pending on exit', () async {
