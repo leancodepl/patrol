@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io' as io;
 import 'dart:io' show exit;
 
@@ -163,6 +164,56 @@ class FlutterTool {
     return urlCompleter.future;
   }
 
+  /// The `adb` forwards for [deviceId] as `local device` pairs, or none when
+  /// adb is not there or knows no such device.
+  Future<Set<String>> _adbForwards(String deviceId) async {
+    try {
+      final result = await _processManager.run(['adb', 'forward', '--list']);
+      if (result.exitCode != 0) {
+        return const {};
+      }
+      return {
+        for (final line in LineSplitter.split(result.stdout as String))
+          if (line.trim().split(RegExp(r'\s+')) case [
+            final serial,
+            final local,
+            final remote,
+          ] when serial == deviceId)
+            '$local $remote',
+      };
+    } on Object {
+      return const {};
+    }
+  }
+
+  /// Removes the forwards `flutter attach` added for [deviceId]. Patrol's own
+  /// forwards map a port to the same port and are removed by the code that
+  /// made them, so only pairs with differing ends are attach's.
+  Future<void> _removeAdbForwardsAdded(
+    String deviceId,
+    Set<String> before,
+  ) async {
+    final added = (await _adbForwards(deviceId)).difference(before);
+    for (final pair in added) {
+      final [local, remote] = pair.split(' ');
+      if (local == remote) {
+        continue;
+      }
+      try {
+        await _processManager.run([
+          'adb',
+          ...['-s', deviceId],
+          'forward',
+          '--remove',
+          local,
+        ]);
+        _logger.detail('Removed adb forward $local left by flutter attach');
+      } on Object {
+        // The device or adb may already be gone.
+      }
+    }
+  }
+
   /// Attaches to the running app. Returns a [Future] that completes when the
   /// connection is ready.
   ///
@@ -181,6 +232,12 @@ class FlutterTool {
     Future<void> Function()? onQuit,
   }) async {
     await _disposeScope.run((scope) async {
+      // `flutter attach` forwards the VM service and DDS ports for itself and
+      // removes them only on its own exit, which a killed tool never reaches.
+      // Registered before the process, so it runs after the process is gone.
+      final forwardsBefore = await _adbForwards(deviceId);
+      scope.addDispose(() => _removeAdbForwardsAdded(deviceId, forwardsBefore));
+
       final process =
           await _processManager.start([
               ...[flutterCommand.executable, ...flutterCommand.arguments],
