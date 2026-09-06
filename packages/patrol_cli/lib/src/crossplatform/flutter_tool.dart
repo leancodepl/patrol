@@ -161,6 +161,8 @@ class FlutterTool {
     required FlutterCommand flutterCommand,
   }) async {
     final urlCompleter = Completer<String>();
+    // The error can be set before anything awaits this below.
+    urlCompleter.future.ignore();
     await logs(
       deviceId,
       flutterCommand: flutterCommand,
@@ -343,21 +345,14 @@ class FlutterTool {
           .disposedBy(scope);
 
       process
-          .listenStdErr(
-            (line) {
-              if (line.startsWith('Waiting for another flutter command')) {
-                // This is a warning that we can ignore
-                return;
-              }
-              stderrLines.add(line);
-              _logger.err('\t$line');
-            },
-            onDone: () {
-              if (!stderrDone.isCompleted) {
-                stderrDone.complete();
-              }
-            },
-          )
+          .listenStdErr((line) {
+            if (line.startsWith('Waiting for another flutter command')) {
+              // This is a warning that we can ignore
+              return;
+            }
+            _collectStderr(stderrLines, line);
+            _logger.err('\t$line');
+          }, onDone: stderrDone.maybeComplete)
           .disposedBy(scope);
 
       await completer.future;
@@ -405,8 +400,9 @@ class FlutterTool {
           if (observationUrlCompleter case final urlCompleter?
               when !urlCompleter.isCompleted) {
             urlCompleter.completeError(
-              const ToolExit(
-                'flutter logs exited before reporting the Dart VM service URL',
+              ToolExit(
+                'flutter logs exited before reporting the Dart VM service '
+                'URL: ${_describeExit('flutter logs', code, stderrLines)}',
               ),
             );
           }
@@ -453,22 +449,30 @@ class FlutterTool {
           .disposedBy(scope);
 
       process
-          .listenStdErr(
-            (line) {
-              stderrLines.add(line);
-              _logger.err('\t$line');
-            },
-            onDone: () {
-              if (!stderrDone.isCompleted) {
-                stderrDone.complete();
-              }
-            },
-          )
+          .listenStdErr((line) {
+            if (line.startsWith('Waiting for another flutter command')) {
+              // This is a warning that we can ignore
+              return;
+            }
+            _collectStderr(stderrLines, line);
+            _logger.err('\t$line');
+          }, onDone: stderrDone.maybeComplete)
           .disposedBy(scope);
 
       await completer.future;
     });
   }
+
+  /// Keeps the tail of stderr: only the lines around the exit explain it, and
+  /// a long session can produce thousands.
+  void _collectStderr(List<String> lines, String line) {
+    lines.add(line);
+    if (lines.length > _maxStderrLines) {
+      lines.removeAt(0);
+    }
+  }
+
+  static const _maxStderrLines = 20;
 
   /// Waits for the stderr stream to drain, bounded so it cannot hang.
   Future<void> _awaitStderr(Completer<void> stderrDone) async {
