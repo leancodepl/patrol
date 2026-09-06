@@ -51,6 +51,7 @@
 - Look for a `patrol test`/`patrol develop` target in the project when the path names nothing from
   the directory the command was run in. A relative target still belongs to that directory first,
   which is how `-t ../patrol_test/app_test.dart` works from a subdirectory. (#3369)
+- Report a dead `flutter attach` or `flutter logs` in `patrol develop`. (#3234)
 
 ## 4.9.0
 
@@ -100,7 +101,6 @@
 - Fix hot restart dying on flavored `patrol develop`, which regressed in 4.6.1. (#3223)
 - Fix flavored iOS `patrol develop` losing logs on devices and failing on simulators. (#2465, #3279)
 - Fix `patrol develop` crashing on hosts whose terminal modes can't be changed. (#3278)
-- Report a dead `flutter attach` or `flutter logs` in `patrol develop` instead of waiting forever. (#3234)
 
 ## 4.7.0
 
