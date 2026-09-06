@@ -6,6 +6,7 @@ import 'package:dispose_scope/dispose_scope.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/base/exceptions.dart';
+import 'package:patrol_cli/src/base/extensions/completer.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
@@ -210,12 +211,11 @@ class FlutterTool {
       scope.addDispose(() {
         if (!completer.isCompleted) {
           _logger.detail('Killed before attached to the app');
-          completer.complete();
         }
+        completer.maybeComplete();
       });
 
-      // `flutter attach` reports a rejected option by exiting. Only its
-      // stdout completes the wait below.
+      // `flutter attach` can exit without ever writing to stdout.
       final stderrLines = <String>[];
       final stderrDone = Completer<void>();
       unawaited(
@@ -232,7 +232,7 @@ class FlutterTool {
               '${_describeExit('flutter attach', code, stderrLines)}';
           _attachFailure = failure;
           _logger.err(failure);
-          completer.complete();
+          completer.maybeComplete();
         }),
       );
 
@@ -275,9 +275,7 @@ class FlutterTool {
             } else if (char == 'q' || char == 'Q') {
               _logger.success('Quitting process...');
               process.kill();
-              if (!completer.isCompleted) {
-                completer.complete();
-              }
+              completer.maybeComplete();
 
               // Call the uninstall function if provided
               if (onQuit != null) {
@@ -318,7 +316,7 @@ class FlutterTool {
               if (!_logsActive && !_logsSkipped) {
                 _logger.warn('Hot Restart: logs are not connected yet');
               }
-              completer.complete();
+              completer.maybeComplete();
             }
 
             if (line.startsWith('Restarted application')) {
@@ -388,14 +386,9 @@ class FlutterTool {
             ..disposedBy(scope);
 
       final completer = Completer<void>();
-      scope.addDispose(() {
-        if (!completer.isCompleted) {
-          completer.complete();
-        }
-      });
+      scope.addDispose(completer.maybeComplete);
 
-      // `flutter logs` exits when it cannot resolve the project, and the
-      // caller awaits this.
+      // `flutter logs` can exit without ever writing to stdout.
       final stderrLines = <String>[];
       final stderrDone = Completer<void>();
       unawaited(
@@ -406,7 +399,7 @@ class FlutterTool {
               'Logs are not available: '
               '${_describeExit('flutter logs', code, stderrLines)}',
             );
-            completer.complete();
+            completer.maybeComplete();
           }
 
           if (observationUrlCompleter case final urlCompleter?
@@ -435,7 +428,7 @@ class FlutterTool {
               if (!_hotRestartActive) {
                 _logger.warn('Hot Restart: not attached to the app yet');
               }
-              completer.complete();
+              completer.maybeComplete();
             }
 
             // Skip the log line that contains "PATROL_LOG" prefix
