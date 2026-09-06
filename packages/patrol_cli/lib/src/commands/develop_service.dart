@@ -747,6 +747,8 @@ class DevelopService {
         return;
       }
       reportTestsCompleted(const TestCompletionResult(success: true));
+    } on ToolExit {
+      rethrow;
     } catch (err, st) {
       _logger
         ..err('$err')
