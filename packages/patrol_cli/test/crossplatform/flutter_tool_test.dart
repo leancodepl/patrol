@@ -18,10 +18,11 @@ void main() {
   late MockProcessManager processManager;
   late MockLogger logger;
   late Platform platform;
+  late StreamController<List<int>> stdin;
 
   setUp(() {
     final disposeScope = DisposeScope();
-    final stdin = StreamController<List<int>>();
+    stdin = StreamController<List<int>>();
     processManager = MockProcessManager();
     logger = MockLogger();
     platform = FakePlatform();
@@ -44,10 +45,16 @@ void main() {
     when(
       () => process.stdout,
     ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
+    // Emitted late on purpose: a process that has already exited still has
+    // its last stderr lines in flight.
     when(() => process.stderr).thenAnswer(
-      (_) => Stream<List<int>>.fromIterable(
-        stderr.map((line) => utf8.encode('$line\n')),
-      ),
+      (_) =>
+          Stream<List<int>>.fromIterable(
+            stderr.map((line) => utf8.encode('$line\n')),
+          ).asyncMap((chunk) async {
+            await Future<void>.delayed(const Duration(milliseconds: 20));
+            return chunk;
+          }),
     );
     when(
       () => process.exitCode,
@@ -145,6 +152,31 @@ void main() {
       ).captured.map((message) => message.toString()).join('\n');
       expect(reported, contains('Logs are not available'));
       expect(reported, contains('exited with code 1'));
+      expect(reported, contains('You must specify a --flavor option'));
+    });
+
+    test('r reports why the attach died', () async {
+      stubProcess(
+        stderr: ['Could not find an option named "--flavor".'],
+        exitCode: Future.value(64),
+      );
+
+      await flutterTool.attach(
+        flutterCommand: flutterCommand,
+        deviceId: 'testDeviceId',
+        target: 'target',
+        appId: 'appId',
+        dartDefines: {},
+        openBrowser: false,
+      );
+      stdin.add('r'.codeUnits);
+      await Future<void>.delayed(Duration.zero);
+
+      final warned = verify(
+        () => logger.warn(captureAny()),
+      ).captured.map((message) => message.toString()).join('\n');
+      expect(warned, contains('Hot Restart is not available'));
+      expect(warned, isNot(contains('not attached to the app yet')));
     });
 
     test('logs does not leave the observation URL pending on exit', () async {
