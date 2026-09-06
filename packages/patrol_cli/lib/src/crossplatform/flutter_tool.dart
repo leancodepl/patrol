@@ -153,26 +153,15 @@ class FlutterTool {
         completer.maybeComplete();
       });
 
-      // `flutter attach` can exit without ever writing to stdout.
-      final stderrLines = <String>[];
-      final stderrDone = Completer<void>();
-      unawaited(
-        process.exitCode.then((code) async {
-          // The lines explaining the exit can still be in flight when
-          // exitCode completes.
-          await _awaitStderr(stderrDone);
-          if (completer.isCompleted) {
-            return;
-          }
-
-          final failure =
-              'Hot Restart is not available: '
-              '${_describeExit('flutter attach', code, stderrLines)}';
-          _attachFailure = failure;
-          _logger.err(failure);
-          completer.maybeComplete();
-        }),
-      );
+      _reportExit(process, scope, 'flutter attach', (reason) {
+        if (completer.isCompleted) {
+          return;
+        }
+        final failure = 'Hot Restart is not available: $reason';
+        _attachFailure = failure;
+        _logger.err(failure);
+        completer.maybeComplete();
+      });
 
       _stdin
           .listen((event) async {
@@ -261,17 +250,6 @@ class FlutterTool {
           })
           .disposedBy(scope);
 
-      process
-          .listenStdErr((line) {
-            if (line.startsWith('Waiting for another flutter command')) {
-              // This is a warning that we can ignore
-              return;
-            }
-            _collectStderr(stderrLines, line);
-            _logger.err('\t$line');
-          }, onDone: stderrDone.maybeComplete)
-          .disposedBy(scope);
-
       await completer.future;
     });
   }
@@ -300,31 +278,22 @@ class FlutterTool {
       final completer = Completer<void>();
       scope.addDispose(completer.maybeComplete);
 
-      // `flutter logs` can exit without ever writing to stdout.
-      final stderrLines = <String>[];
-      final stderrDone = Completer<void>();
-      unawaited(
-        process.exitCode.then((code) async {
-          await _awaitStderr(stderrDone);
-          if (!completer.isCompleted) {
-            _logger.err(
-              'Logs are not available: '
-              '${_describeExit('flutter logs', code, stderrLines)}',
-            );
-            completer.maybeComplete();
-          }
+      _reportExit(process, scope, 'flutter logs', (reason) {
+        if (!completer.isCompleted) {
+          _logger.err('Logs are not available: $reason');
+          completer.maybeComplete();
+        }
 
-          if (observationUrlCompleter case final urlCompleter?
-              when !urlCompleter.isCompleted) {
-            urlCompleter.completeError(
-              ToolExit(
-                'flutter logs exited before reporting the Dart VM service '
-                'URL: ${_describeExit('flutter logs', code, stderrLines)}',
-              ),
-            );
-          }
-        }),
-      );
+        if (observationUrlCompleter case final urlCompleter?
+            when !urlCompleter.isCompleted) {
+          urlCompleter.completeError(
+            ToolExit(
+              'flutter logs exited before reporting the Dart VM service '
+              'URL: $reason',
+            ),
+          );
+        }
+      });
 
       process
           .listenStdOut((line) {
@@ -365,39 +334,51 @@ class FlutterTool {
           })
           .disposedBy(scope);
 
-      process
-          .listenStdErr((line) {
-            if (line.startsWith('Waiting for another flutter command')) {
-              // This is a warning that we can ignore
-              return;
-            }
-            _collectStderr(stderrLines, line);
-            _logger.err('\t$line');
-          }, onDone: stderrDone.maybeComplete)
-          .disposedBy(scope);
-
       await completer.future;
     });
   }
 
-  /// Keeps the tail of stderr: only the lines around the exit explain it, and
-  /// a long session can produce thousands.
-  void _collectStderr(List<String> lines, String line) {
-    lines.add(line);
-    if (lines.length > _maxStderrLines) {
-      lines.removeAt(0);
-    }
+  /// Forwards the process stderr and, once it exits, hands [onExit] a
+  /// description of that exit.
+  ///
+  /// The lines explaining an exit can still be in flight when its exit code
+  /// arrives, so the description is built once stderr drains. Only the tail is
+  /// kept: a long session can produce thousands of lines.
+  void _reportExit(
+    io.Process process,
+    DisposeScope scope,
+    String command,
+    void Function(String reason) onExit,
+  ) {
+    final stderrLines = <String>[];
+    final drained = Completer<void>();
+
+    process
+        .listenStdErr((line) {
+          if (line.startsWith('Waiting for another flutter command')) {
+            // This is a warning that we can ignore
+            return;
+          }
+          stderrLines.add(line);
+          if (stderrLines.length > _maxStderrLines) {
+            stderrLines.removeAt(0);
+          }
+          _logger.err('\t$line');
+        }, onDone: drained.maybeComplete)
+        .disposedBy(scope);
+
+    unawaited(
+      process.exitCode.then((code) async {
+        await drained.future.timeout(
+          const Duration(seconds: 1),
+          onTimeout: () {},
+        );
+        onExit(_describeExit(command, code, stderrLines));
+      }),
+    );
   }
 
   static const _maxStderrLines = 20;
-
-  /// Waits for the stderr stream to drain, bounded so it cannot hang.
-  Future<void> _awaitStderr(Completer<void> stderrDone) async {
-    await stderrDone.future.timeout(
-      const Duration(seconds: 1),
-      onTimeout: () {},
-    );
-  }
 
   String _describeExit(String command, int code, List<String> stderrLines) {
     final lines = stderrLines.where((line) => line.trim().isNotEmpty);
