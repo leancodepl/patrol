@@ -55,13 +55,21 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         coverageFilePath = arguments.getString("coverageFile");
         coverageEnabled = "true".equalsIgnoreCase(arguments.getString("coverage"));
         if (coverageEnabled) {
-            // We ignore coverageFilePath as a write target (see
-            // resolveCoverageFile) — logged here only for diagnostics.
             Logger.INSTANCE.i(
-                "BS coverage: taking over JaCoCo dump. BrowserStack requested coverageFile="
-                    + coverageFilePath + ", writing to app-internal storage instead."
+                "BS coverage: taking over JaCoCo dump → " + coverageFilePath
             );
             arguments.putString("coverage", "false");
+            // Best-effort: the orchestrator forwards its own args to us, but a
+            // farm may strip this one. `patrol bs pull-coverage` checks too.
+            if ("true".equalsIgnoreCase(arguments.getString("clearPackageData"))) {
+                Logger.INSTANCE.e(
+                    "BS coverage: clearPackageData=true is incompatible with "
+                        + "coverage — pm clear between tests revokes this app's "
+                        + "permission to write the coverage file, so only the "
+                        + "first test will be reported. Run coverage builds with "
+                        + "clearPackageData:false."
+                );
+            }
         }
 
         // Register the listener that records each test's JUnit name for screenshots.
@@ -94,25 +102,28 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
     }
 
     /**
-     * Always app-internal — never the shared/`/sdcard` path BrowserStack may
-     * pass via the `coverageFile` argument. `pm clear` (run by the test
-     * orchestrator between test invocations under `clearPackageData:true`)
-     * resets the app's storage permission grant, so writes to a shared
-     * location start failing with EACCES from the second test onward.
-     * App-internal storage needs no permission and isn't affected by that
-     * reset; the test orchestrator (or BrowserStack's own per-test artifact
-     * collection) is expected to retrieve this file before the next clear.
+     * BrowserStack's `coverageFile` (shared storage) when given — that's the
+     * only place its coverage API picks the file up from. Writing there works
+     * only with `clearPackageData:false`: `pm clear` between tests revokes the
+     * app's permission and the write fails with EACCES from the second test on
+     * (see the check in onCreate).
      */
     private File resolveCoverageFile() {
+        if (coverageFilePath != null && !coverageFilePath.isEmpty()) {
+            return new File(coverageFilePath);
+        }
+        // getFilesDir() is available on all supported API levels (unlike
+        // getDataDir(), API 24+) and matches the <filesDir>/patrol_coverage
+        // location the Dart side and BrowserStackCoverage use.
         return new File(getTargetContext().getFilesDir(), "coverage.ec");
     }
 
     /**
-     * Dumps JaCoCo coverage data (collected by the runtime agent) into the
-     * resolved coverage file, then appends patrol's Dart-side LCOV blocks.
-     * Called after each Dart test from runDartTest() — at that point the
-     * process is fully alive and we have unbounded time, unlike the
-     * AGP-driven dump inside `finish()` which races against process teardown.
+     * Dumps JaCoCo coverage data (collected by the runtime agent) into
+     * `coverageFilePath`, then appends patrol's Dart-side LCOV blocks. Called
+     * after each Dart test from runDartTest() — at that point the process is
+     * fully alive and we have unbounded time, unlike the AGP-driven dump
+     * inside `finish()` which races against process teardown.
      *
      * If the JaCoCo runtime classes are absent (e.g. testCoverageEnabled=false
      * on the app under test), this method is a silent no-op.
@@ -141,7 +152,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             }
             Logger.INSTANCE.i("BS coverage: wrote " + data.length + " JaCoCo bytes to " + covFile.getAbsolutePath());
 
-            BrowserStackCoverage.INSTANCE.appendDartCoverage(covFile);
+            BrowserStackCoverage.INSTANCE.appendDartCoverage(getTargetContext(), covFile);
             Logger.INSTANCE.i("BS coverage: merged file now " + covFile.length() + " bytes");
         } catch (ClassNotFoundException e) {
             // coverage=true was requested but the JaCoCo runtime is missing: the

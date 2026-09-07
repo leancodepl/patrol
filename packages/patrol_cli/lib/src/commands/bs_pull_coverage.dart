@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:file/file.dart';
 import 'package:http/http.dart' as http;
 import 'package:patrol_cli/src/base/logger.dart';
+import 'package:patrol_cli/src/coverage/bs_build_check.dart';
 import 'package:patrol_cli/src/coverage/bs_coverage_splitter.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 
@@ -22,6 +23,11 @@ import 'package:patrol_cli/src/runner/patrol_command.dart';
 /// Pass `--session-id` for a single session, or omit it to pull every session
 /// (shard) in the build and merge them into one `jacoco.exec` + one
 /// `patrol_lcov.info`.
+///
+/// Refuses builds that ran with `clearPackageData:true`: coverage and
+/// `clearPackageData` are mutually exclusive on BrowserStack (see
+/// [buildUsedClearPackageData]), and a first-test-only result is worse than
+/// an error.
 class BsPullCoverageCommand extends PatrolCommand {
   BsPullCoverageCommand({required Logger logger, required FileSystem fs})
     : _logger = logger,
@@ -86,17 +92,31 @@ class BsPullCoverageCommand extends PatrolCommand {
 
     outputDir.createSync(recursive: true);
 
+    final Map<String, dynamic> build;
+    try {
+      build = await _fetchBuild(buildId, authHeader);
+    } on _BsHttpException catch (e) {
+      _logger.err(e.message);
+      return 1;
+    }
+
+    if (buildUsedClearPackageData(build) ?? false) {
+      _logger.err(
+        'Build $buildId ran with clearPackageData:true, which is incompatible '
+        'with coverage on BrowserStack: pm clear between tests revokes the '
+        "app's permission to write the coverage file, so only the first test's "
+        'coverage would be reported. Re-run the coverage build with '
+        'clearPackageData:false (keep it true for regular runs).',
+      );
+      return 1;
+    }
+
     // Without --session-id, pull and merge every session (shard) in the build.
     final List<String> sessionIds;
     if (sessionId != null) {
       sessionIds = [sessionId];
     } else {
-      try {
-        sessionIds = await _listSessionIds(buildId, authHeader);
-      } on _BsHttpException catch (e) {
-        _logger.err(e.message);
-        return 1;
-      }
+      sessionIds = _sessionIdsFrom(build);
       if (sessionIds.isEmpty) {
         _logger.err('No sessions found in build $buildId.');
         return 1;
@@ -140,6 +160,12 @@ class BsPullCoverageCommand extends PatrolCommand {
       'Parsed: $jacocoSessions JaCoCo session(s), $execBlocks class probe(s), '
       '$dartChunks Dart chunk(s) across ${sessionIds.length} session(s).',
     );
+    if (dartChunks == 0) {
+      _logger.warn(
+        'No Dart coverage found. Was the app built with '
+        '--dart-define=PATROL_BS_COVERAGE=true?',
+      );
+    }
 
     final jacocoBytes = mergedJacoco.toBytes();
     final jacocoFile = outputDir.childFile('jacoco.exec')
@@ -153,9 +179,7 @@ class BsPullCoverageCommand extends PatrolCommand {
     return 0;
   }
 
-  /// Enumerates every session (shard) id in [buildId] via the build endpoint,
-  /// which nests them under `devices[].sessions[].id`.
-  Future<List<String>> _listSessionIds(String buildId, String auth) async {
+  Future<Map<String, dynamic>> _fetchBuild(String buildId, String auth) async {
     final url = Uri.parse('$_apiBase/builds/$buildId');
     _logger.info('Fetching $url');
     final res = await http.get(url, headers: {'Authorization': auth});
@@ -166,18 +190,26 @@ class BsPullCoverageCommand extends PatrolCommand {
       );
     }
     final decoded = jsonDecode(res.body);
+    if (decoded is! Map<String, dynamic>) {
+      throw _BsHttpException(
+        'BrowserStack returned an unexpected body for build $buildId.',
+      );
+    }
+    return decoded;
+  }
+
+  /// Session (shard) ids nest under `devices[].sessions[].id`.
+  static List<String> _sessionIdsFrom(Map<String, dynamic> build) {
     final ids = <String>[];
-    if (decoded is Map<String, dynamic>) {
-      final devices = decoded['devices'];
-      if (devices is List) {
-        for (final device in devices) {
-          final sessions = (device as Map<String, dynamic>)['sessions'];
-          if (sessions is List) {
-            for (final session in sessions) {
-              final id = (session as Map<String, dynamic>)['id'];
-              if (id is String) {
-                ids.add(id);
-              }
+    final devices = build['devices'];
+    if (devices is List) {
+      for (final device in devices) {
+        final sessions = (device as Map<String, dynamic>)['sessions'];
+        if (sessions is List) {
+          for (final session in sessions) {
+            final id = (session as Map<String, dynamic>)['id'];
+            if (id is String) {
+              ids.add(id);
             }
           }
         }

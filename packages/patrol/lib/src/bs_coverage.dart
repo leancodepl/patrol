@@ -6,16 +6,18 @@ import 'package:path_provider/path_provider.dart';
 import 'package:vm_service/vm_service.dart' as vms;
 import 'package:vm_service/vm_service_io.dart' as vms;
 
-/// Collects Dart line coverage from inside the running app and writes a single
-/// cumulative LCOV file into a directory the patrol native runner picks up
-/// after every test (it appends it to JaCoCo's `coverage.ec` so BrowserStack's
-/// coverage endpoint returns a merged report).
+/// Collects Dart line coverage from inside the running app and writes one
+/// cumulative LCOV file per app process into a directory the patrol native
+/// runner picks up after every test (it appends it to JaCoCo's `coverage.ec` so
+/// BrowserStack's coverage endpoint returns a merged report).
 ///
 /// The VM service reports coverage cumulatively per isolate, so each snapshot
-/// is a superset of the previous one. We overwrite one file per run rather than
-/// emitting one file per test: keeping every per-test snapshot would duplicate
-/// earlier coverage in every later record and grow the appended payload roughly
-/// quadratically, risking BrowserStack's coverage size limit on large suites.
+/// is a superset of the previous one. We overwrite one file per process rather
+/// than emitting one file per test: keeping every per-test snapshot would
+/// duplicate earlier coverage in every later record and grow the appended
+/// payload roughly quadratically, risking BrowserStack's coverage size limit on
+/// large suites. A restarted process (test orchestrator on, or the app
+/// relaunching mid-suite) starts a fresh isolate, so it gets its own file.
 ///
 /// Activated by `--dart-define=PATROL_BS_COVERAGE=true`. Optional
 /// `--dart-define=PATROL_BS_COVERAGE_PACKAGES=foo,bar` restricts collection
@@ -48,6 +50,10 @@ class BrowserStackCoverage {
       .where((s) => s.isNotEmpty)
       .map(RegExp.new)
       .toList();
+
+  /// Names this process's file so a restarted process can't overwrite the
+  /// previous one's snapshot. `pid` alone could be reused within a session.
+  static final _runId = '${DateTime.now().millisecondsSinceEpoch}_$pid';
 
   static String? _cachedDir;
   static vms.VmService? _service;
@@ -126,9 +132,10 @@ class BrowserStackCoverage {
       }
 
       final lcov = _formatLcov(testName: testName, hitMap: hitMap);
-      // Single cumulative file, overwritten each test. VM coverage accumulates
-      // per isolate, so the latest snapshot already contains every prior test.
-      final file = File('$outDir/coverage.lcov');
+      // One file per process, overwritten each test: VM coverage accumulates
+      // per isolate, so the latest snapshot already contains every prior test
+      // run in this process.
+      final file = File('$outDir/coverage_$_runId.lcov');
       await file.writeAsString(lcov, flush: true);
       // ignore: avoid_print -- coverage diagnostics go through stdout/logcat.
       print(
