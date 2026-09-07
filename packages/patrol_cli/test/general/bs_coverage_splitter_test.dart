@@ -197,4 +197,78 @@ void main() {
       );
     });
   });
+
+  group('mergeLcovRecords', () {
+    test('passes through a single record unchanged (modulo TN:)', () {
+      const lcov =
+          'TN:a\n'
+          'SF:package:app/a.dart\n'
+          'DA:1,1\n'
+          'DA:2,0\n'
+          'LF:2\n'
+          'LH:1\n'
+          'end_of_record\n';
+
+      expect(
+        mergeLcovRecords(lcov),
+        'SF:package:app/a.dart\n'
+        'DA:1,1\n'
+        'DA:2,0\n'
+        'LF:2\n'
+        'LH:1\n'
+        'end_of_record\n',
+      );
+    });
+
+    test('unions hit lines across records for the same file', () {
+      // test A covered line 1, test B covered line 2 of the same file: neither
+      // record alone shows the other line as hit, so a naive concatenation
+      // could let test B's record shadow test A's data for line 1.
+      const lcov =
+          'TN:a\n'
+          'SF:package:app/shared.dart\n'
+          'DA:1,3\n'
+          'DA:2,0\n'
+          'LF:2\n'
+          'LH:1\n'
+          'end_of_record\n'
+          'TN:b\n'
+          'SF:package:app/shared.dart\n'
+          'DA:1,0\n'
+          'DA:2,5\n'
+          'LF:2\n'
+          'LH:1\n'
+          'end_of_record\n';
+
+      expect(
+        mergeLcovRecords(lcov),
+        'SF:package:app/shared.dart\n'
+        'DA:1,3\n'
+        'DA:2,5\n'
+        'LF:2\n'
+        'LH:2\n'
+        'end_of_record\n',
+      );
+    });
+
+    test('keeps distinct files as separate records, order preserved', () {
+      const lcov =
+          'SF:package:app/a.dart\n'
+          'DA:1,1\n'
+          'LF:1\n'
+          'LH:1\n'
+          'end_of_record\n'
+          'SF:package:app/b.dart\n'
+          'DA:1,0\n'
+          'LF:1\n'
+          'LH:0\n'
+          'end_of_record\n';
+
+      expect(mergeLcovRecords(lcov), lcov);
+    });
+
+    test('returns empty string for empty input', () {
+      expect(mergeLcovRecords(''), isEmpty);
+    });
+  });
 }

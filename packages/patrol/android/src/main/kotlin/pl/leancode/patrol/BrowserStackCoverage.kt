@@ -1,6 +1,5 @@
 package pl.leancode.patrol
 
-import android.content.Context
 import java.io.DataOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -9,11 +8,17 @@ import java.io.FileOutputStream
  * Bridges Dart coverage (gathered on-device by patrol's Dart side) into the
  * JaCoCo `.ec` file that BrowserStack's coverage pipeline picks up.
  *
- * Strategy: patrol's Dart side writes one or more LCOV-formatted files into
- * `<filesDir>/patrol_coverage/`. After the JaCoCo agent finishes its own dump,
- * we read those files, base64-chunk the bytes to fit the 65535-byte cap on
- * JaCoCo UTF strings, and append a series of `SessionInfo` blocks to the
- * existing `coverage.ec`. The header is left untouched (JaCoCo wrote it).
+ * Strategy: patrol's native side (PatrolJUnitRunner) copies each test's
+ * Dart-written LCOV out of app-internal storage into an accumulator directory
+ * beside [coverageFile] — shared storage that survives `clearPackageData`
+ * between orchestrator-driven test runs, unlike app-internal storage. After
+ * the JaCoCo agent finishes its own dump, we read every file in that
+ * directory, base64-chunk the bytes to fit the 65535-byte cap on JaCoCo UTF
+ * strings, and append a series of `SessionInfo` blocks to the existing
+ * `coverage.ec`. The header is left untouched (JaCoCo wrote it). Because the
+ * accumulator holds every test's LCOV, whichever process happens to dump last
+ * (JaCoCo dump is `append=false`, so only the last one survives on disk)
+ * embeds Dart coverage for every test in the shard, not just its own.
  *
  * Each appended block uses the id format:
  *   `PATROL_DART_COV:<sequence>:<total>:<base64_chunk>`
@@ -33,16 +38,24 @@ internal object BrowserStackCoverage {
 
     const val ID_PREFIX = "PATROL_DART_COV:"
 
+    /** Directory (beside coverageFile) that accumulates every test's Dart LCOV. */
+    const val ACCUMULATOR_DIR_NAME = "patrol_dart_cov"
+
     /**
-     * Reads any LCOV files in `<filesDir>/patrol_coverage/`, encodes them, and
-     * appends JaCoCo session blocks to [coverageFile]. Safe to call even when
-     * no Dart coverage was produced.
+     * Reads every LCOV file in the accumulator directory beside [coverageFile],
+     * encodes them, and appends JaCoCo session blocks to [coverageFile]. Safe
+     * to call even when no Dart coverage was produced.
      */
-    fun appendDartCoverage(context: Context, coverageFile: File) {
+    fun appendDartCoverage(coverageFile: File) {
         val t0 = android.os.SystemClock.elapsedRealtime()
-        val sourceDir = File(context.filesDir, "patrol_coverage")
+        val parent = coverageFile.parentFile
+        if (parent == null) {
+            Logger.i("$TAG: ${coverageFile.absolutePath} has no parent directory, skipping")
+            return
+        }
+        val sourceDir = File(parent, ACCUMULATOR_DIR_NAME)
         if (!sourceDir.exists() || !sourceDir.isDirectory) {
-            Logger.i("$TAG: no patrol_coverage dir at ${sourceDir.absolutePath}, skipping")
+            Logger.i("$TAG: no accumulator dir at ${sourceDir.absolutePath}, skipping")
             return
         }
 

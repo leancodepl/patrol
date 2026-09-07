@@ -16,7 +16,8 @@ import 'package:patrol_cli/src/runner/patrol_command.dart';
 ///     standard `SessionInfo` + `ExecutionData` blocks. Viewable in Android
 ///     Studio (`Analyze → Show Coverage Data`).
 ///   * `<output>/patrol_lcov.info` — the merged LCOV reconstructed from the
-///     `PATROL_DART_COV:` session blocks.
+///     `PATROL_DART_COV:` session blocks, with duplicate `SF:` records for the
+///     same file (common across tests/shards) merged into one.
 ///
 /// Pass `--session-id` for a single session, or omit it to pull every session
 /// (shard) in the build and merge them into one `jacoco.exec` + one
@@ -146,7 +147,7 @@ class BsPullCoverageCommand extends PatrolCommand {
     _logger.success('Wrote ${jacocoFile.path} (${jacocoBytes.length} B)');
 
     final lcovFile = outputDir.childFile('patrol_lcov.info')
-      ..writeAsStringSync(mergedLcov.toString());
+      ..writeAsStringSync(mergeLcovRecords(mergedLcov.toString()));
     _logger.success('Wrote ${lcovFile.path}');
 
     return 0;

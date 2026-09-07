@@ -146,6 +146,64 @@ BsCoverageSplitResult splitJacocoExec(Uint8List bytes) {
   );
 }
 
+/// Merges duplicate `SF:` (source file) records in a concatenated LCOV blob
+/// into one record per file, taking the union of hit lines (max hit count per
+/// line). Needed because the native side now embeds one LCOV per test rather
+/// than one cumulative LCOV per process — tests commonly cover overlapping
+/// files, and naively concatenating their records would leave a later test's
+/// block shadowing an earlier one's data for the same file in tools that
+/// don't already merge repeated `SF:` sections. Drops `TN:` (test name) since
+/// after merging across tests it no longer identifies a single test.
+String mergeLcovRecords(String lcov) {
+  final byFile = <String, Map<int, int>>{};
+  final fileOrder = <String>[];
+  String? currentFile;
+
+  for (final rawLine in lcov.split('\n')) {
+    final line = rawLine.trimRight();
+    if (line.startsWith('SF:')) {
+      currentFile = line.substring(3);
+      if (!byFile.containsKey(currentFile)) {
+        fileOrder.add(currentFile);
+        byFile[currentFile] = <int, int>{};
+      }
+    } else if (line.startsWith('DA:') && currentFile != null) {
+      final rest = line.substring(3);
+      final comma = rest.indexOf(',');
+      if (comma < 0) {
+        continue;
+      }
+      final lineNo = int.parse(rest.substring(0, comma));
+      final count = int.parse(rest.substring(comma + 1));
+      final perFile = byFile[currentFile]!;
+      final existing = perFile[lineNo];
+      if (existing == null || count > existing) {
+        perFile[lineNo] = count;
+      }
+    }
+  }
+
+  final buf = StringBuffer();
+  for (final file in fileOrder) {
+    final lines = byFile[file]!;
+    final sortedLines = lines.keys.toList()..sort();
+    buf.writeln('SF:$file');
+    var hit = 0;
+    for (final lineNo in sortedLines) {
+      final count = lines[lineNo]!;
+      buf.writeln('DA:$lineNo,$count');
+      if (count > 0) {
+        hit++;
+      }
+    }
+    buf
+      ..writeln('LF:${sortedLines.length}')
+      ..writeln('LH:$hit')
+      ..writeln('end_of_record');
+  }
+  return buf.toString();
+}
+
 const _blockHeader = 0x01;
 const _blockSessionInfo = 0x10;
 const _blockExecutionData = 0x11;
