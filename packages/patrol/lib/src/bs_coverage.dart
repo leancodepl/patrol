@@ -32,6 +32,15 @@ class BrowserStackCoverage {
     'PATROL_BS_COVERAGE_PACKAGES',
   );
 
+  /// Whether to force-compile not-yet-compiled functions when collecting
+  /// coverage. `true` reports every line (including never-executed ones) but is
+  /// far slower on large apps; `false` (the default) reports only what the VM
+  /// has already compiled, which is the right, cheaper choice for "what did the
+  /// suite exercise". Wired via `--dart-define=PATROL_BS_COVERAGE_FORCE_COMPILE`.
+  static const _forceCompile = bool.fromEnvironment(
+    'PATROL_BS_COVERAGE_FORCE_COMPILE',
+  );
+
   /// Package-name regexps from [_packagesEnv], compiled once (this is consulted
   /// for every source range in every report).
   static final List<RegExp> _packagePatterns = _packagesEnv
@@ -103,7 +112,7 @@ class BrowserStackCoverage {
           final report = await service.getSourceReport(
             id,
             const ['Coverage'],
-            forceCompile: true,
+            forceCompile: _forceCompile,
             reportLines: true,
           );
           _mergeReport(report, hitMap);

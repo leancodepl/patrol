@@ -137,7 +137,16 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             BrowserStackCoverage.INSTANCE.appendDartCoverage(getTargetContext(), covFile);
             Logger.INSTANCE.i("BS coverage: merged file now " + covFile.length() + " bytes");
         } catch (ClassNotFoundException e) {
-            Logger.INSTANCE.i("BS coverage: JaCoCo runtime absent (testCoverageEnabled=false?), skipping");
+            // coverage=true was requested but the JaCoCo runtime is missing: the
+            // app under test wasn't instrumented. Warn loudly — a silent skip
+            // means no coverage leaves the device and the misconfig is invisible.
+            Logger.INSTANCE.e(
+                "BS coverage: JaCoCo runtime absent, no coverage collected. "
+                    + "Set `enableAndroidTestCoverage true` (AGP 8+) or "
+                    + "`testCoverageEnabled true` (AGP 7) on the app's debug "
+                    + "build type.",
+                e
+            );
         } catch (Throwable t) {
             Logger.INSTANCE.e("BS coverage: writeMergedCoverage failed " + t.getMessage(), t);
         }
