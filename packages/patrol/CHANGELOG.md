@@ -1,5 +1,6 @@
 ## Unreleased
 
+- iOS: fail fast with a descriptive error when a native interaction (tap, enter text, swipe, …) targets an `appId` that isn't a running app — e.g. `com.apple.FileProvider.LocalStorage`, which shows up in the file picker's element identifiers and looks like the picker's owner, but is a file provider extension XCTest can't attach to. (#3275)
 - Fix `pickImageFromGallery` on Android API 36: when the photo picker keeps the picker open after selecting a single image, tap the confirm button to finish. The tap is best-effort, so devices/emulators whose picker auto-confirms (no confirm button) keep working. The button label is resolved per device language (en/de/fr/pl/ja) so it works beyond English. (#3254)
 - Android: keep third-party `AccessibilityService`s running during the test session again. `AndroidAutomatorConfig.dontSuppressAccessibilityServices` now defaults to `true` (it was effectively `false` since 4.8.0) and is configurable, also via the `PATROL_ANDROID_DONT_SUPPRESS_ACCESSIBILITY_SERVICES` dart-define. (#3227)
 - Report uncaught exceptions (e.g. from `onPressed`) in `patrol develop` instead of silently passing. (#3200)

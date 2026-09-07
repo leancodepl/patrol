@@ -38,4 +38,60 @@ void main() {
 
     await $.waitUntilVisible($('picked: patrol_test_file.txt'));
   }, tags: ['ios', 'simulator']);
+
+  patrol(
+    'fails gracefully when tapping via an unattachable appId',
+    ($) async {
+      await createApp($);
+
+      await $(#filePickerScreenButton).scrollTo().tap();
+      await $(#pickFileButton).tap();
+
+      await $.platform.ios.waitUntilVisible(IOSSelector(label: 'Browse'));
+
+      // com.apple.FileProvider.LocalStorage shows up in element identifiers of
+      // the file picker, so users mistake it for the appId owning the picker.
+      // It's a file provider extension, not an app, and XCTest can't attach to
+      // it - Patrol must fail fast with an explanation instead of hanging for
+      // over a minute and timing out
+      // (https://github.com/leancodepl/patrol/issues/2790).
+      await expectLater(
+        $.platform.ios.tap(
+          IOSSelector(labelContains: 'On My iPhone'),
+          appId: 'com.apple.FileProvider.LocalStorage',
+          timeout: const Duration(seconds: 3),
+        ),
+        throwsA(
+          isA<PatrolActionException>().having(
+            (err) => '$err',
+            'message',
+            contains('cannot be interacted with'),
+          ),
+        ),
+      );
+
+      // Springboard is always running, so it must pass the running-app check
+      // and fail on the selector instead.
+      await expectLater(
+        $.platform.ios.tap(
+          IOSSelector(label: 'ThisViewDoesNotExist'),
+          appId: 'com.apple.springboard',
+          timeout: const Duration(seconds: 2),
+        ),
+        throwsA(
+          isA<PatrolActionException>().having(
+            (err) => '$err',
+            'message',
+            contains("doesn't exist"),
+          ),
+        ),
+      );
+
+      // The automator server must survive the failed calls.
+      await $.platform.ios.tap(IOSSelector(label: 'Cancel'));
+
+      await $.waitUntilVisible($('cancelled'));
+    },
+    tags: ['ios', 'simulator'],
+  );
 }
