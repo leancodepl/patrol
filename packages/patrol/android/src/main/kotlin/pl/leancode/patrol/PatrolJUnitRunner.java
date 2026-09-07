@@ -17,9 +17,7 @@ import pl.leancode.patrol.contracts.Contracts;
 import pl.leancode.patrol.contracts.PatrolAppServiceClientException;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -57,8 +55,11 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         coverageFilePath = arguments.getString("coverageFile");
         coverageEnabled = "true".equalsIgnoreCase(arguments.getString("coverage"));
         if (coverageEnabled) {
+            // We ignore coverageFilePath as a write target (see
+            // resolveCoverageFile) — logged here only for diagnostics.
             Logger.INSTANCE.i(
-                "BS coverage: taking over JaCoCo dump → " + coverageFilePath
+                "BS coverage: taking over JaCoCo dump. BrowserStack requested coverageFile="
+                    + coverageFilePath + ", writing to app-internal storage instead."
             );
             arguments.putString("coverage", "false");
         }
@@ -92,67 +93,34 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         super.finish(resultCode, results);
     }
 
+    /**
+     * Always app-internal — never the shared/`/sdcard` path BrowserStack may
+     * pass via the `coverageFile` argument. `pm clear` (run by the test
+     * orchestrator between test invocations under `clearPackageData:true`)
+     * resets the app's storage permission grant, so writes to a shared
+     * location start failing with EACCES from the second test onward.
+     * App-internal storage needs no permission and isn't affected by that
+     * reset; the test orchestrator (or BrowserStack's own per-test artifact
+     * collection) is expected to retrieve this file before the next clear.
+     */
     private File resolveCoverageFile() {
-        if (coverageFilePath != null && !coverageFilePath.isEmpty()) {
-            return new File(coverageFilePath);
-        }
-        // getFilesDir() is available on all supported API levels (unlike
-        // getDataDir(), API 24+) and matches the <filesDir>/patrol_coverage
-        // location the Dart side and BrowserStackCoverage use.
         return new File(getTargetContext().getFilesDir(), "coverage.ec");
     }
 
-    private static final String DART_COVERAGE_SOURCE = "patrol_coverage/coverage.lcov";
-
     /**
-     * Copies this test's Dart LCOV out of app-internal storage — wiped by
-     * `clearPackageData` between orchestrator-driven test runs — into
-     * BrowserStackCoverage's accumulator directory beside `covFile` (shared
-     * storage), keyed by test name. That way whichever process happens to dump
-     * JaCoCo last embeds Dart coverage collected by every test, not just its
-     * own. No-op if the app hasn't written a Dart LCOV for this test (e.g.
-     * BS coverage collection itself failed or is disabled Dart-side).
-     */
-    private void persistDartCoverage(File covFile, String testName) {
-        File source = new File(getTargetContext().getFilesDir(), DART_COVERAGE_SOURCE);
-        if (!source.exists() || source.length() == 0) return;
-
-        File parent = covFile.getParentFile();
-        if (parent == null) return;
-        File accumulatorDir = new File(parent, BrowserStackCoverage.ACCUMULATOR_DIR_NAME);
-        if (!accumulatorDir.exists() && !accumulatorDir.mkdirs()) return;
-
-        File dest = new File(accumulatorDir, testName.replaceAll("[^a-zA-Z0-9._-]", "_") + ".lcov");
-        try (FileInputStream in = new FileInputStream(source);
-             FileOutputStream out = new FileOutputStream(dest, /* append= */ false)) {
-            byte[] buf = new byte[8192];
-            int n;
-            while ((n = in.read(buf)) > 0) {
-                out.write(buf, 0, n);
-            }
-            out.flush();
-            out.getFD().sync();
-        } catch (IOException e) {
-            Logger.INSTANCE.e("BS coverage: failed to persist Dart LCOV for " + testName, e);
-        }
-    }
-
-    /**
-     * Dumps JaCoCo coverage data (collected by the runtime agent) into
-     * `coverageFilePath`, then appends patrol's Dart-side LCOV blocks. Called
-     * after each Dart test from runDartTest() — at that point the process is
-     * fully alive and we have unbounded time, unlike the AGP-driven dump
-     * inside `finish()` which races against process teardown.
+     * Dumps JaCoCo coverage data (collected by the runtime agent) into the
+     * resolved coverage file, then appends patrol's Dart-side LCOV blocks.
+     * Called after each Dart test from runDartTest() — at that point the
+     * process is fully alive and we have unbounded time, unlike the
+     * AGP-driven dump inside `finish()` which races against process teardown.
      *
      * If the JaCoCo runtime classes are absent (e.g. testCoverageEnabled=false
      * on the app under test), this method is a silent no-op.
      */
-    private void writeMergedCoverage(String testName) {
+    private void writeMergedCoverage() {
         if (!coverageEnabled) return;
         File covFile = resolveCoverageFile();
         if (covFile == null) return;
-
-        persistDartCoverage(covFile, testName);
 
         try {
             // org.jacoco.agent.rt.RT is added by AGP when testCoverageEnabled=true.
@@ -314,7 +282,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             // Dump coverage NOW — Dart side has written its per-test LCOV in
             // tearDown(), and the instrumentation process is alive. Doing this
             // here instead of in finish() avoids racing the process teardown.
-            writeMergedCoverage(name);
+            writeMergedCoverage();
             if (response.getResult() == Contracts.RunDartTestResponseResult.failure) {
                 throw new AssertionError("Dart test failed: " + name + "\n" + response.getDetails());
             }
