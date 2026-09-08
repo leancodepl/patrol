@@ -1,8 +1,9 @@
 import 'dart:io' as io;
 
-import 'package:dispose_scope/dispose_scope.dart';
+import 'package:dispose_scope/dispose_scope.dart' hide ProcessDisposed;
 import 'package:file/file.dart';
 import 'package:patrol_cli/src/base/logger.dart';
+import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
 import 'package:patrol_cli/src/crossplatform/video_recording_manager.dart';
 import 'package:patrol_cli/src/devices.dart';
@@ -121,7 +122,7 @@ class IOSVideoRecordingManager extends VideoRecordingManager {
     try {
       // No shell: the stop SIGINT must reach `simctl` directly, not a wrapper.
       _currentRecordingProcess = await _processManager.start(command);
-      _currentRecordingProcess!.disposedBy(_scope);
+      _currentRecordingProcess!.disposedByTree(_scope);
 
       // Listen to stderr for any errors
       _currentRecordingProcess!.stderr.listen((data) {

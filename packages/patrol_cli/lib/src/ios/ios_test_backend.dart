@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io' show Process;
 
-import 'package:dispose_scope/dispose_scope.dart';
+import 'package:dispose_scope/dispose_scope.dart' hide ProcessDisposed;
 import 'package:file/file.dart';
 import 'package:glob/glob.dart';
 import 'package:meta/meta.dart';
@@ -163,7 +163,7 @@ class IOSTestBackend {
               runInShell: true,
               workingDirectory: _rootDirectory.childDirectory('ios').path,
             )
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
       process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
       exitCode = await process.exitCode;
@@ -339,7 +339,7 @@ class IOSTestBackend {
       // Read patrol logs from log stream
       final processLogs =
           await _processManager.start(patrolLogCommand, runInShell: true)
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
 
       final reportPath = resultBundlePath(
         timestamp: DateTime.now().millisecondsSinceEpoch,
@@ -387,7 +387,7 @@ class IOSTestBackend {
               },
               workingDirectory: _rootDirectory.childDirectory('ios').path,
             )
-            ..disposedBy(_disposeScope);
+            ..disposedByTree(_disposeScope);
       process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.detail('\t$l')).disposedBy(scope);
 
