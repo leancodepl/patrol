@@ -1,7 +1,7 @@
 ## Unreleased
 
-- Allow omitting the Gradle HTML report path in the test summary (used when Android
-  tests are run without Gradle, e.g. `patrol test-without-building`).
+- Omit the report line from the test summary when `PatrolLogReader.reportPath` is empty
+  (used when Android tests run without Gradle, e.g. `patrol test-without-building`).
 
 ## 0.10.1
 
