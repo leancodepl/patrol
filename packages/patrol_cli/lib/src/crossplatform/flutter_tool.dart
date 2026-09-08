@@ -58,7 +58,14 @@ class FlutterTool {
 
     StdinModes? previousStdinModes;
     if (io.stdin.hasTerminal) {
-      previousStdinModes = enableInteractiveMode();
+      try {
+        previousStdinModes = enableInteractiveMode();
+      } on io.StdinException catch (err) {
+        // Some hosts (CI, agent harnesses) report a terminal whose modes
+        // cannot be read or changed. Key commands still work if the host
+        // forwards raw keystrokes.
+        _logger.detail('Interactive shell mode unavailable: $err');
+      }
     }
 
     Future<void> onQuitWithRevertInteractiveMode() async {
