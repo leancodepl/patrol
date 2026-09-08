@@ -19,10 +19,6 @@ buildscript {
 apply plugin: "com.android.library"
 
 def agpMajor = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')[0] as int
-// Host apps control Kotlin compilation mode via gradle.properties (android.builtInKotlin).
-// false (Flutter default for unmigrated apps): apply KGP on AGP 9+.
-// true (fully migrated apps): skip KGP and rely on AGP built-in Kotlin on AGP 9+.
-// AGP < 9 always uses KGP regardless of the flag. This plugin supports both paths.
 def usesBuiltInKotlin = project.findProperty("android.builtInKotlin") == "true"
 if (agpMajor < 9 || !usesBuiltInKotlin) {
     apply plugin: "kotlin-android"
@@ -53,7 +49,8 @@ android {
     }
 
     sourceSets {
-        main.java.srcDirs = ["src/plugin/kotlin", "src/main/kotlin"]
+        main.java.srcDirs = ["../android/src/main/kotlin"]
+        main.res.srcDirs = ["../android/src/main/res"]
     }
 
     defaultConfig {
@@ -67,7 +64,6 @@ android {
     }
 
     dependencies {
-        // Exposed for projects using the in-app androidTest layout.
         api "junit:junit:4.13.2"
         api "androidx.test:runner:1.5.1"
         api "androidx.test.espresso:espresso-core:3.5.0"
@@ -91,7 +87,7 @@ android {
 plugins.withId("org.jetbrains.kotlin.android") {
     kotlin {
         sourceSets {
-            main.kotlin.setSrcDirs(["src/plugin/kotlin", "src/main/kotlin"])
+            main.kotlin.setSrcDirs(["../android/src/main/kotlin"])
         }
         compilerOptions {
             jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_1_8
@@ -99,7 +95,6 @@ plugins.withId("org.jetbrains.kotlin.android") {
     }
 }
 
-// Test Logging
 tasks.withType(Test).configureEach {
     testLogging {
         events "passed", "skipped", "failed"
