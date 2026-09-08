@@ -6,7 +6,8 @@
   test**: the file moves from the method name into the class name, methods are named after the test
   alone, and the name is no longer truncated to 80 characters nor suffixed with the test's position
   in the manifest. Regenerate any saved shard lists, native test filters or dashboard mappings.
-  Class and method names are now identical on Android and iOS.
+  Class and method names are now identical on Android and iOS. Two files whose names sanitize to
+  the same identifier get distinct classes.
 - `--only` now also accepts the path of a test file, which runs that whole file as one native
   selector, next to the exact Dart test name it already accepted. Entries matching nothing are
   reported instead of being dropped silently.
@@ -16,7 +17,9 @@
   with `'PatrolGeneratedTests.inc' file not found`. `patrol.emit_test_manifest` and
   `--emit-test-manifest` now apply to `patrol develop` too, generating the tests for its `--target`.
 - Fail with an explanation when `RunnerUITests.m` uses the static runner while build-time discovery
-  is disabled, instead of letting the build die on the missing include.
+  is disabled, instead of letting the build die on the missing include. Also fail with a migration
+  message when the file still has the 4.7.0 form, with the `#include` between the
+  `STATIC_BEGIN`/`STATIC_END` macros, which the per-file generated classes can no longer compile in.
 - Add `screenshot_on_failure` option to the pubspec's `patrol` section, forwarded to the app (via a dart-define) for `build` and `test` so patrol can capture native failure screenshots on Android device farms (e.g. BrowserStack, Firebase Test Lab). Not collected by `patrol develop`. Off by default. (#3222)
 - `patrol test` (Android) now pulls native screenshots (failure and on-demand) from the device into `<test-directory>/screenshots` after the run (override with `--screenshots-output-dir`), so they are available from local/emulator runs, not only device farms. (#3222)
 - Allow the latest `package_config` (3.x), `cli_completion` (0.6.x) and `pub_updater` (0.6.x), without raising the minimum Dart SDK. (#3225)

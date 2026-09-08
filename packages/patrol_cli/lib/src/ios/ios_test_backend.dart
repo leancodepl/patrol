@@ -208,7 +208,25 @@ class IOSTestBackend {
     final runner = _runnerFile;
     // Missing target is surfaced by the regular xcodebuild step; nothing to
     // guard here.
-    if (!runner.existsSync() || _usesStaticRunner(runner)) {
+    if (!runner.existsSync()) {
+      return;
+    }
+
+    if (_usesLegacyStaticRunner(runner)) {
+      throwToolExit(
+        '${runner.path} #includes PatrolGeneratedTests.inc between the '
+        'PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN and _END macros. The '
+        'generated file now declares whole test classes and cannot be compiled '
+        'inside another class. Replace the macros with:\n'
+        '\n'
+        '  PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE(RunnerUITests)\n'
+        '  #include "PatrolGeneratedTests.inc"\n'
+        '\n'
+        'See https://patrol.leancode.co/documentation/ci/build-time-test-discovery',
+      );
+    }
+
+    if (_usesStaticRunner(runner)) {
       return;
     }
 
@@ -258,6 +276,19 @@ class IOSTestBackend {
     final contents = runner.readAsStringSync();
     return contents.contains('PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC') &&
         contents.contains('#include "PatrolGeneratedTests.inc"');
+  }
+
+  /// Whether [runner] still has the 4.7.0 static form, with the `#include`
+  /// between the STATIC_BEGIN/STATIC_END macros instead of after STATIC_BASE.
+  bool _usesLegacyStaticRunner(File runner) {
+    final contents = runner.readAsStringSync();
+    final includeIndex = contents.indexOf(
+      '#include "PatrolGeneratedTests.inc"',
+    );
+    final endIndex = contents.indexOf(
+      'PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_END',
+    );
+    return includeIndex != -1 && endIndex != -1 && includeIndex < endIndex;
   }
 
   /// Maps requested [onlyTests] entries to the generated XCTest selectors below

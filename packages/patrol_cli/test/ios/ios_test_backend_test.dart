@@ -311,6 +311,30 @@ void main() {
           );
         },
       );
+
+      test(
+        'explains the 4.7.0 STATIC_BEGIN/END form when discovery is enabled',
+        () async {
+          fs.file('ios/RunnerUITests/RunnerUITests.m')
+            ..createSync(recursive: true)
+            ..writeAsStringSync(
+              'PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN(RunnerUITests)\n'
+              '#include "PatrolGeneratedTests.inc"\n'
+              'PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_END\n',
+            );
+
+          await expectLater(
+            iosTestBackend.build(options(emitTestManifest: true)),
+            throwsA(
+              isA<ToolExit>().having(
+                (e) => e.message,
+                'message',
+                contains('cannot be compiled inside another class'),
+              ),
+            ),
+          );
+        },
+      );
     });
   });
 }
