@@ -4,6 +4,7 @@ import 'package:meta/meta.dart';
 import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
+import 'package:patrol_cli/src/android/android_test_layout.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/commands/dart_define_utils.dart';
@@ -198,13 +199,18 @@ class BuildAndroidCommand extends PatrolCommand {
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       uninstall: uninstall,
+      testLayout: _androidTestBackend.detectTestLayout(),
       emitTestManifest:
           optionalBoolArg('emit-test-manifest') ?? config.emitTestManifest,
     );
 
     try {
       await _androidTestBackend.build(androidOpts);
-      printApkPaths(flavor: flavor, buildMode: buildMode.androidName);
+      printApkPaths(
+        flavor: flavor,
+        buildMode: buildMode.androidName,
+        testLayout: androidOpts.testLayout,
+      );
     } catch (err, st) {
       _logger
         ..err('$err')
@@ -221,7 +227,11 @@ class BuildAndroidCommand extends PatrolCommand {
   ///
   /// [flavor] is the flavor of the app under test.
   /// [buildMode] is the build mode of the app under test.
-  void printApkPaths({String? flavor, required String buildMode}) {
+  void printApkPaths({
+    String? flavor,
+    required String buildMode,
+    AndroidTestLayout testLayout = AndroidTestLayout.selfInstrumenting,
+  }) {
     // Standard Android APK output paths (relative to project root)
     final baseApkPath = join('build', 'app', 'outputs', 'apk');
 
@@ -238,22 +248,28 @@ class BuildAndroidCommand extends PatrolCommand {
 
     final appApkPath = join(flavorPath, '$apkPrefix.apk');
 
-    // Test APK path - include flavor if present
+    final selfInstrumenting = testLayout == AndroidTestLayout.selfInstrumenting;
+    final testBaseApkPath = selfInstrumenting
+        ? join('build', 'patrolTest', 'outputs', 'apk')
+        : join('build', 'app', 'outputs', 'apk', 'androidTest');
+    final prefix = selfInstrumenting ? 'patrolTest' : 'app';
+    final suffix = selfInstrumenting ? '' : '-androidTest';
+    final testApkPrefix = flavor == null
+        ? '$prefix-${buildMode.toLowerCase()}'
+        : '$prefix-$flavor-${buildMode.toLowerCase()}';
     final String testApkPath;
     if (flavor != null) {
       testApkPath = join(
-        baseApkPath,
-        'androidTest',
+        testBaseApkPath,
         flavor,
         buildMode.toLowerCase(),
-        '$apkPrefix-androidTest.apk',
+        '$testApkPrefix$suffix.apk',
       );
     } else {
       testApkPath = join(
-        baseApkPath,
-        'androidTest',
+        testBaseApkPath,
         buildMode.toLowerCase(),
-        '$apkPrefix-androidTest.apk',
+        '$testApkPrefix$suffix.apk',
       );
     }
 
