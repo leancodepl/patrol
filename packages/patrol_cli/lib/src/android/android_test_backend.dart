@@ -599,7 +599,8 @@ class AndroidTestBackend {
               listenStdOut: processLogcat.listenStdOut,
               scope: scope,
               log: _logger.info,
-              reportPath: null,
+              // No Gradle run, so there is no HTML report to point at.
+              reportPath: '',
               showFlutterLogs: showFlutterLogs,
               hideTestSteps: hideTestSteps,
               clearTestSteps: clearTestSteps,

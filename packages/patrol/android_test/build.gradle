@@ -95,6 +95,13 @@ plugins.withId("org.jetbrains.kotlin.android") {
     }
 }
 
+// The harness shares its sources with the `patrol` plugin, but is a plain Android
+// library with no Flutter on its classpath. PatrolPlugin is the Flutter plugin
+// entrypoint and has to stay where the Flutter tool looks for it, so skip it here.
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    exclude("**/PatrolPlugin.kt")
+}
+
 tasks.withType(Test).configureEach {
     testLogging {
         events "passed", "skipped", "failed"

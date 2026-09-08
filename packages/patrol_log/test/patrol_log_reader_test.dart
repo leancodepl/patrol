@@ -14,7 +14,7 @@ PatrolLogReader _buildReader({
   bool clearTestSteps = false,
   bool hideTestSteps = false,
   bool hideTestLifecycle = true,
-  String? reportPath = 'test_report.html',
+  String reportPath = 'test_report.html',
 }) {
   return PatrolLogReader(
     scope: DisposeScope(),
@@ -47,7 +47,7 @@ Map<String, dynamic> _testEntryJson({
 void main() {
   group('PatrolLogReader', () {
     test('omits the report line when no report was generated', () {
-      final reader = _buildReader(reportPath: null);
+      final reader = _buildReader(reportPath: '');
 
       expect(reader.summary, isNot(contains('Report:')));
     });

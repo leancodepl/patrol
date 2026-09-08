@@ -21,7 +21,9 @@ class PatrolLogReader {
   }) : _scope = scope;
 
   final void Function(String) log;
-  final String? reportPath;
+
+  /// Path to the HTML report, or empty when the run produces no report file.
+  final String reportPath;
   final bool showFlutterLogs;
   final bool hideTestSteps;
   final bool clearTestSteps;
@@ -357,7 +359,7 @@ class PatrolLogReader {
       '${Emojis.failure} Failed: $failedTestsCount\n'
       '${failedTestsCount > 0 ? '$failedTestsList\n' : ''}'
       '${Emojis.skip} Skipped: $skippedTests\n'
-      '${reportPath == null ? '' : '${Emojis.report} Report: ${reportPath!.replaceAll(' ', '%20')}\n'}'
+      '${reportPath.isEmpty ? '' : '${Emojis.report} Report: ${reportPath.replaceAll(' ', '%20')}\n'}'
       '${Emojis.duration} Duration: ${_stopwatch.elapsed.toFormattedString()}\n';
 
   /// Closes the stream subscription and the stream controller.
