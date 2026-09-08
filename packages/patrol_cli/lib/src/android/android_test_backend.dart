@@ -550,10 +550,10 @@ class AndroidTestBackend {
       );
     }
 
-    final fqcns = AndroidTestCodegen(
+    final generatedClassNames = AndroidTestCodegen(
       _rootDirectory.fileSystem,
     ).findGeneratedClassNames(_rootDirectory.childDirectory('android'));
-    if (fqcns.isEmpty) {
+    if (generatedClassNames.isEmpty) {
       throwToolExit(
         'No generated test class found. Run `patrol build android '
         '--emit-test-manifest` (or set patrol.emit_test_manifest in pubspec) '
@@ -561,7 +561,7 @@ class AndroidTestBackend {
       );
     }
 
-    final classArg = _resolveClassArg(fqcns, onlyTests);
+    final classArg = _resolveClassArg(generatedClassNames, onlyTests);
 
     // `patrol build android` only ASSEMBLES the app + androidTest APKs; it does
     // not install them. Install both now so a clean device works with the
@@ -647,15 +647,21 @@ class AndroidTestBackend {
   }
 
   /// Builds the `-e class` value for `am instrument`: the generated classes
-  /// ([fqcns]) to run all of them, or a comma-separated selection mapped from the
+  /// ([generatedClassNames]) to run all of them, or a comma-separated selection mapped from the
   /// requested [onlyTests] entries via the build-time manifest. A Dart test name
   /// becomes `<fqcn>#<method>`, a test file path becomes the bare `<fqcn>` so the
   /// whole file costs one entry.
-  String _resolveClassArg(List<String> fqcns, List<String> onlyTests) {
+  String _resolveClassArg(
+    List<String> generatedClassNames,
+    List<String> onlyTests,
+  ) {
     if (onlyTests.isEmpty) {
-      return fqcns.join(',');
+      return generatedClassNames.join(',');
     }
-    final package = fqcns.first.substring(0, fqcns.first.lastIndexOf('.'));
+    final package = generatedClassNames.first.substring(
+      0,
+      generatedClassNames.first.lastIndexOf('.'),
+    );
     final manifest = TestManifest.loadFromBuild(_rootDirectory);
     if (manifest == null) {
       throwToolExit(

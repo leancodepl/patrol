@@ -71,6 +71,8 @@ class AndroidTestCodegen {
     ).tests;
     final names = generatePerFileTestNames(tests, classPrefix: className);
 
+    // Group tests by their generated class (one class per Dart test file) and
+    // write one .java file per class into the host's source set.
     final byClass = <String, List<int>>{};
     for (var i = 0; i < tests.length; i++) {
       byClass.putIfAbsent(names[i].className, () => <int>[]).add(i);
