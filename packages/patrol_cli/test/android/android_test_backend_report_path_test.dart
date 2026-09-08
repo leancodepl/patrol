@@ -1,4 +1,5 @@
 import 'package:patrol_cli/src/android/android_test_backend.dart';
+import 'package:patrol_cli/src/android/android_test_layout.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:test/test.dart';
 
@@ -10,7 +11,7 @@ void main() {
     /// Helper function to build expected path
     String buildExpectedPath(String buildMode, {String? flavor}) {
       const baseUrl =
-          'file://$rootPath/build/app/reports/androidTests/connected';
+          'file://$rootPath/build/patrolTest/reports/androidTests/connected';
       if (flavor != null) {
         return '$baseUrl/$buildMode/flavors/$flavor/index.html';
       }
@@ -61,5 +62,18 @@ void main() {
       buildMode: BuildMode.profile,
       flavor: flavor,
     );
+
+    test('in-app layout reports under build/app', () {
+      final actual = AndroidTestBackend.generateTestReportPath(
+        rootPath: rootPath,
+        buildMode: BuildMode.debug,
+        testLayout: AndroidTestLayout.inApp,
+      );
+
+      expect(
+        actual,
+        'file://$rootPath/build/app/reports/androidTests/connected/debug/index.html',
+      );
+    });
   });
 }
