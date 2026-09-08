@@ -212,6 +212,11 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
 
         if (clearAppData) {
             clearAppData(appId);
+        } else if (isSelfInstrumenting()) {
+            // Orchestrator starts a new tester process per JUnit case. A launcher
+            // intent only foregrounds an already-running app, whose Dart explorer
+            // will not signal ready again. Stop it so this process gets a fresh one.
+            forceStopApp(appId);
         }
 
         Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
@@ -312,6 +317,24 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             throw new IllegalStateException(
                     "Failed to clear app data of " + appId + ": " + output
             );
+        }
+    }
+
+    /**
+     * Stops the app under test without wiping its data. Safe only when the runner
+     * is not hosted in that app.
+     */
+    private void forceStopApp(String appId) {
+        if (!appId.matches("[A-Za-z0-9._]+")) {
+            throw new IllegalArgumentException("Invalid Android package name: " + appId);
+        }
+
+        Logger.INSTANCE.i("PatrolJUnitRunner: force-stopping " + appId);
+
+        try {
+            UiDevice.getInstance(this).executeShellCommand("am force-stop " + appId);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to force-stop " + appId, e);
         }
     }
 
