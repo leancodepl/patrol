@@ -65,3 +65,4 @@ PatrolGeneratedTests.java
 
 # SauceLabs iOS test list (regenerated per build by scripts/generate_ios_testlist.sh)
 .sauce/ios_testlist.txt
+dev/e2e_app/patrol_test/videos/
