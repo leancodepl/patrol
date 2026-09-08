@@ -212,6 +212,30 @@ void main() {
       });
     });
 
+    group('extractVmServiceUrl', () {
+      // As printed by `xcrun simctl spawn <udid> log stream --type log`.
+      test('extracts the URL from the simulator log line', () {
+        const line =
+            '2026-09-04 13:17:11.693981+0200 0x1cb243   Default     0x0      '
+            '            39258  0    Runner: (Flutter) flutter: The Dart VM '
+            'service is listening on http://127.0.0.1:54296/4crAtS2Ux7w=/';
+
+        expect(
+          IOSTestBackend.extractVmServiceUrl(line),
+          'http://127.0.0.1:54296/4crAtS2Ux7w=/',
+        );
+      });
+
+      test('ignores other log lines', () {
+        expect(
+          IOSTestBackend.extractVmServiceUrl(
+            'Runner: (Flutter) flutter: PATROL_LOG {"type":"step"}',
+          ),
+          isNull,
+        );
+      });
+    });
+
     group('stripFlavorFromAppId', () {
       test('simply returns appId when flavor is null', () {
         const appId = 'com.company.app';

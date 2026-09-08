@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show Process;
 
@@ -10,6 +11,8 @@ import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
+import 'package:patrol_cli/src/crossplatform/flutter_tool.dart'
+    show getObservationUrl;
 import 'package:patrol_cli/src/crossplatform/patrol_build_environment.dart';
 import 'package:patrol_cli/src/crossplatform/test_manifest.dart';
 import 'package:patrol_cli/src/crossplatform/test_manifest_generator.dart';
@@ -289,6 +292,18 @@ class IOSTestBackend {
     _logger.info('Generated $count static XCTest method(s) → ${output.path}');
   }
 
+  /// Extracts the Dart VM service URL from a device log line. Returns null
+  /// unless [line] is the engine's "The Dart VM service is listening on"
+  /// message.
+  @visibleForTesting
+  static String? extractVmServiceUrl(String line) {
+    if (!line.contains('Dart VM service') || !line.contains('http')) {
+      return null;
+    }
+
+    return getObservationUrl(line);
+  }
+
   /// Executes the tests of the given [options] on the given [device].
   ///
   /// [build] must be called before this method.
@@ -304,6 +319,7 @@ class IOSTestBackend {
     required bool clearTestSteps,
     List<String> onlyTests = const [],
     void Function(Entry entry)? onLogEntry,
+    void Function(String url)? onVmServiceUrl,
     VideoRecordingConfig? videoConfig,
   }) async {
     final onlyTesting = _resolveOnlyTesting(onlyTests);
@@ -345,9 +361,28 @@ class IOSTestBackend {
         timestamp: DateTime.now().millisecondsSinceEpoch,
       );
 
+      StreamSubscription<void> listenPatrolLogs(
+        void Function(String) onData, {
+        Function? onError,
+        void Function()? onDone,
+        bool? cancelOnError,
+      }) => processLogs.listenStdOut(
+        (line) {
+          final vmServiceUrl = extractVmServiceUrl(line);
+          if (vmServiceUrl != null) {
+            onVmServiceUrl?.call(vmServiceUrl);
+          }
+
+          onData(line);
+        },
+        onError: onError,
+        onDone: onDone,
+        cancelOnError: cancelOnError,
+      );
+
       final patrolLogReader =
           PatrolLogReader(
-              listenStdOut: processLogs.listenStdOut,
+              listenStdOut: listenPatrolLogs,
               scope: scope,
               log: _logger.info,
               reportPath: reportPath,
