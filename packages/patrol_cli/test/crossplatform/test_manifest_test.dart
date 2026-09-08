@@ -110,6 +110,29 @@ void main() {
       expect(names.map((n) => n.qualified).toSet(), hasLength(tests.length));
     });
 
+    test('distinct files whose names sanitize identically get distinct '
+        'classes', () {
+      final tests = [
+        DiscoveredTest(
+          dartName: 'foo.bar_test nested',
+          skip: false,
+          topLevelGroup: 'foo.bar_test',
+        ),
+        DiscoveredTest(
+          dartName: 'foo_bar_test root',
+          skip: false,
+          topLevelGroup: 'foo_bar_test',
+        ),
+      ];
+
+      final names = generatePerFileTestNames(tests);
+
+      expect(names.map((n) => n.className), [
+        'PatrolGeneratedTests_foo_bar_test',
+        'PatrolGeneratedTests_foo_bar_test_2',
+      ]);
+    });
+
     test('the test prefix keeps Java keywords out of method names', () {
       const keywords = '''
 {"group":{"name":"","type":"group","skip":false,"entries":[

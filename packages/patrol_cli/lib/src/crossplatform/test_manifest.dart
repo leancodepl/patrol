@@ -131,12 +131,25 @@ List<GeneratedTestName> generatePerFileTestNames(
   List<DiscoveredTest> tests, {
   String classPrefix = 'PatrolGeneratedTests',
 }) {
+  // Sanitization can collapse distinct files into one identifier (`foo/bar_test`
+  // and `foo_bar_test` both become `foo_bar_test`), so class names are deduped
+  // per file group, deterministically by manifest order.
+  final classByGroup = <String, String>{};
+  final takenClassNames = <String>{};
   final usedPerClass = <String, Set<String>>{};
   final out = <GeneratedTestName>[];
   for (var i = 0; i < tests.length; i++) {
     final test = tests[i];
-    final className =
-        '${classPrefix}_${_sanitizeIdentifier(test.topLevelGroup)}';
+    final className = classByGroup.putIfAbsent(test.topLevelGroup, () {
+      final base = '${classPrefix}_${_sanitizeIdentifier(test.topLevelGroup)}';
+      var candidate = base;
+      var dedup = 1;
+      while (!takenClassNames.add(candidate)) {
+        dedup++;
+        candidate = '${base}_$dedup';
+      }
+      return candidate;
+    });
     final used = usedPerClass.putIfAbsent(className, () => <String>{});
     out.add(
       GeneratedTestName(
