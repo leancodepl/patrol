@@ -1,10 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/src/common.dart'
-    show
-        createDartTestGroup,
-        deduplicateGroupEntryName,
-        namesWithPathSeparator,
-        pathSeparatorNameError;
+    show createDartTestGroup, deduplicateGroupEntryName, namesWithPathSeparator;
 import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:test_api/backend.dart';
 import 'package:test_api/src/backend/group.dart';
