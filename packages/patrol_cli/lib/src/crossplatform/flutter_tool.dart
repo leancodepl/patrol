@@ -5,6 +5,8 @@ import 'dart:io' show exit;
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' show basename;
+import 'package:patrol_cli/src/base/exceptions.dart';
+import 'package:patrol_cli/src/base/extensions/completer.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
@@ -41,6 +43,7 @@ class FlutterTool {
   var _logsActive = false;
   var _logsSkipped = false;
   var _devtoolsUrl = '';
+  String? _attachFailure;
 
   /// Forwards logs and hot restarts the app when "r" is pressed.
   Future<void> attachForHotRestart({
@@ -72,6 +75,8 @@ class FlutterTool {
 
     if (attachUsingUrl) {
       final urlCompleter = Completer<String>();
+      // The error can be set before anything awaits this below.
+      urlCompleter.future.ignore();
       await logs(
         deviceId,
         flutterCommand: flutterCommand,
@@ -144,8 +149,18 @@ class FlutterTool {
       scope.addDispose(() {
         if (!completer.isCompleted) {
           _logger.detail('Killed before attached to the app');
-          completer.complete();
         }
+        completer.maybeComplete();
+      });
+
+      _reportExit(process, scope, 'flutter attach', (reason) {
+        if (completer.isCompleted) {
+          return;
+        }
+        final failure = 'Hot Restart is not available: $reason';
+        _attachFailure = failure;
+        _logger.err(failure);
+        completer.maybeComplete();
       });
 
       _stdin
@@ -153,7 +168,9 @@ class FlutterTool {
             final char = String.fromCharCode(event.first);
             if (char == 'r' || char == 'R') {
               if (!_hotRestartActive) {
-                _logger.warn('Hot Restart: not attached to the app yet!');
+                _logger.warn(
+                  _attachFailure ?? 'Hot Restart: not attached to the app yet!',
+                );
                 return;
               }
 
@@ -179,9 +196,7 @@ class FlutterTool {
             } else if (char == 'q' || char == 'Q') {
               _logger.success('Quitting process...');
               process.kill();
-              if (!completer.isCompleted) {
-                completer.complete();
-              }
+              completer.maybeComplete();
 
               // Call the uninstall function if provided
               if (onQuit != null) {
@@ -217,7 +232,7 @@ class FlutterTool {
               if (!_logsActive && !_logsSkipped) {
                 _logger.warn('Hot Restart: logs are not connected yet');
               }
-              completer.complete();
+              completer.maybeComplete();
             }
 
             if (line.startsWith('The Flutter DevTools debugger and profiler')) {
@@ -232,16 +247,6 @@ class FlutterTool {
             }
 
             _logger.detail('\t: $line');
-          })
-          .disposedBy(scope);
-
-      process
-          .listenStdErr((line) {
-            if (line.startsWith('Waiting for another flutter command')) {
-              // This is a warning that we can ignore
-              return;
-            }
-            _logger.err('\t$line');
           })
           .disposedBy(scope);
 
@@ -271,9 +276,22 @@ class FlutterTool {
             ..disposedBy(scope);
 
       final completer = Completer<void>();
-      scope.addDispose(() {
+      scope.addDispose(completer.maybeComplete);
+
+      _reportExit(process, scope, 'flutter logs', (reason) {
         if (!completer.isCompleted) {
-          completer.complete();
+          _logger.err('Logs are not available: $reason');
+          completer.maybeComplete();
+        }
+
+        if (observationUrlCompleter case final urlCompleter?
+            when !urlCompleter.isCompleted) {
+          urlCompleter.completeError(
+            ToolExit(
+              'flutter logs exited before reporting the Dart VM service '
+              'URL: $reason',
+            ),
+          );
         }
       });
 
@@ -292,7 +310,7 @@ class FlutterTool {
               if (!_hotRestartActive) {
                 _logger.warn('Hot Restart: not attached to the app yet');
               }
-              completer.complete();
+              completer.maybeComplete();
             }
 
             // Skip the log line that contains "PATROL_LOG" prefix
@@ -316,10 +334,56 @@ class FlutterTool {
           })
           .disposedBy(scope);
 
-      process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
-
       await completer.future;
     });
+  }
+
+  /// Forwards the process stderr and, once it exits, hands [onExit] a
+  /// description of that exit.
+  ///
+  /// The lines explaining an exit can still be in flight when its exit code
+  /// arrives, so the description is built once stderr drains. Only the tail is
+  /// kept: a long session can produce thousands of lines.
+  void _reportExit(
+    io.Process process,
+    DisposeScope scope,
+    String command,
+    void Function(String reason) onExit,
+  ) {
+    final stderrLines = <String>[];
+    final drained = Completer<void>();
+
+    process
+        .listenStdErr((line) {
+          if (line.startsWith('Waiting for another flutter command')) {
+            // This is a warning that we can ignore
+            return;
+          }
+          stderrLines.add(line);
+          if (stderrLines.length > _maxStderrLines) {
+            stderrLines.removeAt(0);
+          }
+          _logger.err('\t$line');
+        }, onDone: drained.maybeComplete)
+        .disposedBy(scope);
+
+    unawaited(
+      process.exitCode.then((code) async {
+        await drained.future.timeout(
+          const Duration(seconds: 1),
+          onTimeout: () {},
+        );
+        onExit(_describeExit(command, code, stderrLines));
+      }),
+    );
+  }
+
+  static const _maxStderrLines = 20;
+
+  String _describeExit(String command, int code, List<String> stderrLines) {
+    final lines = stderrLines.where((line) => line.trim().isNotEmpty);
+    final reason = lines.isEmpty ? '' : ':\n\t${lines.join('\n\t')}';
+    return '`$command` exited with code $code$reason';
   }
 
   /// Enables interactive mode. Returns the previous stdin modes.
