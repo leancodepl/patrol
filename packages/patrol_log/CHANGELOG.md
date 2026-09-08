@@ -1,3 +1,8 @@
+## Unreleased
+
+- Allow omitting the Gradle HTML report path in the test summary (used when Android
+  tests are run without Gradle, e.g. `patrol test-without-building`).
+
 ## 0.10.1
 
 - Fix first word of a test description being displayed as the test file name when the finished test entry name has no file prefix. (#3167)
