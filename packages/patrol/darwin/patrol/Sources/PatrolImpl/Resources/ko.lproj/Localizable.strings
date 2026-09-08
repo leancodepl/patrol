@@ -13,9 +13,9 @@
 /* Settings navigation */
 "developer" = "개발자";
 "dark_appearance" = "다크 화면 모드";
-"display_brightness" = "화면 및 밝기";
-"dark" = "다크";
-"light" = "라이트";
+"display_brightness" = "디스플레이 및 밝기";
+"dark" = "다크 모드";
+"light" = "라이트 모드";
 
 /* Location precision */
 "precise_off" = "정확한 위치: 끔";
