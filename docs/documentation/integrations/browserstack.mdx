@@ -157,9 +157,11 @@ Patrol can collect Dart line coverage on BrowserStack and hand it back through B
     By default only code the VM has already compiled is reported — that is, what the suite actually exercised. Add `--dart-define=PATROL_BS_COVERAGE_FORCE_COMPILE=true` to also force-compile untouched functions so never-executed lines count towards the denominator.
 
     <Warning>
-      `PATROL_BS_COVERAGE_FORCE_COMPILE=true` does not scale with `useOrchestrator:true`. Force-compiling recompiles the whole package graph on every collection, and the orchestrator gives each test a fresh process, so the cost is paid per test with nothing reused — measured at roughly 90s per test on a 2,700-file app, which overruns BrowserStack's 2h session cap long before a large suite finishes.
+      `PATROL_BS_COVERAGE_FORCE_COMPILE=true` is expensive, and how expensive depends on `PATROL_BS_COVERAGE_PACKAGES`.
 
-      Use it only with `useOrchestrator:false`, where one process serves the whole shard and the compile is amortised, and always narrow the scope with `PATROL_BS_COVERAGE_PACKAGES`. For a whole-app percentage on a big suite, prefer a normal `forceCompile=false` run and add the never-loaded files to the denominator afterwards.
+      Set `PATROL_BS_COVERAGE_PACKAGES` to plain anchored prefixes (`^package:my_app/`, comma-separated) and Patrol hands them to the VM as library filters, so force-compilation only ever touches your own code. Leave it unset, or use real regexp syntax such as `^package:(a|b)/`, and the filter cannot be pushed down — the VM then force-compiles the whole program, Flutter framework and SDK included, on every collection. That is the difference between seconds and minutes per test.
+
+      Within one app process the compile is paid once: Patrol tells the VM which libraries it has already compiled, so later collections skip straight to reporting. With `useOrchestrator:true` every test is a fresh process, so there is nothing to amortise and the first-collection cost is paid per test — for a large suite prefer `useOrchestrator:false` for force-compile runs.
     </Warning>
   </Step>
   <Step>

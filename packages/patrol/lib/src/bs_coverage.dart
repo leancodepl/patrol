@@ -51,6 +51,40 @@ class BrowserStackCoverage {
       .map(RegExp.new)
       .toList();
 
+  /// Matches any character that makes a pattern a real regexp rather than a
+  /// plain literal.
+  static final _regexpMeta = RegExp(r'[\\$.|?*+()\[\]{}]');
+
+  /// Library URI prefixes handed to the VM's own `libraryFilters`, so that
+  /// force-compilation and report generation never touch the Flutter framework
+  /// or the SDK in the first place. Only plain anchored prefixes such as
+  /// `^package:my_app/` can be pushed down; if any pattern uses real regexp
+  /// syntax we send nothing and fall back to filtering after the fact, because
+  /// a partial filter set would silently drop the other patterns' coverage.
+  static final List<String> _libraryFilters = _deriveLibraryFilters();
+
+  static List<String> _deriveLibraryFilters() {
+    final patterns = _packagesEnv.split(',').where((s) => s.isNotEmpty);
+    final filters = <String>[];
+    for (final pattern in patterns) {
+      if (!pattern.startsWith('^')) {
+        return const [];
+      }
+      final literal = pattern.substring(1);
+      if (literal.isEmpty || _regexpMeta.hasMatch(literal)) {
+        return const [];
+      }
+      filters.add(literal);
+    }
+    return filters;
+  }
+
+  /// Libraries already force-compiled in this process, per isolate. Passing
+  /// them back to the VM is what keeps repeat collections cheap: the first call
+  /// in a process pays the compile, the rest skip it. Without this every test
+  /// re-pays it, which is what made `forceCompile` unaffordable on large apps.
+  static final Map<String, Set<String>> _compiledLibraries = {};
+
   /// Names this process's file so a restarted process can't overwrite the
   /// previous one's snapshot. `pid` alone could be reused within a session.
   static final _runId = '${DateTime.now().millisecondsSinceEpoch}_$pid';
@@ -118,13 +152,26 @@ class BrowserStackCoverage {
           continue;
         }
         try {
+          final alreadyCompiled = _compiledLibraries[id];
           final report = await service.getSourceReport(
             id,
             const ['Coverage'],
             forceCompile: _forceCompile,
             reportLines: true,
+            libraryFilters: _libraryFilters.isEmpty ? null : _libraryFilters,
+            librariesAlreadyCompiled:
+                _forceCompile &&
+                    alreadyCompiled != null &&
+                    alreadyCompiled.isNotEmpty
+                ? alreadyCompiled.toList()
+                : null,
           );
           _mergeReport(report, hitMap);
+          if (_forceCompile) {
+            // Recomputed every time rather than cached once, so libraries
+            // loaded later (deferred imports) still get compiled once.
+            _compiledLibraries[id] = await _collectedLibrariesOf(service, id);
+          }
         } catch (_) {
           // Isolate may have gone away mid-collection; ignore.
         }
@@ -171,6 +218,21 @@ class BrowserStackCoverage {
       'useOrchestrator:false for force-compile runs, and narrow the scope with '
       'PATROL_BS_COVERAGE_PACKAGES.',
     );
+  }
+
+  /// The in-scope libraries currently loaded in [isolateId] — i.e. the ones a
+  /// `forceCompile` pass has just compiled.
+  static Future<Set<String>> _collectedLibrariesOf(
+    vms.VmService service,
+    String isolateId,
+  ) async {
+    final isolate = await service.getIsolate(isolateId);
+    final libraries = isolate.libraries ?? const <vms.LibraryRef>[];
+    return {
+      for (final library in libraries)
+        if (library.uri case final uri?)
+          if (_shouldInclude(uri)) uri,
+    };
   }
 
   static void _mergeReport(
