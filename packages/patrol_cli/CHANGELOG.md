@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Detect and support both Android test layouts: the self-instrumenting
+  `:patrolTest` module and the in-app `:app` androidTest source set.
 - Fix the generated test bundle dropping the Dart entrypoint arguments passed by the native side of
   the app: `main` now takes them and passes them to tests as `$.entrypointArgs`. Needs a `patrol`
   release that includes this change. (#3366)
