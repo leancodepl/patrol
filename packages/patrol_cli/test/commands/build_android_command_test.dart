@@ -4,6 +4,7 @@ import 'package:args/command_runner.dart';
 import 'package:file/memory.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:path/path.dart' show join;
+import 'package:patrol_cli/src/android/android_test_layout.dart';
 import 'package:patrol_cli/src/commands/build_android.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
@@ -104,6 +105,9 @@ void main() {
       );
 
       when(() => mockAndroidTestBackend.build(any())).thenAnswer((_) async {});
+      when(
+        () => mockAndroidTestBackend.detectTestLayout(),
+      ).thenReturn(AndroidTestLayout.selfInstrumenting);
 
       when(
         () => mockCompatibilityChecker.checkVersionsCompatibilityForBuild(
@@ -527,6 +531,23 @@ void main() {
     });
 
     group('printApkPaths', () {
+      test('prints in-app androidTest path', () {
+        command.printApkPaths(
+          buildMode: 'debug',
+          testLayout: AndroidTestLayout.inApp,
+        );
+
+        verifyInOrder([
+          () => mockLogger.info(
+            '${join('build', 'app', 'outputs', 'apk', 'debug', 'app-debug.apk')} '
+            '(app under test)',
+          ),
+          () => mockLogger.info(
+            '${join('build', 'app', 'outputs', 'apk', 'androidTest', 'debug', 'app-debug-androidTest.apk')} (test instrumentation app)',
+          ),
+        ]);
+      });
+
       test('prints correct paths for debug build without flavor', () {
         command.printApkPaths(buildMode: 'debug');
 
@@ -537,7 +558,7 @@ void main() {
         ).called(1);
         verify(
           () => mockLogger.info(
-            '${join('build', 'app', 'outputs', 'apk', 'androidTest', 'debug', 'app-debug-androidTest.apk')} (test instrumentation app)',
+            '${join('build', 'patrolTest', 'outputs', 'apk', 'debug', 'patrolTest-debug.apk')} (test instrumentation app)',
           ),
         ).called(1);
       });
@@ -552,7 +573,7 @@ void main() {
         ).called(1);
         verify(
           () => mockLogger.info(
-            '${join('build', 'app', 'outputs', 'apk', 'androidTest', 'release', 'app-release-androidTest.apk')} (test instrumentation app)',
+            '${join('build', 'patrolTest', 'outputs', 'apk', 'release', 'patrolTest-release.apk')} (test instrumentation app)',
           ),
         ).called(1);
       });
@@ -567,7 +588,7 @@ void main() {
         ).called(1);
         verify(
           () => mockLogger.info(
-            '${join('build', 'app', 'outputs', 'apk', 'androidTest', 'dev', 'debug', 'app-dev-debug-androidTest.apk')} (test instrumentation app)',
+            '${join('build', 'patrolTest', 'outputs', 'apk', 'dev', 'debug', 'patrolTest-dev-debug.apk')} (test instrumentation app)',
           ),
         ).called(1);
       });
@@ -582,7 +603,7 @@ void main() {
         ).called(1);
         verify(
           () => mockLogger.info(
-            '${join('build', 'app', 'outputs', 'apk', 'androidTest', 'prod', 'release', 'app-prod-release-androidTest.apk')} (test instrumentation app)',
+            '${join('build', 'patrolTest', 'outputs', 'apk', 'prod', 'release', 'patrolTest-prod-release.apk')} (test instrumentation app)',
           ),
         ).called(1);
       });
@@ -597,7 +618,7 @@ void main() {
         ).called(1);
         verify(
           () => mockLogger.info(
-            '${join('build', 'app', 'outputs', 'apk', 'androidTest', 'profile', 'app-profile-androidTest.apk')} (test instrumentation app)',
+            '${join('build', 'patrolTest', 'outputs', 'apk', 'profile', 'patrolTest-profile.apk')} (test instrumentation app)',
           ),
         ).called(1);
       });
@@ -612,7 +633,7 @@ void main() {
         ).called(1);
         verify(
           () => mockLogger.info(
-            '${join('build', 'app', 'outputs', 'apk', 'androidTest', 'staging', 'profile', 'app-staging-profile-androidTest.apk')} (test instrumentation app)',
+            '${join('build', 'patrolTest', 'outputs', 'apk', 'staging', 'profile', 'patrolTest-staging-profile.apk')} (test instrumentation app)',
           ),
         ).called(1);
       });
@@ -627,7 +648,7 @@ void main() {
         ).called(1);
         verify(
           () => mockLogger.info(
-            '${join('build', 'app', 'outputs', 'apk', 'androidTest', 'debug', 'app-debug-androidTest.apk')} (test instrumentation app)',
+            '${join('build', 'patrolTest', 'outputs', 'apk', 'debug', 'patrolTest-debug.apk')} (test instrumentation app)',
           ),
         ).called(1);
       });
@@ -642,7 +663,7 @@ void main() {
         ).called(1);
         verify(
           () => mockLogger.info(
-            '${join('build', 'app', 'outputs', 'apk', 'androidTest', 'Dev', 'release', 'app-Dev-release-androidTest.apk')} (test instrumentation app)',
+            '${join('build', 'patrolTest', 'outputs', 'apk', 'Dev', 'release', 'patrolTest-Dev-release.apk')} (test instrumentation app)',
           ),
         ).called(1);
       });
@@ -657,7 +678,7 @@ void main() {
         ).called(1);
         verify(
           () => mockLogger.info(
-            '${join('build', 'app', 'outputs', 'apk', 'androidTest', 'staging-prod', 'release', 'app-staging-prod-release-androidTest.apk')} (test instrumentation app)',
+            '${join('build', 'patrolTest', 'outputs', 'apk', 'staging-prod', 'release', 'patrolTest-staging-prod-release.apk')} (test instrumentation app)',
           ),
         ).called(1);
       });
@@ -672,7 +693,7 @@ void main() {
         ).called(1);
         verify(
           () => mockLogger.info(
-            '${join('build', 'app', 'outputs', 'apk', 'androidTest', 'debug', 'app-debug-androidTest.apk')} (test instrumentation app)',
+            '${join('build', 'patrolTest', 'outputs', 'apk', 'debug', 'patrolTest-debug.apk')} (test instrumentation app)',
           ),
         ).called(1);
       });
@@ -703,15 +724,7 @@ void main() {
         expect(
           captured[1],
           contains(
-            join(
-              'build',
-              'app',
-              'outputs',
-              'apk',
-              'androidTest',
-              'dev',
-              'debug',
-            ),
+            join('build', 'patrolTest', 'outputs', 'apk', 'dev', 'debug'),
           ),
         );
       });
