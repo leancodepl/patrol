@@ -53,7 +53,7 @@ android {
     }
 
     sourceSets {
-        main.java.srcDirs = ["src/plugin/kotlin", "src/main/kotlin"]
+        main.java.srcDirs += "src/main/kotlin"
     }
 
     defaultConfig {
@@ -90,9 +90,6 @@ android {
 
 plugins.withId("org.jetbrains.kotlin.android") {
     kotlin {
-        sourceSets {
-            main.kotlin.setSrcDirs(["src/plugin/kotlin", "src/main/kotlin"])
-        }
         compilerOptions {
             jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_1_8
         }
