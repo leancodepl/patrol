@@ -136,6 +136,8 @@ class BrowserStackCoverage {
 
     _warnAboutForceCompileOnce();
 
+    final stopwatch = Stopwatch()..start();
+
     try {
       final outDir = await _resolveOutputDir();
       if (outDir == null) {
@@ -187,10 +189,17 @@ class BrowserStackCoverage {
       // run in this process.
       final file = File('$outDir/coverage_$_runId.lcov');
       await file.writeAsString(lcov, flush: true);
+      // The timing and the filter state are the two things worth having in a
+      // device-farm log: they say whether force-compile is being scoped to the
+      // app's own libraries or is walking the whole program.
+      final scope = _libraryFilters.isEmpty
+          ? 'none (whole program)'
+          : _libraryFilters.join(' ');
       // ignore: avoid_print -- coverage diagnostics go through stdout/logcat.
       print(
         'BrowserStackCoverage: wrote ${file.path} '
-        '(${hitMap.length} files, passed=$passed)',
+        '(${hitMap.length} files, ${stopwatch.elapsedMilliseconds}ms, '
+        'forceCompile=$_forceCompile, libraryFilters=$scope, passed=$passed)',
       );
     } catch (err, st) {
       // ignore: avoid_print -- coverage failure must not fail the test.
