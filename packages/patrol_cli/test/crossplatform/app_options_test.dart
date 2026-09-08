@@ -1,3 +1,4 @@
+import 'package:patrol_cli/src/android/android_test_layout.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
@@ -103,7 +104,7 @@ void main() {
           invocation,
           equals([
             r'.\gradlew.bat',
-            ':app:assembleDebugAndroidTest',
+            ':patrolTest:assembleDebug',
             r'-Ptarget=C:\Users\john\app\patrol_test\app_test.dart',
             '-Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true',
             '-Papp-server-port=1',
@@ -138,7 +139,7 @@ void main() {
           invocation,
           equals([
             './gradlew',
-            ':app:assembleReleaseAndroidTest',
+            ':patrolTest:assembleRelease',
             '-Ptarget=/Users/john/app/patrol_test/app_test.dart',
             '-Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true',
             '-Papp-server-port=1',
@@ -181,7 +182,7 @@ void main() {
           invocation,
           equals([
             r'.\gradlew.bat',
-            ':app:assembleDevReleaseAndroidTest',
+            ':patrolTest:assembleDevRelease',
             r'-Ptarget=C:\Users\john\app\patrol_test\app_test.dart',
             '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg==',
             '-Papp-server-port=1',
@@ -216,7 +217,7 @@ void main() {
           invocation,
           equals([
             './gradlew',
-            ':app:assembleDevDebugAndroidTest',
+            ':patrolTest:assembleDevDebug',
             '-Ptarget=/Users/john/app/patrol_test/app_test.dart',
             '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg==',
             '-Papp-server-port=1',
@@ -251,7 +252,7 @@ void main() {
           invocation,
           equals([
             './gradlew',
-            ':app:connectedDevDebugAndroidTest',
+            ':patrolTest:connectedDevDebugAndroidTest',
             '-Ptarget=/Users/john/app/patrol_test/app_test.dart',
             '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg==',
             '-Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true',
@@ -261,6 +262,82 @@ void main() {
           ]),
         );
       });
+
+      test('with a runtime app id override', () {
+        const flutterOpts = FlutterAppOptions(
+          command: flutterCommand,
+          target: '/Users/john/app/patrol_test/app_test.dart',
+          buildMode: BuildMode.debug,
+          flavor: null,
+          buildName: null,
+          buildNumber: null,
+          dartDefines: {},
+          dartDefineFromFilePaths: [],
+        );
+        options = const AndroidAppOptions(
+          flutter: flutterOpts,
+          appServerPort: 1,
+          testServerPort: 2,
+          uninstall: true,
+        );
+
+        final invocation = options.toGradleConnectedTestInvocation(
+          isWindows: false,
+          targetAppId: 'com.example.app',
+        );
+        expect(
+          invocation,
+          equals([
+            './gradlew',
+            ':patrolTest:connectedDebugAndroidTest',
+            '-Ptarget=/Users/john/app/patrol_test/app_test.dart',
+            '-Papp-server-port=1',
+            '-Ptest-server-port=2',
+            '-Ppatrol-enabled=true',
+            '-Pandroid.testInstrumentationRunnerArguments.patrolAppId=com.example.app',
+          ]),
+        );
+      });
+    });
+  });
+
+  group('AndroidAppOptions in-app layout', () {
+    const flutterOpts = FlutterAppOptions(
+      command: flutterCommand,
+      target: 'patrol_test/test_bundle.dart',
+      buildMode: BuildMode.debug,
+      flavor: 'dev',
+      buildName: null,
+      buildNumber: null,
+      dartDefines: {},
+      dartDefineFromFilePaths: [],
+    );
+    const options = AndroidAppOptions(
+      flutter: flutterOpts,
+      appServerPort: 1,
+      testServerPort: 2,
+      uninstall: true,
+      testLayout: AndroidTestLayout.inApp,
+    );
+
+    test('assembles the app androidTest APK', () {
+      expect(
+        options
+            .toGradleAssembleTestInvocation(isWindows: false)
+            .take(2)
+            .toList(),
+        ['./gradlew', ':app:assembleDevDebugAndroidTest'],
+      );
+    });
+
+    test('runs connected tests from app', () {
+      expect(
+        options
+            .toGradleConnectedTestInvocation(isWindows: false)
+            .take(2)
+            .toList(),
+        ['./gradlew', ':app:connectedDevDebugAndroidTest'],
+      );
     });
   });
 
