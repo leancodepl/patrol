@@ -154,7 +154,13 @@ Patrol can collect Dart line coverage on BrowserStack and hand it back through B
   <Step>
     Build with `--dart-define=PATROL_BS_COVERAGE=true`. Optionally narrow what's collected with `--dart-define=PATROL_BS_COVERAGE_PACKAGES=<regexp>,<regexp>`.
 
-    By default only code the VM has already compiled is reported — that is, what the suite actually exercised. Add `--dart-define=PATROL_BS_COVERAGE_FORCE_COMPILE=true` to also force-compile untouched functions so never-executed lines count towards the denominator. It gives a whole-app coverage percentage, but is much slower on large apps and can push a shard past BrowserStack's session time limit, so combine it with `PATROL_BS_COVERAGE_PACKAGES`.
+    By default only code the VM has already compiled is reported — that is, what the suite actually exercised. Add `--dart-define=PATROL_BS_COVERAGE_FORCE_COMPILE=true` to also force-compile untouched functions so never-executed lines count towards the denominator.
+
+    <Warning>
+      `PATROL_BS_COVERAGE_FORCE_COMPILE=true` does not scale with `useOrchestrator:true`. Force-compiling recompiles the whole package graph on every collection, and the orchestrator gives each test a fresh process, so the cost is paid per test with nothing reused — measured at roughly 90s per test on a 2,700-file app, which overruns BrowserStack's 2h session cap long before a large suite finishes.
+
+      Use it only with `useOrchestrator:false`, where one process serves the whole shard and the compile is amortised, and always narrow the scope with `PATROL_BS_COVERAGE_PACKAGES`. For a whole-app percentage on a big suite, prefer a normal `forceCompile=false` run and add the never-loaded files to the denominator afterwards.
+    </Warning>
   </Step>
   <Step>
     Start the build with `"coverage": "true"` and **`"clearPackageData": "false"`** (see the warning below). `useOrchestrator` can be either value, and sharding works.

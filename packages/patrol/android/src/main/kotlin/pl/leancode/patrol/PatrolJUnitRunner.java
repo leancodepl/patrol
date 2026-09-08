@@ -17,7 +17,9 @@ import pl.leancode.patrol.contracts.Contracts;
 import pl.leancode.patrol.contracts.PatrolAppServiceClientException;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -145,14 +147,32 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             if (parent != null && !parent.exists()) {
                 parent.mkdirs();
             }
-            try (FileOutputStream fos = new FileOutputStream(covFile, /* append= */ false)) {
+
+            // Assemble the whole file (JaCoCo dump + Dart blocks) in a staging
+            // file next to the destination, then swap it in with a single
+            // rename. Writing straight into covFile leaves it holding JaCoCo
+            // and zero Dart blocks for the entire duration of the append; a
+            // process killed in that window - e.g. by the BrowserStack session
+            // timeout - hands the farm a Dart-less .ec, losing every earlier
+            // test's Dart coverage.
+            File staging = new File(covFile.getAbsolutePath() + ".patrol-staging");
+            try (FileOutputStream fos = new FileOutputStream(staging, /* append= */ false)) {
                 fos.write(data);
                 fos.flush();
                 fos.getFD().sync();
             }
-            Logger.INSTANCE.i("BS coverage: wrote " + data.length + " JaCoCo bytes to " + covFile.getAbsolutePath());
+            Logger.INSTANCE.i("BS coverage: staged " + data.length + " JaCoCo bytes in " + staging.getAbsolutePath());
 
-            BrowserStackCoverage.INSTANCE.appendDartCoverage(getTargetContext(), covFile);
+            BrowserStackCoverage.INSTANCE.appendDartCoverage(getTargetContext(), staging);
+
+            if (!staging.renameTo(covFile)) {
+                // A same-directory rename is atomic on the filesystems Android
+                // uses here. If it is refused anyway, fall back to a copy so
+                // the run still produces coverage.
+                Logger.INSTANCE.e("BS coverage: rename to " + covFile.getAbsolutePath() + " failed, copying instead", null);
+                copyFile(staging, covFile);
+                staging.delete();
+            }
             Logger.INSTANCE.i("BS coverage: merged file now " + covFile.length() + " bytes");
         } catch (ClassNotFoundException e) {
             // coverage=true was requested but the JaCoCo runtime is missing: the
@@ -167,6 +187,19 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             );
         } catch (Throwable t) {
             Logger.INSTANCE.e("BS coverage: writeMergedCoverage failed " + t.getMessage(), t);
+        }
+    }
+
+    private static void copyFile(File from, File to) throws IOException {
+        try (FileInputStream in = new FileInputStream(from);
+             FileOutputStream out = new FileOutputStream(to, /* append= */ false)) {
+            byte[] buf = new byte[8192];
+            int read;
+            while ((read = in.read(buf)) > 0) {
+                out.write(buf, 0, read);
+            }
+            out.flush();
+            out.getFD().sync();
         }
     }
 

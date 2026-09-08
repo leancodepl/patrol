@@ -55,6 +55,7 @@ class BrowserStackCoverage {
   /// previous one's snapshot. `pid` alone could be reused within a session.
   static final _runId = '${DateTime.now().millisecondsSinceEpoch}_$pid';
 
+  static var _forceCompileWarned = false;
   static String? _cachedDir;
   static vms.VmService? _service;
   static Future<vms.VmService>? _serviceFuture;
@@ -98,6 +99,8 @@ class BrowserStackCoverage {
     if (!Platform.isAndroid) {
       return;
     }
+
+    _warnAboutForceCompileOnce();
 
     try {
       final outDir = await _resolveOutputDir();
@@ -146,6 +149,28 @@ class BrowserStackCoverage {
       // ignore: avoid_print -- coverage failure must not fail the test.
       print('BrowserStackCoverage: failed to record $testName: $err\n$st');
     }
+  }
+
+  /// `forceCompile: true` recompiles every function in scope on each call. In
+  /// a fresh process that is the whole package graph, so under the Android test
+  /// orchestrator - one process per test - nothing is ever reused and the cost
+  /// is paid in full for every test. Measured at ~90s/test on a 2.7k-file app,
+  /// which overruns BrowserStack's session cap well before a large suite ends.
+  /// Warn once so the run's logs say why it is slow.
+  static void _warnAboutForceCompileOnce() {
+    if (!_forceCompile || _forceCompileWarned) {
+      return;
+    }
+    _forceCompileWarned = true;
+    // ignore: avoid_print -- coverage diagnostics go through stdout/logcat.
+    print(
+      'BrowserStackCoverage: PATROL_BS_COVERAGE_FORCE_COMPILE=true recompiles '
+      'the whole package graph on every collection. Under the Android test '
+      'orchestrator each test is a fresh process, so this cost is paid per '
+      'test and large suites will hit the device-farm session limit. Prefer '
+      'useOrchestrator:false for force-compile runs, and narrow the scope with '
+      'PATROL_BS_COVERAGE_PACKAGES.',
+    );
   }
 
   static void _mergeReport(

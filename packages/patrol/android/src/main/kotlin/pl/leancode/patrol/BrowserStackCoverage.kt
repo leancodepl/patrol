@@ -12,9 +12,10 @@ import java.io.FileOutputStream
  * Strategy: patrol's Dart side writes one LCOV file per app process into
  * `<filesDir>/patrol_coverage/` (cumulative within a process; a new file when
  * the orchestrator or the app itself restarts the process). After the JaCoCo
- * agent finishes its own dump, we read every file there, base64-chunk the
- * bytes to fit the 65535-byte cap on JaCoCo UTF strings, and append a series
- * of `SessionInfo` blocks to the existing `coverage.ec`. The header is left
+ * agent finishes its own dump, we read every file there, merge them into one
+ * cumulative LCOV (see [mergeLcov]), base64-chunk the bytes to fit the
+ * 65535-byte cap on JaCoCo UTF strings, and append a series of `SessionInfo`
+ * blocks to the existing `coverage.ec`. The header is left
  * untouched (JaCoCo wrote it). `<filesDir>` outlives a process restart only
  * without `clearPackageData`, which coverage runs require anyway.
  *
@@ -70,14 +71,15 @@ internal object BrowserStackCoverage {
             return
         }
 
-        val merged = StringBuilder()
-        for (file in lcovFiles) {
-            merged.append(file.readText())
-            if (!merged.endsWith("\n")) merged.append('\n')
-        }
-        Logger.i("$TAG: t+${android.os.SystemClock.elapsedRealtime() - t0}ms read ${merged.length} chars")
+        val sources = lcovFiles.map { it.readText() }
+        val rawChars = sources.sumOf { it.length }
+        val merged = mergeLcov(sources)
+        Logger.i(
+            "$TAG: t+${android.os.SystemClock.elapsedRealtime() - t0}ms " +
+                "read $rawChars chars, merged to ${merged.length}"
+        )
 
-        val payload = merged.toString().toByteArray(Charsets.UTF_8)
+        val payload = merged.toByteArray(Charsets.UTF_8)
         val chunks = chunkBytes(payload, MAX_CHUNK_BYTES)
         Logger.i("$TAG: t+${android.os.SystemClock.elapsedRealtime() - t0}ms chunked ${chunks.size} (${payload.size} bytes)")
 
@@ -113,4 +115,58 @@ internal object BrowserStackCoverage {
         }
         return out
     }
+}
+
+/**
+ * Merges LCOV records from several sources into one, keeping the highest hit
+ * count seen for each line. Mirrors `mergeLcovRecords` on the
+ * `patrol bs pull-coverage` side.
+ *
+ * Under the Android test orchestrator each test runs in a fresh process and
+ * leaves its own LCOV file behind. Concatenating them would re-embed every
+ * earlier snapshot on every dump, so the payload grew with the test count -
+ * hundreds of MB by the end of a large suite, and a write window long enough
+ * to be killed mid-append. Merging keeps it the size of one cumulative
+ * snapshot no matter how many tests ran.
+ */
+internal fun mergeLcov(sources: List<String>): String {
+    val byFile = LinkedHashMap<String, LinkedHashMap<Int, Int>>()
+    var current: LinkedHashMap<Int, Int>? = null
+
+    for (source in sources) {
+        for (rawLine in source.lineSequence()) {
+            val line = rawLine.trimEnd()
+            when {
+                line.startsWith("SF:") -> current = byFile.getOrPut(line.substring(3)) { LinkedHashMap() }
+                line == "end_of_record" -> current = null
+                line.startsWith("DA:") -> {
+                    val target = current ?: continue
+                    val rest = line.substring(3)
+                    val comma = rest.indexOf(',')
+                    if (comma < 0) continue
+                    val lineNo = rest.substring(0, comma).toIntOrNull() ?: continue
+                    val count = rest.substring(comma + 1).toIntOrNull() ?: continue
+                    val existing = target[lineNo]
+                    if (existing == null || count > existing) {
+                        target[lineNo] = count
+                    }
+                }
+            }
+        }
+    }
+
+    val out = StringBuilder()
+    for ((file, lines) in byFile) {
+        out.append("SF:").append(file).append('\n')
+        var hit = 0
+        for (lineNo in lines.keys.sorted()) {
+            val count = lines.getValue(lineNo)
+            out.append("DA:").append(lineNo).append(',').append(count).append('\n')
+            if (count > 0) hit++
+        }
+        out.append("LF:").append(lines.size).append('\n')
+        out.append("LH:").append(hit).append('\n')
+        out.append("end_of_record").append('\n')
+    }
+    return out.toString()
 }
