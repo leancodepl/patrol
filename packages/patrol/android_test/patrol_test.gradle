@@ -6,10 +6,14 @@ def remapClearPackageData = { args ->
         return
     }
     def raw = args.get("clearPackageData")
-    if (raw != null && raw.toString().equalsIgnoreCase("true")) {
-        args.remove("clearPackageData")
-        args.put("patrolClearAppData", "true")
+    if (raw == null) {
+        return
     }
+    args.remove("clearPackageData")
+    args.put(
+            "patrolClearAppData",
+            raw.toString().equalsIgnoreCase("true") ? "true" : "false"
+    )
 }
 
 def bakedClear = { args ->
