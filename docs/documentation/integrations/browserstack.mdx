@@ -143,6 +143,39 @@ After scheduling the test execution, you can check the status of the test execut
 
 If you need to change the test configuration, check out full list of available devices and OS versions in the [BrowserStack Browsers & Devices][bs_devices].
 
+## Dart code coverage (Android)
+
+Patrol can collect Dart line coverage on BrowserStack and hand it back through BrowserStack's Espresso coverage API.
+
+<Steps>
+  <Step>
+    Instrument the app under test: in **android/app/build.gradle.kts** set `enableAndroidTestCoverage = true` (AGP 8+; `testCoverageEnabled = true` on AGP 7) on the debug build type.
+  </Step>
+  <Step>
+    Build with `--dart-define=PATROL_BS_COVERAGE=true`. Optionally narrow what's collected with `--dart-define=PATROL_BS_COVERAGE_PACKAGES=<regexp>,<regexp>`.
+
+    By default only code the VM has already compiled is reported — that is, what the suite actually exercised. Add `--dart-define=PATROL_BS_COVERAGE_FORCE_COMPILE=true` to also force-compile untouched functions so never-executed lines count towards the denominator. It gives a whole-app coverage percentage, but is much slower on large apps and can push a shard past BrowserStack's session time limit, so combine it with `PATROL_BS_COVERAGE_PACKAGES`.
+  </Step>
+  <Step>
+    Start the build with `"coverage": "true"` and **`"clearPackageData": "false"`** (see the warning below). `useOrchestrator` can be either value, and sharding works.
+  </Step>
+  <Step>
+    Pull and merge the result once the build finishes:
+
+    ```bash
+    patrol bs pull-coverage --build-id <build_id> --output coverage
+    ```
+
+    Credentials come from `--creds USERNAME:ACCESS_KEY` or the `BROWSERSTACK_CREDS` env var. This writes `coverage/jacoco.exec` (Java) and `coverage/patrol_lcov.info` (Dart, merged across all shards).
+  </Step>
+</Steps>
+
+<Warning>
+  Coverage and `clearPackageData:true` are mutually exclusive on BrowserStack. `pm clear` between tests revokes the app's permission to write the shared coverage file, so only the first test's coverage survives — and the one remaining workaround (letting the orchestrator collect per-test coverage) is blocked by a long-standing Android bug ([android-test#829]). This is a platform limitation, not a Patrol one.
+
+  Keep `clearPackageData:true` for your regular and nightly runs. Run coverage as a separate, periodic build with `clearPackageData:false`, accepting that a few tests which rely on a clean app/permission state may fail there. `patrol bs pull-coverage` refuses builds that ran with `clearPackageData:true` instead of handing back a misleading first-test-only result.
+</Warning>
+
 [BrowserStack App Automate]: https://www.browserstack.com/app-automate
 [mobile-tools]: https://github.com/leancodepl/mobile-tools
 [bs_account]: https://www.browserstack.com/accounts/profile
@@ -162,3 +195,5 @@ If you need to change the test configuration, check out full list of available d
 [bs_ios_app_docs]: https://www.browserstack.com/docs/app-automate/api-reference/xcuitest/apps#upload-an-app
 [bs_ios_test_docs]: https://www.browserstack.com/docs/app-automate/api-reference/xcuitest/tests#upload-a-test-suite
 [bs_execute_ios_docs]: https://www.browserstack.com/docs/app-automate/api-reference/xcuitest/builds#execute-a-build
+
+[android-test#829]: https://github.com/android/android-test/issues/829
