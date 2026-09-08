@@ -70,7 +70,12 @@ class FlutterTool {
 
     Future<void> onQuitWithRevertInteractiveMode() async {
       if (previousStdinModes != null) {
-        revertInteractiveMode(previousStdinModes);
+        try {
+          revertInteractiveMode(previousStdinModes);
+        } on io.StdinException catch (err) {
+          // Never let a terminal hiccup skip the cleanup below.
+          _logger.detail('Could not restore terminal modes: $err');
+        }
       }
       if (onQuit != null) {
         await onQuit();
@@ -350,8 +355,10 @@ class FlutterTool {
   }
 
   void revertInteractiveMode(StdinModes stdinModes) {
-    io.stdin.echoMode = stdinModes.echoMode;
+    // Line mode first: on Windows echo mode can only be enabled while line
+    // mode is enabled, otherwise SetConsoleMode fails with errno 87.
     io.stdin.lineMode = stdinModes.lineMode;
+    io.stdin.echoMode = stdinModes.echoMode;
 
     _logger.detail('Interactive shell mode disabled.');
   }
