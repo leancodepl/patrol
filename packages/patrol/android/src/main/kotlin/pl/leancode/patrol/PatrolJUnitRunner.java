@@ -34,6 +34,7 @@ import static pl.leancode.patrol.contracts.Contracts.RunDartTestResponse;
 public class PatrolJUnitRunner extends AndroidJUnitRunner {
     public PatrolAppServiceClient patrolAppServiceClient;
     private Map<String, Boolean> dartTestCaseSkipMap = new HashMap<>();
+    private boolean generatedSetUpDone = false;
 
     /** Simple name of the class written by build-time test discovery (`patrol build android --emit-test-manifest`). */
     private static final String GENERATED_TESTS_CLASS = "PatrolGeneratedTests";
@@ -110,10 +111,19 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
      * Equivalent to {@link #setUp(Class)} followed by {@link #waitForPatrolAppService()}, except it
      * never stands down: the generated classes hold the tests themselves, so nothing supersedes
      * them. Keeping them on their own entry point is what lets the stand-down check stay a plain
-     * "is there a generated class next to the host" question.
+     * "is there a generated class next to the host" question. Only the first call launches the app;
+     * the calls from the remaining generated classes in the process are no-ops.
      * </p>
      */
     public void setUpGenerated(Class<?> activityClass) {
+        // Each generated class calls this from @BeforeClass, and without the ATO
+        // they all share one instrumentation process. The server binds a fixed
+        // port, so launch once and reuse it (same as the iOS static runner).
+        if (generatedSetUpDone) {
+            return;
+        }
+        generatedSetUpDone = true;
+
         launchAppUnderTest(activityClass);
         awaitPatrolAppService();
     }
