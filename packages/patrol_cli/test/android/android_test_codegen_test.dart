@@ -1,6 +1,7 @@
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:patrol_cli/src/android/android_test_codegen.dart';
+import 'package:patrol_cli/src/android/android_test_layout.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -83,6 +84,54 @@ public class MainActivityTest {}
     expect(source, contains('shows two", true);'));
     // Quotes in Dart names are escaped in the Java string literal.
     expect(source, contains(r'\"quoted\"'));
+  });
+
+  test('generates into a self-instrumenting Patrol test module', () {
+    final selfInstrumenting = MemoryFileSystem.test();
+    selfInstrumenting.file('/manifest.json')
+      ..createSync(recursive: true)
+      ..writeAsStringSync(manifest);
+    selfInstrumenting.file(
+        '/android/patrolTest/src/main/java/com/example/patrol_test/MainActivityTest.java',
+      )
+      ..createSync(recursive: true)
+      ..writeAsStringSync('''
+package com.example.patrol_test;
+import pl.leancode.patrol.PatrolJUnitRunner;
+public class MainActivityTest {
+  public void setUp() {
+    PatrolJUnitRunner instrumentation =
+        (PatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
+    instrumentation.setUp();
+  }
+}
+''');
+
+    final result = AndroidTestCodegen(selfInstrumenting).generate(
+      manifestPath: '/manifest.json',
+      androidDir: selfInstrumenting.directory('/android'),
+      testLayout: AndroidTestLayout.selfInstrumenting,
+    );
+
+    expect(result, isNotNull);
+    expect(
+      result!.outputPath,
+      '/android/patrolTest/src/main/java/com/example/patrol_test/PatrolGeneratedTests.java',
+    );
+    final source = selfInstrumenting.file(result.outputPath).readAsStringSync();
+    expect(source, contains('package com.example.patrol_test;'));
+    expect(source, contains('instrumentation.setUp();'));
+    expect(source, isNot(contains('MainActivity.class')));
+  });
+
+  test('self-instrumenting layout only uses its own host', () {
+    final result = AndroidTestCodegen(fs).generate(
+      manifestPath: '/manifest.json',
+      androidDir: fs.directory('/android'),
+      testLayout: AndroidTestLayout.selfInstrumenting,
+    );
+
+    expect(result, isNull);
   });
 
   test('disambiguates identical sanitized method names with the index', () {
