@@ -132,6 +132,14 @@ Check out our video version of this tutorial on YouTube!
         ```
     </Info>
 
+    <Info>
+        **Native failure screenshots (device farms)**: set
+        `screenshot_on_failure: true` to capture the failing screen and collect
+        it from your device-farm run (Android only, off by default). See
+        [Screenshots](/cli-commands/test#screenshots) for setup and the per-farm
+        details.
+    </Info>
+
     <Warning>
         In this tutorial, we are using example app, which has package name
         `com.example.myapp` on Android, bundle id `com.example.MyApp` on iOS,
@@ -791,6 +799,31 @@ Check out our video version of this tutorial on YouTube!
       bundle_id: com.example.macos.MyApp
   ```
 
+  ### iOS and macOS naming convention
+
+  On iOS and macOS, Patrol derives the Xcode **scheme** and **build configuration**
+  names from the flavor and build mode using a fixed convention. Your Xcode project
+  must match it exactly:
+
+  | Patrol input | Xcode object | Expected name |
+  |---|---|---|
+  | `--flavor development` | Scheme | `development` |
+  | `--flavor development` (debug) | Build Configuration | `Debug-development` |
+  | `--flavor development` (profile) | Build Configuration | `Profile-development` |
+  | `--flavor development` (release) | Build Configuration | `Release-development` |
+
+  The build configuration format is always `<BuildMode>-<flavor>`, with `BuildMode`
+  capitalized (`Debug`, `Profile`, `Release`). This is the same convention Flutter
+  uses for iOS flavors.
+
+  <Warning>
+    If your build configurations use a different format (for example
+    `Development-debug` instead of `Debug-development`), `xcodebuild` silently falls
+    back to its default configuration and the build fails with a misleading error
+    such as *"release/profile builds are only supported for physical devices."*
+    Rename (or duplicate) your configurations to match the convention above.
+  </Warning>
+
 ## FAQ
 
 <Accordions>
@@ -889,6 +922,16 @@ Check out our video version of this tutorial on YouTube!
   ```
 
   Make sure to replace `patrol_test/example_test.dart` with the path to your test file.
+</Accordion>
+
+<Accordion id="faq-release-profile-physical-devices" title="Build fails with 'release/profile builds are only supported for physical devices' when using a flavor">
+  This almost always means the Xcode **build configuration** name doesn't match the
+  convention Patrol expects. Patrol looks for a configuration named
+  `<BuildMode>-<flavor>` (for example `Debug-development`). If it doesn't exist,
+  `xcodebuild` silently falls back to its default and produces this misleading error.
+  Open your Xcode project and make sure your build configurations are named
+  `Debug-<flavor>`, `Profile-<flavor>` and `Release-<flavor>`. See the
+  [Flavors](#flavors) section for the full convention.
 </Accordion>
 </Accordions>
 

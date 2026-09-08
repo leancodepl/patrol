@@ -4,6 +4,12 @@ import 'package:meta/meta.dart';
 @internal
 const hotRestartEnabled = bool.fromEnvironment('PATROL_HOT_RESTART');
 
+/// Whether to auto-capture a native screenshot on test failure (`screenshot_on_failure`).
+@internal
+const screenshotOnFailureEnabled = bool.fromEnvironment(
+  'PATROL_SCREENSHOT_ON_FAILURE',
+);
+
 /// Whether the bundle runs in build-time test discovery mode, driven by a host
 /// `flutter test` run.
 ///

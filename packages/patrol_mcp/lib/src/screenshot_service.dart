@@ -14,27 +14,6 @@ enum ScreenshotPlatform {
 
   final String command;
 
-  /// Builds the command arguments that target [device] specifically, so
-  /// the capture doesn't fail (or silently hit the wrong device) when
-  /// multiple devices/simulators are attached.
-  List<String> argsFor(Device device) => switch (this) {
-    ScreenshotPlatform.android => [
-      '-s',
-      device.id,
-      'exec-out',
-      'screencap',
-      '-p',
-    ],
-    ScreenshotPlatform.ios => [
-      'simctl',
-      'io',
-      device.id,
-      'screenshot',
-      '--type=png',
-      '/dev/stdout',
-    ],
-  };
-
   static ScreenshotPlatform fromDevice(Device device) =>
       switch (device.targetPlatform) {
         TargetPlatform.android => ScreenshotPlatform.android,
@@ -45,6 +24,31 @@ enum ScreenshotPlatform {
         ),
       };
 }
+
+/// Builds the `adb` args that target [device] specifically, so the capture
+/// doesn't fail (or silently hit the wrong device) when multiple
+/// devices/emulators are attached.
+List<String> androidScreenshotArgs(Device device) => [
+  '-s',
+  device.id,
+  'exec-out',
+  'screencap',
+  '-p',
+];
+
+/// Builds the `simctl` args that target [device] and write to [outputPath].
+///
+/// `simctl io screenshot` writes atomically (temp file + rename) in the
+/// destination directory, so `outputPath` must be a real, writable path —
+/// not `/dev/stdout`, which fails there with a permission error.
+List<String> iosScreenshotArgs(Device device, String outputPath) => [
+  'simctl',
+  'io',
+  device.id,
+  'screenshot',
+  '--type=png',
+  outputPath,
+];
 
 abstract final class ScreenshotService {
   static const _maxHeight = 800;
@@ -85,9 +89,19 @@ abstract final class ScreenshotService {
     ScreenshotPlatform platform,
     Device device,
   ) async {
+    final rawBytes = switch (platform) {
+      ScreenshotPlatform.android => await _captureFromStdout(device),
+      ScreenshotPlatform.ios => await _captureViaTempFile(device),
+    };
+
+    _validatePng(rawBytes);
+    return _resizeImage(rawBytes);
+  }
+
+  static Future<Uint8List> _captureFromStdout(Device device) async {
     final process = await Process.start(
-      platform.command,
-      platform.argsFor(device),
+      ScreenshotPlatform.android.command,
+      androidScreenshotArgs(device),
     );
 
     final bytes = await process.stdout.expand((chunk) => chunk).toList();
@@ -98,14 +112,38 @@ abstract final class ScreenshotService {
       throw Exception('Failed to capture screenshot: $stderr');
     }
 
-    final rawBytes = Uint8List.fromList(bytes);
-    _validatePng(rawBytes);
-    return _resizeImage(rawBytes);
+    return Uint8List.fromList(bytes);
+  }
+
+  static Future<Uint8List> _captureViaTempFile(Device device) async {
+    final tempFile = File(
+      '${Directory.systemTemp.path}/patrol_mcp_screenshot_'
+      '${DateTime.now().microsecondsSinceEpoch}.png',
+    );
+
+    try {
+      final process = await Process.start(
+        ScreenshotPlatform.ios.command,
+        iosScreenshotArgs(device, tempFile.path),
+      );
+
+      final stderrFuture = process.stderr.transform(utf8.decoder).join();
+      final exitCode = await process.exitCode;
+      if (exitCode != 0) {
+        throw Exception('Failed to capture screenshot: ${await stderrFuture}');
+      }
+
+      return await tempFile.readAsBytes();
+    } finally {
+      if (tempFile.existsSync()) {
+        await tempFile.delete();
+      }
+    }
   }
 
   /// Throws if the captured bytes don't start with a valid PNG header.
-  /// Any text that `screencap` printed to stdout before the image data
-  /// is included in the exception message so users can diagnose the issue.
+  /// Any text the capture command printed in place of image data is
+  /// included in the exception message so users can diagnose the issue.
   static void _validatePng(Uint8List bytes) {
     const pngSignature = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
 
@@ -120,7 +158,7 @@ abstract final class ScreenshotService {
     );
 
     throw Exception(
-      'screencap returned invalid image data.\n'
+      'Screenshot capture returned invalid image data.\n'
       'Output prefix: $prefix',
     );
   }

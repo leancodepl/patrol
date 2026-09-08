@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Regenerate API contracts for the new Android `ConfigureRequest` accessibility flag. (#3227)
+- Regenerate API contracts (adds `AndroidTakeNativeScreenshotRequest`). (#3222)
 
 ## 0.4.1
 
