@@ -56,14 +56,11 @@ class AndroidTestLayoutDetector {
         sourceDirectory
             .listSync(recursive: true)
             .whereType<File>()
-            .any(
-              (file) =>
-                  file.path.endsWith('.java') || file.path.endsWith('.kt'),
-            );
+            .any((file) => file.path.endsWith('.java'));
     if (!hasHostSource) {
       throwToolExit(
-        'The :patrolTest module is included, but no Java or Kotlin test host '
-        'was found under android/patrolTest/src/main.',
+        'The :patrolTest module is included, but no Java test host was found '
+        'under android/patrolTest/src/main.',
       );
     }
 
