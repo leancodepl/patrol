@@ -10,6 +10,7 @@ class AndroidAutomatorConfig extends MobileAutomatorConfig {
     String? appName,
     KeyboardBehavior? keyboardBehavior,
     bool? dontSuppressAccessibilityServices,
+    bool? retrieveInteractiveWindows,
     super.host,
     super.port,
     super.connectionTimeout,
@@ -25,6 +26,12 @@ class AndroidAutomatorConfig extends MobileAutomatorConfig {
            dontSuppressAccessibilityServices ??
            const bool.fromEnvironment(
              'PATROL_ANDROID_DONT_SUPPRESS_ACCESSIBILITY_SERVICES',
+             defaultValue: true,
+           ),
+       retrieveInteractiveWindows =
+           retrieveInteractiveWindows ??
+           const bool.fromEnvironment(
+             'PATROL_ANDROID_RETRIEVE_INTERACTIVE_WINDOWS',
              defaultValue: true,
            );
 
@@ -52,6 +59,18 @@ class AndroidAutomatorConfig extends MobileAutomatorConfig {
   /// See https://github.com/leancodepl/patrol/issues/3201.
   final bool dontSuppressAccessibilityServices;
 
+  /// Whether Patrol keeps `FLAG_RETRIEVE_INTERACTIVE_WINDOWS` on its
+  /// `UiAutomation`.
+  ///
+  /// uiautomator 2.3.0 force-enables this flag, which stops some WebViews (e.g.
+  /// Plaid Link) from populating their accessibility tree, so `$.native`
+  /// selectors targeting text inside them fail. Set to `false` to clear it and
+  /// restore the pre-2.3.0 behavior. Defaults to `true`. Can also be set with
+  /// the `PATROL_ANDROID_RETRIEVE_INTERACTIVE_WINDOWS` dart-define.
+  ///
+  /// See https://github.com/leancodepl/patrol/issues/3178.
+  final bool retrieveInteractiveWindows;
+
   /// Creates a copy of this config but with the given fields replaced with the
   /// new values.
   AndroidAutomatorConfig copyWith({
@@ -63,6 +82,7 @@ class AndroidAutomatorConfig extends MobileAutomatorConfig {
     Duration? findTimeout,
     KeyboardBehavior? keyboardBehavior,
     bool? dontSuppressAccessibilityServices,
+    bool? retrieveInteractiveWindows,
     void Function(String)? logger,
   }) {
     return AndroidAutomatorConfig(
@@ -76,6 +96,8 @@ class AndroidAutomatorConfig extends MobileAutomatorConfig {
       dontSuppressAccessibilityServices:
           dontSuppressAccessibilityServices ??
           this.dontSuppressAccessibilityServices,
+      retrieveInteractiveWindows:
+          retrieveInteractiveWindows ?? this.retrieveInteractiveWindows,
       logger: logger ?? this.logger,
     );
   }

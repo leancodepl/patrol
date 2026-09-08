@@ -42,7 +42,8 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
     override fun configure(request: ConfigureRequest) {
         automation.configure(
             waitForSelectorTimeout = request.findTimeoutMillis,
-            dontSuppressAccessibilityServices = request.androidDontSuppressAccessibilityServices ?: true
+            dontSuppressAccessibilityServices = request.androidDontSuppressAccessibilityServices ?: true,
+            retrieveInteractiveWindows = request.androidRetrieveInteractiveWindows ?: true
         )
     }
 
