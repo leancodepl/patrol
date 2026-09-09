@@ -10,4 +10,8 @@ class PatrolRuntimePorts {
 
   /// Always null on web.
   static int? appServerPort() => null;
+
+  /// Host of the native automation server.
+  static String nativeServerHost() =>
+      const String.fromEnvironment('PATROL_HOST', defaultValue: 'localhost');
 }
