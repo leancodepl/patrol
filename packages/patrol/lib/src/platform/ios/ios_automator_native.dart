@@ -238,6 +238,15 @@ class IOSAutomator extends NativeMobileAutomator
     });
   }
 
+  @override
+  Future<void> takeNativeScreenshot(String tag) async {
+    await wrapRequest('takeNativeScreenshot', () async {
+      await _client.takeNativeScreenshot(
+        IOSTakeNativeScreenshotRequest(tag: tag),
+      );
+    });
+  }
+
   /// Double taps on the native view specified by [selector].
   ///
   /// It waits for the view to become visible for [timeout] duration. If
