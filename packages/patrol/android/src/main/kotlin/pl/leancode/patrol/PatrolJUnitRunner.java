@@ -9,6 +9,7 @@ import static org.junit.Assume.*;
 
 import android.app.Instrumentation;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnitRunner;
@@ -219,15 +220,20 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             forceStopApp(appId);
         }
 
-        Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
-
         PatrolServer patrolServer = new PatrolServer();
         patrolServer.start();
+
+        launchApp(appId, activityClassName);
+        patrolAppServiceClient = createAppServiceClient();
+    }
+
+    private void launchApp(String appId, String activityClassName) {
+        Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
 
         // Launcher intents support activities declared through aliases.
         Intent intent = instrumentation.getContext().getPackageManager()
                 .getLaunchIntentForPackage(appId);
-        
+
         if (intent == null && activityClassName != null) {
             intent = new Intent(Intent.ACTION_MAIN);
             intent.setClassName(appId, activityClassName);
@@ -236,11 +242,9 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         if (intent == null) {
             throw new IllegalStateException("No launch intent found for " + appId);
         }
-        
+
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         instrumentation.getContext().startActivity(intent);
-
-        patrolAppServiceClient = createAppServiceClient();
     }
 
     public PatrolAppServiceClient createAppServiceClient() {
@@ -467,6 +471,32 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         try {
             Logger.INSTANCE.i(TAG + "Requested execution");
             RunDartTestResponse response = patrolAppServiceClient.runDartTest(name);
+
+            while (response.getResult() == Contracts.RunDartTestResponseResult.continuation) {
+                if (!isSelfInstrumenting()) {
+                    throw new IllegalStateException(
+                            "Phased Patrol tests require the self-instrumenting "
+                                    + ":patrolTest Android layout"
+                    );
+                }
+
+                final Long nextPhaseIndex = response.getNextPhaseIndex();
+                if (nextPhaseIndex == null) {
+                    throw new IllegalStateException(
+                            "A phased Patrol test returned continuation without a next phase"
+                    );
+                }
+
+                closePatrolAppServiceClient();
+                PatrolServer.Companion.getAppReady().close();
+                forceStopApp(targetAppId);
+                openApp(targetAppId, response.getNextPhaseLaunchUrl());
+
+                waitForPatrolAppService();
+                patrolAppServiceClient = createAppServiceClient();
+                response = patrolAppServiceClient.runDartTest(name, nextPhaseIndex);
+            }
+
             if (response.getResult() == Contracts.RunDartTestResponseResult.failure) {
                 throw new AssertionError("Dart test failed: " + name + "\n" + response.getDetails());
             }
@@ -482,5 +512,26 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             Logger.INSTANCE.e(TAG + e.getMessage(), e.getCause());
             throw new RuntimeException(e);
         }
+    }
+
+    private void openApp(String appId, String url) {
+        if (url == null || url.isEmpty()) {
+            launchApp(appId, null);
+            return;
+        }
+
+        Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        intent.setPackage(appId);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        instrumentation.getContext().startActivity(intent);
+    }
+
+    private void closePatrolAppServiceClient() {
+        if (patrolAppServiceClient == null) {
+            return;
+        }
+        patrolAppServiceClient.close();
+        patrolAppServiceClient = null;
     }
 }
