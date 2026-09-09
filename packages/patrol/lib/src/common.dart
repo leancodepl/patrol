@@ -9,6 +9,7 @@ import 'package:patrol/src/binding.dart';
 import 'package:patrol/src/develop_generation.dart';
 import 'package:patrol/src/develop_view_assertion.dart';
 import 'package:patrol/src/global_state.dart' as global_state;
+import 'package:patrol/src/phases.dart';
 import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:patrol/src/platform/platform_automator.dart';
 import 'package:patrol_finders/patrol_finders.dart' as finders;
@@ -117,6 +118,8 @@ void patrolTest(
       LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
   bool deterministicCursor = true,
 }) {
+  final phasedTest = patrolPhasesOf(callback);
+
   if (constants.testDiscoveryEnabled) {
     // Build-time discovery (host `flutter test`): only register the test so it
     // shows up in the group tree. Do NOT initialize PatrolBinding (Live binding,
@@ -182,23 +185,44 @@ void patrolTest(
       // The binding claimed this generation when the program started.
       final generation = patrolBinding.developGeneration;
 
-      patrolLog.log(
-        TestEntry(
-          name: global_state.currentTestFullName,
-          status: TestEntryStatus.start,
-        ),
-      );
       final patrolTester = PatrolIntegrationTester(
         tester: widgetTester,
         config: config,
         platformAutomator: platformAutomator,
         entrypointArgs: patrolBinding.entrypointArgs,
       );
+      var callbackToRun = callback;
+      var phaseIndex = 0;
+      if (phasedTest != null) {
+        if (constants.hotRestartEnabled) {
+          throw UnsupportedError(
+            'Phased Patrol tests are not supported in develop mode',
+          );
+        }
+        final request =
+            await patrolBinding.patrolAppService.testExecutionRequested;
+        phaseIndex = request.phaseIndex ?? 0;
+        callbackToRun = phasedTest.phaseAt(phaseIndex).callback;
+      }
+
+      if (phaseIndex == 0) {
+        patrolLog.log(
+          TestEntry(
+            name: global_state.currentTestFullName,
+            status: TestEntryStatus.start,
+          ),
+        );
+      }
+
       try {
         await runWithDeterministicCursor(
           enabled: deterministicCursor,
-          body: () => callback(patrolTester),
+          body: () => callbackToRun(patrolTester),
         );
+        final continuation = phasedTest?.continuationAfter(phaseIndex);
+        if (continuation != null) {
+          patrolBinding.patrolAppService.setContinuation(continuation);
+        }
       } catch (err, st) {
         // Capture the failing screen before teardown pumps the next frame.
         if (constants.screenshotOnFailureEnabled) {
