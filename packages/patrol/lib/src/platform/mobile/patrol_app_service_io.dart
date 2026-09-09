@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:http_multi_server/http_multi_server.dart';
 import 'package:patrol/patrol.dart';
 import 'package:patrol/src/common.dart';
+import 'package:patrol/src/phases.dart';
 import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:patrol/src/platform/contracts/patrol_app_service_server.dart';
 import 'package:patrol/src/platform/mobile/patrol_runtime_ports.dart';
@@ -16,10 +17,15 @@ import 'package:shelf/shelf_io.dart' as shelf_io;
 const _idleTimeout = Duration(hours: 2);
 
 class _TestExecutionResult {
-  const _TestExecutionResult({required this.passed, required this.details});
+  const _TestExecutionResult({
+    required this.passed,
+    required this.details,
+    required this.continuation,
+  });
 
   final bool passed;
   final String? details;
+  final PatrolPhaseContinuation? continuation;
 }
 
 /// Initializes the app service.
@@ -75,15 +81,17 @@ class PatrolAppService extends PatrolAppServiceServer {
   /// bundled Dart test file.
   final DartGroupEntry topLevelDartTestGroup;
 
-  /// A completer that completes with the name of the Dart test file that was
-  /// requested to execute by the native side.
-  final _testExecutionRequested = Completer<String>();
+  /// A completer that completes with the Dart test request made by the native
+  /// side.
+  final _testExecutionRequested = Completer<RunDartTestRequest>();
 
-  /// A future that completes with the name of the Dart test file that was
-  /// requested to execute by the native side.
-  Future<String> get testExecutionRequested => _testExecutionRequested.future;
+  /// A future that completes with the Dart test request made by the native
+  /// side.
+  Future<RunDartTestRequest> get testExecutionRequested =>
+      _testExecutionRequested.future;
 
   final _testExecutionCompleted = Completer<_TestExecutionResult>();
+  PatrolPhaseContinuation? _continuation;
 
   /// A future that completes when the Dart test file (whose execution was
   /// requested by the native side) completes.
@@ -94,6 +102,11 @@ class PatrolAppService extends PatrolAppServiceServer {
   }
 
   final _patrolLog = PatrolLogWriter();
+
+  /// Sets the native work that should follow the currently running Dart phase.
+  void setContinuation(PatrolPhaseContinuation continuation) {
+    _continuation = continuation;
+  }
 
   /// Marks [dartFileName] as completed with the given [passed] status.
   ///
@@ -110,15 +123,19 @@ class PatrolAppService extends PatrolAppServiceServer {
       'Tried to mark a test as completed, but no tests were requested to run',
     );
 
-    final requestedDartTestName = await testExecutionRequested;
+    final request = await testExecutionRequested;
     assert(
-      requestedDartTestName == dartFileName,
+      request.name == dartFileName,
       'Tried to mark test $dartFileName as completed, but the test '
-      'that was most recently requested to run was $requestedDartTestName',
+      'that was most recently requested to run was ${request.name}',
     );
 
     _testExecutionCompleted.complete(
-      _TestExecutionResult(passed: passed, details: details),
+      _TestExecutionResult(
+        passed: passed,
+        details: details,
+        continuation: passed ? _continuation : null,
+      ),
     );
   }
 
@@ -134,14 +151,14 @@ class PatrolAppService extends PatrolAppServiceServer {
   Future<bool> waitForExecutionRequest(String dartTest) async {
     print('PatrolAppService: registered "$dartTest"');
 
-    final requestedDartTest = await testExecutionRequested;
-    if (requestedDartTest != dartTest) {
+    final request = await testExecutionRequested;
+    if (request.name != dartTest) {
       // If the requested Dart test is not the one we're waiting for now, it
       // means that dartTest was already executed. Return false so that callers
       // can skip the already executed test.
 
       print(
-        'PatrolAppService: registered test "$dartTest" was not matched by requested test "$requestedDartTest"',
+        'PatrolAppService: registered test "$dartTest" was not matched by requested test "${request.name}"',
       );
 
       return false;
@@ -231,7 +248,7 @@ class PatrolAppService extends PatrolAppServiceServer {
       );
     }
 
-    _testExecutionRequested.complete(request.name);
+    _testExecutionRequested.complete(request);
 
     final testExecutionResult = await testExecutionCompleted;
 
@@ -242,17 +259,22 @@ class PatrolAppService extends PatrolAppServiceServer {
       testExecutionResult.details
           ?.split('\n')
           .forEach((e) => _patrolLog.log(ErrorEntry(message: e)));
-    } else {
+    } else if (testExecutionResult.continuation == null) {
       _patrolLog.log(
         TestEntry(name: request.name, status: TestEntryStatus.success),
       );
     }
 
+    final continuation = testExecutionResult.continuation;
     return RunDartTestResponse(
-      result: testExecutionResult.passed
-          ? RunDartTestResponseResult.success
-          : RunDartTestResponseResult.failure,
+      result: !testExecutionResult.passed
+          ? RunDartTestResponseResult.failure
+          : continuation != null
+          ? RunDartTestResponseResult.continuation
+          : RunDartTestResponseResult.success,
       details: testExecutionResult.details,
+      nextPhaseIndex: continuation?.nextPhaseIndex,
+      nextPhaseLaunchUrl: continuation?.launchUrl,
     );
   }
 }
