@@ -61,9 +61,6 @@ class FlutterTool {
       try {
         previousStdinModes = enableInteractiveMode();
       } on io.StdinException catch (err) {
-        // Some hosts (CI, agent harnesses) report a terminal whose modes
-        // cannot be read or changed. Key commands still work if the host
-        // forwards raw keystrokes.
         _logger.detail('Interactive shell mode unavailable: $err');
       }
     }
@@ -73,7 +70,6 @@ class FlutterTool {
         try {
           revertInteractiveMode(previousStdinModes);
         } on io.StdinException catch (err) {
-          // Never let a terminal hiccup skip the cleanup below.
           _logger.detail('Could not restore terminal modes: $err');
         }
       }
@@ -355,8 +351,6 @@ class FlutterTool {
   }
 
   void revertInteractiveMode(StdinModes stdinModes) {
-    // Line mode first: on Windows echo mode can only be enabled while line
-    // mode is enabled, otherwise SetConsoleMode fails with errno 87.
     io.stdin.lineMode = stdinModes.lineMode;
     io.stdin.echoMode = stdinModes.echoMode;
 
