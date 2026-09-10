@@ -359,22 +359,15 @@ DartGroupEntry createDartTestGroup(
   return groupDTO;
 }
 
-/// The character that must not appear in a test name.
-///
-/// It is the path separator on the device, where the name becomes a file name.
+/// Not allowed in a test name, which becomes a file name on the device.
 const _pathSeparator = '/';
 
-/// Android Test Orchestrator writes one output file per test case, named after
-/// the test, and rejects a name containing a path separator - by crashing the
-/// whole instrumentation before the first test runs. That surfaces as a run of
-/// 0 tests with no indication of which name caused it, so the names are
-/// collected here while they can still be reported.
+/// Returns full names of tests in [group] that contain [_pathSeparator].
 @internal
 List<String> namesWithPathSeparator(DartGroupEntry group) =>
     _namesWithPathSeparator(group, '');
 
-/// Walks [group], prefixing each entry with [parentName] the way the native side
-/// joins a hierarchy into one name.
+/// Joins names with a space, like the native side does.
 List<String> _namesWithPathSeparator(DartGroupEntry group, String parentName) {
   final invalidNames = <String>[];
 
@@ -396,8 +389,7 @@ List<String> _namesWithPathSeparator(DartGroupEntry group, String parentName) {
   return invalidNames;
 }
 
-/// The message reported for [invalidNames], as returned by
-/// [namesWithPathSeparator].
+/// Builds the error message for [invalidNames].
 @internal
 String pathSeparatorNameError(List<String> invalidNames) =>
     "Test names must not contain '$_pathSeparator', but these do:\n"
