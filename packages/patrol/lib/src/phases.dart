@@ -27,7 +27,7 @@ final class PatrolAppLaunch {
   const PatrolAppLaunch.normal() : url = null;
 
   /// Launches the app through [url].
-  const PatrolAppLaunch.deepLink(this.url) : assert(url != '');
+  const PatrolAppLaunch.deepLink(String this.url) : assert(url != '');
 
   /// The deep link URL, or `null` for a normal launch.
   final String? url;

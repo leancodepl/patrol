@@ -59,6 +59,8 @@
       if (url == nil) {                                                                                             \
         return;                                                                                                     \
       }                                                                                                             \
+      /* iOS 16.4+: openURL cold-starts through the link. Older iOS must launch  \
+         first, then openURL — first paint is a normal start, not the deep link. */ \
       if (@available(iOS 16.4, *)) {                                                                                \
         [app openURL:url];                                                                                          \
       } else {                                                                                                      \
@@ -476,6 +478,8 @@
       if (url == nil) {                                                                                                \
         return;                                                                                                        \
       }                                                                                                                \
+      /* iOS 16.4+: openURL cold-starts through the link. Older iOS must launch       \
+         first, then openURL — first paint is a normal start, not the deep link. */    \
       if (@available(iOS 16.4, *)) {                                                                                   \
         [app openURL:url];                                                                                             \
       } else {                                                                                                         \
