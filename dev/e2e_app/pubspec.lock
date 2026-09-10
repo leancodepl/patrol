@@ -13,10 +13,10 @@ packages:
     dependency: transitive
     description:
       name: adb
-      sha256: "1c1d53b356bc9a7b89e7abcbb8b7b941f6d6ab0fc61a77eb8a4928befa294202"
+      sha256: ff7324138e3df9dcd8fab54050f9f74a224928321ae50161256109414a87f1d4
       url: "https://pub.dev"
     source: hosted
-    version: "0.6.0"
+    version: "0.6.1"
   analyzer:
     dependency: transitive
     description:
@@ -817,7 +817,7 @@ packages:
     source: hosted
     version: "1.9.1"
   path_provider:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: path_provider
       sha256: "50c5dd5b6e1aaf6fb3a78b33f6aa3afca52bf903a8a5298f53101fdaee55bbcd"

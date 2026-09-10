@@ -3,15 +3,15 @@
 # Generates the SauceLabs XCUITest testListFile (.sauce/ios_testlist.txt) from
 # the static XCTest methods emitted by `patrol build ios --emit-test-manifest`.
 #
-# The generated ios/RunnerUITests/PatrolGeneratedTests.inc holds one Objective-C
-# method per Dart test (`- (void)test_<sanitized>_<index> { ... }`). We turn each
-# selector into the SauceLabs testListFile format.
+# The generated ios/RunnerUITests/PatrolGeneratedTests.inc holds one XCTestCase
+# subclass per Dart test file, each with one method per test. We turn every
+# class/method pair into the SauceLabs testListFile format.
 #
 # IMPORTANT: SauceLabs uses a DIFFERENT separator between the test target and the
 # test class depending on the device type (see the docs linked below):
 #
-#     simulator:    RunnerUITests/RunnerUITests/test_<sanitized>_<index>
-#     real device:  RunnerUITests.RunnerUITests/test_<sanitized>_<index>
+#     simulator:    RunnerUITests/PatrolGeneratedTests_<file>/test_<name>
+#     real device:  RunnerUITests.PatrolGeneratedTests_<file>/test_<name>
 #                                 ^ dot, not slash
 #
 # Using the simulator format on a real device (or vice versa) matches no tests,
@@ -34,8 +34,8 @@ OUT_FILE="$ROOT_DIR/.sauce/ios_testlist.txt"
 
 SAUCE_DEVICE="${SAUCE_DEVICE:-simulator}"
 case "$SAUCE_DEVICE" in
-  simulator) PREFIX='RunnerUITests/RunnerUITests/' ;;
-  real)      PREFIX='RunnerUITests.RunnerUITests/' ;;
+  simulator) SEPARATOR='/' ;;
+  real)      SEPARATOR='.' ;;
   *)
     echo "ERROR: SAUCE_DEVICE must be 'simulator' or 'real' (got '$SAUCE_DEVICE')." >&2
     exit 1
@@ -48,15 +48,17 @@ if [[ ! -f "$INC_FILE" ]]; then
   exit 1
 fi
 
-# Extract each generated selector and prefix it with the target/class in the
-# format the selected device type expects.
-#
-# `|| true` on grep: with `set -euo pipefail` a no-match (exit 1) would abort the
-# script here, making the explicit empty-list diagnostic below unreachable.
+# Walk the file, remembering the class each method belongs to, and emit the
+# target/class/method triple in the format the selected device type expects.
 mkdir -p "$(dirname "$OUT_FILE")"
-{ grep -oE '^- \(void\)test_[A-Za-z0-9_]+' "$INC_FILE" || true; } \
-  | sed -E "s#^- \(void\)#$PREFIX#" \
-  > "$OUT_FILE"
+awk -v sep="$SEPARATOR" '
+  /^@implementation / { cls = $2; next }
+  /^- \(void\)test_/ {
+    method = $2
+    sub(/^\(void\)/, "", method)
+    if (cls != "") print "RunnerUITests" sep cls "/" method
+  }
+' "$INC_FILE" > "$OUT_FILE"
 
 COUNT="$(wc -l < "$OUT_FILE" | tr -d '[:space:]')"
 if [[ "$COUNT" -eq 0 ]]; then

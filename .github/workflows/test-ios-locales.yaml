@@ -34,9 +34,9 @@ jobs:
       matrix:
         flutter-version: ['3.38.x']
         flutter-channel: ['stable']
-        device_model: ['iphone14pro']
+        device_model: ['iphone16pro']
         locale: ['en', 'fr', 'de_DE', 'pl', 'ja']
-        os_version: ['16.6']
+        os_version: ['18.3']
         os: [iOS]
 
 

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:meta/meta.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
@@ -31,6 +32,19 @@ class TestCompletionResult {
   /// The error if the test backend failed, or `null` on success.
   final Object? error;
 }
+
+/// Whether `flutter attach` should connect to the Dart VM service URL read from
+/// the device logs instead of relying on its own discovery.
+///
+/// xcodebuild launches the app, so discovery is unreliable on the iOS
+/// simulator; physical iOS devices keep discovery. macOS always uses the URL,
+/// Android and web use discovery.
+@visibleForTesting
+bool shouldAttachUsingUrl(Device device) => switch (device.targetPlatform) {
+  TargetPlatform.macOS => true,
+  TargetPlatform.iOS => !device.real,
+  TargetPlatform.android || TargetPlatform.web => false,
+};
 
 /// Orchestrates a patrol develop session.
 ///
@@ -247,12 +261,18 @@ class DevelopService {
       buildNumber: options.buildNumber,
     );
 
+    // Develop bundles a single target, so the generated native tests cover
+    // only that one until the next `patrol build`.
+    final emitTestManifest =
+        options.emitTestManifest ?? config.emitTestManifest;
+
     final androidOpts = AndroidAppOptions(
       flutter: flutterOpts,
       packageName: packageName,
       appServerPort: options.appServerPort,
       testServerPort: options.testServerPort,
       uninstall: options.uninstall,
+      emitTestManifest: emitTestManifest,
     );
 
     final iosOpts = IOSAppOptions(
@@ -264,6 +284,7 @@ class DevelopService {
       osVersion: options.iosVersion ?? 'latest',
       appServerPort: options.appServerPort,
       testServerPort: options.testServerPort,
+      emitTestManifest: emitTestManifest,
     );
 
     final macosOpts = MacOSAppOptions(
@@ -365,6 +386,27 @@ class DevelopService {
     }
   }
 
+  /// `flutter logs` resolves the iOS app package without a build
+  /// configuration, so it needs a scheme named Runner and takes no option to
+  /// pick another - on a flavored iOS project it exits right away. There
+  /// `showFlutterLogs` falls back to Patrol's own log stream, and
+  /// `forwardFlutterLogs` tells `flutter attach` not to open its own. When
+  /// attach needs the Dart VM service URL, it comes from Patrol's stream too.
+  @visibleForTesting
+  static ({bool showFlutterLogs, bool forwardFlutterLogs}) resolveFlutterLogs({
+    required TargetPlatform targetPlatform,
+    required String? flavor,
+    required bool showFlutterLogs,
+  }) {
+    final flutterLogsUnavailable =
+        targetPlatform == TargetPlatform.iOS && flavor != null;
+
+    return (
+      showFlutterLogs: showFlutterLogs || flutterLogsUnavailable,
+      forwardFlutterLogs: !flutterLogsUnavailable,
+    );
+  }
+
   Future<void> _execute(
     FlutterAppOptions flutterOpts,
     AndroidAppOptions android,
@@ -383,6 +425,18 @@ class DevelopService {
     Future<void> Function() action;
     Future<void> Function()? finalizer;
     String? appId;
+
+    final attachUsingUrl = shouldAttachUsingUrl(device);
+    final flutterLogs = resolveFlutterLogs(
+      targetPlatform: device.targetPlatform,
+      flavor: flutterOpts.flavor,
+      showFlutterLogs: showFlutterLogs,
+    );
+
+    final vmServiceUrlCompleter =
+        attachUsingUrl && !flutterLogs.forwardFlutterLogs
+        ? Completer<String>()
+        : null;
 
     switch (device.targetPlatform) {
       case TargetPlatform.android:
@@ -412,10 +466,17 @@ class DevelopService {
           iosOpts,
           device,
           interruptible: true,
-          showFlutterLogs: showFlutterLogs,
+          showFlutterLogs: flutterLogs.showFlutterLogs,
           hideTestSteps: hideTestSteps,
           clearTestSteps: clearTestSteps,
           onLogEntry: onLogEntry,
+          onVmServiceUrl: vmServiceUrlCompleter == null
+              ? null
+              : (url) {
+                  if (!vmServiceUrlCompleter.isCompleted) {
+                    vmServiceUrlCompleter.complete(url);
+                  }
+                },
           videoConfig: videoConfig,
         );
         final bundleId = iosOpts.bundleId;
@@ -453,13 +514,32 @@ class DevelopService {
         onTestsCompleted?.call(result);
       }
 
+      // Once the app is gone that URL will never come, so fail the
+      // wait instead of hanging the session.
+      void failPendingVmServiceUrl() {
+        if (vmServiceUrlCompleter != null &&
+            !vmServiceUrlCompleter.isCompleted) {
+          vmServiceUrlCompleter.completeError(
+            const ToolExit(
+              'The app exited before it printed the Dart VM service URL, so '
+              'hot restart could not attach',
+            ),
+          );
+        }
+      }
+
       unawaited(
         future.then(
-          (_) =>
-              reportTestsCompleted(const TestCompletionResult(success: true)),
-          onError: (Object err, StackTrace st) => reportTestsCompleted(
-            TestCompletionResult(success: false, error: err),
-          ),
+          (_) {
+            reportTestsCompleted(const TestCompletionResult(success: true));
+            failPendingVmServiceUrl();
+          },
+          onError: (Object err, StackTrace st) {
+            reportTestsCompleted(
+              TestCompletionResult(success: false, error: err),
+            );
+            failPendingVmServiceUrl();
+          },
         ),
       );
 
@@ -471,8 +551,9 @@ class DevelopService {
           appId: appId,
           dartDefines: flutterOpts.dartDefines,
           openDevtools: openDevtools,
-          flavor: flutterOpts.flavor,
-          attachUsingUrl: device.targetPlatform == TargetPlatform.macOS,
+          attachUsingUrl: attachUsingUrl,
+          debugUrl: vmServiceUrlCompleter?.future,
+          forwardFlutterLogs: flutterLogs.forwardFlutterLogs,
           onQuit: onQuitCleanup,
         );
       }

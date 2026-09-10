@@ -39,6 +39,11 @@ class Keys {
   static const textfieldsScreenButton = Key('textfieldsScreenButton');
   static const openExternalAppScreenButton = Key('openExternalAppScreenButton');
 
+  // file picker screen
+  static const filePickerScreenButton = Key('filePickerScreenButton');
+  static const filePickerStatusText = Key('filePickerStatusText');
+  static const pickFileButton = Key('pickFileButton');
+
   // text fields screen
   static const textField1 = Key('textField1');
   static const textField2 = Key('textField2');

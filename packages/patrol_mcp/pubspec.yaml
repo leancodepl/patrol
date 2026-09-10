@@ -14,7 +14,7 @@ environment:
   sdk: ">=3.8.0 <4.0.0"
 
 dependencies:
-  adb: ^0.6.0
+  adb: ^0.6.1
   args: ^2.7.0
   dispose_scope: ^2.1.0
   image: ^4.5.4
