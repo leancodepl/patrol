@@ -57,6 +57,69 @@ patrol:
         expect(reader.read().ios.flavor, equals('dev'));
       });
 
+      group('test_directory', () {
+        // One pubspec.yaml is shared by a team on mixed operating systems, so a
+        // nested path can only be committed with forward slashes. See #2896.
+        test("a forward-slash path resolves to this host's separator", () {
+          fs.file('pubspec.yaml').writeAsStringSync('''
+$_pubspecBase
+patrol:
+  test_directory: test/integration_test
+''');
+
+          expect(
+            reader.read().testDirectory,
+            equals(fs.path.join('test', 'integration_test')),
+          );
+        });
+
+        test('a doubled separator is collapsed', () {
+          fs.file('pubspec.yaml').writeAsStringSync('''
+$_pubspecBase
+patrol:
+  test_directory: test//integration_test
+''');
+
+          expect(
+            reader.read().testDirectory,
+            equals(fs.path.join('test', 'integration_test')),
+          );
+        });
+
+        test('a trailing separator is dropped', () {
+          fs.file('pubspec.yaml').writeAsStringSync('''
+$_pubspecBase
+patrol:
+  test_directory: test/integration_test/
+''');
+
+          expect(
+            reader.read().testDirectory,
+            equals(fs.path.join('test', 'integration_test')),
+          );
+        });
+
+        test('a single-segment directory is left alone', () {
+          fs.file('pubspec.yaml').writeAsStringSync('''
+$_pubspecBase
+patrol:
+  test_directory: my_custom_test_dir
+''');
+
+          expect(reader.read().testDirectory, equals('my_custom_test_dir'));
+        });
+
+        test('defaults to patrol_test', () {
+          fs.file('pubspec.yaml').writeAsStringSync('''
+$_pubspecBase
+patrol:
+  app_name: Example
+''');
+
+          expect(reader.read().testDirectory, equals('patrol_test'));
+        });
+      });
+
       test('emit_test_manifest defaults to false', () {
         fs.file('pubspec.yaml').writeAsStringSync('''
 $_pubspecBase
