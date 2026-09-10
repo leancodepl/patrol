@@ -1,7 +1,7 @@
 ## Unreleased
 
-- **Breaking (build-time test discovery, iOS):** in `RunnerUITests.m`, replace the
-  `PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN`/`_END` pair with
+- Build-time test discovery (experimental): the generated `.inc` now declares whole test classes.
+  In `RunnerUITests.m`, replace the `STATIC_BEGIN`/`_END` pair with
   `PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE(RunnerUITests)` followed by the `#include`.
 - Add `patrolTargetPlatform`: use it in `skip:` (and anything else deciding whether a test is
   registered) so build-time discovery on the host matches the device. (#3241)
