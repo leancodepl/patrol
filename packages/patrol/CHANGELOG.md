@@ -32,6 +32,11 @@
   `getNativeViews` with a selector `instance` on Android failing with "instance() argument is not
   supported for BySelector". `tapOnNotificationBySelector` taps the n-th match, and `getNativeViews`
   returns every match, as on iOS. (#3445)
+- Add `phases()` so a Patrol test can continue after the app is killed and
+  relaunched (normal start or a deep link). Requires the self-instrumenting
+  Android `:patrolTest` layout; unsupported in `patrol develop` and on macOS.
+  See [Phased tests](https://patrol.leancode.co/documentation/phased-tests).
+  (#1374)
 - Add the optional self-instrumenting Android `:patrolTest` layout, which runs
   JUnit outside the app process. The in-app `androidTest` layout remains
   supported. Needs a matching `patrol_cli` release: an older CLI still runs the
