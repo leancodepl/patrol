@@ -492,7 +492,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
                 forceStopApp(targetAppId);
                 openApp(targetAppId, response.getNextPhaseLaunchUrl());
 
-                waitForPatrolAppService();
+                awaitPatrolAppService();
                 patrolAppServiceClient = createAppServiceClient();
                 response = patrolAppServiceClient.runDartTest(name, nextPhaseIndex);
             }
