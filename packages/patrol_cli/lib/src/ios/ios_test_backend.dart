@@ -119,7 +119,7 @@ class IOSTestBackend {
           processManager: _processManager,
           rootDirectory: _rootDirectory,
           logger: _logger,
-        ).generate(options.flutter, scope);
+        ).generate(options.flutter, scope, targetPlatform: TargetPlatform.iOS);
         if (manifestPath == null) {
           throwToolExit(
             'Build-time test discovery failed; fix the errors above or disable '
@@ -127,6 +127,8 @@ class IOSTestBackend {
           );
         }
         _generateXcodeTests(manifestPath);
+      } else {
+        _verifyRuntimeRunnerSetup();
       }
 
       // flutter build ios --config-only
@@ -203,20 +205,28 @@ class IOSTestBackend {
   /// the STATIC macro and `#include`s that file; otherwise the build would
   /// silently fall back to runtime discovery, which is confusing.
   void _verifyStaticRunnerSetup() {
-    final runner = _rootDirectory
-        .childDirectory('ios')
-        .childDirectory('RunnerUITests')
-        .childFile('RunnerUITests.m');
+    final runner = _runnerFile;
+    // Missing target is surfaced by the regular xcodebuild step; nothing to
+    // guard here.
     if (!runner.existsSync()) {
-      // Missing target is surfaced by the regular xcodebuild step; nothing to
-      // guard here.
       return;
     }
 
-    final contents = runner.readAsStringSync();
-    const beginMacro = 'PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN';
-    const include = '#include "PatrolGeneratedTests.inc"';
-    if (contents.contains(beginMacro) && contents.contains(include)) {
+    if (_usesLegacyStaticRunner(runner)) {
+      throwToolExit(
+        '${runner.path} #includes PatrolGeneratedTests.inc between the '
+        'PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN and _END macros. The '
+        'generated file now declares whole test classes and cannot be compiled '
+        'inside another class. Replace the macros with:\n'
+        '\n'
+        '  PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE(RunnerUITests)\n'
+        '  #include "PatrolGeneratedTests.inc"\n'
+        '\n'
+        'See https://patrol.leancode.co/documentation/ci/build-time-test-discovery',
+      );
+    }
+
+    if (_usesStaticRunner(runner)) {
       return;
     }
 
@@ -225,18 +235,68 @@ class IOSTestBackend {
       'for it. Replace the PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerUITests) '
       'macro with the static form:\n'
       '\n'
-      '  PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN(RunnerUITests)\n'
+      '  PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE(RunnerUITests)\n'
       '  #include "PatrolGeneratedTests.inc"\n'
-      '  PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_END\n'
       '\n'
       'See https://patrol.leancode.co/documentation/ci/build-time-test-discovery',
     );
   }
 
-  /// Maps requested Dart test [onlyTests] names to the generated XCTest
-  /// selectors (`test_<sanitized>_<index>`) using the build-time manifest.
-  /// Empty in → empty out (run the whole class). Used by `patrol test
-  /// test-without-building --only`. Throws when the manifest is missing or no name matches.
+  /// Fails fast when the runner is static but discovery is off: nobody
+  /// generates `PatrolGeneratedTests.inc` then, so the build would die on a bare
+  /// `'PatrolGeneratedTests.inc' file not found`.
+  void _verifyRuntimeRunnerSetup() {
+    final runner = _runnerFile;
+    if (!runner.existsSync() || !_usesStaticRunner(runner)) {
+      return;
+    }
+
+    throwToolExit(
+      '${runner.path} uses the static (build-time discovery) runner, but '
+      'build-time discovery is disabled, so PatrolGeneratedTests.inc is never '
+      'generated and the build cannot compile.\n'
+      '\n'
+      'Either enable discovery (patrol.emit_test_manifest: true in '
+      'pubspec.yaml, or --emit-test-manifest), or go back to runtime discovery '
+      'by restoring the PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerUITests) '
+      'macro.\n'
+      '\n'
+      'See https://patrol.leancode.co/documentation/ci/build-time-test-discovery',
+    );
+  }
+
+  File get _runnerFile => _rootDirectory
+      .childDirectory('ios')
+      .childDirectory('RunnerUITests')
+      .childFile('RunnerUITests.m');
+
+  /// Whether [runner] is set up for build-time discovery: a static macro plus
+  /// the `#include` that pulls in the generated tests.
+  bool _usesStaticRunner(File runner) {
+    final contents = runner.readAsStringSync();
+    return contents.contains('PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC') &&
+        contents.contains('#include "PatrolGeneratedTests.inc"');
+  }
+
+  /// Whether [runner] still has the 4.7.0 static form, with the `#include`
+  /// between the STATIC_BEGIN/STATIC_END macros instead of after STATIC_BASE.
+  bool _usesLegacyStaticRunner(File runner) {
+    final contents = runner.readAsStringSync();
+    final includeIndex = contents.indexOf(
+      '#include "PatrolGeneratedTests.inc"',
+    );
+    final endIndex = contents.indexOf(
+      'PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_END',
+    );
+    return includeIndex != -1 && endIndex != -1 && includeIndex < endIndex;
+  }
+
+  /// Maps requested [onlyTests] entries to the generated XCTest selectors below
+  /// the target, using the build-time manifest: a Dart test name becomes
+  /// `<class>/<method>`, a test file path becomes the bare `<class>` so the whole
+  /// file costs one selector. Empty in → empty out (run every generated class).
+  /// Used by `patrol test-without-building --only`. Throws when the manifest is
+  /// missing or nothing matches.
   List<String> _resolveOnlyTesting(List<String> onlyTests) {
     if (onlyTests.isEmpty) {
       return const [];
@@ -250,20 +310,42 @@ class IOSTestBackend {
       );
     }
     final tests = manifest.tests;
-    final selectors = generateIosSelectors(tests);
-    final out = <String>[];
-    for (var i = 0; i < tests.length; i++) {
-      if (onlyTests.contains(tests[i].dartName)) {
-        out.add(selectors[i]);
-      }
-    }
-    if (out.isEmpty) {
+    final selection = resolveOnlySelection(tests, onlyTests);
+    if (selection.isEmpty) {
       throwToolExit(
         'None of the requested --only test(s) were found in the manifest.\n'
+        'Pass an exact Dart test name or a test file path.\n'
         'Available tests:\n${tests.map((t) => '  ${t.dartName}').join('\n')}',
       );
     }
-    return out;
+    if (selection.unmatched.isNotEmpty) {
+      _logger.warn(
+        'Ignoring --only ${selection.unmatched.join(', ')}: no such Dart test '
+        'or test file in the manifest.',
+      );
+    }
+    return [
+      ...selection.classNames,
+      ...selection.tests.map((name) => name.selector),
+    ];
+  }
+
+  /// Every generated class, as an `-only-testing` selector, so a run restricted
+  /// to Patrol's own tests stays restricted: the generated tests live in per-file
+  /// subclasses now, and selecting the base class would select nothing. Empty for
+  /// the runtime runner (whose tests are all in one class) and when the manifest
+  /// is missing, in which case the whole target runs.
+  List<String> _generatedClassSelectors() {
+    if (!_runnerFile.existsSync() || !_usesStaticRunner(_runnerFile)) {
+      return const [];
+    }
+    final manifest = TestManifest.loadFromBuild(_rootDirectory);
+    if (manifest == null) {
+      return const [];
+    }
+    return generatePerFileTestNames(
+      manifest.tests,
+    ).map((name) => name.className).toSet().toList();
   }
 
   /// The generated static-XCTest include file, `#include`d by RunnerUITests.m.
@@ -306,7 +388,9 @@ class IOSTestBackend {
     void Function(Entry entry)? onLogEntry,
     VideoRecordingConfig? videoConfig,
   }) async {
-    final onlyTesting = _resolveOnlyTesting(onlyTests);
+    final onlyTesting = onlyTests.isNotEmpty
+        ? _resolveOnlyTesting(onlyTests)
+        : _generatedClassSelectors();
     await _disposeScope.run((scope) async {
       // Create video recording manager if enabled
       IOSVideoRecordingManager? videoRecordingManager;
@@ -376,6 +460,8 @@ class IOSTestBackend {
                 ),
                 resultBundlePath: reportPath,
                 onlyTesting: onlyTesting,
+                staticRunner:
+                    _runnerFile.existsSync() && _usesStaticRunner(_runnerFile),
               ),
               runInShell: true,
               environment: {
