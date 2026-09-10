@@ -3,16 +3,23 @@ name: check skills
 on:
   workflow_dispatch:
   pull_request:
-    paths:
-      - 'skills/**'
-      - '.agents/skills/**'
-      - '.claude/skills'
-      - 'tool/check_skills.sh'
-      - '.github/workflows/check-skills.yaml'
 
 jobs:
+  changes:
+    uses: ./.github/workflows/_relevant.yaml
+    with:
+      filters: |
+        relevant:
+          - 'skills/**'
+          - '.agents/skills/**'
+          - '.claude/skills'
+          - 'tool/check_skills.sh'
+          - '.github/workflows/check-skills.yaml'
+
   check-skills:
     name: Validate agent skills
+    needs: changes
+    if: ${{ needs.changes.outputs.relevant == 'true' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -21,3 +28,17 @@ jobs:
 
       - name: Check agent skills
         run: tool/check_skills.sh
+
+  check-skills-gate:
+    name: check skills gate
+    needs: [changes, check-skills]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify required jobs passed
+        run: |
+          if [ "${{ contains(needs.*.result, 'failure') }}" = "true" ] || [ "${{ contains(needs.*.result, 'cancelled') }}" = "true" ]; then
+            echo "A required job did not pass: ${{ join(needs.*.result, ' ') }}"
+            exit 1
+          fi
+          echo "All required jobs passed or were skipped: ${{ join(needs.*.result, ' ') }}"

@@ -3,12 +3,19 @@ name: patrol_devtools_extension prepare
 on:
   workflow_dispatch:
   pull_request:
-    paths:
-      - 'packages/patrol_devtools_extension/**'
 
 jobs:
+  changes:
+    uses: ./.github/workflows/_relevant.yaml
+    with:
+      filters: |
+        relevant:
+          - 'packages/patrol_devtools_extension/**'
+
   prepare:
     name: Flutter ${{ matrix.flutter-version }}
+    needs: changes
+    if: ${{ needs.changes.outputs.relevant == 'true' }}
     runs-on: ubuntu-latest
 
     strategy:
@@ -51,3 +58,17 @@ jobs:
       - name: Build extension
         if: success() || failure()
         run: ./publish_to_patrol_extension
+
+  patrol_devtools_extension-prepare-gate:
+    name: patrol_devtools_extension prepare gate
+    needs: [changes, prepare]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify required jobs passed
+        run: |
+          if [ "${{ contains(needs.*.result, 'failure') }}" = "true" ] || [ "${{ contains(needs.*.result, 'cancelled') }}" = "true" ]; then
+            echo "A required job did not pass: ${{ join(needs.*.result, ' ') }}"
+            exit 1
+          fi
+          echo "All required jobs passed or were skipped: ${{ join(needs.*.result, ' ') }}"
