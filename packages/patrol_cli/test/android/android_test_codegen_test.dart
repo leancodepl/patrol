@@ -114,13 +114,17 @@ public class MainActivityTest {
     );
 
     expect(result, isNotNull);
+    expect(result!.fullyQualifiedClassNames, [
+      'com.example.patrol_test.PatrolGeneratedTests_example_test',
+    ]);
     expect(
-      result!.outputPath,
-      '/android/patrolTest/src/main/java/com/example/patrol_test/PatrolGeneratedTests.java',
+      result.directoryPath,
+      '/android/patrolTest/src/main/java/com/example/patrol_test',
     );
-    final source = selfInstrumenting.file(result.outputPath).readAsStringSync();
+    final source = sourceOf(selfInstrumenting, result);
     expect(source, contains('package com.example.patrol_test;'));
-    expect(source, contains('instrumentation.setUp();'));
+    // The app under test's ID comes from the test APK, not an activity class.
+    expect(source, contains('instrumentation.setUpGenerated();'));
     expect(source, isNot(contains('MainActivity.class')));
   });
 
