@@ -1,4 +1,4 @@
-## Unreleased
+## 4.10.0
 
 - Build-time test discovery (experimental): the generated `.inc` now declares whole test classes.
   In `RunnerUITests.m`, replace the `STATIC_BEGIN`/`_END` pair with
