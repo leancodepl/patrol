@@ -24,9 +24,7 @@
 
     private var timeout: TimeInterval = 10
 
-    /// Bundle ids that already passed the accessibility check in
-    /// `getRunningApp(withBundleId:)`. Only touched on the main queue
-    /// (all actions run through `runAction`).
+    /// Bundle ids that already passed the accessibility check. Main queue only.
     private var automatableApps = Set<String>()
 
     func configure(timeout: TimeInterval) {
@@ -1081,24 +1079,16 @@
       return app
     }
 
-    /// Explains which appId to target instead when the requested one can't be
-    /// automated. Appended to the errors thrown by `getRunningApp(withBundleId:)`.
+    /// Appended to the errors thrown by `getRunningApp(withBundleId:)`.
     private static let appIdHint =
       "System views presented over the app under test (like the file picker "
       + "or the share sheet) belong to the app under test, so interact with them "
       + "using the default appId. System alerts (like permission dialogs) belong "
       + "to \"com.apple.springboard\""
 
-    /// Like `getApp(withBundleId:)`, but requires the app to be running and
-    /// automatable.
-    ///
-    /// Querying an XCUIApplication that XCTest can't automate - one that isn't
-    /// running, or isn't an app at all, e.g. a file provider extension like
-    /// com.apple.FileProvider.LocalStorage (its id shows up in the file
-    /// picker's element identifiers, so users mistake it for the picker's
-    /// owner) - stalls inside XCTest for minutes and then fails with a cryptic
-    /// kAXErrorServerNotFound error. Interactions fail fast with an
-    /// explanation instead. See https://github.com/leancodepl/patrol/issues/2790
+    /// Like `getApp(withBundleId:)`, but fails fast if the app isn't running or
+    /// can't be automated (e.g. a file provider extension). Querying such an
+    /// app stalls inside XCTest for minutes. See #2790.
     private func getRunningApp(withBundleId bundleId: String) throws -> XCUIApplication {
       let app = XCUIApplication(bundleIdentifier: bundleId)
 
@@ -1109,9 +1099,7 @@
         )
       }
 
-      // The app under test is in the foreground and gets queried all the
-      // time, so skip the accessibility check for it to avoid the overhead.
-      // Apps that passed the check once stay automatable, so cache them too.
+      // Skip the check for the foreground app and apps that already passed it.
       if app.state != .runningForeground, !automatableApps.contains(bundleId) {
         try assertRespondsToAccessibility(app: app, bundleId: bundleId)
         automatableApps.insert(bundleId)
@@ -1120,12 +1108,8 @@
       return app
     }
 
-    /// Throws if the running process behind `app` doesn't expose an
-    /// accessibility server, which means XCTest cannot automate it.
-    ///
-    /// `snapshot()` is the only XCTest API that reports this as a catchable
-    /// error, but on a non-automatable process it internally retries for
-    /// minutes, so it runs off the main thread bounded by our own deadline.
+    /// Throws if XCTest can't automate `app`. `snapshot()` is the only API that
+    /// reports this as a catchable error.
     private func assertRespondsToAccessibility(
       app: XCUIApplication, bundleId: String
     ) throws {
