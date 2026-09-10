@@ -27,6 +27,10 @@
     /// Bundle ids that already passed the accessibility check. Main queue only.
     private var automatableApps = Set<String>()
 
+    /// Bundle ids whose accessibility check timed out but is still running in
+    /// the background. Main queue only.
+    private var pendingAccessibilityChecks = Set<String>()
+
     func configure(timeout: TimeInterval) {
       self.timeout = timeout
     }
@@ -1093,10 +1097,7 @@
       let app = XCUIApplication(bundleIdentifier: bundleId)
 
       guard app.state != .notRunning, app.state != .unknown else {
-        throw PatrolError.internal(
-          "app \(format: bundleId) is not running, so it cannot be interacted with. "
-            + Self.appIdHint
-        )
+        throw cannotInteractError(withApp: bundleId, because: "is not running")
       }
 
       // Skip the check for the foreground app and apps that already passed it.
@@ -1113,7 +1114,13 @@
     private func assertRespondsToAccessibility(
       app: XCUIApplication, bundleId: String
     ) throws {
-      let deadline: TimeInterval = 10
+      guard !pendingAccessibilityChecks.contains(bundleId) else {
+        throw cannotInteractError(
+          withApp: bundleId,
+          because: "is running, but still hasn't responded to accessibility queries"
+        )
+      }
+
       var snapshotError: Error?
 
       let group = DispatchGroup()
@@ -1127,20 +1134,38 @@
         group.leave()
       }
 
-      guard group.wait(timeout: .now() + deadline) == .success else {
-        throw PatrolError.internal(
-          "app \(format: bundleId) is running, but did not respond to accessibility "
-            + "queries within \(Int(deadline)) seconds, so it cannot be interacted with. "
-            + Self.appIdHint
+      // The find timeout always fits inside the Dart-side connection timeout.
+      guard group.wait(timeout: .now() + timeout) == .success else {
+        pendingAccessibilityChecks.insert(bundleId)
+        group.notify(queue: .main) {
+          self.pendingAccessibilityChecks.remove(bundleId)
+          if snapshotError == nil {
+            self.automatableApps.insert(bundleId)
+          }
+        }
+
+        throw cannotInteractError(
+          withApp: bundleId,
+          because:
+            "is running, but did not respond to accessibility queries within "
+            + "\(Int(timeout)) seconds"
         )
       }
 
       if snapshotError != nil {
-        throw PatrolError.internal(
-          "app \(format: bundleId) is running, but does not respond to accessibility "
-            + "queries, so it cannot be interacted with. " + Self.appIdHint
+        throw cannotInteractError(
+          withApp: bundleId,
+          because: "is running, but does not respond to accessibility queries"
         )
       }
+    }
+
+    private func cannotInteractError(withApp bundleId: String, because reason: String)
+      -> PatrolError
+    {
+      PatrolError.internal(
+        "app \(format: bundleId) \(reason), so it cannot be interacted with. " + Self.appIdHint
+      )
     }
 
     private func swipeToOpenControlCenter() {
