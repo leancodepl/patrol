@@ -82,6 +82,7 @@ void main() {
             buildName: null,
             buildNumber: null,
           ),
+          bundleId: 'com.example.app',
           scheme: 'Runner',
           configuration: 'Debug',
           simulator: true,
@@ -283,6 +284,96 @@ void main() {
         expect(_lastResult!.error, isA<Exception>());
       },
     );
+
+    /// Makes the pubspec report `patrol.emit_test_manifest: true`.
+    void enableManifestInPubspec() {
+      when(pubspecReader.read).thenReturn(
+        PatrolPubspecConfig.empty(flutterPackageName: 'test_app')
+          ..emitTestManifest = true,
+      );
+    }
+
+    test(
+      'passes emit_test_manifest from pubspec to the Android build',
+      () async {
+        enableManifestInPubspec();
+
+        final built = Completer<AndroidAppOptions>();
+        when(() => androidTestBackend.build(any())).thenAnswer((
+          invocation,
+        ) async {
+          built.complete(
+            invocation.positionalArguments.first as AndroidAppOptions,
+          );
+        });
+
+        unawaited(buildService().run(options).catchError((Object _) {}));
+
+        expect((await built.future).emitTestManifest, isTrue);
+      },
+    );
+
+    test('passes emit_test_manifest from pubspec to the iOS build', () async {
+      enableManifestInPubspec();
+
+      const iosDevice = Device(
+        name: 'iPhone 15',
+        id: 'iphone-15',
+        targetPlatform: TargetPlatform.iOS,
+        real: false,
+      );
+      when(
+        () => deviceFinder.find(
+          any(),
+          flutterCommand: any(named: 'flutterCommand'),
+        ),
+      ).thenAnswer((_) async => [iosDevice]);
+      when(
+        () => iosTestBackend.getInstalledAppsEnvVariable(any()),
+      ).thenAnswer((_) async => '');
+
+      final built = Completer<IOSAppOptions>();
+      when(() => iosTestBackend.build(any())).thenAnswer((invocation) async {
+        built.complete(invocation.positionalArguments.first as IOSAppOptions);
+      });
+
+      unawaited(buildService().run(options).catchError((Object _) {}));
+
+      expect((await built.future).emitTestManifest, isTrue);
+    });
+
+    test('--no-emit-test-manifest overrides the pubspec value', () async {
+      enableManifestInPubspec();
+
+      final built = Completer<AndroidAppOptions>();
+      when(() => androidTestBackend.build(any())).thenAnswer((
+        invocation,
+      ) async {
+        built.complete(
+          invocation.positionalArguments.first as AndroidAppOptions,
+        );
+      });
+
+      unawaited(
+        buildService()
+            .run(
+              const DevelopOptions(
+                target: 'onboarding_test.dart',
+                flutterCommand: FlutterCommand('flutter'),
+                buildMode: BuildMode.debug,
+                testServerPort: 8081,
+                appServerPort: 8080,
+                generateBundle: false,
+                uninstall: false,
+                checkCompatibility: false,
+                emitTestManifest: false,
+              ),
+            )
+            .catchError((Object _) {}),
+      );
+
+      expect((await built.future).emitTestManifest, isFalse);
+    });
 
     group('iOS logs', () {
       /// Runs a develop session on [device] and reports where the app's logs

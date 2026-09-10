@@ -1,5 +1,17 @@
 ## Unreleased
 
+- Build-time test discovery (experimental): the generated `.inc` now declares whole test classes.
+  In `RunnerUITests.m`, replace the `STATIC_BEGIN`/`_END` pair with
+  `PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE(RunnerUITests)` followed by the `#include`.
+- Add `patrolTargetPlatform`: use it in `skip:` (and anything else deciding whether a test is
+  registered) so build-time discovery on the host matches the device. (#3241)
+- A test the app skips or doesn't have is now reported back to the native runner instead of
+  hanging the run. (#3241)
+- Android: the runtime-discovery host class stands down when a generated class is in the APK, so
+  direct-APK tools (Firebase Test Lab, saucectl, emulator.wtf, Marathon) no longer run every test
+  twice.
+- Fix `Failure.details` being `null` for tests that fail due to an exception thrown after the test body finishes but before/during teardown (e.g. a widget's `dispose()` throwing). Patrol now keeps gathering exceptions until its own `tearDown()` callback has read the results. (#3252)
+- Add Korean (ko) language support for native OS interactions. Permission dialog strings were captured from a real Korean iOS 26 device; Android strings follow the official AOSP localizations (`values-ko`). (#2303)
 - Fix `pickImageFromGallery` on Android API 36: when the photo picker keeps the picker open after selecting a single image, tap the confirm button to finish. The tap is best-effort, so devices/emulators whose picker auto-confirms (no confirm button) keep working. The button label is resolved per device language (en/de/fr/pl/ja) so it works beyond English. (#3254)
 - Android: keep third-party `AccessibilityService`s running during the test session again. `AndroidAutomatorConfig.dontSuppressAccessibilityServices` now defaults to `true` (it was effectively `false` since 4.8.0) and is configurable, also via the `PATROL_ANDROID_DONT_SUPPRESS_ACCESSIBILITY_SERVICES` dart-define. (#3227)
 - Report uncaught exceptions (e.g. from `onPressed`) in `patrol develop` instead of silently passing. (#3200)

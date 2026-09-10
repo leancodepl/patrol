@@ -1,5 +1,19 @@
 ## Unreleased
 
+- Build-time test discovery now generates one native test class per Dart test file, so reports
+  group by file and a whole file is selectable with a single native selector. **This renames every
+  generated native test** (the file becomes the class name, the method is the test name, no more
+  80-character truncation or index suffix; identical on Android and iOS). Regenerate any saved
+  shard lists, native test filters or dashboard mappings.
+- `--only` now also accepts the path of a test file, which runs that whole file as one native
+  selector. Entries matching nothing are reported instead of being dropped silently.
+- Tell the build-time discovery run which platform it builds for, so `patrolTargetPlatform` reports
+  the device's platform while discovering on the host. (#3241)
+- Fix `patrol develop` ignoring build-time test discovery, which made every iOS develop build fail
+  with `'PatrolGeneratedTests.inc' file not found`.
+- Fail with an explanation when `RunnerUITests.m` disagrees with the discovery setting: the static
+  runner with discovery disabled, or the 4.7.0 `STATIC_BEGIN`/`STATIC_END` form, which the per-file
+  generated classes no longer compile in.
 - Add `screenshot_on_failure` option to the pubspec's `patrol` section, forwarded to the app (via a dart-define) for `build` and `test` so patrol can capture native failure screenshots on Android device farms (e.g. BrowserStack, Firebase Test Lab). Not collected by `patrol develop`. Off by default. (#3222)
 - `patrol test` (Android) now pulls native screenshots (failure and on-demand) from the device into `<test-directory>/screenshots` after the run (override with `--screenshots-output-dir`), so they are available from local/emulator runs, not only device farms. (#3222)
 - Allow the latest `package_config` (3.x), `cli_completion` (0.6.x) and `pub_updater` (0.6.x), without raising the minimum Dart SDK. (#3225)
