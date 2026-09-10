@@ -2,14 +2,21 @@ import Foundation
 
 /// Simplified objective-c RunDartTestResponse model that we use in PatrolIntegrationTestRunner.h
 @objc(ObjCRunDartTestResponse) public class ObjCRunDartTestResponse: NSObject {
-  @objc public dynamic let passed: Bool
-  @objc public dynamic let skipped: Bool
+  @objc public dynamic let result: String
   @objc public dynamic let details: String?
+  @objc public dynamic let nextPhaseIndex: NSNumber?
+  @objc public dynamic let nextPhaseLaunchUrl: String?
 
-  @objc public init(passed: Bool, skipped: Bool, details: String?) {
-    self.passed = passed
-    self.skipped = skipped
+  @objc public init(
+    result: String,
+    details: String?,
+    nextPhaseIndex: NSNumber?,
+    nextPhaseLaunchUrl: String?
+  ) {
+    self.result = result
     self.details = details
+    self.nextPhaseIndex = nextPhaseIndex
+    self.nextPhaseLaunchUrl = nextPhaseLaunchUrl
   }
 }
 
@@ -78,16 +85,27 @@ import Foundation
   @objc public func runDartTest(
     name: String, completion: @escaping (ObjCRunDartTestResponse?, Error?) -> Void
   ) {
-    NSLog("PatrolAppServiceClient.runDartTest(\(name))")
+    runDartTest(name: name, phaseIndex: nil, completion: completion)
+  }
 
-    let request = RunDartTestRequest(name: name)
+  @objc public func runDartTest(
+    name: String,
+    phaseIndex: NSNumber?,
+    completion: @escaping (ObjCRunDartTestResponse?, Error?) -> Void
+  ) {
+    NSLog(
+      "PatrolAppServiceClient.runDartTest(\(name), phaseIndex=\(String(describing: phaseIndex)))"
+    )
+
+    let request = RunDartTestRequest(name: name, phaseIndex: phaseIndex?.intValue)
     client.runDartTest(request: request) { result in
       switch result {
       case .success(let result):
         let testResponse = ObjCRunDartTestResponse(
-          passed: result.result == .success,
-          skipped: result.result == .skipped,
-          details: result.details
+          result: result.result.rawValue,
+          details: result.details,
+          nextPhaseIndex: result.nextPhaseIndex.map(NSNumber.init(value:)),
+          nextPhaseLaunchUrl: result.nextPhaseLaunchUrl
         )
         completion(testResponse, nil)
       case .failure(let error):
