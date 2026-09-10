@@ -26,6 +26,5 @@ void main() {
         await file.delete();
       }),
     ]),
-    tags: ['ios', 'simulator'],
   );
 }
