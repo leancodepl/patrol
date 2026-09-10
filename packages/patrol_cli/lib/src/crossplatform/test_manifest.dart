@@ -173,10 +173,14 @@ String _withinFileName(DiscoveredTest test) {
 /// `test_<sanitized>`, unique within its class. The `test_` prefix keeps the
 /// method name identical to the iOS selector for the same test, and the manifest
 /// index disambiguates two names that sanitize to the same identifier.
+/// Keeps generated method names readable in reports and selectors; not a
+/// platform limit (Java and XCTest accept far longer names).
+const _maxMethodNameLength = 120;
+
 String _uniqueMethodName(String name, int index, Set<String> used) {
   var sanitized = _sanitizeIdentifier(name);
-  if (sanitized.length > 120) {
-    sanitized = sanitized.substring(0, 120);
+  if (sanitized.length > _maxMethodNameLength) {
+    sanitized = sanitized.substring(0, _maxMethodNameLength);
   }
   var methodName = 'test_$sanitized';
   if (used.contains(methodName)) {

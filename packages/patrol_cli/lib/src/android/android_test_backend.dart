@@ -526,9 +526,9 @@ class AndroidTestBackend {
   }
 
   /// Runs already-built tests without rebuilding, via `adb shell am instrument`
-  /// (the true no-rebuild path — no Gradle up-to-date check). Requires a prior
-  /// `patrol build android --emit-test-manifest`, whose generated JUnit class
-  /// makes each Dart test an individually-addressable `<fqcn>#<method>`.
+  /// (the true no-rebuild path, no Gradle up-to-date check). Requires a prior
+  /// `patrol build android --emit-test-manifest`, whose generated JUnit classes
+  /// make each Dart test an individually-addressable `<class>#<method>`.
   ///
   /// [onlyTests] are Dart test names (as shown by discovery); empty runs the
   /// whole generated class. Backs `patrol test-without-building [--only ...]`.
@@ -649,8 +649,8 @@ class AndroidTestBackend {
   /// Builds the `-e class` value for `am instrument`: the generated classes
   /// ([generatedClassNames]) to run all of them, or a comma-separated selection mapped from the
   /// requested [onlyTests] entries via the build-time manifest. A Dart test name
-  /// becomes `<fqcn>#<method>`, a test file path becomes the bare `<fqcn>` so the
-  /// whole file costs one entry.
+  /// becomes `<class>#<method>`, a test file path becomes the bare `<class>` so
+  /// the whole file costs one entry.
   String _resolveClassArg(
     List<String> generatedClassNames,
     List<String> onlyTests,
