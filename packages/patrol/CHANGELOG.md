@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Reject a test name containing `/`, with a message naming the offending test, instead of letting it crash Android Test Orchestrator. The name is rejected on Android, iOS and macOS with runtime test discovery. (#3259)
 - Build-time test discovery (experimental): the generated `.inc` now declares whole test classes.
   In `RunnerUITests.m`, replace the `STATIC_BEGIN`/`_END` pair with
   `PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE(RunnerUITests)` followed by the `#include`.
