@@ -218,21 +218,29 @@ class PatrolAppService {
       result.details
           ?.split('\n')
           .forEach((e) => _patrolLog.log(ErrorEntry(message: e)));
-    } else if (result.continuation == null) {
-      _patrolLog.log(
-        TestEntry(name: request.name, status: TestEntryStatus.success),
+      return RunDartTestResponse(
+        result: RunDartTestResponseResult.failure,
+        details: result.details,
       );
     }
-    final continuation = result.continuation;
-    return RunDartTestResponse(
-      result: !result.passed
-          ? RunDartTestResponseResult.failure
-          : continuation != null
-          ? RunDartTestResponseResult.continuation
-          : RunDartTestResponseResult.success,
-      details: result.details,
-      nextPhaseIndex: continuation?.nextPhaseIndex,
-      nextPhaseLaunchUrl: continuation?.launchUrl,
+
+    // Playwright only fails on `failure`, and web has no process-kill loop.
+    if (result.continuation != null) {
+      const details = 'Phased Patrol tests are not supported on web';
+      _patrolLog
+        ..log(TestEntry(name: request.name, status: TestEntryStatus.failure))
+        ..log(ErrorEntry(message: details));
+      return const RunDartTestResponse(
+        result: RunDartTestResponseResult.failure,
+        details: details,
+      );
+    }
+
+    _patrolLog.log(
+      TestEntry(name: request.name, status: TestEntryStatus.success),
+    );
+    return const RunDartTestResponse(
+      result: RunDartTestResponseResult.success,
     );
   }
 }
