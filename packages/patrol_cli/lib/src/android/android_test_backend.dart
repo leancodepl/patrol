@@ -871,22 +871,40 @@ class AndroidTestBackend {
   }
 
   String _resolveBuiltApplicationId(AndroidAppOptions options) {
-    return AndroidArtifactResolver(_rootDirectory)
-        .app(
-          buildMode: options.flutter.buildMode,
-          flavor: options.flutter.flavor,
-        )
-        .applicationId;
+    try {
+      return AndroidArtifactResolver(_rootDirectory)
+          .app(
+            buildMode: options.flutter.buildMode,
+            flavor: options.flutter.flavor,
+          )
+          .applicationId;
+    } on ToolExit {
+      final packageName = options.packageName;
+      if (packageName != null && packageName.isNotEmpty) {
+        return packageName;
+      }
+      rethrow;
+    }
   }
 
   String _resolveBuiltTestApplicationId(AndroidAppOptions options) {
-    return AndroidArtifactResolver(_rootDirectory)
-        .test(
-          layout: options.testLayout,
-          buildMode: options.flutter.buildMode,
-          flavor: options.flutter.flavor,
-        )
-        .applicationId;
+    try {
+      return AndroidArtifactResolver(_rootDirectory)
+          .test(
+            layout: options.testLayout,
+            buildMode: options.flutter.buildMode,
+            flavor: options.flutter.flavor,
+          )
+          .applicationId;
+    } on ToolExit {
+      final packageName = options.packageName;
+      if (packageName != null &&
+          packageName.isNotEmpty &&
+          options.testLayout == AndroidTestLayout.inApp) {
+        return '$packageName.test';
+      }
+      rethrow;
+    }
   }
 
   /// Generates the Android test report path based on build mode and flavor.
