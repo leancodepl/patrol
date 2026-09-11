@@ -114,6 +114,54 @@ void main() {
         await processStdout.close();
       },
     );
+    test(
+      'hotRestart onFailed fires when Flutter rejects the restart',
+      () async {
+        final process = MockProcess();
+        final processStdin = _MockIOSink();
+        final processStdout = StreamController<List<int>>();
+        when(() => process.stdout).thenAnswer((_) => processStdout.stream);
+        when(
+          () => process.stderr,
+        ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
+        when(() => process.stdin).thenReturn(processStdin);
+        when(() => processStdin.add(any())).thenReturn(null);
+        when(
+          () => processManager.start(any()),
+        ).thenAnswer((_) async => process);
+
+        final attach = flutterTool.attach(
+          flutterCommand: flutterCommand,
+          deviceId: 'testDeviceId',
+          target: 'target',
+          appId: 'appId',
+          dartDefines: {},
+          openBrowser: false,
+        );
+        processStdout.add(utf8.encode('Flutter run key commands.\n'));
+        await attach;
+
+        var completed = false;
+        var failed = false;
+        flutterTool.hotRestart(
+          onCompleted: () => completed = true,
+          onFailed: () => failed = true,
+        );
+
+        processStdout.add(
+          utf8.encode('Try again after fixing the above error(s).\n'),
+        );
+        await Future<void>.delayed(const Duration(milliseconds: 10));
+        expect(failed, isTrue);
+        expect(completed, isFalse);
+
+        // A later successful restart must not fire the stale callback again.
+        processStdout.add(utf8.encode('Restarted application in 1,234ms.\n'));
+        await Future<void>.delayed(const Duration(milliseconds: 10));
+        expect(completed, isFalse);
+        await processStdout.close();
+      },
+    );
     test('attach passes deviceId correctly', () {
       final process = MockProcess();
       when(

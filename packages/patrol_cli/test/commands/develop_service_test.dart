@@ -464,7 +464,10 @@ void main() {
           ),
         ).thenAnswer((_) => attachCompleter.future);
         when(
-          () => flutterTool.hotRestart(onCompleted: any(named: 'onCompleted')),
+          () => flutterTool.hotRestart(
+            onCompleted: any(named: 'onCompleted'),
+            onFailed: any(named: 'onFailed'),
+          ),
         ).thenAnswer((invocation) {
           hotRestarts++;
           // The real FlutterTool fires this once `flutter attach` reports
@@ -544,8 +547,10 @@ void main() {
             throwsA(isA<ToolExit>()),
           );
           verifyNever(
-            () =>
-                flutterTool.hotRestart(onCompleted: any(named: 'onCompleted')),
+            () => flutterTool.hotRestart(
+              onCompleted: any(named: 'onCompleted'),
+              onFailed: any(named: 'onFailed'),
+            ),
           );
         },
       );

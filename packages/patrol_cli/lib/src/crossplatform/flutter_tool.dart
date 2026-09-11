@@ -44,6 +44,7 @@ class FlutterTool {
   io.Process? _attachProcess;
   var _pendingHotRestart = false;
   void Function()? _onRestartCompleted;
+  void Function()? _onRestartFailed;
 
   /// Sends a Hot Restart to the attached app - the same as pressing `r`.
   ///
@@ -54,8 +55,11 @@ class FlutterTool {
   /// [onCompleted] fires once `flutter attach` reports the restart as
   /// completed ('Restarted application ...'), not when it is requested.
   /// Callers use it to tell output of the old and the new program apart.
-  void hotRestart({void Function()? onCompleted}) {
+  /// [onFailed] fires instead when the restart is rejected (compile error);
+  /// exactly one of the two fires, at most once.
+  void hotRestart({void Function()? onCompleted, void Function()? onFailed}) {
     _onRestartCompleted = onCompleted;
+    _onRestartFailed = onFailed;
     final process = _attachProcess;
     if (process == null || !_hotRestartActive) {
       _logger.warn(
@@ -66,6 +70,12 @@ class FlutterTool {
     }
     _logger.success('Hot Restart requested...');
     process.stdin.add('R'.codeUnits);
+  }
+
+  void _settleRestart(void Function()? callback) {
+    _onRestartCompleted = null;
+    _onRestartFailed = null;
+    callback?.call();
   }
 
   /// Forwards logs and hot restarts the app when "r" is pressed.
@@ -280,9 +290,11 @@ class FlutterTool {
             }
 
             if (line.startsWith('Restarted application')) {
-              final onRestartCompleted = _onRestartCompleted;
-              _onRestartCompleted = null;
-              onRestartCompleted?.call();
+              _settleRestart(_onRestartCompleted);
+            }
+
+            if (line.startsWith('Try again after fixing the above error')) {
+              _settleRestart(_onRestartFailed);
             }
 
             if (line.startsWith('The Flutter DevTools debugger and profiler')) {

@@ -622,24 +622,27 @@ class AndroidTestBackend {
     if (!dir.existsSync()) {
       throwToolExit('Prebuilt APK directory does not exist: $apksDir');
     }
-    File? appApk;
-    File? testApk;
+    final appApks = <File>[];
+    final testApks = <File>[];
     for (final entity in dir.listSync(recursive: true)) {
       if (entity is! File || !entity.path.endsWith('.apk')) {
         continue;
       }
       if (entity.path.endsWith('-androidTest.apk')) {
-        testApk ??= entity;
+        testApks.add(entity);
       } else {
-        appApk ??= entity;
+        appApks.add(entity);
       }
     }
-    if (appApk == null || testApk == null) {
+    if (appApks.length != 1 || testApks.length != 1) {
+      final found = [...appApks, ...testApks].map((f) => f.path).join(', ');
       throwToolExit(
-        'Expected an app APK and a *-androidTest.apk in $apksDir (got '
-        'app=${appApk?.path}, test=${testApk?.path}).',
+        'Expected exactly one app APK and one *-androidTest.apk in $apksDir '
+        '(found: ${found.isEmpty ? 'none' : found}).',
       );
     }
+    final appApk = appApks.single;
+    final testApk = testApks.single;
 
     _logger.detail('Installing app APK: ${appApk.path}');
     await _adbInstall(appApk.path, device);

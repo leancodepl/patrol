@@ -107,7 +107,9 @@ patrol build android --develop --target patrol_test/example_test.dart
 ```
 
 Then, on a checkout of the **same commit** using the **same Flutter version**,
-point `patrol develop` at a directory that contains the two APKs:
+point `patrol develop` at a directory that contains exactly those two APKs. If
+you pass `--test-server-port` or `--app-server-port`, pass the same values to
+both commands - the ports are baked into the APKs at build time:
 
 ```
 patrol develop --use-prebuilt-apks path/to/apks --target patrol_test/example_test.dart

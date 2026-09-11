@@ -625,6 +625,16 @@ class DevelopService {
           );
           _flutterTool.hotRestart(
             onCompleted: () => prebuiltTargetActive = true,
+            // The placeholder is gone once a restart was attempted, so open
+            // the gate anyway; otherwise a compile error in the target would
+            // keep every later entry (after the user's fix + `r`) hidden.
+            onFailed: () {
+              prebuiltTargetActive = true;
+              _logger.warn(
+                'Hot restart into the requested target failed. Fix the '
+                'error above and press r.',
+              );
+            },
           );
         }
       }
