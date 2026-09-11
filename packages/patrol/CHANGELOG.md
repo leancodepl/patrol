@@ -1,22 +1,36 @@
-## Unreleased
+## 4.10.0
 
-- Reject a test name containing `/`, with a message naming the offending test, instead of letting it crash Android Test Orchestrator. The name is rejected on Android, iOS and macOS with runtime test discovery. (#3259)
 - Build-time test discovery (experimental): the generated `.inc` now declares whole test classes.
   In `RunnerUITests.m`, replace the `STATIC_BEGIN`/`_END` pair with
   `PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE(RunnerUITests)` followed by the `#include`.
+  This form of discovery requires `patrol_cli` 4.8.0 or newer.
 - Add `patrolTargetPlatform`: use it in `skip:` (and anything else deciding whether a test is
   registered) so build-time discovery on the host matches the device. (#3241)
-- A test the app skips or doesn't have is now reported back to the native runner instead of
-  hanging the run. (#3241)
+- Add opt-in native failure screenshots on Android: set `screenshot_on_failure: true` in the
+  pubspec's `patrol` section to capture the failing screen before teardown. It lands in a folder
+  named after the running JUnit test, so it matches what device farms (BrowserStack, Firebase Test
+  Lab) report. Also adds `$.takeNativeScreenshot('tag')` for on-demand captures. Off by default,
+  needs `patrol_cli` 4.8.0 or newer to be forwarded to the app, and iOS is a no-op for now. (#3222)
+- Add Korean (ko) language support for native OS interactions. (#2303)
+- Android: keep third-party `AccessibilityService`s running during the test session again.
+  `AndroidAutomatorConfig.dontSuppressAccessibilityServices` now defaults to `true` (it was
+  effectively `false` since 4.8.0) and is configurable, also via the
+  `PATROL_ANDROID_DONT_SUPPRESS_ACCESSIBILITY_SERVICES` dart-define. (#3227)
 - Android: the runtime-discovery host class stands down when a generated class is in the APK, so
   direct-APK tools (Firebase Test Lab, saucectl, emulator.wtf, Marathon) no longer run every test
   twice.
-- Fix `Failure.details` being `null` for tests that fail due to an exception thrown after the test body finishes but before/during teardown (e.g. a widget's `dispose()` throwing). Patrol now keeps gathering exceptions until its own `tearDown()` callback has read the results. (#3252)
-- Add Korean (ko) language support for native OS interactions. Permission dialog strings were captured from a real Korean iOS 26 device; Android strings follow the official AOSP localizations (`values-ko`). (#2303)
-- Fix `pickImageFromGallery` on Android API 36: when the photo picker keeps the picker open after selecting a single image, tap the confirm button to finish. The tap is best-effort, so devices/emulators whose picker auto-confirms (no confirm button) keep working. The button label is resolved per device language (en/de/fr/pl/ja) so it works beyond English. (#3254)
-- Android: keep third-party `AccessibilityService`s running during the test session again. `AndroidAutomatorConfig.dontSuppressAccessibilityServices` now defaults to `true` (it was effectively `false` since 4.8.0) and is configurable, also via the `PATROL_ANDROID_DONT_SUPPRESS_ACCESSIBILITY_SERVICES` dart-define. (#3227)
-- Report uncaught exceptions (e.g. from `onPressed`) in `patrol develop` instead of silently passing. (#3200)
-- Add opt-in native failure screenshots on Android for device farms (e.g. BrowserStack, Firebase Test Lab): set `screenshot_on_failure: true` in the pubspec's `patrol` section to capture the failing screen from the Dart failure path (before teardown). The screenshot is written to the folder named after the running JUnit test (read from its `Description`), so it matches what the farm reports. Also adds `$.takeNativeScreenshot('tag')` for on-demand captures. Off by default; iOS is a no-op for now. (#3222)
+- Reject a test name containing `/`, naming the offending test, instead of letting it crash Android
+  Test Orchestrator. Applies to Android, iOS and macOS with runtime test discovery. (#3259)
+- A test the app skips or doesn't have is now reported back to the native runner instead of
+  hanging the run. (#3241)
+- Fix `Failure.details` being `null` when a test fails from an exception thrown after the test body
+  but before or during teardown, e.g. a widget's `dispose()`. Patrol now keeps gathering exceptions
+  until its own `tearDown()` has read the results. (#3252)
+- Fix `pickImageFromGallery` on Android API 36, where the photo picker can stay open after a single
+  selection: Patrol now taps the confirm button, resolving its label per device language
+  (en/de/fr/pl/ja). The tap is best-effort, so pickers that auto-confirm keep working. (#3254)
+- Report uncaught exceptions (e.g. from `onPressed`) in `patrol develop` instead of silently
+  passing. (#3200)
 
 ## 4.9.0
 

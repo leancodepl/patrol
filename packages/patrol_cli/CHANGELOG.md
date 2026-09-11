@@ -1,27 +1,39 @@
-## Unreleased
+## 4.8.0
 
-- Build-time test discovery now generates one native test class per Dart test file, so reports
-  group by file and a whole file is selectable with a single native selector. **This renames every
-  generated native test** (the file becomes the class name, the method is the test name, no more
-  80-character truncation or index suffix; identical on Android and iOS). Regenerate any saved
-  shard lists, native test filters or dashboard mappings.
+- Build-time test discovery (experimental) now generates one native test class per Dart test file,
+  so reports group by file and a whole file is selectable with a single native selector.
+  **This renames every generated native test** (the file becomes the class name, the method is the
+  test name, no more 80-character truncation or index suffix; identical on Android and iOS).
+  Regenerate any saved shard lists, native test filters or dashboard mappings. This form of
+  discovery requires `patrol` 4.10.0 or newer.
 - `--only` now also accepts the path of a test file, which runs that whole file as one native
   selector. Entries matching nothing are reported instead of being dropped silently.
 - Tell the build-time discovery run which platform it builds for, so `patrolTargetPlatform` reports
   the device's platform while discovering on the host. (#3241)
-- Fix `patrol develop` ignoring build-time test discovery, which made every iOS develop build fail
-  with `'PatrolGeneratedTests.inc' file not found`.
+- Add `screenshot_on_failure` to the pubspec's `patrol` section, forwarded to the app (via a
+  dart-define) for `build` and `test` so Patrol can capture native failure screenshots on Android
+  device farms (e.g. BrowserStack, Firebase Test Lab). Not collected by `patrol develop`. Off by
+  default, and requires `patrol` 4.10.0 or newer. (#3222)
+- `patrol test` (Android) now pulls native screenshots (failure and on-demand) off the device into
+  `<test-directory>/screenshots` after the run (override with `--screenshots-output-dir`), so they
+  are available from local and emulator runs, not only device farms. (#3222)
+- Allow the latest `package_config` (3.x), `cli_completion` (0.6.x) and `pub_updater` (0.6.x),
+  without raising the minimum Dart SDK. (#3225)
 - Fail with an explanation when `RunnerUITests.m` disagrees with the discovery setting: the static
   runner with discovery disabled, or the 4.7.0 `STATIC_BEGIN`/`STATIC_END` form, which the per-file
   generated classes no longer compile in.
-- Add `screenshot_on_failure` option to the pubspec's `patrol` section, forwarded to the app (via a dart-define) for `build` and `test` so patrol can capture native failure screenshots on Android device farms (e.g. BrowserStack, Firebase Test Lab). Not collected by `patrol develop`. Off by default. (#3222)
-- `patrol test` (Android) now pulls native screenshots (failure and on-demand) from the device into `<test-directory>/screenshots` after the run (override with `--screenshots-output-dir`), so they are available from local/emulator runs, not only device farms. (#3222)
-- Allow the latest `package_config` (3.x), `cli_completion` (0.6.x) and `pub_updater` (0.6.x), without raising the minimum Dart SDK. (#3225)
-- Fix an issue when building iOS tests from different directory than project's root - we were looking in a wrong place for .xctestrun file. (#3250)
-- Fix hot restart dying on flavored `patrol develop` — `flutter attach` has no `--flavor`. Regressed in 4.6.1. (#3223)
-- Fix `patrol develop` terminal handling.
-- Fix flavored iOS `patrol develop` losing logs — they now come from Patrol's own stream. (#2465)
-- Fix `patrol develop` on a flavored iOS simulator.(#3279)
+- Fix `patrol develop` ignoring build-time test discovery, which made every iOS develop build fail
+  with `'PatrolGeneratedTests.inc' file not found`.
+- Fix looking for the `.xctestrun` file in the wrong place when building iOS tests from a directory
+  other than the project root. (#3250)
+- Fix hot restart dying on flavored `patrol develop` — `flutter attach` has no `--flavor`.
+  Regressed in 4.6.1. (#3223)
+- Fix flavored iOS `patrol develop`: logs and the VM service URL now come from Patrol's own stream
+  instead of `flutter logs`, which can't resolve a flavored project. This fixes lost logs on
+  devices and the `You must specify a --flavor option` exit on simulators. (#2465, #3279)
+- Fix `patrol develop` crashing with `StdinException: Error getting terminal echo mode` on hosts
+  whose terminal modes can't be changed (some CI and agent harnesses); interactive mode is skipped,
+  and echo is restored if enabling it fails halfway. (#3278)
 
 ## 4.7.0
 

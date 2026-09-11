@@ -870,14 +870,14 @@ packages:
       path: "../../packages/patrol"
       relative: true
     source: path
-    version: "4.9.0"
+    version: "4.10.0"
   patrol_cli:
     dependency: "direct dev"
     description:
       path: "../../packages/patrol_cli"
       relative: true
     source: path
-    version: "4.7.0"
+    version: "4.8.0"
   patrol_finders:
     dependency: transitive
     description:
@@ -900,7 +900,7 @@ packages:
       path: "../../packages/patrol_mcp"
       relative: true
     source: path
-    version: "0.2.0"
+    version: "0.2.1"
   permission_handler:
     dependency: "direct main"
     description:
