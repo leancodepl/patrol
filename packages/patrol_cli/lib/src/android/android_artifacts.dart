@@ -20,11 +20,7 @@ class AndroidArtifactResolver {
 
   AndroidArtifact app({required BuildMode buildMode, required String? flavor}) {
     return _resolve(
-      metadataRoot: rootDirectory
-          .childDirectory('build')
-          .childDirectory('app')
-          .childDirectory('outputs')
-          .childDirectory('apk'),
+      metadataRoots: _apkOutputRoots('app'),
       expectedVariant: _variantName(buildMode, flavor),
     );
   }
@@ -35,33 +31,70 @@ class AndroidArtifactResolver {
     required String? flavor,
   }) {
     final selfInstrumenting = layout == AndroidTestLayout.selfInstrumenting;
-    var metadataRoot = rootDirectory
-        .childDirectory('build')
-        .childDirectory(selfInstrumenting ? 'patrolTest' : 'app')
-        .childDirectory('outputs')
-        .childDirectory('apk');
-    if (!selfInstrumenting) {
-      metadataRoot = metadataRoot.childDirectory('androidTest');
-    }
+    final roots = [
+      for (final root in _apkOutputRoots(
+        selfInstrumenting ? 'patrolTest' : 'app',
+      ))
+        if (selfInstrumenting) root else root.childDirectory('androidTest'),
+    ];
     return _resolve(
-      metadataRoot: metadataRoot,
+      metadataRoots: roots,
       expectedVariant:
           '${_variantName(buildMode, flavor)}'
           '${selfInstrumenting ? '' : 'AndroidTest'}',
     );
   }
 
+  /// Flutter's usual `rootProject.buildDir = '../build'` puts some outputs
+  /// under `<flutterRoot>/build/<project>/`. Gradle 8 / newer AGP still write
+  /// `outputs/apk` next to the module at `android/<project>/build/`.
+  List<Directory> _apkOutputRoots(String project) {
+    return [
+      rootDirectory
+          .childDirectory('build')
+          .childDirectory(project)
+          .childDirectory('outputs')
+          .childDirectory('apk'),
+      rootDirectory
+          .childDirectory('android')
+          .childDirectory(project)
+          .childDirectory('build')
+          .childDirectory('outputs')
+          .childDirectory('apk'),
+    ];
+  }
+
   AndroidArtifact _resolve({
-    required Directory metadataRoot,
+    required List<Directory> metadataRoots,
     required String expectedVariant,
   }) {
-    if (!metadataRoot.existsSync()) {
+    final existing = [
+      for (final root in metadataRoots)
+        if (root.existsSync()) root,
+    ];
+    if (existing.isEmpty) {
       throwToolExit(
-        'No Android APK outputs found under ${metadataRoot.path}. '
+        'No Android APK outputs found under '
+        '${metadataRoots.map((root) => root.path).join(' or ')}. '
         'Build the requested variant first.',
       );
     }
 
+    for (final metadataRoot in existing) {
+      final artifact = _resolveIn(metadataRoot, expectedVariant);
+      if (artifact != null) {
+        return artifact;
+      }
+    }
+
+    throwToolExit(
+      'Could not resolve Android APK for variant $expectedVariant under '
+      '${existing.map((root) => root.path).join(' or ')}. '
+      'Build that variant first.',
+    );
+  }
+
+  AndroidArtifact? _resolveIn(Directory metadataRoot, String expectedVariant) {
     final metadataFiles =
         metadataRoot
             .listSync(recursive: true)
@@ -105,11 +138,7 @@ class AndroidArtifactResolver {
         // Ignore unrelated or partially written metadata files.
       }
     }
-
-    throwToolExit(
-      'Could not resolve Android APK for variant $expectedVariant under '
-      '${metadataRoot.path}. Build that variant first.',
-    );
+    return null;
   }
 
   String _variantName(BuildMode mode, String? flavor) {
