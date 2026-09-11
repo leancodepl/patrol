@@ -1,9 +1,10 @@
-## 0.2.1
+## Unreleased
 
-- Fix the `screenshot` tool on iOS: it now captures to a temp file instead of `/dev/stdout`, since
-  `simctl io screenshot` writes atomically and can't create its temp file inside `/dev`. (#3257)
-- Require `adb ^0.6.1`, which has the `Adb.pull`/`Adb.remove` methods the `patrol_cli` dependency
-  uses. (#3258)
+- Fix the `screenshot` tool on iOS: it now captures to a temp file instead of
+  `/dev/stdout`, since `simctl io screenshot` writes atomically and can't
+  create its temp file inside `/dev` (#3257).
+- Require `adb ^0.6.1`: earlier versions don't have `Adb.pull`/`Adb.remove`,
+  which the `patrol_cli` dependency uses (#3258).
 
 ## 0.2.0
 

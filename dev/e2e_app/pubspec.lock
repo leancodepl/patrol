@@ -900,7 +900,7 @@ packages:
       path: "../../packages/patrol_mcp"
       relative: true
     source: path
-    version: "0.2.1"
+    version: "0.2.0"
   permission_handler:
     dependency: "direct main"
     description:
