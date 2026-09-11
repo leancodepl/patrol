@@ -10,13 +10,11 @@
   selector. Entries matching nothing are reported instead of being dropped silently.
 - Tell the build-time discovery run which platform it builds for, so `patrolTargetPlatform` reports
   the device's platform while discovering on the host. (#3241)
-- Add `screenshot_on_failure` to the pubspec's `patrol` section, forwarded to the app (via a
-  dart-define) for `build` and `test` so Patrol can capture native failure screenshots on Android
-  device farms (e.g. BrowserStack, Firebase Test Lab). Not collected by `patrol develop`. Off by
-  default, and requires `patrol` 4.10.0 or newer. (#3222)
-- `patrol test` (Android) now pulls native screenshots (failure and on-demand) off the device into
-  `<test-directory>/screenshots` after the run (override with `--screenshots-output-dir`), so they
-  are available from local and emulator runs, not only device farms. (#3222)
+- Add native screenshots on Android: `screenshot_on_failure` in the pubspec's `patrol` section
+  turns on failure captures, and `patrol test` pulls them off the device into
+  `<test-directory>/screenshots` (override with `--screenshots-output-dir`). Off by default, not
+  collected by `patrol develop`, and needs `patrol` 4.10.0 or newer. See the
+  [screenshots docs](https://patrol.leancode.co/cli-commands/test#screenshots). (#3222)
 - Allow the latest `package_config` (3.x), `cli_completion` (0.6.x) and `pub_updater` (0.6.x),
   without raising the minimum Dart SDK. (#3225)
 - Fail with an explanation when `RunnerUITests.m` disagrees with the discovery setting: the static

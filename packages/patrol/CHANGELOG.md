@@ -6,11 +6,9 @@
   This form of discovery requires `patrol_cli` 4.8.0 or newer.
 - Add `patrolTargetPlatform`: use it in `skip:` (and anything else deciding whether a test is
   registered) so build-time discovery on the host matches the device. (#3241)
-- Add opt-in native failure screenshots on Android: set `screenshot_on_failure: true` in the
-  pubspec's `patrol` section to capture the failing screen before teardown. It lands in a folder
-  named after the running JUnit test, so it matches what device farms (BrowserStack, Firebase Test
-  Lab) report. Also adds `$.takeNativeScreenshot('tag')` for on-demand captures. Off by default,
-  needs `patrol_cli` 4.8.0 or newer to be forwarded to the app, and iOS is a no-op for now. (#3222)
+- Add opt-in native failure screenshots on Android, plus `$.takeNativeScreenshot('tag')` for
+  on-demand captures. Needs `patrol_cli` 4.8.0 or newer; iOS is a no-op for now. See the
+  [screenshots docs](https://patrol.leancode.co/cli-commands/test#screenshots). (#3222)
 - Add Korean (ko) language support for native OS interactions. (#2303)
 - Android: keep third-party `AccessibilityService`s running during the test session again.
   `AndroidAutomatorConfig.dontSuppressAccessibilityServices` now defaults to `true` (it was
