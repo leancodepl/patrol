@@ -1,6 +1,6 @@
 apps:
   app: build/app/outputs/apk/debug/app-debug.apk
-  test: build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+  test: build/patrolTest/outputs/apk/debug/patrolTest-debug.apk
 
 # Useful during debugging, when you want to run tests on all supported versions
 all_devices:
@@ -52,7 +52,6 @@ ci_webview_devices:
 
 config:
   use-orchestrator: true
-  clear-package-data: true
   record-video: true
   timeout: 10m
 

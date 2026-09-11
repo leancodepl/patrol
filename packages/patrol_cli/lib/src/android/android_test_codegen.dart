@@ -1,4 +1,5 @@
 import 'package:file/file.dart';
+import 'package:patrol_cli/src/android/android_test_layout.dart';
 import 'package:patrol_cli/src/crossplatform/test_manifest.dart';
 
 /// The result of [AndroidTestCodegen.generate].
@@ -50,18 +51,23 @@ class AndroidTestCodegen {
   final FileSystem _fs;
 
   /// Reads the manifest JSON at [manifestPath] and writes the generated JUnit
-  /// class into the app's `androidTest` source set, next to the existing host
-  /// test class (the one referencing `PatrolJUnitRunner`), reusing its package.
+  /// class next to the selected layout's existing host test class (the one
+  /// referencing `PatrolJUnitRunner`), reusing its package.
   ///
   /// [androidDir] is the app's `android/` directory. Returns `null` when the
-  /// androidTest source set / host test class cannot be located (the caller
+  /// selected source set / host test class cannot be located (the caller
   /// then falls back to the runtime discovery path).
   AndroidCodegenResult? generate({
     required String manifestPath,
     required Directory androidDir,
+    AndroidTestLayout testLayout = AndroidTestLayout.inApp,
     String className = 'PatrolGeneratedTests',
   }) {
-    final host = _locateHostTest(androidDir, generatedClassName: className);
+    final host = _locateHostTest(
+      androidDir,
+      testLayout: testLayout,
+      generatedClassName: className,
+    );
     if (host == null) {
       return null;
     }
@@ -86,6 +92,7 @@ class AndroidTestCodegen {
         [for (final i in entry.value) names[i].methodName],
         activityClass: host.activityClass,
         activityImport: host.activityImport,
+        selfInstrumenting: host.selfInstrumenting,
       );
       _fs.file(_fs.path.join(host.directory.path, '${entry.key}.java'))
         ..createSync(recursive: true)
@@ -112,9 +119,14 @@ class AndroidTestCodegen {
   /// when nothing was generated.
   List<String> findGeneratedClassNames(
     Directory androidDir, {
+    AndroidTestLayout testLayout = AndroidTestLayout.inApp,
     String className = 'PatrolGeneratedTests',
   }) {
-    final host = _locateHostTest(androidDir, generatedClassName: className);
+    final host = _locateHostTest(
+      androidDir,
+      testLayout: testLayout,
+      generatedClassName: className,
+    );
     if (host == null) {
       return const [];
     }
@@ -144,9 +156,14 @@ class AndroidTestCodegen {
   /// both run, double-running every test).
   bool deleteGenerated(
     Directory androidDir, {
+    AndroidTestLayout testLayout = AndroidTestLayout.inApp,
     String className = 'PatrolGeneratedTests',
   }) {
-    final host = _locateHostTest(androidDir, generatedClassName: className);
+    final host = _locateHostTest(
+      androidDir,
+      testLayout: testLayout,
+      generatedClassName: className,
+    );
     if (host == null) {
       return false;
     }
@@ -162,8 +179,8 @@ class AndroidTestCodegen {
     return deleted;
   }
 
-  /// Locates the host instrumentation test under `android/app/src/androidTest`,
-  /// returning its directory, declared package and the activity it launches.
+  /// Locates the host instrumentation test in the selected layout, returning
+  /// its directory, declared package and the activity it launches.
   ///
   /// Merely referencing `PatrolJUnitRunner` is not enough to identify the host:
   /// a project may also *subclass* the runner next to the host test (the
@@ -175,66 +192,85 @@ class AndroidTestCodegen {
   /// choice never depends on filesystem listing order.
   _HostTest? _locateHostTest(
     Directory androidDir, {
+    required AndroidTestLayout testLayout,
     String generatedClassName = 'PatrolGeneratedTests',
   }) {
-    final testRoot = androidDir
-        .childDirectory('app')
-        .childDirectory('src')
-        .childDirectory('androidTest');
-    if (!testRoot.existsSync()) {
-      return null;
-    }
+    final selfInstrumenting = testLayout == AndroidTestLayout.selfInstrumenting;
+    final testRoots = [
+      (
+        directory: selfInstrumenting
+            ? androidDir
+                  .childDirectory('patrolTest')
+                  .childDirectory('src')
+                  .childDirectory('main')
+            : androidDir
+                  .childDirectory('app')
+                  .childDirectory('src')
+                  .childDirectory('androidTest'),
+        selfInstrumenting: selfInstrumenting,
+      ),
+    ];
 
-    final sources =
-        testRoot
-            .listSync(recursive: true)
-            .whereType<File>()
-            .where((f) => f.path.endsWith('.java') || f.path.endsWith('.kt'))
-            .where(
-              (f) =>
-                  f.basename != '$generatedClassName.java' &&
-                  f.basename != '$generatedClassName.kt',
-            )
-            .toList()
-          ..sort((a, b) => a.path.compareTo(b.path));
+    for (final testRoot in testRoots) {
+      if (!testRoot.directory.existsSync()) {
+        continue;
+      }
+      final sources =
+          testRoot.directory
+              .listSync(recursive: true)
+              .whereType<File>()
+              .where((f) => f.path.endsWith('.java') || f.path.endsWith('.kt'))
+              .where(
+                (f) =>
+                    f.basename != '$generatedClassName.java' &&
+                    f.basename != '$generatedClassName.kt',
+              )
+              .toList()
+            ..sort((a, b) => a.path.compareTo(b.path));
 
-    _HostTest? weakMatch;
-    for (final entity in sources) {
-      final content = entity.readAsStringSync();
-      if (!content.contains('PatrolJUnitRunner')) {
-        continue;
+      _HostTest? weakMatch;
+      for (final entity in sources) {
+        final content = entity.readAsStringSync();
+        if (!content.contains('PatrolJUnitRunner')) {
+          continue;
+        }
+        // Skip our own output regardless of where/how it was named: it drives the
+        // runner exactly like the host does, so it would otherwise look like one.
+        if (content.startsWith(_generatedMarker)) {
+          continue;
+        }
+        // Skip runner declarations (e.g. `class AllurePatrolJUnitRunner :
+        // PatrolJUnitRunner()` / `extends PatrolJUnitRunner`) - they reference the
+        // runner but are not the test host.
+        if (_declaresRunnerSubclass(content)) {
+          continue;
+        }
+        final packageName = _parsePackage(content);
+        if (packageName == null) {
+          continue;
+        }
+        final activity = _parseActivity(content);
+        final host = _HostTest(
+          directory: entity.parent,
+          packageName: packageName,
+          activityClass: activity.className,
+          activityImport: activity.import,
+          selfInstrumenting: testRoot.selfInstrumenting,
+        );
+        // A file that actually drives the runner is the host; anything else that
+        // merely mentions it is only a fallback.
+        if (content.contains('getInstrumentation()') &&
+            (content.contains('setUp(') ||
+                content.contains('listDartTests('))) {
+          return host;
+        }
+        weakMatch ??= host;
       }
-      // Skip our own output regardless of where/how it was named: it drives the
-      // runner exactly like the host does, so it would otherwise look like one.
-      if (content.startsWith(_generatedMarker)) {
-        continue;
+      if (weakMatch != null) {
+        return weakMatch;
       }
-      // Skip runner declarations (e.g. `class AllurePatrolJUnitRunner :
-      // PatrolJUnitRunner()` / `extends PatrolJUnitRunner`) - they reference the
-      // runner but are not the test host.
-      if (_declaresRunnerSubclass(content)) {
-        continue;
-      }
-      final packageName = _parsePackage(content);
-      if (packageName == null) {
-        continue;
-      }
-      final activity = _parseActivity(content);
-      final host = _HostTest(
-        directory: entity.parent,
-        packageName: packageName,
-        activityClass: activity.className,
-        activityImport: activity.import,
-      );
-      // A file that actually drives the runner is the host; anything else that
-      // merely mentions it is only a fallback.
-      if (content.contains('getInstrumentation()') &&
-          (content.contains('setUp(') || content.contains('listDartTests('))) {
-        return host;
-      }
-      weakMatch ??= host;
     }
-    return weakMatch;
+    return null;
   }
 
   /// Whether [content] declares a class extending `PatrolJUnitRunner` (Java
@@ -291,6 +327,7 @@ class AndroidTestCodegen {
     List<String> methodNames, {
     String activityClass = 'MainActivity',
     String? activityImport,
+    bool selfInstrumenting = false,
   }) {
     final buffer = StringBuffer()
       ..writeln(_generatedMarker)
@@ -312,7 +349,7 @@ class AndroidTestCodegen {
       ..writeln('import org.junit.Test;')
       ..writeln('import org.junit.runner.RunWith;')
       ..writeln('import pl.leancode.patrol.PatrolJUnitRunner;');
-    if (activityImport != null) {
+    if (!selfInstrumenting && activityImport != null) {
       buffer.writeln('import $activityImport;');
     }
     buffer
@@ -326,8 +363,13 @@ class AndroidTestCodegen {
         '(PatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();',
       )
       // setUpGenerated, not setUp: the generated classes must never stand down
-      // for the host class they replace.
-      ..writeln('        instrumentation.setUpGenerated($activityClass.class);')
+      // for the host class they replace. The self-instrumenting layout reads the
+      // app under test's ID from the test APK instead of an activity class.
+      ..writeln(
+        selfInstrumenting
+            ? '        instrumentation.setUpGenerated();'
+            : '        instrumentation.setUpGenerated($activityClass.class);',
+      )
       ..writeln('    }')
       ..writeln();
 
@@ -393,6 +435,7 @@ class _HostTest {
     required this.packageName,
     required this.activityClass,
     required this.activityImport,
+    required this.selfInstrumenting,
   });
   final Directory directory;
   final String packageName;
@@ -404,6 +447,8 @@ class _HostTest {
   /// The `import` to replicate for [activityClass], or `null` when none is
   /// needed (fully-qualified reference, or same-package class).
   final String? activityImport;
+
+  final bool selfInstrumenting;
 }
 
 class _HostActivity {

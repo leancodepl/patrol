@@ -1,5 +1,8 @@
 ## Unreleased
 
+- Add the optional self-instrumenting Android `:patrolTest` layout, which runs
+  JUnit outside the app process. The in-app `androidTest` layout remains
+  supported.
 - Reject a test name containing `/`, with a message naming the offending test, instead of letting it crash Android Test Orchestrator. The name is rejected on Android, iOS and macOS with runtime test discovery. (#3259)
 - Build-time test discovery (experimental): the generated `.inc` now declares whole test classes.
   In `RunnerUITests.m`, replace the `STATIC_BEGIN`/`_END` pair with
@@ -11,7 +14,7 @@
 - Android: the runtime-discovery host class stands down when a generated class is in the APK, so
   direct-APK tools (Firebase Test Lab, saucectl, emulator.wtf, Marathon) no longer run every test
   twice.
-- Fix `Failure.details` being `null` for tests that fail due to an exception thrown after the test body finishes but before/during teardown (e.g. a widget's `dispose()` throwing). Patrol now keeps gathering exceptions until its own `tearDown()` callback has read the results. (#3252)
+- Fix `Failure.details` being `null` for tests that fail due to an exception thrown after the test body finishes but before/during teardown (e.g. a widget's `dispose()` throwing). Patrol now keeps   gathering exceptions until its own `tearDown()` callback has read the results. (#3252)
 - Add Korean (ko) language support for native OS interactions. Permission dialog strings were captured from a real Korean iOS 26 device; Android strings follow the official AOSP localizations (`values-ko`). (#2303)
 - Fix `pickImageFromGallery` on Android API 36: when the photo picker keeps the picker open after selecting a single image, tap the confirm button to finish. The tap is best-effort, so devices/emulators whose picker auto-confirms (no confirm button) keep working. The button label is resolved per device language (en/de/fr/pl/ja) so it works beyond English. (#3254)
 - Android: keep third-party `AccessibilityService`s running during the test session again. `AndroidAutomatorConfig.dontSuppressAccessibilityServices` now defaults to `true` (it was effectively `false` since 4.8.0) and is configurable, also via the `PATROL_ANDROID_DONT_SUPPRESS_ACCESSIBILITY_SERVICES` dart-define. (#3227)

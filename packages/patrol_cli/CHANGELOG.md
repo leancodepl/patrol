@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Detect and support both Android test layouts: the self-instrumenting
+  `:patrolTest` module and the in-app `:app` androidTest source set.
 - Build-time test discovery now generates one native test class per Dart test file, so reports
   group by file and a whole file is selectable with a single native selector. **This renames every
   generated native test** (the file becomes the class name, the method is the test name, no more

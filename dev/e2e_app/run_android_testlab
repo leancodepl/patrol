@@ -14,12 +14,21 @@ else
     echo "Using locale: $ANDROID_DEVICE_LOCALE"
 fi
 
+APP_APK="build/app/outputs/apk/debug/app-debug.apk"
+TEST_APK="build/patrolTest/outputs/apk/debug/patrolTest-debug.apk"
+
+for apk in "$APP_APK" "$TEST_APK"; do
+    if [ ! -f "$apk" ]; then
+        echo "Missing $apk. Run 'patrol build android' first." >&2
+        exit 1
+    fi
+done
+
 gcloud firebase test android run \
 	--type instrumentation \
-	--app build/app/outputs/apk/debug/app-debug.apk \
-	--test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+	--app "$APP_APK" \
+	--test "$TEST_APK" \
 	--device model="$ANDROID_DEVICE_MODEL",version="$ANDROID_DEVICE_VERSION",locale="$ANDROID_DEVICE_LOCALE",orientation=portrait \
 	--timeout 45m \
 	--results-bucket="patrol_runs" \
-	--use-orchestrator \
-	--environment-variables clearPackageData=true
+	--use-orchestrator

@@ -19,7 +19,6 @@ fun dartTestCase(name: String): DartGroupEntry {
 class DartTestGroupExtensionsTest {
     @Test
     fun `listTestsFlat() handles simple hierarchy`() {
-        // given
         val dartTestGroup = dartTestGroup(
             "",
             listOf(
@@ -38,10 +37,8 @@ class DartTestGroupExtensionsTest {
             ),
         )
 
-        // when
         val dartTests = dartTestGroup.listTestsFlat()
 
-        // then
         assertContentEquals(
             listOf(
                 dartTestCase("example_test increments counter, exits the app, and comes back"),
@@ -54,7 +51,6 @@ class DartTestGroupExtensionsTest {
 
     @Test
     fun `listTestsFlat() handles nested hierarchy`() {
-        // given
         val exampleTest = dartTestGroup(
             "example_test",
             listOf(
@@ -83,29 +79,24 @@ class DartTestGroupExtensionsTest {
         )
 
         val openAppTest = dartTestGroup(
-                "open_app_test",
-                listOf(
-                    dartTestCase("open maps"),
-                    dartTestCase("open browser"),
-                ),
-            )
+            "open_app_test",
+            listOf(
+                dartTestCase("open maps"),
+                dartTestCase("open browser"),
+            ),
+        )
 
         val rootDartTestGroup = dartTestGroup("", listOf(exampleTest, openAppTest))
-
-        // when
         val dartTests = rootDartTestGroup.listTestsFlat()
 
-        // then
         assertContentEquals(
             listOf(
-                // example_test
                 dartTestCase("example_test the first test"),
                 dartTestCase("example_test top level group in file alpha first"),
                 dartTestCase("example_test top level group in file alpha second"),
                 dartTestCase("example_test top level group in file test between groups"),
                 dartTestCase("example_test top level group in file bravo first"),
                 dartTestCase("example_test top level group in file bravo second"),
-                // open_app_test
                 dartTestCase("open_app_test open maps"),
                 dartTestCase("open_app_test open browser"),
             ),

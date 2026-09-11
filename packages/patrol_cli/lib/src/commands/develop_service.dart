@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:meta/meta.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
+import 'package:patrol_cli/src/android/android_test_layout.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
@@ -273,6 +274,9 @@ class DevelopService {
       testServerPort: options.testServerPort,
       uninstall: options.uninstall,
       emitTestManifest: emitTestManifest,
+      testLayout: device.targetPlatform == TargetPlatform.android
+          ? _androidTestBackend.detectTestLayout()
+          : AndroidTestLayout.inApp,
     );
 
     final iosOpts = IOSAppOptions(
@@ -362,10 +366,7 @@ class DevelopService {
     Future<void> Function()? action;
     switch (device.targetPlatform) {
       case TargetPlatform.android:
-        final packageName = androidOpts.packageName;
-        if (packageName != null) {
-          action = () => _androidTestBackend.uninstall(packageName, device);
-        }
+        action = () => _androidTestBackend.uninstall(androidOpts, device);
       case TargetPlatform.iOS:
         final bundleId = iosOpts.bundleId;
         if (bundleId != null) {
@@ -452,9 +453,8 @@ class DevelopService {
           onLogEntry: onLogEntry,
           videoConfig: videoConfig,
         );
-        final package = android.packageName;
-        if (package != null && uninstall) {
-          finalizer = () => _androidTestBackend.uninstall(package, device);
+        if (uninstall) {
+          finalizer = () => _androidTestBackend.uninstall(android, device);
         }
       case TargetPlatform.macOS:
         appId = macos.bundleId;

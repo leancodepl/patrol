@@ -67,10 +67,8 @@ android {
     }
 
     dependencies {
-        // TODO: These dependencies should not be added to release builds.
-        // https://github.com/flutter/flutter/issues/56591
+        // Exposed for projects using the in-app androidTest layout.
         api "junit:junit:4.13.2"
-
         api "androidx.test:runner:1.5.1"
         api "androidx.test.espresso:espresso-core:3.5.0"
         api "androidx.test.uiautomator:uiautomator:2.3.0"
@@ -78,7 +76,7 @@ android {
         implementation platform("org.http4k:http4k-bom:5.47.0.0")
         implementation platform("io.ktor:ktor-bom:3.2.2")
         implementation "org.http4k:http4k-core"
-        implementation "com.squareup.okhttp:okhttp:2.7.5" // See https://github.com/square/okhttp/issues/8031
+        implementation "com.squareup.okhttp:okhttp:2.7.5"
         implementation "org.http4k:http4k-server-ktorcio"
         implementation "com.google.code.gson:gson:2.10.1"
         implementation "io.ktor:ktor-client-core"

@@ -6,7 +6,9 @@ import 'package:adb/adb.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:meta/meta.dart';
+import 'package:patrol_cli/src/android/android_artifacts.dart';
 import 'package:patrol_cli/src/android/android_test_codegen.dart';
+import 'package:patrol_cli/src/android/android_test_layout.dart';
 import 'package:patrol_cli/src/android/android_video_recording_manager.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/extensions/completer.dart';
@@ -52,6 +54,10 @@ class AndroidTestBackend {
   final Logger _logger;
   late final String? javaPath;
 
+  AndroidTestLayout detectTestLayout() => AndroidTestLayoutDetector(
+    _rootDirectory.childDirectory('android'),
+  ).detect();
+
   Future<void> build(AndroidAppOptions options) async {
     await buildApkConfigOnly(options.flutter);
     verifyAndroidSdkResolved();
@@ -72,12 +78,12 @@ class AndroidTestBackend {
       // (and shows up under its own name in reports, not under the parameterized
       // `runDartTest[...]` wrapper). Failures are non-fatal: the build falls
       // back to the runtime-discovery host class.
+      final codegen = AndroidTestCodegen(_rootDirectory.fileSystem);
+      final androidDir = _rootDirectory.childDirectory('android');
       // Always start from a clean slate: remove any previously generated class
       // so a stale one can't linger after a failed discovery or an opt-out
       // (which would double-run tests alongside the runtime host class).
-      final codegen = AndroidTestCodegen(_rootDirectory.fileSystem);
-      final androidDir = _rootDirectory.childDirectory('android');
-      codegen.deleteGenerated(androidDir);
+      codegen.deleteGenerated(androidDir, testLayout: options.testLayout);
 
       if (options.emitTestManifest) {
         final manifestPath =
@@ -99,6 +105,7 @@ class AndroidTestBackend {
         final result = codegen.generate(
           manifestPath: manifestPath,
           androidDir: androidDir,
+          testLayout: options.testLayout,
         );
         if (result != null) {
           _logger.info(
@@ -108,13 +115,13 @@ class AndroidTestBackend {
           );
         } else {
           _logger.warn(
-            'Could not locate the androidTest host class; falling back to '
+            'Could not locate the Android test host class; falling back to '
             'runtime test discovery',
           );
         }
       }
 
-      // :app:assembleDebug
+      // Build the app APK.
 
       process =
           await _processManager.start(
@@ -142,7 +149,7 @@ class AndroidTestBackend {
         throw Exception(cause);
       }
 
-      // :app:assembleDebugAndroidTest
+      // Build the test APK.
 
       process =
           await _processManager.start(
@@ -338,7 +345,7 @@ class AndroidTestBackend {
 
       process =
           await _processManager.start(
-              options.toGradleAppDependencies(isWindows: _platform.isWindows),
+              options.toGradleTestDependencies(isWindows: _platform.isWindows),
               runInShell: true,
               workingDirectory: _rootDirectory.childDirectory('android').path,
               environment: switch (javaPath) {
@@ -412,6 +419,7 @@ class AndroidTestBackend {
         rootPath: _rootDirectory.path,
         buildMode: options.flutter.buildMode,
         flavor: flavor,
+        testLayout: options.testLayout,
       );
       final reportPath = _platform.isWindows
           ? path.replaceAll(r'\', '/')
@@ -442,11 +450,15 @@ class AndroidTestBackend {
       final generatedClasses = options.emitTestManifest
           ? AndroidTestCodegen(
               _rootDirectory.fileSystem,
-            ).findGeneratedClassNames(_rootDirectory.childDirectory('android'))
+            ).findGeneratedClassNames(
+              _rootDirectory.childDirectory('android'),
+              testLayout: options.testLayout,
+            )
           : const <String>[];
       final onlyTestClass = generatedClasses.isEmpty
           ? null
           : generatedClasses.join(',');
+      final targetAppId = _resolveBuiltApplicationId(options);
 
       // Start from a clean slate so the screenshots pulled after this run
       // belong to it. Leftovers from an aborted run or from `develop` (which
@@ -464,6 +476,7 @@ class AndroidTestBackend {
               options.toGradleConnectedTestInvocation(
                 isWindows: _platform.isWindows,
                 onlyTestClass: onlyTestClass,
+                targetAppId: targetAppId,
               ),
               runInShell: true,
               environment: {
@@ -542,17 +555,11 @@ class AndroidTestBackend {
     List<String> onlyTests = const [],
     void Function(Entry entry)? onLogEntry,
   }) async {
-    final packageName = options.packageName;
-    if (packageName == null) {
-      throwToolExit(
-        'Android applicationId is unknown. Set patrol.android.package_name in '
-        'pubspec.yaml or pass --package-name.',
-      );
-    }
-
-    final generatedClassNames = AndroidTestCodegen(
-      _rootDirectory.fileSystem,
-    ).findGeneratedClassNames(_rootDirectory.childDirectory('android'));
+    final generatedClassNames = AndroidTestCodegen(_rootDirectory.fileSystem)
+        .findGeneratedClassNames(
+          _rootDirectory.childDirectory('android'),
+          testLayout: options.testLayout,
+        );
     if (generatedClassNames.isEmpty) {
       throwToolExit(
         'No generated test class found. Run `patrol build android '
@@ -570,8 +577,13 @@ class AndroidTestBackend {
 
     // Resolve the real instrumentation component from the device so custom
     // testApplicationId / custom runners are honored; falls back to the default.
-    final (instrumentPackage, instrumentRunner) =
-        await _resolveInstrumentationComponent(packageName, device);
+    final (
+      instrumentPackage,
+      instrumentRunner,
+    ) = await _resolveInstrumentationComponent(
+      _resolveBuiltTestApplicationId(options),
+      device,
+    );
 
     await _disposeScope.run((scope) async {
       final processLogcat =
@@ -582,21 +594,13 @@ class AndroidTestBackend {
             )
             ..disposedBy(scope);
 
-      final path = generateTestReportPath(
-        rootPath: _rootDirectory.path,
-        buildMode: options.flutter.buildMode,
-        flavor: flavor,
-      );
-      final reportPath = _platform.isWindows
-          ? path.replaceAll(r'\', '/')
-          : path;
-
       final patrolLogReader =
           PatrolLogReader(
               listenStdOut: processLogcat.listenStdOut,
               scope: scope,
               log: _logger.info,
-              reportPath: reportPath,
+              // No Gradle run, so there is no HTML report to point at.
+              reportPath: '',
               showFlutterLogs: showFlutterLogs,
               hideTestSteps: hideTestSteps,
               clearTestSteps: clearTestSteps,
@@ -616,7 +620,10 @@ class AndroidTestBackend {
               packageName: instrumentPackage,
               intentClass: instrumentRunner,
               device: device.id,
-              arguments: {'class': classArg},
+              arguments: {
+                'class': classArg,
+                'patrolAppId': _resolveBuiltApplicationId(options),
+              },
             )
             ..disposedBy(scope);
       process
@@ -699,64 +706,21 @@ class AndroidTestBackend {
     Device device, {
     String? flavor,
   }) async {
-    final buildMode = options.flutter.buildMode.androidName.toLowerCase();
-    final apkDir = _rootDirectory
-        .childDirectory('build')
-        .childDirectory('app')
-        .childDirectory('outputs')
-        .childDirectory('apk');
+    final artifacts = AndroidArtifactResolver(_rootDirectory);
+    final app = artifacts.app(
+      buildMode: options.flutter.buildMode,
+      flavor: flavor,
+    );
+    final test = artifacts.test(
+      layout: options.testLayout,
+      buildMode: options.flutter.buildMode,
+      flavor: flavor,
+    );
 
-    if (!apkDir.existsSync()) {
-      throwToolExit(
-        'No built APKs found under ${apkDir.path}. Run `patrol build android '
-        '--emit-test-manifest` before `patrol test-without-building`.',
-      );
-    }
-
-    bool matches(File apk) {
-      final segments = apk.path.split(RegExp(r'[/\\]'));
-      if (!segments.contains(buildMode)) {
-        return false;
-      }
-      // When a flavor is set, its (case-sensitive) directory segment is present
-      // in both the app and androidTest APK paths; use it to disambiguate.
-      if (flavor != null && !segments.contains(flavor)) {
-        return false;
-      }
-      return true;
-    }
-
-    File? appApk;
-    File? testApk;
-    for (final entity in apkDir.listSync(recursive: true)) {
-      if (entity is! File || !entity.path.endsWith('.apk')) {
-        continue;
-      }
-      if (!matches(entity)) {
-        continue;
-      }
-      final inAndroidTestDir = entity.path
-          .split(RegExp(r'[/\\]'))
-          .contains('androidTest');
-      if (entity.path.endsWith('-androidTest.apk')) {
-        testApk ??= entity;
-      } else if (!inAndroidTestDir) {
-        appApk ??= entity;
-      }
-    }
-
-    if (appApk == null || testApk == null) {
-      throwToolExit(
-        'Could not locate the built app and androidTest APKs under '
-        '${apkDir.path}. Run `patrol build android --emit-test-manifest` '
-        'before `patrol test-without-building`.',
-      );
-    }
-
-    _logger.detail('Installing app APK: ${appApk.path}');
-    await _adbInstall(appApk.path, device);
-    _logger.detail('Installing androidTest APK: ${testApk.path}');
-    await _adbInstall(testApk.path, device);
+    _logger.detail('Installing app APK: ${app.apk.path}');
+    await _adbInstall(app.apk.path, device);
+    _logger.detail('Installing test APK: ${test.apk.path}');
+    await _adbInstall(test.apk.path, device);
   }
 
   /// Runs `adb install -r -t <path>` on [device]. `Adb.install` does not pass
@@ -781,15 +745,12 @@ class AndroidTestBackend {
   /// `pm list instrumentation` on [device]. This makes custom `testApplicationId`
   /// and custom runners (e.g. BrowserStack's `BrowserstackPatrolJUnitRunner`)
   /// authoritative while keeping the conventional
-  /// `${packageName}.test/pl.leancode.patrol.PatrolJUnitRunner` as the fallback.
+  /// `<test applicationId>/pl.leancode.patrol.PatrolJUnitRunner` as the fallback.
   Future<(String, String)> _resolveInstrumentationComponent(
-    String packageName,
+    String testPackageName,
     Device device,
   ) async {
-    final fallback = (
-      '$packageName.test',
-      'pl.leancode.patrol.PatrolJUnitRunner',
-    );
+    final fallback = (testPackageName, 'pl.leancode.patrol.PatrolJUnitRunner');
 
     final result = await _processManager.run([
       'adb',
@@ -808,16 +769,12 @@ class AndroidTestBackend {
     }
 
     final entries = _parseInstrumentation(result.stdOut);
-    // Prefer an exact applicationId (target) match; fall back to a prefix match
-    // to tolerate a flavor's applicationIdSuffix.
-    final exact = entries.where((e) => e.target == packageName).toList();
-    final prefixed = entries
-        .where((e) => e.target != null && e.target!.startsWith(packageName))
+    final candidates = entries
+        .where((entry) => entry.package == testPackageName)
         .toList();
-    final candidates = exact.isNotEmpty ? exact : prefixed;
     if (candidates.isEmpty) {
       _logger.detail(
-        'No instrumentation targeting $packageName found; using default '
+        'No instrumentation found in $testPackageName; using default '
         'component ${fallback.$1}/${fallback.$2}',
       );
       return fallback;
@@ -859,11 +816,13 @@ class AndroidTestBackend {
     return out;
   }
 
-  Future<void> uninstall(String appId, Device device) async {
+  Future<void> uninstall(AndroidAppOptions options, Device device) async {
+    final appId = _resolveBuiltApplicationId(options);
+    final testAppId = _resolveBuiltTestApplicationId(options);
     _logger.detail('Uninstalling $appId from ${device.name}');
     await _adb.uninstall(appId, device: device.id);
-    _logger.detail('Uninstalling $appId.test from ${device.name}');
-    await _adb.uninstall('$appId.test', device: device.id);
+    _logger.detail('Uninstalling $testAppId from ${device.name}');
+    await _adb.uninstall(testAppId, device: device.id);
   }
 
   /// Where patrol writes native screenshots on the device.
@@ -911,15 +870,51 @@ class AndroidTestBackend {
     }
   }
 
+  String _resolveBuiltApplicationId(AndroidAppOptions options) {
+    try {
+      return AndroidArtifactResolver(_rootDirectory)
+          .app(
+            buildMode: options.flutter.buildMode,
+            flavor: options.flutter.flavor,
+          )
+          .applicationId;
+    } on ToolExit {
+      final packageName = options.packageName;
+      if (packageName != null && packageName.isNotEmpty) {
+        return packageName;
+      }
+      rethrow;
+    }
+  }
+
+  String _resolveBuiltTestApplicationId(AndroidAppOptions options) {
+    try {
+      return AndroidArtifactResolver(_rootDirectory)
+          .test(
+            layout: options.testLayout,
+            buildMode: options.flutter.buildMode,
+            flavor: options.flutter.flavor,
+          )
+          .applicationId;
+    } on ToolExit {
+      final packageName = options.packageName;
+      if (packageName != null &&
+          packageName.isNotEmpty &&
+          options.testLayout == AndroidTestLayout.inApp) {
+        return '$packageName.test';
+      }
+      rethrow;
+    }
+  }
+
   /// Generates the Android test report path based on build mode and flavor.
   ///
   /// This method creates the correct file:// URL for the HTML test report
-  /// generated by Gradle, following the structure:
-  /// - No flavor: `file://{rootPath}/build/app/reports/androidTests/connected/{buildMode}/index.html`
-  /// - With flavor: `file://{rootPath}/build/app/reports/androidTests/connected/{buildMode}/flavors/{flavor}/index.html`
+  /// generated by Gradle.
   static String generateTestReportPath({
     required String rootPath,
     required BuildMode buildMode,
+    AndroidTestLayout testLayout = AndroidTestLayout.selfInstrumenting,
     String? flavor,
   }) {
     var buildModeAndFlavorPath = '';
@@ -931,7 +926,10 @@ class AndroidTestBackend {
       buildModeAndFlavorPath = '$buildModeString/';
     }
 
-    return 'file://$rootPath/build/app/reports/androidTests/connected/${buildModeAndFlavorPath}index.html';
+    final project = testLayout == AndroidTestLayout.selfInstrumenting
+        ? 'patrolTest'
+        : 'app';
+    return 'file://$rootPath/build/$project/reports/androidTests/connected/${buildModeAndFlavorPath}index.html';
   }
 }
 
