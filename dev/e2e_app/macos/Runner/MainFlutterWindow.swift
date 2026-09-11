@@ -32,8 +32,6 @@ class MainFlutterWindow: NSWindow {
 
         let response = alert.runModal()
         result(response == .alertFirstButtonReturn ? "ok" : "cancel")
-      case "getPatrolMenuActionCount":
-        result(AppDelegate.patrolMenuActionCount)
       default:
         result(FlutterMethodNotImplemented)
       }

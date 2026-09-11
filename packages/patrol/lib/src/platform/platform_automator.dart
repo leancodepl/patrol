@@ -67,9 +67,9 @@ class PlatformAutomatorConfig {
     /// Android only.
     String? packageName,
 
-    /// Bundle identifier name of the application under test.
+    /// Bundle identifier of the iOS application under test.
     ///
-    /// iOS only. For macOS, prefer `macosBundleId`.
+    /// iOS only. Use [macosBundleId] for macOS.
     String? bundleId,
 
     /// Bundle identifier of the macOS application under test.
@@ -125,7 +125,7 @@ class PlatformAutomatorConfig {
         port: port,
       ),
       macosConfig: MacOSAutomatorConfig(
-        bundleId: macosBundleId ?? bundleId,
+        bundleId: macosBundleId,
         appName: macosAppName,
         connectionTimeout: connectionTimeout,
         findTimeout: findTimeout,
