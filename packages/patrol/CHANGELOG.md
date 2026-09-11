@@ -27,8 +27,9 @@
   but before or during teardown, e.g. a widget's `dispose()`. Patrol now keeps gathering exceptions
   until its own `tearDown()` has read the results. (#3252)
 - Fix `pickImageFromGallery` on Android API 36, where the photo picker can stay open after a single
-  selection: Patrol now taps the confirm button, resolving its label per device language
-  (en/de/fr/pl/ja). The tap is best-effort, so pickers that auto-confirm keep working. (#3254)
+  selection: Patrol now taps the confirm button, resolving its label in the device's language (one
+  of en, de, fr, ja, ko, pl — any other language throws). The tap is best-effort, so pickers that
+  auto-confirm keep working. (#3254)
 - Report uncaught exceptions (e.g. from `onPressed`) in `patrol develop` instead of silently
   passing. (#3200)
 
