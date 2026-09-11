@@ -552,9 +552,10 @@ abstract class PatrolCommand extends Command<int> {
       ..addOption(
         'screenshots-output-dir',
         help:
-            'Directory to save native screenshots pulled from the device '
-            'after an Android `patrol test` run. Defaults to '
-            '<test-directory>/screenshots.',
+            'Directory to save native screenshots collected after a `patrol '
+            'test` run: pulled from the device on Android, and exported from '
+            'the `.xcresult` bundle on iOS (requires Xcode 16 or newer). '
+            'Defaults to <test-directory>/screenshots.',
         valueHelp: 'path/to/screenshots',
       );
   }

@@ -234,10 +234,13 @@ class PlatformAutomator {
     );
   }
 
-  /// Captures a native screenshot (for a device farm to collect). Android only;
-  /// a no-op elsewhere.
+  /// Captures a native screenshot (for a device farm to collect). Supported on
+  /// Android and iOS; a no-op elsewhere.
   Future<void> takeNativeScreenshot(String tag) async {
-    await action.maybe(android: () => android.takeNativeScreenshot(tag));
+    await action.maybe(
+      android: () => android.takeNativeScreenshot(tag),
+      ios: () => ios.takeNativeScreenshot(tag),
+    );
   }
 
   /// None of the native actions are supported on MacOS, so we will just always throw.
