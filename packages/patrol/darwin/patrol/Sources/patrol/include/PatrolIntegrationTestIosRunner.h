@@ -41,6 +41,9 @@
     return [[NSProcessInfo processInfo].environment[@"PATROL_DEVELOP"] isEqualToString:@"1"];                       \
   }                                                                                                                 \
   +(void)launchPatrolAppWithServer : (PatrolServer *)server {                                                       \
+    [self launchPatrolAppWithServer:server launchURL:nil];                                                          \
+  }                                                                                                                 \
+  +(void)launchPatrolAppWithServer : (PatrolServer *)server launchURL : (NSString *)launchURL {                     \
     server.appReady = NO;                                                                                           \
     XCUIApplication *app = [[XCUIApplication alloc] init];                                                          \
     NSMutableDictionary<NSString *, NSString *> *environment =                                                      \
@@ -48,7 +51,23 @@
     environment[@"PATROL_TEST_SERVER_PORT"] = [NSString stringWithFormat:@"%ld", (long)server.boundTestPort];       \
     environment[@"PATROL_APP_SERVER_PORT"] = [NSString stringWithFormat:@"%ld", (long)server.boundAppPort];         \
     app.launchEnvironment = environment;                                                                            \
-    [app launch];                                                                                                   \
+    if (launchURL == nil) {                                                                                         \
+      [app launch];                                                                                                 \
+    } else {                                                                                                        \
+      NSURL *url = [NSURL URLWithString:launchURL];                                                                 \
+      XCTAssertNotNil(url, @"Invalid phase launch URL: %@", launchURL);                                             \
+      if (url == nil) {                                                                                             \
+        return;                                                                                                     \
+      }                                                                                                             \
+      /* iOS 16.4+: openURL cold-starts through the link. Older iOS must launch  \
+         first, then openURL — first paint is a normal start, not the deep link. */ \
+      if (@available(iOS 16.4, *)) {                                                                                \
+        [app openURL:url];                                                                                          \
+      } else {                                                                                                      \
+        [app launch];                                                                                               \
+        [[XCUIDevice sharedDevice].system openURL:url];                                                             \
+      }                                                                                                             \
+    }                                                                                                               \
   }                                                                                                                 \
   +(BOOL)waitForPatrolAppReadyWithServer : (PatrolServer *)server {                                                 \
     NSDate *deadline = [NSDate dateWithTimeIntervalSinceNow:60.0];                                                  \
@@ -338,27 +357,49 @@
         }                                                                                                           \
                                                                                                                     \
         __block ObjCRunDartTestResponse *response = NULL;                                                           \
-        __block NSError *error;                                                                                     \
-        [appServiceClient                                                                                           \
-            runDartTestWithName:dartTestName                                                                        \
-                     completion:^(ObjCRunDartTestResponse *_Nullable r, NSError *_Nullable err) {                   \
-                       NSString *status;                                                                            \
-                       if (err != NULL) {                                                                           \
-                         error = err;                                                                               \
-                         status = @"CRASHED";                                                                       \
-                       } else {                                                                                     \
-                         response = r;                                                                              \
-                         status = response.passed ? @"PASSED" : @"FAILED";                                          \
-                       }                                                                                            \
-                       NSLog(@"runDartTest(\"%@\"): call finished, test result: %@", dartTestName, status);         \
-                     }];                                                                                            \
+        __block NSError *error = nil;                                                                               \
+        NSNumber *phaseIndex = nil;                                                                                 \
+        while (true) {                                                                                              \
+          response = NULL;                                                                                          \
+          error = nil;                                                                                              \
+          [appServiceClient                                                                                         \
+              runDartTestWithName:dartTestName                                                                      \
+                       phaseIndex:phaseIndex                                                                        \
+                       completion:^(ObjCRunDartTestResponse *_Nullable r, NSError *_Nullable err) {                 \
+                         if (err != NULL) {                                                                         \
+                           error = err;                                                                             \
+                         } else {                                                                                   \
+                           response = r;                                                                            \
+                         }                                                                                          \
+                         NSString *status = err != NULL ? @"CRASHED" : response.result.uppercaseString;             \
+                         NSLog(@"runDartTest(\"%@\"): call finished, test result: %@", dartTestName, status);       \
+                       }];                                                                                          \
                                                                                                                     \
-        while (!response && !error) {                                                                               \
-          [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                        \
+          while (!response && !error) {                                                                             \
+            [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                      \
+          }                                                                                                         \
+          if (error != nil || response == nil || ![response.result isEqualToString:@"continuation"]) {              \
+            break;                                                                                                  \
+          }                                                                                                         \
+                                                                                                                    \
+          phaseIndex = response.nextPhaseIndex;                                                                     \
+          if (phaseIndex == nil) {                                                                                  \
+            XCTFail(@"A phased Patrol test returned continuation without a next phase");                            \
+            return;                                                                                                 \
+          }                                                                                                         \
+          NSString *launchURL = response.nextPhaseLaunchUrl;                                                        \
+          XCUIApplication *app = [[XCUIApplication alloc] init];                                                    \
+          [app terminate];                                                                                          \
+          [__test_class launchPatrolAppWithServer:server launchURL:launchURL];                                      \
+          appReady = [__test_class waitForPatrolAppReadyWithServer:server];                                         \
+          XCTAssertTrue(appReady, @"Patrol app did not become ready on port %ld", (long)server.boundAppPort);       \
+          if (!appReady) {                                                                                          \
+            return;                                                                                                 \
+          }                                                                                                         \
         }                                                                                                           \
-        BOOL passed = response ? response.passed : NO;                                                              \
+        BOOL passed = response != nil && [response.result isEqualToString:@"success"];                              \
         NSString *details = response ? response.details : @"(no details - app likely crashed)";                     \
-        if (response && response.skipped) {                                                                         \
+        if (response && [response.result isEqualToString:@"skipped"]) {                                             \
           XCTSkip(@"%@", details);                                                                                  \
         }                                                                                                           \
         XCTAssertTrue(passed, @"%@", details);                                                                      \
@@ -417,6 +458,9 @@
   }                                                                                                                    \
                                                                                                                        \
   +(void)launchPatrolApp {                                                                                             \
+    [self launchPatrolAppWithURL:nil];                                                                                 \
+  }                                                                                                                    \
+  +(void)launchPatrolAppWithURL : (NSString *)launchURL {                                                              \
     _patrolStaticServer.appReady = NO;                                                                                 \
     XCUIApplication *app = [[XCUIApplication alloc] init];                                                             \
     NSMutableDictionary<NSString *, NSString *> *environment =                                                         \
@@ -426,7 +470,23 @@
     environment[@"PATROL_APP_SERVER_PORT"] =                                                                           \
         [NSString stringWithFormat:@"%ld", (long)_patrolStaticServer.boundAppPort];                                    \
     app.launchEnvironment = environment;                                                                               \
-    [app launch];                                                                                                      \
+    if (launchURL == nil) {                                                                                            \
+      [app launch];                                                                                                    \
+    } else {                                                                                                           \
+      NSURL *url = [NSURL URLWithString:launchURL];                                                                    \
+      XCTAssertNotNil(url, @"Invalid phase launch URL: %@", launchURL);                                                \
+      if (url == nil) {                                                                                                \
+        return;                                                                                                        \
+      }                                                                                                                \
+      /* iOS 16.4+: openURL cold-starts through the link. Older iOS must launch       \
+         first, then openURL — first paint is a normal start, not the deep link. */    \
+      if (@available(iOS 16.4, *)) {                                                                                   \
+        [app openURL:url];                                                                                             \
+      } else {                                                                                                         \
+        [app launch];                                                                                                  \
+        [[XCUIDevice sharedDevice].system openURL:url];                                                                \
+      }                                                                                                                \
+    }                                                                                                                  \
   }                                                                                                                    \
                                                                                                                        \
   +(void)resetPermissions {                                                                                            \
@@ -570,22 +630,51 @@
     }                                                                                                                  \
                                                                                                                        \
     __block ObjCRunDartTestResponse *response = NULL;                                                                  \
-    __block NSError *error;                                                                                            \
-    [_patrolStaticClient runDartTestWithName:dartTestName                                                              \
-                                  completion:^(ObjCRunDartTestResponse *_Nullable r, NSError *_Nullable e) {           \
-                                    if (e != NULL) {                                                                   \
-                                      error = e;                                                                       \
-                                    } else {                                                                           \
-                                      response = r;                                                                    \
-                                    }                                                                                  \
-                                  }];                                                                                  \
+    __block NSError *error = nil;                                                                                      \
+    NSNumber *phaseIndex = nil;                                                                                        \
+    while (true) {                                                                                                     \
+      response = NULL;                                                                                                 \
+      error = nil;                                                                                                     \
+      [_patrolStaticClient runDartTestWithName:dartTestName                                                            \
+                                    phaseIndex:phaseIndex                                                              \
+                                    completion:^(ObjCRunDartTestResponse *_Nullable r, NSError *_Nullable e) {         \
+                                      if (e != NULL) {                                                                 \
+                                        error = e;                                                                     \
+                                      } else {                                                                         \
+                                        response = r;                                                                  \
+                                      }                                                                                \
+                                    }];                                                                                \
                                                                                                                        \
-    while (!response && !error) {                                                                                      \
-      [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                               \
+      while (!response && !error) {                                                                                    \
+        [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                             \
+      }                                                                                                                \
+      if (error != nil || response == nil || ![response.result isEqualToString:@"continuation"]) {                     \
+        break;                                                                                                         \
+      }                                                                                                                \
+                                                                                                                       \
+      phaseIndex = response.nextPhaseIndex;                                                                            \
+      if (phaseIndex == nil) {                                                                                         \
+        XCTFail(@"A phased Patrol test returned continuation without a next phase");                                   \
+        return;                                                                                                        \
+      }                                                                                                                \
+      NSString *launchURL = response.nextPhaseLaunchUrl;                                                               \
+      XCUIApplication *app = [[XCUIApplication alloc] init];                                                           \
+      [app terminate];                                                                                                 \
+      [[self class] launchPatrolAppWithURL:launchURL];                                                                 \
+                                                                                                                       \
+      NSDate *phaseReadyDeadline = [NSDate dateWithTimeIntervalSinceNow:180.0];                                        \
+      while (!_patrolStaticServer.appReady) {                                                                          \
+        if ([[NSDate date] compare:phaseReadyDeadline] == NSOrderedDescending) {                                       \
+          XCTFail(@"App did not report PatrolAppService readiness on port %ld",                                        \
+                  (long)_patrolStaticServer.boundAppPort);                                                             \
+          return;                                                                                                      \
+        }                                                                                                              \
+        [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                             \
+      }                                                                                                                \
     }                                                                                                                  \
-    BOOL passed = response ? response.passed : NO;                                                                     \
+    BOOL passed = response != nil && [response.result isEqualToString:@"success"];                                     \
     NSString *details = response ? response.details : @"(no details - app likely crashed)";                            \
-    if (response && response.skipped) {                                                                                \
+    if (response && [response.result isEqualToString:@"skipped"]) {                                                    \
       XCTSkip(@"%@", details);                                                                                         \
     }                                                                                                                  \
     XCTAssertTrue(passed, @"%@", details);                                                                             \
