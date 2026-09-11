@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:mocktail/mocktail.dart';
@@ -92,6 +94,60 @@ void main() {
         '--dart-define',
       });
     });
+
+    // A flavored iOS project cannot run `flutter logs`, so the caller hands
+    // attach the Dart VM service URL taken from Patrol's own log stream.
+    test(
+      'attachForHotRestart uses a provided debug URL instead of flutter logs',
+      () async {
+        const url = 'http://127.0.0.1:54296/4crAtS2Ux7w=/';
+        final process = MockProcess();
+        when(() => process.stdout).thenAnswer(
+          (_) => Stream<List<int>>.fromIterable([
+            utf8.encode('Flutter run key commands.\n'),
+          ]),
+        );
+        when(
+          () => process.stderr,
+        ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
+        // Awaiting attach to completion disposes its scope, which kills the
+        // process.
+        when(process.kill).thenReturn(true);
+        when(
+          () => processManager.start(any()),
+        ).thenAnswer((_) async => process);
+
+        // Keep the test independent of the host: attachForHotRestart consults
+        // the real stdin for a terminal to switch into raw mode.
+        final stdin = MockStdin();
+        when(() => stdin.hasTerminal).thenReturn(false);
+
+        await IOOverrides.runZoned(
+          () => flutterTool.attachForHotRestart(
+            flutterCommand: flutterCommand,
+            deviceId: 'testDeviceId',
+            target: 'target',
+            appId: 'appId',
+            dartDefines: {},
+            openDevtools: false,
+            attachUsingUrl: true,
+            debugUrl: Future.value(url),
+            forwardFlutterLogs: false,
+          ),
+          stdin: () => stdin,
+        );
+
+        final commands = verify(
+          () => processManager.start(captureAny()),
+        ).captured.cast<List<Object>>();
+
+        expect(commands, hasLength(1));
+
+        final args = commands.single.map((arg) => arg.toString()).toList();
+        expect(args, containsAllInOrder(['attach', '--debug-url', url]));
+        expect(args, isNot(contains('logs')));
+      },
+    );
   });
 
   group('getObservationUrl', () {

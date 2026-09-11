@@ -51,6 +51,7 @@ class FlutterTool {
     required Map<String, String> dartDefines,
     required bool openDevtools,
     bool attachUsingUrl = false,
+    Future<String>? debugUrl,
     bool forwardFlutterLogs = true,
     Future<void> Function()? onQuit,
   }) async {
@@ -79,13 +80,13 @@ class FlutterTool {
     }
 
     if (attachUsingUrl) {
-      final urlCompleter = Completer<String>();
-      await logs(
-        deviceId,
-        flutterCommand: flutterCommand,
-        observationUrlCompleter: urlCompleter,
-      );
-      final url = await urlCompleter.future;
+      final url =
+          await (debugUrl ??
+              _readDebugUrlFromFlutterLogs(
+                deviceId,
+                flutterCommand: flutterCommand,
+              ));
+
       await attach(
         flutterCommand: flutterCommand,
         target: target,
@@ -110,6 +111,20 @@ class FlutterTool {
         ),
       ]);
     }
+  }
+
+  Future<String> _readDebugUrlFromFlutterLogs(
+    String deviceId, {
+    required FlutterCommand flutterCommand,
+  }) async {
+    final urlCompleter = Completer<String>();
+    await logs(
+      deviceId,
+      flutterCommand: flutterCommand,
+      observationUrlCompleter: urlCompleter,
+    );
+
+    return urlCompleter.future;
   }
 
   /// Attaches to the running app. Returns a [Future] that completes when the
@@ -394,7 +409,8 @@ String getDevtoolsUrl(String line) {
   return uri.replace(pathSegments: segments).toString();
 }
 
-@visibleForTesting
+/// Returns the URL that [line] carries, e.g. the Dart VM service URL from
+/// "The Dart VM service is listening on http://…".
 String getObservationUrl(String line) {
   final startIndex = line.indexOf('http');
   if (startIndex == -1) {

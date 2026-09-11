@@ -359,6 +359,44 @@ DartGroupEntry createDartTestGroup(
   return groupDTO;
 }
 
+/// Not allowed in a test name, which becomes a file name on the device.
+const _pathSeparator = '/';
+
+/// Returns full names of tests in [group] that contain [_pathSeparator].
+@internal
+List<String> namesWithPathSeparator(DartGroupEntry group) =>
+    _namesWithPathSeparator(group, '');
+
+/// Joins names with a space, like the native side does.
+List<String> _namesWithPathSeparator(DartGroupEntry group, String parentName) {
+  final invalidNames = <String>[];
+
+  for (final entry in group.entries) {
+    final fullName = parentName.isEmpty
+        ? entry.name
+        : '$parentName ${entry.name}';
+
+    switch (entry.type) {
+      case GroupEntryType.test:
+        if (fullName.contains(_pathSeparator)) {
+          invalidNames.add(fullName);
+        }
+      case GroupEntryType.group:
+        invalidNames.addAll(_namesWithPathSeparator(entry, fullName));
+    }
+  }
+
+  return invalidNames;
+}
+
+/// Builds the error message for [invalidNames].
+@internal
+String pathSeparatorNameError(List<String> invalidNames) =>
+    "Test names must not contain '$_pathSeparator', but these do:\n"
+    '${invalidNames.map((e) => '  \u2022 $e').join('\n')}'
+    "\n\nRemove '$_pathSeparator' from the patrolTest() description or from the "
+    'group() name it sits in.';
+
 /// Allows for retrieving the name of a GroupEntry by stripping the names of all ancestor groups.
 ///
 /// Example:
