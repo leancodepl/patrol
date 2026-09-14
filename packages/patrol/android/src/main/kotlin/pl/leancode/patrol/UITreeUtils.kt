@@ -10,11 +10,15 @@ import pl.leancode.patrol.contracts.Contracts.Point2D
 import pl.leancode.patrol.contracts.Contracts.Rectangle
 
 // This function is similar to AccessibilityNodeInfoDumper.dumpWindowHierarchy()
-fun getWindowTrees(uiDevice: UiDevice, uiAutomation: UiAutomation): List<AndroidNativeView> {
+fun getWindowTrees(
+    uiDevice: UiDevice,
+    uiAutomation: UiAutomation,
+    includeInvisibleNodes: Boolean = false
+): List<AndroidNativeView> {
     val windowRoots = getWindowRoots(uiDevice, uiAutomation)
     Logger.i("Found ${windowRoots.size} windowRoots")
 
-    return windowRoots.map { node -> fromUiAccessibilityNodeInfo(node) }
+    return windowRoots.map { node -> fromUiAccessibilityNodeInfo(node, includeInvisibleNodes) }
 }
 
 // This is a private method from uiautomator.UiDevice.java
@@ -45,13 +49,18 @@ private fun getWindowRoots(uiDevice: UiDevice, uiAutomation: UiAutomation): Arra
     return roots.toTypedArray()
 }
 
-private fun fromUiAccessibilityNodeInfo(obj: AccessibilityNodeInfo): AndroidNativeView {
+// Skipping a node whose isVisibleToUser is false drops its whole subtree. WebViews sometimes
+// report an on-screen container as invisible, so includeInvisibleNodes lets callers keep them.
+internal fun fromUiAccessibilityNodeInfo(
+    obj: AccessibilityNodeInfo,
+    includeInvisibleNodes: Boolean
+): AndroidNativeView {
     val children = mutableListOf<AndroidNativeView>()
 
     for (i in 0 until obj.childCount) {
         val child = obj.getChild(i)
-        if (child != null && child.isVisibleToUser) {
-            children.add(fromUiAccessibilityNodeInfo(child))
+        if (child != null && (includeInvisibleNodes || child.isVisibleToUser)) {
+            children.add(fromUiAccessibilityNodeInfo(child, includeInvisibleNodes))
         }
     }
 
