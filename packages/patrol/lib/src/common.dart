@@ -176,6 +176,7 @@ void patrolTest(
       await platformAutomator.action.maybe(
         android: platformAutomator.android.configure,
         ios: platformAutomator.ios.configure,
+        macos: platformAutomator.macos.configure,
         web: platformAutomator.web.configure,
       );
 
