@@ -233,11 +233,13 @@ collects them:
 #### iOS
 
 The same API works on iOS: enable `screenshot_on_failure: true` and/or call
-`await $.takeNativeScreenshot('tag')`. The screenshot is captured natively at the
-failure moment (via the Dart failure hook, before teardown) and attached to the
-test's `.xcresult` bundle, which `xcodebuild` writes on the host — so it works on
-simulators and physical devices alike, with no on-device pull. Requires Xcode 16
-or newer.
+`await $.takeNativeScreenshot('tag')`. With `screenshot_on_failure`, the screen is
+captured at the failure moment (via the Dart failure hook, before teardown);
+`takeNativeScreenshot('tag')` captures whenever the call executes, so you can grab
+before/after states on purpose. Either way the image is captured natively and
+attached to the test's `.xcresult` bundle, which `xcodebuild` writes on the host —
+so it works on simulators and physical devices alike, with no on-device pull.
+Requires Xcode 16 or newer.
 
 On `patrol test`, Patrol extracts the images from the `.xcresult` into
 `<test-directory>/screenshots` after the run (override with
