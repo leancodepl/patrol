@@ -215,10 +215,7 @@ jobs:
 
       - name: flutter pub publish --dry-run
         if: success() || failure()
-        run: |
-          rm -f pubspec_overrides.yaml
-          flutter pub get
-          flutter pub publish --dry-run
+        run: flutter pub publish --dry-run
 
       - name: flutter pub get (example app)
         if: success() || failure()
