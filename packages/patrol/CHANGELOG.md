@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Add `includeInvisibleNodes` to `getNativeViews()` on Android (`$.platform.android` and `$.platform.mobile`). By default the full native tree skips nodes whose `isVisibleToUser` is `false` together with their subtrees, like UiAutomator's `dumpWindowHierarchy()`; some WebViews report an on-screen container as invisible, hiding all of its content. Pass `includeInvisibleNodes: true` to keep such nodes and tap them with `tapAt`. Default unchanged. (#3287)
 - Reject a test name containing `/`, with a message naming the offending test, instead of letting it crash Android Test Orchestrator. The name is rejected on Android, iOS and macOS with runtime test discovery. (#3259)
 - Build-time test discovery (experimental): the generated `.inc` now declares whole test classes.
   In `RunnerUITests.m`, replace the `STATIC_BEGIN`/`_END` pair with

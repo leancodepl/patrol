@@ -66,6 +66,11 @@ android {
         buildConfig true
     }
 
+    testOptions {
+        // Lets unit tests touch android.jar types (e.g. Rect) instead of hitting "Stub!".
+        unitTests.returnDefaultValues = true
+    }
+
     dependencies {
         // TODO: These dependencies should not be added to release builds.
         // https://github.com/flutter/flutter/issues/56591
@@ -87,6 +92,7 @@ android {
         implementation "io.ktor:ktor-serialization-gson"
 
         testImplementation "org.jetbrains.kotlin:kotlin-test"
+        testImplementation "io.mockk:mockk:1.13.13"
     }
 }
 

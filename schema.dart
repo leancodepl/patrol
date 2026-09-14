@@ -108,6 +108,9 @@ class IOSSelector {
 
 class AndroidGetNativeViewsRequest {
   AndroidSelector? selector;
+  // Only used when selector is null (full tree). false (default) drops nodes
+  // whose isVisibleToUser is false, like uiautomator's dumpWindowHierarchy().
+  bool? includeInvisibleNodes;
 }
 
 class IOSGetNativeViewsRequest {

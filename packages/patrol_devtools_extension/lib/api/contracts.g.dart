@@ -304,11 +304,15 @@ AndroidGetNativeViewsRequest _$AndroidGetNativeViewsRequestFromJson(
   selector: json['selector'] == null
       ? null
       : AndroidSelector.fromJson(json['selector'] as Map<String, dynamic>),
+  includeInvisibleNodes: json['includeInvisibleNodes'] as bool?,
 );
 
 Map<String, dynamic> _$AndroidGetNativeViewsRequestToJson(
   AndroidGetNativeViewsRequest instance,
-) => <String, dynamic>{'selector': instance.selector?.toJson()};
+) => <String, dynamic>{
+  'selector': instance.selector?.toJson(),
+  'includeInvisibleNodes': instance.includeInvisibleNodes,
+};
 
 IOSGetNativeViewsRequest _$IOSGetNativeViewsRequestFromJson(
   Map<String, dynamic> json,

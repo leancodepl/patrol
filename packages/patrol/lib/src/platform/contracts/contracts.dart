@@ -531,17 +531,21 @@ class IOSSelector with Equatable {
 
 @JsonSerializable()
 class AndroidGetNativeViewsRequest with Equatable {
-  const AndroidGetNativeViewsRequest({this.selector});
+  const AndroidGetNativeViewsRequest({
+    this.selector,
+    this.includeInvisibleNodes,
+  });
 
   factory AndroidGetNativeViewsRequest.fromJson(Map<String, dynamic> json) =>
       _$AndroidGetNativeViewsRequestFromJson(json);
 
   final AndroidSelector? selector;
+  final bool? includeInvisibleNodes;
 
   Map<String, dynamic> toJson() => _$AndroidGetNativeViewsRequestToJson(this);
 
   @override
-  List<Object?> get props => [selector];
+  List<Object?> get props => [selector, includeInvisibleNodes];
 }
 
 @JsonSerializable()
