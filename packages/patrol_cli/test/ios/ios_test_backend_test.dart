@@ -9,6 +9,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
+import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:platform/platform.dart';
@@ -21,6 +22,14 @@ final _pngBytes = <int>[0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0, 0];
 /// Binary plist signature - what XCTest's automatic "UI Snapshot" element-tree
 /// attachments look like (not an image).
 final _bplistBytes = <int>[0x62, 0x70, 0x6C, 0x69, 0x73, 0x74, 0x30, 0x30];
+
+/// First bytes of an ISO media (.mp4/.mov) file: box size, then `ftyp`.
+final _mp4Bytes = <int>[0, 0, 0, 0x18, 0x66, 0x74, 0x79, 0x70, 0x71, 0x74];
+
+/// The 60-byte "pending attachment" text stub XCTest leaves for a killed run.
+final _stubBytes = utf8.encode(
+  'Unexpected Error: Finished test run with pending attachment.',
+);
 
 void main() {
   group('BuildMode', () {
@@ -348,7 +357,7 @@ void main() {
     });
   });
 
-  group('IOSTestBackend.extractScreenshots', () {
+  group('IOSTestBackend.extractAttachments', () {
     late IOSTestBackend iosTestBackend;
     late MockProcessManager processManager;
     late FileSystem fs;
@@ -434,9 +443,9 @@ void main() {
         },
       );
 
-      await iosTestBackend.extractScreenshots(
+      await iosTestBackend.extractAttachments(
         xcresultPath: 'build/out.xcresult',
-        outputDir: 'screenshots',
+        screenshotsOutputDir: 'screenshots',
       );
 
       final testDir = rootDirectory
@@ -449,9 +458,9 @@ void main() {
     test(
       'does not throw and writes nothing when the bundle is missing',
       () async {
-        await iosTestBackend.extractScreenshots(
+        await iosTestBackend.extractAttachments(
           xcresultPath: 'build/missing.xcresult',
-          outputDir: 'screenshots',
+          screenshotsOutputDir: 'screenshots',
         );
 
         verifyNever(
@@ -468,12 +477,113 @@ void main() {
       fs.directory('build/out.xcresult').createSync(recursive: true);
       stubExport(manifest: [], files: {}, exitCode: 1);
 
-      await iosTestBackend.extractScreenshots(
+      await iosTestBackend.extractAttachments(
         xcresultPath: 'build/out.xcresult',
-        outputDir: 'screenshots',
+        screenshotsOutputDir: 'screenshots',
       );
 
       expect(rootDirectory.childDirectory('screenshots').existsSync(), isFalse);
+    });
+
+    test('saves screen recordings named like Android videos', () async {
+      fs.directory('build/out.xcresult').createSync(recursive: true);
+      stubExport(
+        manifest: [
+          {
+            'testIdentifier':
+                'RunnerUITests/login_test+logs+in+with+a+valid+password',
+            'attachments': [
+              attachment('a', 'Screen Recording 2026-08-04 at 08.49.20.mp4'),
+              attachment('b', 'Complete Issue Description.txt', failure: true),
+              attachment('c', 'patrol_failure', failure: true),
+            ],
+          },
+          {
+            // Killed develop session: only a text stub, no real video.
+            'testIdentifier': 'RunnerUITests/testPatrolDevelopSession',
+            'attachments': [
+              attachment('d', 'Screen Recording 2026-08-04 at 08.38.36'),
+            ],
+          },
+        ],
+        files: {
+          'a': _mp4Bytes,
+          'b': utf8.encode('Assertion Failure'),
+          'c': _pngBytes,
+          'd': _stubBytes,
+        },
+      );
+
+      final saved = await iosTestBackend.extractAttachments(
+        xcresultPath: 'build/out.xcresult',
+        videoConfig: const VideoRecordingConfig(
+          enabled: true,
+          outputDirectory: 'videos',
+        ),
+        deviceId: 'ABCD-1234',
+      );
+
+      final files = rootDirectory
+          .childDirectory('videos')
+          .listSync()
+          .map((e) => e.basename)
+          .toList();
+      expect(files, hasLength(1));
+      expect(
+        files.single,
+        matches(
+          RegExp(r'^patrol_logs_in_with_a_valid_password_ABCD-1234_\d+\.mp4$'),
+        ),
+      );
+      expect(saved.single, endsWith(files.single));
+      expect(
+        rootDirectory
+            .childDirectory('videos')
+            .childFile(files.single)
+            .readAsBytesSync(),
+        _mp4Bytes,
+      );
+      // No screenshots dir was requested, so none is created.
+      expect(rootDirectory.childDirectory('screenshots').existsSync(), isFalse);
+    });
+
+    test('one export serves both screenshots and videos', () async {
+      fs.directory('build/out.xcresult').createSync(recursive: true);
+      stubExport(
+        manifest: [
+          {
+            'testIdentifier': 'RunnerUITests/RunnerUITests/test_login',
+            'attachments': [
+              attachment('a', 'Screen Recording 2026-08-04 at 08.49.20.mp4'),
+              attachment('b', 'patrol_failure', failure: true),
+            ],
+          },
+        ],
+        files: {'a': _mp4Bytes, 'b': _pngBytes},
+      );
+
+      final saved = await iosTestBackend.extractAttachments(
+        xcresultPath: 'build/out.xcresult',
+        screenshotsOutputDir: 'screenshots',
+        videoConfig: const VideoRecordingConfig(
+          enabled: true,
+          outputDirectory: 'videos',
+        ),
+        deviceId: 'sim',
+      );
+
+      verify(
+        () => processManager.run(any(), runInShell: any(named: 'runInShell')),
+      ).called(1);
+      expect(saved, hasLength(1));
+      expect(
+        rootDirectory
+            .childDirectory('screenshots')
+            .childDirectory('RunnerUITests_RunnerUITests_test_login')
+            .childFile('patrol_failure_0.png')
+            .existsSync(),
+        isTrue,
+      );
     });
   });
 }

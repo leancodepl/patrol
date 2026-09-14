@@ -529,14 +529,17 @@ abstract class PatrolCommand extends Command<int> {
       ..addFlag(
         'record-video',
         help:
-            'Record video of the test execution (Android emulators and iOS '
-            'simulators). May also work on physical Android devices, '
-            'depending on the vendor. iOS physical devices are not '
-            'supported.',
+            'Record a video of each test case. Android: emulators, and '
+            'physical devices depending on the vendor. iOS: simulators and '
+            'physical devices; `patrol test` takes the recordings from the '
+            '`.xcresult` after the run (requires Xcode 16 or newer), '
+            '`patrol develop` records simulators only.',
       )
       ..addOption(
         'video-output-dir',
-        help: 'Directory to save recorded videos.',
+        help:
+            'Directory to save recorded videos. Defaults to '
+            '<test-directory>/videos.',
         valueHelp: 'path/to/videos',
       )
       ..addOption(
