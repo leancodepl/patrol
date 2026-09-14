@@ -536,13 +536,21 @@ class NativeAutomator2 {
   /// [selector], which are currently visible on screen.
   ///
   /// If [selector] is null, returns the whole native UI tree.
+  ///
+  /// On Android the full tree skips nodes whose `isVisibleToUser` is false
+  /// (and their subtrees). Pass [includeInvisibleNodes] to keep them, e.g. for
+  /// WebViews that report an on-screen container as invisible. Such nodes are
+  /// not reachable by selector-based actions; tap them with [tapAt] using
+  /// their `visibleCenter`. Ignored on iOS.
   Future<GetNativeViewsResult> getNativeViews(
     NativeSelector selector, {
     String? appId,
+    bool includeInvisibleNodes = false,
   }) => _platform.action.mobile(
     android: () async => GetNativeViewsResult(
       androidViews: (await _platform.android.getNativeViews(
         _getSafeAndroidSelector(selector),
+        includeInvisibleNodes: includeInvisibleNodes,
       )).roots,
       iosViews: [],
     ),

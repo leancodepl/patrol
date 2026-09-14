@@ -281,6 +281,7 @@ public struct IOSSelector: Codable {
 
 public struct AndroidGetNativeViewsRequest: Codable {
   public var selector: AndroidSelector?
+  public var includeInvisibleNodes: Bool?
 }
 
 public struct IOSGetNativeViewsRequest: Codable {

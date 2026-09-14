@@ -68,6 +68,35 @@ await $.platform.android.tap(
 await $.platform.android.openPlatformApp(androidAppId: 'com.android.settings');
 ```
 
+#### Native views hidden from the tree
+
+`getNativeViews(null)` returns the full native tree, but skips nodes whose `isVisibleToUser`
+is `false` together with their subtrees, the same way UiAutomator's `dumpWindowHierarchy()`
+does. Some WebViews (e.g. third-party SDK screens) report an on-screen container as invisible,
+so its content never shows up. Pass `includeInvisibleNodes: true` to keep such nodes:
+
+```dart
+final tree = await $.platform.android.getNativeViews(
+  null,
+  includeInvisibleNodes: true,
+);
+```
+
+Selector-based actions like `tap(AndroidSelector(...))` still go through UiAutomator, which
+skips these nodes as well. To interact with one, tap its coordinates instead. `tapAt` takes
+fractions of the screen, so divide the node's `visibleCenter` by the root node's bounds:
+
+```dart
+final root = tree.roots.first;
+final node = findNodeByText(tree, 'Continue'); // your own tree walk
+await $.platform.android.tapAt(
+  Offset(
+    node.visibleCenter.x / root.visibleBounds.maxX,
+    node.visibleCenter.y / root.visibleBounds.maxY,
+  ),
+);
+```
+
 ### iOS-specific actions
 
 For iOS-only actions, use `$.platform.ios`:

@@ -351,10 +351,10 @@ class Automator private constructor() {
         return uiObjects2.map { fromUiObject2(it) }
     }
 
-    fun getNativeUITrees(): List<AndroidNativeView> {
-        Logger.d("getNativeUITrees()")
+    fun getNativeUITrees(includeInvisibleNodes: Boolean = false): List<AndroidNativeView> {
+        Logger.d("getNativeUITrees(includeInvisibleNodes=$includeInvisibleNodes)")
 
-        return getWindowTrees(uiDevice, uiAutomation)
+        return getWindowTrees(uiDevice, uiAutomation, includeInvisibleNodes)
     }
 
     fun tap(uiSelector: UiSelector, bySelector: BySelector, index: Int, timeout: Long? = null) {
