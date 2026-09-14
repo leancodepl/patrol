@@ -36,6 +36,7 @@ class DevelopOptions {
     this.iosVersion,
     this.videoConfig,
     this.emitTestManifest,
+    this.prebuiltApksDir,
   });
 
   factory DevelopOptions.fromArgResults(
@@ -79,6 +80,7 @@ class DevelopOptions {
       clearTestSteps: results['clear-test-steps'] as bool,
       checkCompatibility: results['check-compatibility'] as bool,
       iosVersion: results['ios'] as String?,
+      prebuiltApksDir: results['use-prebuilt-apks'] as String?,
       videoConfig: VideoRecordingConfig(
         enabled: results['record-video'] as bool,
         outputDirectory:
@@ -175,6 +177,11 @@ class DevelopOptions {
   /// tests. `null` means the flag wasn't passed, so the `patrol.emit_test_manifest`
   /// pubspec value applies.
   final bool? emitTestManifest;
+
+  /// Directory with prebuilt app + androidTest APKs (Android only). When set,
+  /// the Gradle build is skipped and the session is started from these
+  /// artifacts (`adb install` + `am instrument`). See `--use-prebuilt-apks`.
+  final String? prebuiltApksDir;
 }
 
 class _DevelopOptionsParserCommand extends PatrolCommand {
