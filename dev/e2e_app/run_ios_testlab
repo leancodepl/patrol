@@ -89,11 +89,16 @@ if os.path.exists(manifest):
             for a in atts
         )
         vid_i = 0
+        shot_i = 0
         for a in atts:
             name = a.get("suggestedHumanReadableName", "")
             src = os.path.join(attach_dir, a["exportedFileName"])
             if name.startswith("patrol_"):
-                shutil.copy(src, os.path.join(shots_dir, f"{tid}__{slug(name)}"))
+                # Index + .png so repeated same-tag captures don't overwrite
+                # and *.png collectors still list them.
+                dst = f"{tid}__{slug(name)}_{shot_i}.png"
+                shutil.copy(src, os.path.join(shots_dir, dst))
+                shot_i += 1
             elif failed and a["exportedFileName"].lower().endswith(".mp4"):
                 shutil.copy(src, os.path.join(videos_dir, f"{tid}__{vid_i}.mp4"))
                 vid_i += 1
