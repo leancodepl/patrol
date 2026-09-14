@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Constrain `platform` to `>=3.1.3 <3.2.0`. Version 3.2.0 ships a new, non-backwards-compatible API that deprecates `LocalPlatform`, `FakePlatform` and the legacy `Platform` members, which broke `flutter analyze` in CI. Migration to the new `NativePlatform` API is tracked separately.
 - Build-time test discovery now generates one native test class per Dart test file, so reports
   group by file and a whole file is selectable with a single native selector. **This renames every
   generated native test** (the file becomes the class name, the method is the test name, no more
