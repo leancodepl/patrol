@@ -166,6 +166,62 @@ jobs:
         if: success() || failure()
         run: |
           find . -iname '*.h' -o -iname '*.m' | xargs -I {} clang-format --dry-run --Werror {}
+  prepare-published-deps:
+    name: Resolve against published dependencies
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        flutter-version: ['3.38.x']
+        flutter-channel: ['stable']
+
+    defaults:
+      run:
+        working-directory: packages/patrol
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          channel: ${{ matrix.flutter-channel }}
+
+      # Deliberately no `melos bootstrap`. It writes pubspec_overrides.yaml,
+      # which points patrol_finders and patrol_log at the in-repo copies and
+      # would hide a constraint that cannot be satisfied from pub.dev. The
+      # `rm` covers the case of the file arriving some other way.
+      - name: flutter pub get, without the workspace overrides
+        run: |
+          rm -f pubspec_overrides.yaml
+          flutter pub get
+
+      # custom_lint runs as a legacy analyzer plugin, and it crashes the
+      # analysis server once the overrides are gone (`Bad state: The analysis
+      # server crashed unexpectedly`). Its rules are enforced by the
+      # `Flutter <version>` job; this job only needs patrol's own code to type
+      # check against the published packages, so drop the plugin here.
+      - name: Drop the custom_lint analyzer plugin
+        run: |
+          python3 - <<'EOF'
+          import re
+          path = 'analysis_options.yaml'
+          text = open(path).read()
+          stripped = re.sub(r'\n  plugins:\n(?:    - .*\n)+', '\n', text)
+          assert stripped != text, 'no plugins block in analysis_options.yaml'
+          open(path, 'w').write(stripped)
+          EOF
+          cat analysis_options.yaml
+
+      # `flutter pub publish --dry-run` runs this internally, but discards the
+      # analyzer's stderr and reports only "found the following issue(s)" with
+      # an empty list. Running it here keeps the real output.
+      - name: Analyze against the published dependencies
+        run: dart analyze lib pubspec.yaml
+
   prepare-flutter:
     name: Flutter ${{ matrix.flutter-version }}
     runs-on: ubuntu-latest
@@ -215,10 +271,7 @@ jobs:
 
       - name: flutter pub publish --dry-run
         if: success() || failure()
-        run: |
-          rm -f pubspec_overrides.yaml
-          flutter pub get
-          flutter pub publish --dry-run
+        run: flutter pub publish --dry-run
 
       - name: flutter pub get (example app)
         if: success() || failure()
