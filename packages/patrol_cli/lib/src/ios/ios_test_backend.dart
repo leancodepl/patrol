@@ -422,7 +422,7 @@ class IOSTestBackend {
       }
 
       final patrolLogCommand = device.real
-          ? ['idevicesyslog']
+          ? ['idevicesyslog', '-u', device.id]
           : [
               'xcrun',
               'simctl',

@@ -1,3 +1,9 @@
+## Unreleased
+
+- Fix `idevicesyslog` not being scoped to the device under test, so concurrent runs on a host with
+  several real iOS devices attached all streamed the same device's log, corrupting the step
+  display, `--show-flutter-logs` output and the test summary. (#3245)
+
 ## 4.8.0
 
 - Build-time test discovery (experimental) now generates one native test class per Dart test file,
