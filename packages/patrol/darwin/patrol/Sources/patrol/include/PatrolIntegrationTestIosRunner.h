@@ -40,6 +40,7 @@
   +(BOOL)isPatrolDevelopMode {                                                                                      \
     return [[NSProcessInfo processInfo].environment[@"PATROL_DEVELOP"] isEqualToString:@"1"];                       \
   }                                                                                                                 \
+                                                                                                                    \
   +(void)launchPatrolAppWithServer : (PatrolServer *)server {                                                       \
     server.appReady = NO;                                                                                           \
     XCUIApplication *app = [[XCUIApplication alloc] init];                                                          \
@@ -332,8 +333,9 @@
                                                                                                                     \
         [__test_class launchPatrolAppWithServer:server];                                                            \
         BOOL appReady = [__test_class waitForPatrolAppReadyWithServer:server];                                      \
-        XCTAssertTrue(appReady, @"Patrol app did not become ready on port %ld", (long)server.boundAppPort);         \
         if (!appReady) {                                                                                            \
+          [PatrolScreenshotBuffer attachCurrentScreenNamed:@"patrol_failure" to:_self];                                    \
+          XCTFail(@"Patrol app did not become ready on port %ld", (long)server.boundAppPort);                       \
           return;                                                                                                   \
         }                                                                                                           \
                                                                                                                     \
@@ -361,6 +363,7 @@
         if (response && response.skipped) {                                                                         \
           XCTSkip(@"%@", details);                                                                                  \
         }                                                                                                           \
+        [[PatrolScreenshotBuffer sharedBuffer] drainAttachingTo:_self];                                             \
         XCTAssertTrue(passed, @"%@", details);                                                                      \
       });                                                                                                           \
       SEL selector = NSSelectorFromString(selectorName);                                                            \
@@ -563,6 +566,7 @@
     NSDate *_patrolReadyDeadline = [NSDate dateWithTimeIntervalSinceNow:180.0];                                        \
     while (!_patrolStaticServer.appReady) {                                                                            \
       if ([[NSDate date] compare:_patrolReadyDeadline] == NSOrderedDescending) {                                       \
+        [PatrolScreenshotBuffer attachCurrentScreenNamed:@"patrol_failure" to:self];                                          \
         XCTFail(@"App did not report PatrolAppService readiness on port %ld", (long)_patrolStaticServer.boundAppPort); \
         return;                                                                                                        \
       }                                                                                                                \
@@ -588,6 +592,7 @@
     if (response && response.skipped) {                                                                                \
       XCTSkip(@"%@", details);                                                                                         \
     }                                                                                                                  \
+    [[PatrolScreenshotBuffer sharedBuffer] drainAttachingTo:self];                                                     \
     XCTAssertTrue(passed, @"%@", details);                                                                             \
   }
 

@@ -218,6 +218,9 @@
       withTimeout timeout: TimeInterval?
     ) throws
 
+    // MARK: Screenshots
+    func takeNativeScreenshot(name: String) throws
+
     // MARK: Volume settings
     func pressVolumeUp() throws
     func pressVolumeDown() throws
