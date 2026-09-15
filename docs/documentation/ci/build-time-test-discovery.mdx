@@ -16,6 +16,15 @@ reports, and compatibility with external test-distribution tools.
   enabling it — in particular the host-vs-device discovery caveat.
 </Warning>
 
+<Info>
+  **Requires `patrol_cli` 4.8.0 and `patrol` 4.10.0 or newer.** Both sides have to
+  agree on the generated code, so a mismatch fails the build instead of the
+  [compatibility check](/documentation/compatibility-table). The feature first
+  shipped in `patrol_cli` 4.7.0 / `patrol` 4.9.0 with a different iOS runner macro
+  and different generated test names — see [the upgrade note](#setup) if you're
+  coming from that pair.
+</Info>
+
 ## How it works
 
 Normally, Patrol discovers your tests at runtime: the app is launched once, and the
@@ -102,7 +111,8 @@ app launching, permissions) and holding no tests of its own; the generated
 `.inc`, included after it, declares one subclass per test file.
 
 <Warning>
-  **Upgrading from the first release of this feature.** Two things changed. The
+  **Upgrading from the first release of this feature** (`patrol_cli` 4.7.0 /
+  `patrol` 4.9.0). Two things changed. The
   runner macro pair `PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN`/`_END` is
   replaced by the single `..._STATIC_BASE` shown above, so update
   `RunnerUITests.m` or the build fails to compile. And every generated native test
