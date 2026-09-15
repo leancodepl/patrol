@@ -127,8 +127,11 @@ const defaultScrollMaxIteration = 15;
 /// <https://dart.dev/guides/language/language-tour#callable-classes>
 class PatrolTester {
   /// Creates a new [PatrolTester] which wraps [tester].
-  PatrolTester({required this.tester, required this.config})
-    : patrolLog = PatrolLogWriter();
+  PatrolTester({
+    required this.tester,
+    required this.config,
+    PatrolLogWriter? patrolLog,
+  }) : patrolLog = patrolLog ?? PatrolLogWriter();
 
   /// Global configuration of this tester.
   final PatrolTesterConfig config;
@@ -155,18 +158,61 @@ class PatrolTester {
       !kIsWeb && defaultTargetPlatform == platform;
 
   /// Wraps a function with a log entry for the start and end of the function.
+  ///
+  /// If [description] is provided, it replaces the auto-generated step text in
+  /// the patrol log. On failure, the error is wrapped in [PatrolStepException]
+  /// with that description (e.g. `failed on: …`).
   Future<T> wrapWithPatrolLog<T>({
     required String action,
     String? value,
     Finder? finder,
+    String? description,
     required String color,
     required Future<T> Function() function,
     bool enablePatrolLog = true,
   }) async {
-    if (!(config.printLogs && enablePatrolLog)) {
+    final shouldLog = config.printLogs && enablePatrolLog;
+    if (!shouldLog && description == null) {
       return function();
     }
 
+    final text =
+        description ??
+        _defaultStepText(
+          action: action,
+          value: value,
+          finder: finder,
+          color: color,
+        );
+    if (shouldLog) {
+      patrolLog.log(StepEntry(action: text, status: StepEntryStatus.start));
+    }
+    try {
+      final result = await function();
+      if (shouldLog) {
+        patrolLog.log(StepEntry(action: text, status: StepEntryStatus.success));
+      }
+      return result;
+    } catch (err, st) {
+      if (shouldLog) {
+        patrolLog.log(StepEntry(action: text, status: StepEntryStatus.failure));
+      }
+      if (description != null) {
+        Error.throwWithStackTrace(
+          PatrolStepException(description: description, cause: err),
+          st,
+        );
+      }
+      rethrow;
+    }
+  }
+
+  String _defaultStepText({
+    required String action,
+    String? value,
+    Finder? finder,
+    required String color,
+  }) {
     final finderText =
         finder
             ?.toString(describeSelf: true)
@@ -175,16 +221,7 @@ class PatrolTester {
             .replaceAll(' (ignoring all but first)', '') ??
         '';
     final valueText = value != null ? ' "$value"' : '';
-    final text = '$color$action${AnsiCodes.reset}$valueText$finderText';
-    patrolLog.log(StepEntry(action: text, status: StepEntryStatus.start));
-    try {
-      final result = await function();
-      patrolLog.log(StepEntry(action: text, status: StepEntryStatus.success));
-      return result;
-    } catch (err) {
-      patrolLog.log(StepEntry(action: text, status: StepEntryStatus.failure));
-      rethrow;
-    }
+    return '$color$action${AnsiCodes.reset}$valueText$finderText';
   }
 
   /// Returns a [PatrolFinder] that matches [matching].
@@ -298,6 +335,9 @@ class PatrolTester {
   ///  - [PatrolFinder.waitUntilVisible], which is used to wait for the widget
   ///    to appear
   ///  - [WidgetController.tap]
+  ///
+  /// If [description] is provided, it replaces the auto-generated step text in
+  /// the patrol log and is included in the error message on failure.
   Future<void> tap(
     Finder finder, {
     SettlePolicy? settlePolicy,
@@ -305,6 +345,7 @@ class PatrolTester {
     Duration? settleTimeout,
     Alignment alignment = Alignment.center,
     bool enablePatrolLog = true,
+    String? description,
   }) {
     return TestAsyncUtils.guard(
       () => wrapWithPatrolLog(
@@ -312,6 +353,7 @@ class PatrolTester {
         finder: finder,
         color: AnsiCodes.yellow,
         enablePatrolLog: enablePatrolLog,
+        description: description,
         function: () async {
           final resolvedFinder = await waitUntilVisible(
             finder,
@@ -355,6 +397,9 @@ class PatrolTester {
   ///  - [PatrolFinder.waitUntilVisible], which is used to wait for the widget
   ///    to appear
   ///  - [WidgetController.longPress]
+  ///
+  /// If [description] is provided, it replaces the auto-generated step text in
+  /// the patrol log and is included in the error message on failure.
   Future<void> longPress(
     Finder finder, {
     SettlePolicy? settlePolicy,
@@ -362,6 +407,7 @@ class PatrolTester {
     Duration? settleTimeout,
     Alignment alignment = Alignment.center,
     bool enablePatrolLog = true,
+    String? description,
   }) {
     return TestAsyncUtils.guard(
       () => wrapWithPatrolLog(
@@ -369,6 +415,7 @@ class PatrolTester {
         finder: finder,
         color: AnsiCodes.yellow,
         enablePatrolLog: enablePatrolLog,
+        description: description,
         function: () async {
           final resolvedFinder = await waitUntilVisible(
             finder,
@@ -412,6 +459,9 @@ class PatrolTester {
   ///  - [PatrolFinder.waitUntilVisible], which is used to wait for the widget
   ///    to appear
   ///  - [WidgetTester.enterText]
+  ///
+  /// If [description] is provided, it replaces the auto-generated step text in
+  /// the patrol log and is included in the error message on failure.
   Future<void> enterText(
     Finder finder,
     String text, {
@@ -421,6 +471,7 @@ class PatrolTester {
     Alignment alignment = Alignment.center,
     bool enablePatrolLog = true,
     bool hideKeyboard = true,
+    String? description,
   }) {
     return TestAsyncUtils.guard(
       () => wrapWithPatrolLog(
@@ -429,6 +480,7 @@ class PatrolTester {
         finder: finder,
         color: AnsiCodes.magenta,
         enablePatrolLog: enablePatrolLog,
+        description: description,
         function: () async {
           final resolvedFinder = await waitUntilVisible(
             finder,
@@ -538,6 +590,7 @@ class PatrolTester {
     PatrolFinder finder, {
     Duration? timeout,
     bool enablePatrolLog = true,
+    String? description,
   }) {
     return TestAsyncUtils.guard(
       () => wrapWithPatrolLog<PatrolFinder>(
@@ -545,6 +598,7 @@ class PatrolTester {
         finder: finder,
         color: AnsiCodes.cyan,
         enablePatrolLog: enablePatrolLog,
+        description: description,
         function: () async {
           final duration = timeout ?? config.existsTimeout;
           final end = tester.binding.clock.now().add(duration);
@@ -617,6 +671,7 @@ class PatrolTester {
     Duration? timeout,
     Alignment alignment = Alignment.center,
     bool enablePatrolLog = true,
+    String? description,
   }) {
     return TestAsyncUtils.guard(
       () => wrapWithPatrolLog(
@@ -624,6 +679,7 @@ class PatrolTester {
         finder: finder,
         color: AnsiCodes.cyan,
         enablePatrolLog: enablePatrolLog,
+        description: description,
         function: () async {
           final duration = timeout ?? config.visibleTimeout;
           final end = tester.binding.clock.now().add(duration);
@@ -690,6 +746,7 @@ class PatrolTester {
     Duration? dragDuration,
     SettlePolicy? settlePolicy,
     bool enablePatrolLog = true,
+    String? description,
   }) {
     return TestAsyncUtils.guard(
       () => wrapWithPatrolLog<PatrolFinder>(
@@ -697,6 +754,7 @@ class PatrolTester {
         finder: view,
         color: AnsiCodes.blue,
         enablePatrolLog: enablePatrolLog,
+        description: description,
         function: () async {
           var viewPatrolFinder = PatrolFinder(finder: view, tester: this);
           await viewPatrolFinder.waitUntilVisible(enablePatrolLog: false);
@@ -769,6 +827,7 @@ class PatrolTester {
     SettlePolicy? settlePolicy,
     Alignment alignment = Alignment.center,
     bool enablePatrolLog = true,
+    String? description,
   }) {
     return TestAsyncUtils.guard(
       () => wrapWithPatrolLog<PatrolFinder>(
@@ -776,6 +835,7 @@ class PatrolTester {
         finder: view,
         color: AnsiCodes.blue,
         enablePatrolLog: enablePatrolLog,
+        description: description,
         function: () async {
           final viewPatrolFinder = (await waitUntilVisible(
             PatrolFinder(finder: view, tester: this),
@@ -827,6 +887,7 @@ class PatrolTester {
     Duration? dragDuration,
     SettlePolicy? settlePolicy,
     bool enablePatrolLog = true,
+    String? description,
   }) {
     assert(maxScrolls > 0, 'maxScrolls must be positive number');
     return wrapWithPatrolLog<PatrolFinder>(
@@ -834,6 +895,7 @@ class PatrolTester {
       finder: view,
       color: AnsiCodes.green,
       enablePatrolLog: enablePatrolLog,
+      description: description,
       function: () async {
         final finderView = view ?? find.byType(Scrollable);
 
@@ -901,6 +963,7 @@ class PatrolTester {
     SettlePolicy? settlePolicy,
     Alignment alignment = Alignment.center,
     bool enablePatrolLog = true,
+    String? description,
   }) {
     assert(maxScrolls > 0, 'maxScrolls must be positive number');
     return wrapWithPatrolLog(
@@ -908,6 +971,7 @@ class PatrolTester {
       finder: view,
       color: AnsiCodes.green,
       enablePatrolLog: enablePatrolLog,
+      description: description,
       function: () async {
         final finderView = view ?? find.byType(Scrollable);
         final scrollablePatrolFinder = await PatrolFinder(
