@@ -469,8 +469,9 @@ class IOSTestBackend {
         scheme: options.scheme,
         sdkVersion: sdkVersion,
       );
+      String? previousLifetime;
       if (recordVideo && !interruptible) {
-        await _patchXcTestRunKeepRecordings(xctestRunFile);
+        previousLifetime = await _patchXcTestRunKeepRecordings(xctestRunFile);
       }
 
       final process =
@@ -500,6 +501,12 @@ class IOSTestBackend {
       final exitCode = await process.exitCode;
       patrolLogReader.stopTimer();
       processLogs.kill();
+
+      // The xctestrun is a reusable build artifact (`test-without-building`),
+      // so put the retention policy back once the recordings are in the bundle.
+      if (previousLifetime != null) {
+        await _restoreXcTestRunLifetime(xctestRunFile, previousLifetime);
+      }
 
       // Cleanup video recording manager
       await videoRecordingManager?.dispose();
@@ -772,30 +779,71 @@ class IOSTestBackend {
     return jsonEncode(ids);
   }
 
+  static const _lifetimeKey = 'RunnerUITests:SystemAttachmentLifetime';
+
   /// Makes XCTest keep its per-test screen recording for passing tests too.
+  /// Returns the value to restore afterwards, or `null` if nothing was changed.
   ///
   /// xcodebuild generates the xctestrun with `PreferredScreenCaptureFormat =
   /// screenRecording` but `SystemAttachmentLifetime = deleteOnSuccess`, so
   /// without this only failing tests leave a recording in the `.xcresult`.
   /// Set explicitly rather than assumed: a project's own test plan may say
   /// `keepNever`, and then there would be nothing to extract.
-  Future<void> _patchXcTestRunKeepRecordings(String xctestRunPath) async {
-    const plistKey = 'RunnerUITests:SystemAttachmentLifetime';
+  Future<String?> _patchXcTestRunKeepRecordings(String xctestRunPath) async {
+    final read = await _processManager.run([
+      '/usr/libexec/PlistBuddy',
+      '-c',
+      'Print :$_lifetimeKey',
+      xctestRunPath,
+    ], runInShell: true);
+    final previous = read.stdOut.trim();
+    if (read.exitCode != 0 || previous.isEmpty) {
+      _logger.warn(
+        'Could not read SystemAttachmentLifetime from the xctestrun; only '
+        'failing tests will have a video: ${read.stdErr}',
+      );
+      return null;
+    }
+    if (previous == 'keepAlways') {
+      return null;
+    }
+
+    final set = await _processManager.run([
+      '/usr/libexec/PlistBuddy',
+      '-c',
+      'Set :$_lifetimeKey keepAlways',
+      xctestRunPath,
+    ], runInShell: true);
+    if (set.exitCode != 0) {
+      _logger.warn(
+        'Failed to patch xctestrun SystemAttachmentLifetime; only failing '
+        'tests will have a video: ${set.stdErr}',
+      );
+      return null;
+    }
+    _logger.detail(
+      'Patched xctestrun: SystemAttachmentLifetime $previous -> keepAlways',
+    );
+    return previous;
+  }
+
+  Future<void> _restoreXcTestRunLifetime(
+    String xctestRunPath,
+    String value,
+  ) async {
     final result = await _processManager.run([
       '/usr/libexec/PlistBuddy',
       '-c',
-      'Set :$plistKey keepAlways',
+      'Set :$_lifetimeKey $value',
       xctestRunPath,
     ], runInShell: true);
-
     if (result.exitCode == 0) {
-      _logger.detail(
-        'Patched xctestrun: SystemAttachmentLifetime = keepAlways',
-      );
+      _logger.detail('Restored xctestrun SystemAttachmentLifetime = $value');
     } else {
       _logger.warn(
-        'Failed to patch xctestrun SystemAttachmentLifetime; only failing '
-        'tests will have a video: ${result.stdErr}',
+        'Failed to restore xctestrun SystemAttachmentLifetime to $value; '
+        'later runs of this build keep every screen recording: '
+        '${result.stdErr}',
       );
     }
   }
@@ -902,6 +950,7 @@ class IOSTestBackend {
             ),
             config: videoConfig,
             deviceId: deviceId,
+            dartNamesBySelector: _dartNamesBySelector(),
           );
           if (saved.isEmpty) {
             _logger.warn('No screen recordings were found in the .xcresult.');
@@ -932,6 +981,7 @@ class IOSTestBackend {
     required Directory destination,
     required VideoRecordingConfig config,
     required String deviceId,
+    Map<String, String> dartNamesBySelector = const {},
   }) {
     if (manifest is! List) {
       return const [];
@@ -966,10 +1016,7 @@ class IOSTestBackend {
           continue;
         }
 
-        // `Target/Class/method` or `Target/<file>+<test+name>` (`+` for
-        // spaces): the last segment is what the log reader reports as the test
-        // name, so the file is named like the Android recording of that test.
-        final testName = testId.split('/').last.replaceAll('+', ' ');
+        final testName = _dartTestName(testId, dartNamesBySelector);
         final base = config
             .generateVideoFilename(deviceId: deviceId, testName: testName)
             .replaceAll(RegExp(r'\.mp4$'), '');
@@ -979,7 +1026,7 @@ class IOSTestBackend {
           target = destination.childFile('${base}_$i.mp4');
         }
         destination.createSync(recursive: true);
-        target.writeAsBytesSync(source.readAsBytesSync());
+        source.copySync(target.path);
         saved.add(target.path);
         _logger.detail(
           'Video recording saved for test "$testName": ${target.path}',
@@ -1031,14 +1078,47 @@ class IOSTestBackend {
 
         final testDir = destination.childDirectory(_sanitize(testId))
           ..createSync(recursive: true);
-        testDir
-            .childFile('${_sanitize(name)}_$indexInTest.png')
-            .writeAsBytesSync(source.readAsBytesSync());
+        source.copySync(
+          testDir.childFile('${_sanitize(name)}_$indexInTest.png').path,
+        );
         indexInTest++;
         saved++;
       }
     }
     return saved;
+  }
+
+  /// The Dart test name behind an xcresult [testId], in the `<file> <test>`
+  /// shape the log reader reports on Android, so recordings of the same test
+  /// get the same file name on both platforms.
+  ///
+  /// Runtime runner: `Target/<file>+<test+name>` (`+` for spaces). Static
+  /// runner: `Target/<class>/<method>`, a generated selector that is looked up
+  /// in the build-time manifest; unknown selectors fall back to the method.
+  String _dartTestName(String testId, Map<String, String> dartNamesBySelector) {
+    final parts = testId.split('/');
+    if (parts.length >= 3) {
+      final selector = '${parts[parts.length - 2]}/${parts.last}';
+      final dartName = dartNamesBySelector[selector];
+      if (dartName != null) {
+        return dartName;
+      }
+    }
+    return parts.last.replaceAll('+', ' ');
+  }
+
+  /// `<class>/<method>` selector -> Dart test name for every test in the
+  /// build-time manifest; empty when the build didn't emit one (runtime runner).
+  Map<String, String> _dartNamesBySelector() {
+    final manifest = TestManifest.loadFromBuild(_rootDirectory);
+    if (manifest == null) {
+      return const {};
+    }
+    final names = generatePerFileTestNames(manifest.tests);
+    return {
+      for (var i = 0; i < names.length; i++)
+        names[i].selector: manifest.tests[i].dartName,
+    };
   }
 
   /// Whether [file] has the [magic] bytes at [offset].

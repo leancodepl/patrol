@@ -547,6 +547,50 @@ void main() {
       expect(rootDirectory.childDirectory('screenshots').existsSync(), isFalse);
     });
 
+    test('names static-runner recordings after the Dart test', () async {
+      fs.directory('build/out.xcresult').createSync(recursive: true);
+      fs.file('build/patrol/patrol_test_manifest.json')
+        ..createSync(recursive: true)
+        ..writeAsStringSync('''
+{"group":{"name":"","type":"group","skip":false,"entries":[
+  {"name":"login_test","type":"group","skip":false,"entries":[
+    {"name":"logs in with a valid password","type":"test","skip":false}
+  ]}
+]}}
+''');
+      stubExport(
+        manifest: [
+          {
+            'testIdentifier':
+                'RunnerUITests/PatrolGeneratedTests_login_test/'
+                'test_logs_in_with_a_valid_password',
+            'attachments': [
+              attachment('a', 'Screen Recording 2026-08-04 at 08.49.20.mp4'),
+            ],
+          },
+        ],
+        files: {'a': _mp4Bytes},
+      );
+
+      await iosTestBackend.extractAttachments(
+        xcresultPath: 'build/out.xcresult',
+        videoConfig: const VideoRecordingConfig(
+          enabled: true,
+          outputDirectory: 'videos',
+        ),
+        deviceId: 'sim',
+      );
+
+      final files = rootDirectory
+          .childDirectory('videos')
+          .listSync()
+          .map((e) => e.basename);
+      expect(
+        files.single,
+        matches(RegExp(r'^patrol_logs_in_with_a_valid_password_sim_\d+\.mp4$')),
+      );
+    });
+
     test('one export serves both screenshots and videos', () async {
       fs.directory('build/out.xcresult').createSync(recursive: true);
       stubExport(
