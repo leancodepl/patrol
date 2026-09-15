@@ -261,7 +261,7 @@ Android sharding, and clean per-test names in reports.
 XCUITest has no built-in sharding. Device farms shard it by taking an **explicit
 list of test identifiers** (`Bundle/Class/method`) and splitting it across
 parallel runners — for example SauceLabs' `testListFile` (with
-`shard: concurrency`) or BrowserStack's XCUITest sharding.
+`shard: concurrency`) or [BrowserStack's XCUITest sharding](/documentation/integrations/browserstack#sharding).
 
 With stock Patrol this is impossible: tests are registered at runtime
 (`class_addMethod`) only after the app launches, so no static list of test
