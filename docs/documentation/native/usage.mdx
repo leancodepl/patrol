@@ -83,19 +83,9 @@ final tree = await $.platform.android.getNativeViews(
 ```
 
 Selector-based actions like `tap(AndroidSelector(...))` still go through UiAutomator, which
-skips these nodes as well. To interact with one, tap its coordinates instead. `tapAt` takes
-fractions of the screen, so divide the node's `visibleCenter` by the root node's bounds:
-
-```dart
-final root = tree.roots.first;
-final node = findNodeByText(tree, 'Continue'); // your own tree walk
-await $.platform.android.tapAt(
-  Offset(
-    node.visibleCenter.x / root.visibleBounds.maxX,
-    node.visibleCenter.y / root.visibleBounds.maxY,
-  ),
-);
-```
+skips these nodes as well. To interact with one, tap its coordinates with `tapAt`. Note that
+`tapAt` takes fractions of the **display** size (`uiDevice.displayWidth/Height`), not of the
+root node's bounds, which usually exclude the system bars.
 
 ### iOS-specific actions
 
