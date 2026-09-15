@@ -23,15 +23,25 @@ class VideoRecordingConfig {
   /// Maximum recording time in seconds (max: 180).
   final int timeLimit;
 
-  /// Generates a unique filename for the video recording.
+  /// Generates a unique filename for the video recording. [testName] is the
+  /// full test name as reported by the test run (`<file> <test name>`); the
+  /// leading file part is dropped so the file is named after the test itself.
   String generateVideoFilename({
     required String deviceId,
     required String testName,
   }) {
     final timestamp = DateTime.now().millisecondsSinceEpoch;
-    final sanitizedTestName = testName.replaceAll(RegExp(r'[^\w\-]'), '_');
+    final sanitizedTestName = _stripFilePrefix(
+      testName,
+    ).replaceAll(RegExp(r'[^\w\-]'), '_');
     final sanitizedDeviceId = deviceId.replaceAll(RegExp(r'[^\w\-]'), '_');
     return 'patrol_${sanitizedTestName}_${sanitizedDeviceId}_$timestamp.mp4';
+  }
+
+  /// Drops the first space-separated part (the test file) when there is one.
+  String _stripFilePrefix(String testName) {
+    final parts = testName.split(' ');
+    return parts.length > 1 ? parts.skip(1).join(' ') : testName;
   }
 
   /// Path on the Android device where the video will be temporarily stored.

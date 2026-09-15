@@ -8,7 +8,12 @@ import 'package:patrol_cli/src/crossplatform/video_recording_manager.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:process/process.dart';
 
-/// Manages video recording for individual test cases on iOS devices and simulators.
+/// Records each test case on an iOS simulator with `simctl io recordVideo`.
+///
+/// Used by `patrol develop` only. `patrol test` takes the recordings XCTest
+/// makes itself out of the `.xcresult` instead (see
+/// `IOSTestBackend.extractAttachments`), which also covers physical devices;
+/// develop can't, because the session is killed before XCTest finalizes them.
 class IOSVideoRecordingManager extends VideoRecordingManager {
   IOSVideoRecordingManager({
     required ProcessManager processManager,
@@ -44,33 +49,29 @@ class IOSVideoRecordingManager extends VideoRecordingManager {
     // Stop any existing recording first
     await stopRecording();
 
+    if (_device.real) {
+      _logger.warn(
+        'Video recording is not supported by `patrol develop` on physical iOS '
+        'devices; use `patrol test --record-video` instead.',
+      );
+      return;
+    }
+
     _currentTestName = testName;
     _currentVideoFilename = _config.generateVideoFilename(
       deviceId: _device.id,
-      testName: sanitizeTestName(testName),
+      testName: testName,
     );
 
     _logger
       ..detail('Starting iOS video recording for test: $testName')
       ..detail('Video file: $_currentVideoFilename')
       ..detail('Device ID: ${_device.id}')
-      ..detail('Device is real: ${_device.real}')
       ..detail('Device name: ${_device.name}');
 
     try {
-      if (_device.real) {
-        // For real iOS devices, we need to use different approaches
-        // This is more complex and may require additional tools
-        _logger.warn(
-          'Video recording for real iOS devices is not yet supported. '
-          'Device: ${_device.name} (${_device.id})',
-        );
-        _startRealDeviceRecording();
-      } else {
-        // For iOS simulators, use xcrun simctl
-        _logger.detail('Starting simulator recording with xcrun simctl...');
-        await _startSimulatorRecording();
-      }
+      _logger.detail('Starting simulator recording with xcrun simctl...');
+      await _startSimulatorRecording();
 
       // Give the recording a moment to start and wait for the "Recording started" message
       await Future<void>.delayed(const Duration(milliseconds: 2000));
@@ -160,29 +161,6 @@ class IOSVideoRecordingManager extends VideoRecordingManager {
     }
   }
 
-  /// Starts recording for real iOS device.
-  /// Note: This is more complex and may require additional setup.
-  void _startRealDeviceRecording() {
-    // For real iOS devices, we could use:
-    // 1. QuickTime Player automation (requires GUI)
-    // 2. Third-party tools like tidevice or pymobiledevice3
-    // 3. Xcode's built-in recording capabilities
-
-    // For now, we'll log that real device recording is not yet implemented
-    _logger.warn(
-      'Video recording for real iOS devices is not yet implemented. '
-      'Only iOS Simulator recording is currently supported.',
-    );
-
-    // We could implement this using tidevice if available:
-    // tidevice screenshot --format png > screenshot.png
-    // But for video, it's more complex and would require additional dependencies
-
-    throw UnsupportedError(
-      'Video recording for real iOS devices is not yet implemented',
-    );
-  }
-
   @override
   Future<void> stopRecording() async {
     if (_currentRecordingProcess == null || _currentVideoFilename == null) {
@@ -194,48 +172,41 @@ class IOSVideoRecordingManager extends VideoRecordingManager {
     _logger.detail('Stopping iOS video recording for test: $testName');
 
     try {
-      if (_device.real) {
-        // Handle real device recording stop
-        await _stopRealDeviceRecording();
-      } else {
-        // For simulator, send SIGINT (Control+C equivalent) to stop recording gracefully
-        _logger.detail(
-          'Sending SIGINT to xcrun simctl process for proper termination...',
-        );
+      // Send SIGINT (not SIGTERM) so `simctl` finalizes the .mp4 on exit.
+      _logger.detail(
+        'Sending SIGINT to xcrun simctl process for proper termination...',
+      );
+      _currentRecordingProcess!.kill(io.ProcessSignal.sigint);
 
-        // Send SIGINT (not SIGTERM) so `simctl` finalizes the .mp4 on exit.
-        _currentRecordingProcess!.kill(io.ProcessSignal.sigint);
+      // Force kill if it doesn't exit shortly (a SIGINT during startup is
+      // ignored), so a stuck recording can't hang the run.
+      _logger.detail('Waiting for xcrun simctl process to exit...');
+      final process = _currentRecordingProcess!;
+      final exitCode = await process.exitCode.timeout(
+        const Duration(seconds: 10),
+        onTimeout: () {
+          _logger.warn(
+            'xcrun simctl recordVideo did not exit after SIGINT; force '
+            'killing it. The video for this test may be incomplete.',
+          );
+          process.kill(io.ProcessSignal.sigkill);
+          return -1;
+        },
+      );
+      _logger.detail('xcrun simctl process exited with code: $exitCode');
 
-        // Force kill if it doesn't exit shortly (a SIGINT during startup is
-        // ignored), so a stuck recording can't hang the run.
-        _logger.detail('Waiting for xcrun simctl process to exit...');
-        final process = _currentRecordingProcess!;
-        final exitCode = await process.exitCode.timeout(
-          const Duration(seconds: 10),
-          onTimeout: () {
-            _logger.warn(
-              'xcrun simctl recordVideo did not exit after SIGINT; force '
-              'killing it. The video for this test may be incomplete.',
-            );
-            process.kill(io.ProcessSignal.sigkill);
-            return -1;
-          },
-        );
-        _logger.detail('xcrun simctl process exited with code: $exitCode');
-
-        // Try to ensure simulator state is stable after recording
-        try {
-          await _processManager.run([
-            'xcrun',
-            'simctl',
-            'io',
-            _device.id,
-            'enumerate',
-          ], runInShell: true);
-          _logger.detail('Verified simulator IO state after recording');
-        } catch (err) {
-          _logger.detail('Could not verify simulator state: $err');
-        }
+      // Try to ensure simulator state is stable after recording
+      try {
+        await _processManager.run([
+          'xcrun',
+          'simctl',
+          'io',
+          _device.id,
+          'enumerate',
+        ], runInShell: true);
+        _logger.detail('Verified simulator IO state after recording');
+      } catch (err) {
+        _logger.detail('Could not verify simulator state: $err');
       }
 
       final outputDir = _rootDirectory.childDirectory(_config.outputDirectory);
@@ -279,12 +250,5 @@ class IOSVideoRecordingManager extends VideoRecordingManager {
       _currentVideoFilename = null;
       _currentTestName = null;
     }
-  }
-
-  /// Stops recording for real iOS device.
-  Future<void> _stopRealDeviceRecording() async {
-    // Implementation would depend on the recording method used
-    // For now, this is a placeholder
-    _currentRecordingProcess?.kill();
   }
 }
