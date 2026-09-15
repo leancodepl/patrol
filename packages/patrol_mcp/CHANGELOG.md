@@ -1,4 +1,4 @@
-## Unreleased
+## 0.2.1
 
 - Wait for the previous develop session to finish before starting a new one.
   `quit` followed quickly by `run` could otherwise let the old session's
