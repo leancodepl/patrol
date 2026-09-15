@@ -29,6 +29,10 @@ constraint is on `patrol_cli`; the resolver then picks a `patrol_cli` (and its
 A version conflict means your `patrol` — or a `patrol_cli` you pin directly —
 falls outside that range.
 
+`patrol_cli` carries its own requirement on the `patrol` in your app, and
+checks it before every run: `patrol_cli` 4.8.0 needs `patrol` 4.9.0 or newer.
+See the [compatibility table](/documentation/compatibility-table).
+
 ## Getting Started
 
 See the [full setup guide on GitHub](https://github.com/leancodepl/patrol/blob/master/packages/patrol_mcp/README.md)

@@ -9,7 +9,7 @@
 - Fix the `screenshot` tool on iOS: it now captures to a temp file instead of
   `/dev/stdout`, since `simctl io screenshot` writes atomically and can't
   create its temp file inside `/dev` (#3257).
-- Require `patrol_cli` `^4.8.0`: in 4.6.1 and 4.7.0 hot restart is dead for the
+- Require `patrol_cli` `^4.8.0`, and with it `patrol` 4.9.0 or newer: in 4.6.1 and 4.7.0 hot restart is dead for the
   whole of a flavored `patrol develop` session, which leaves the second `run`
   hanging (#3223).
 - Require `adb ^0.6.1`: earlier versions don't have `Adb.pull`/`Adb.remove`,
