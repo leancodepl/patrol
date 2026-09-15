@@ -29,9 +29,12 @@ constraint is on `patrol_cli`; the resolver then picks a `patrol_cli` (and its
 A version conflict means your `patrol` — or a `patrol_cli` you pin directly —
 falls outside that range.
 
-`patrol_cli` carries its own requirement on the `patrol` in your app, and
-checks it before every run: `patrol_cli` 4.8.0 needs `patrol` 4.9.0 or newer.
-See the [compatibility table](/documentation/compatibility-table).
+`patrol_mcp` uses `patrol_cli` as a library, resolved in your own
+`pubspec.yaml` alongside `patrol`, and both of them pull `patrol_log` — so the
+`patrol_cli` row reaches your `patrol` version as well. `patrol_mcp` 0.2.1
+needs `patrol` 4.7.0 to resolve, and `patrol_cli` checks the app's `patrol`
+before every run, where 4.8.0 accepts 4.9.0 or newer. See the
+[compatibility table](/documentation/compatibility-table).
 
 ## Getting Started
 
