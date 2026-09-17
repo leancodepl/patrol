@@ -190,20 +190,15 @@ jobs:
           flutter-version: ${{ matrix.flutter-version }}
           channel: ${{ matrix.flutter-channel }}
 
-      # Deliberately no `melos bootstrap`. It writes pubspec_overrides.yaml,
-      # which points patrol_finders and patrol_log at the in-repo copies and
-      # would hide a constraint that cannot be satisfied from pub.dev. The
-      # `rm` covers the case of the file arriving some other way.
+      # No `melos bootstrap` on purpose: its pubspec_overrides.yaml would hide a
+      # constraint pub.dev can't satisfy, which is what this job checks.
       - name: flutter pub get, without the workspace overrides
         run: |
           rm -f pubspec_overrides.yaml
           flutter pub get
 
-      # custom_lint runs as a legacy analyzer plugin, and it crashes the
-      # analysis server once the overrides are gone (`Bad state: The analysis
-      # server crashed unexpectedly`). Its rules are enforced by the
-      # `Flutter <version>` job; this job only needs patrol's own code to type
-      # check against the published packages, so drop the plugin here.
+      # custom_lint is a legacy analyzer plugin and crashes the analysis server
+      # without the overrides. Its rules run in the `Flutter <version>` job.
       - name: Drop the custom_lint analyzer plugin
         run: |
           python3 - <<'EOF'
@@ -216,9 +211,8 @@ jobs:
           EOF
           cat analysis_options.yaml
 
-      # `flutter pub publish --dry-run` runs this internally, but discards the
-      # analyzer's stderr and reports only "found the following issue(s)" with
-      # an empty list. Running it here keeps the real output.
+      # `--dry-run` runs this internally but discards the analyzer's stderr,
+      # reporting an empty issue list. Running it here keeps the real output.
       - name: Analyze against the published dependencies
         run: dart analyze lib pubspec.yaml
 
