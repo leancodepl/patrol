@@ -16,7 +16,7 @@ void main() {
       await $(FloatingActionButton).tap();
       expect($(#counterText).text, '1');
 
-      await $(#textField).enterText('Hello, Flutter!');
+      await $('You have entered this text').enterText('Hello, Flutter!');
       expect($('Hello, Flutter!'), findsOneWidget);
 
       $.log('Tapped the button');
