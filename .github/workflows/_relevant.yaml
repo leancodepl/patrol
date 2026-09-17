@@ -1,0 +1,51 @@
+name: _relevant
+
+# Reusable "changes" job. Callers pass a dorny/paths-filter `filters` block and
+# get back `relevant`: 'true' when a PR touches those paths, or on any non-PR
+# event (schedule / workflow_dispatch / push), so the caller's real jobs run.
+# Skipped jobs report success, which keeps the caller's required gate green.
+
+on:
+  workflow_call:
+    inputs:
+      filters:
+        description: A dorny/paths-filter `filters` block with a `relevant:` filter.
+        required: true
+        type: string
+      quantifier:
+        # 'every' (a file must match all patterns) is what makes `!**/*.md`
+        # exclusions actually work; combine positives into one `{a,b}` pattern
+        # when using it. 'some' (default) is for a plain list of alternatives.
+        description: dorny/paths-filter predicate-quantifier ('some' or 'every').
+        required: false
+        type: string
+        default: some
+    outputs:
+      relevant:
+        description: "'true' when the PR is relevant or the event is not a PR."
+        value: ${{ jobs.relevant.outputs.relevant }}
+
+jobs:
+  relevant:
+    name: changes
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      relevant: ${{ steps.decide.outputs.relevant }}
+    steps:
+      - name: Filter paths
+        id: filter
+        if: github.event_name == 'pull_request' || github.event_name == 'pull_request_target'
+        uses: dorny/paths-filter@0e4a8c6effa4802afeda77dc8d303f8176d7dfad # v3.0.4
+        with:
+          predicate-quantifier: ${{ inputs.quantifier }}
+          filters: ${{ inputs.filters }}
+      - name: Decide whether to run
+        id: decide
+        run: |
+          if [ "${{ github.event_name }}" != "pull_request" ] && [ "${{ github.event_name }}" != "pull_request_target" ]; then
+            echo "relevant=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "relevant=${{ steps.filter.outputs.relevant }}" >> "$GITHUB_OUTPUT"
+          fi

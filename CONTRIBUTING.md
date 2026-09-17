@@ -10,7 +10,7 @@ In the PR description mention the issue that this PR resolves. If that issue doe
 
 Use `## Unreleased` title if you're not sure what should be next version number.
 
-Be aware that `test android emulator` and `test android emulator webview` workflows will fails due to insufficient permission of a contributor. Those will have to be re-run by someone with the write access in the repository.
+Be aware that `test android emulator` and `test android emulator webview` run their emulator.wtf job only for PRs whose branch lives in this repository. On a PR from a fork that job is skipped, so it does not fail and the PR is not blocked. Re-running does not change this, since the check is on the head repository, not on the actor who triggered the run. To exercise these workflows on a fork PR, a maintainer runs them from an in-repo branch.
 
 ## Running patrol_cli locally
 
