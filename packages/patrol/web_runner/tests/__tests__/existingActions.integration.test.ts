@@ -642,3 +642,50 @@ test("addCookie - supports additional cookie properties", async ({ browser }) =>
 
   await context.close()
 })
+
+// ---------------------------------------------------------------------------
+// 21. getNativeViews - DOM serialization for the DevTools inspector
+// ---------------------------------------------------------------------------
+test("getNativeViews - serializes the DOM tree through the dispatch layer", async ({ browser }) => {
+  const { context, page, pageManager } = await setup(browser)
+
+  await page.setContent(`
+    <div id="wrapper">
+      Own text
+      <span data-testid="child" role="note" aria-label="child-label">Nested text</span>
+    </div>
+    <button id="off" disabled>Disabled</button>
+    <p id="ghost" style="display: none">Hidden</p>
+    <script>// metadata tag, must be skipped</script>
+  `)
+
+  const result = (await handlePatrolPlatformAction(pageManager, {
+    action: "getNativeViews",
+    params: {},
+  })) as { roots: any[] }
+
+  const [body] = result.roots
+  expect(body.tagName).toBe("BODY")
+  expect(body.childCount).toBe(body.children.length)
+  // SCRIPT is filtered out of children
+  expect(body.children.map((c: any) => c.tagName)).toEqual(["DIV", "BUTTON", "P"])
+
+  const [wrapper, off, ghost] = body.children
+  // Own text nodes only - the span's text must not leak into the parent
+  expect(wrapper.text).toBe("Own text")
+  expect(wrapper.isVisible).toBe(true)
+  expect(wrapper.bounds.width).toBeGreaterThan(0)
+  expect(wrapper.children[0]).toMatchObject({
+    tagName: "SPAN",
+    testId: "child",
+    role: "note",
+    ariaLabel: "child-label",
+    text: "Nested text",
+  })
+
+  expect(off).toMatchObject({ id: "off", isEnabled: false })
+  expect(ghost).toMatchObject({ id: "ghost", isVisible: false })
+  expect(ghost.bounds).toMatchObject({ width: 0, height: 0 })
+
+  await context.close()
+})

@@ -1,3 +1,13 @@
+## Unreleased
+
+- Support the DevTools extension inspector on web: `patrol.getNativeUITree` returns the page's DOM, so
+  with semantics enabled you see the `<flt-semantics>` elements carrying the roles, labels and text that
+  web selectors match.
+- Report the failure details of a failing test in `patrol develop`, not just the failure status.
+- Fix the develop-mode idle loop leaking across hot restarts on web, which flooded the console with
+  assertions from a disposed `EngineFlutterView`.
+- Fix the Playwright develop driver idling forever after `flutter run` closes the browser.
+
 ## 4.10.0
 
 - Build-time test discovery (experimental): replace the `STATIC_BEGIN`/`_END` pair in
