@@ -149,7 +149,10 @@ class DevelopService {
         'patrol develop on web requires Flutter $_minWebDevelopFlutter or '
         'newer, but found $version.\n'
         'Older SDKs report a successful Hot Restart and keep serving the '
-        'previous test bundle, so your changes would silently do nothing.',
+        'previous test bundle, so your changes would silently do nothing.\n'
+        'patrol runs the `flutter` on PATH. If your project pins a newer SDK, '
+        'point patrol at it with --flutter-command, '
+        'e.g. --flutter-command "fvm flutter".',
       );
     }
   }
