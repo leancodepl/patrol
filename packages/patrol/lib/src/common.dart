@@ -278,12 +278,6 @@ void patrolTest(
           reportDevelopException();
           await Future<void>.delayed(const Duration(milliseconds: 10));
         }
-
-        // Still the current generation means the loop ended because the view
-        // went away, which on web is a hot restart that died partway.
-        if (kIsWeb && isCurrentDevelopGeneration(generation)) {
-          reportDeadViewOnce();
-        }
       }
     },
   );

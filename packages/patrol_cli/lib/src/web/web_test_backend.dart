@@ -77,8 +77,6 @@ class WebTestBackend {
   /// waiting for a Chrome that will never come up.
   int? _flutterExitCode;
 
-  bool _deadViewReported = false;
-
   /// Set on quit so subprocess kills aren't surfaced as unexpected exits.
   bool _quitting = false;
 
@@ -466,20 +464,18 @@ class WebTestBackend {
     // Patrol's own develop-mode diagnostics reach us as app console output,
     // which is verbose-only; they are the one thing the user must not miss.
     if (line.startsWith('Patrol: ')) {
-      if (line.contains('destroyed the app view')) {
-        _deadViewReported = true;
-      }
       _logger.warn(line.substring('Patrol: '.length));
       return;
     }
 
-    // Once the view is gone nothing can run, so the scheduler banners and the
-    // "failed" summary that follow are artifacts of the dead view, not results.
-    if (_deadViewReported &&
+    // A restart tears the previous run down mid-flight, so the failure it
+    // reports on the way out belongs to the run being replaced, not to yours.
+    // Only inside that window: a real failure after it must still be shown.
+    if (_restartInFlight &&
         (line.contains('EXCEPTION CAUGHT BY SCHEDULER LIBRARY') ||
             line.contains('Test failed.') ||
             line.contains('Some tests failed.'))) {
-      _logger.detail('Flutter (dead view): $line');
+      _logger.detail('Flutter (restart teardown): $line');
       return;
     }
 
@@ -513,6 +509,9 @@ class WebTestBackend {
       if (browserDebugPort != null)
         '--web-browser-debug-port=$browserDebugPort',
       if (options.webPort != null) '--web-port=${options.webPort}',
+      // dwds traces each hot restart step only under --verbose, so without it
+      // a restart that hangs leaves no record of which step never returned.
+      if (_logger.level == Level.verbose) '--verbose',
       '--target=${options.flutter.target}',
       '--${options.flutter.buildMode.name}',
       // Note: --flavor is not supported for web, so we don't include it
