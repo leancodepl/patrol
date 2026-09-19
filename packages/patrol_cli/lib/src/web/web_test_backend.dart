@@ -19,6 +19,9 @@ import 'package:process/process.dart';
 
 const _kDefaultWebServerTimeoutSeconds = 120;
 
+/// How long a hot restart may run before another "r" is accepted again.
+const _kRestartOutcomeWindow = Duration(seconds: 60);
+
 /// Strips the `[  +12 ms]` prefix that `flutter run --verbose` puts on every
 /// line. Harmless on non-verbose output.
 final _flutterLogPrefix = RegExp(r'^\[[\s\d+ms]*\]\s?');
@@ -60,6 +63,12 @@ class WebTestBackend {
   /// outcome. `flutter run` silently ignores key commands while it is busy, so
   /// without this the user would press "r" and see nothing happen.
   bool _restartInFlight = false;
+
+  DateTime? _restartRequestedAt;
+
+  /// Set once the resident `flutter run` is gone, so the startup sequence stops
+  /// waiting for a Chrome that will never come up.
+  int? _flutterExitCode;
 
   /// Set on quit so subprocess kills aren't surfaced as unexpected exits.
   bool _quitting = false;
@@ -177,6 +186,9 @@ class WebTestBackend {
     _flutterProcess = flutterProcess;
 
     final exited = Completer<void>();
+    // Nothing awaits `exited` until the startup sequence below finishes, so a
+    // crash during it would be an unhandled async error that skips `finally`.
+    unawaited(exited.future.then((_) {}, onError: (Object _) {}));
 
     final stdinSubscription = stdin.listen((event) async {
       if (event.isEmpty) {
@@ -289,11 +301,18 @@ class WebTestBackend {
       return;
     }
     if (_restartInFlight) {
-      _logger.warn('Hot Restart: a restart is already in progress');
-      return;
+      final requestedAt = _restartRequestedAt;
+      if (requestedAt != null &&
+          DateTime.now().difference(requestedAt) < _kRestartOutcomeWindow) {
+        _logger.warn('Hot Restart: a restart is already in progress');
+        return;
+      }
+      // `flutter run` never reported an outcome; don't wedge the session.
+      _restartInFlight = false;
     }
 
     _restartInFlight = true;
+    _restartRequestedAt = DateTime.now();
     _logger.success('Hot Restart for entrypoint ${basename(target)}...');
     process.stdin.add('R'.codeUnits);
     await process.stdin.flush();
@@ -336,6 +355,7 @@ class WebTestBackend {
   Future<void> _watchFlutterRun(Process process, Completer<void> exited) async {
     final debugServiceReady = Completer<void>();
     _debugServiceReady = debugServiceReady;
+    unawaited(debugServiceReady.future.then((_) {}, onError: (Object _) {}));
 
     process.stdout
         .transform(const SystemEncoding().decoder)
@@ -350,6 +370,7 @@ class WebTestBackend {
         .disposedBy(_disposeScope);
 
     process.exitCode.then((exitCode) {
+      _flutterExitCode = exitCode;
       _hotRestartActive = false;
       _restartInFlight = false;
       if (!debugServiceReady.isCompleted) {
@@ -589,6 +610,12 @@ class WebTestBackend {
     final endpoint = Uri.parse('http://127.0.0.1:$debuggerPort/json/version');
 
     while (!await _httpOk(endpoint)) {
+      final exitCode = _flutterExitCode;
+      if (exitCode != null) {
+        throw StateError(
+          'Flutter exited with code $exitCode before Chrome was ready',
+        );
+      }
       if (_flutterProcess == null) {
         throw StateError('Flutter process stopped before Chrome was ready');
       }
