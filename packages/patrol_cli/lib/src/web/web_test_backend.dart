@@ -57,9 +57,14 @@ class WebTestBackend {
 
   Process? _playwrightDevelopProcess;
 
-  /// True once `flutter run` reported that it is accepting key commands, i.e.
-  /// once it is safe to ask it for a hot restart.
+  /// True once the app is up and the Playwright driver is attached to it.
+  /// `flutter run` accepts key commands long before that, and a restart sent
+  /// while the first devFS upload is still in flight kills the session
+  /// (flutter/flutter#182377).
   bool _hotRestartActive = false;
+
+  /// An "r" pressed before the session was attached, replayed once it is.
+  String? _pendingHotRestartTarget;
 
   /// True between asking `flutter run` for a hot restart and it reporting the
   /// outcome. `flutter run` silently ignores key commands while it is busy, so
@@ -234,6 +239,8 @@ class WebTestBackend {
         onLogEntry: onLogEntry,
       );
 
+      _markAttached();
+
       if (openDevtools) {
         await _serveDevtools(options);
       }
@@ -293,13 +300,32 @@ class WebTestBackend {
   ///
   /// The `flush()` matters: without it the byte sits in the pipe buffer and
   /// `flutter run` never sees the key command.
+  /// Opens the session to hot restarts and replays one queued while it booted.
+  void _markAttached() {
+    if (_hotRestartActive) {
+      return;
+    }
+    _hotRestartActive = true;
+    _logger.success('Hot Restart: attached to the app\n$_developKeyCommands');
+
+    final pending = _pendingHotRestartTarget;
+    if (pending != null) {
+      _pendingHotRestartTarget = null;
+      _logger.success('Hot Restart: sending the queued restart');
+      unawaited(_requestHotRestart(pending));
+    }
+  }
+
   Future<void> _requestHotRestart(String target) async {
     final process = _flutterProcess;
     if (process == null) {
       return;
     }
     if (!_hotRestartActive) {
-      _logger.warn('Hot Restart: not attached to the app yet!');
+      _pendingHotRestartTarget = target;
+      _logger.warn(
+        'Hot Restart: not attached to the app yet, will restart once attached',
+      );
       return;
     }
     if (_restartInFlight) {
@@ -406,12 +432,6 @@ class WebTestBackend {
     }
 
     if (line == 'Flutter run key commands.') {
-      if (!_hotRestartActive) {
-        _hotRestartActive = true;
-        _logger.success(
-          'Hot Restart: attached to the app\n$_developKeyCommands',
-        );
-      }
       return;
     }
 
