@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
+import 'package:patrol/src/develop_view_assertion.dart';
 import 'package:patrol/src/devtools_service_extensions/devtools_service_extensions.dart';
 import 'package:patrol/src/global_state.dart' as global_state;
 import 'package:patrol/src/platform/current.dart' as current_platform;
@@ -342,9 +343,16 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
     // widget's `onPressed` - would otherwise be printed nowhere. Dump them to
     // the console like a normal test failure, so `patrol develop` forwards the
     // full stack trace (file and line) instead of swallowing it.
-    if (_isDevelopMode) {
-      FlutterError.dumpErrorToConsole(exception, forceReport: true);
+    if (!_isDevelopMode) {
+      return;
     }
+
+    if (isDisposedViewAssertion(exception.exception)) {
+      reportDeadViewOnce();
+      return;
+    }
+
+    FlutterError.dumpErrorToConsole(exception, forceReport: true);
   }
 }
 

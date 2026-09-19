@@ -1,5 +1,25 @@
-## Unreleased
+## 4.9.0-dev.1
 
+- `patrol develop -d chrome` now uses a real Flutter hot restart instead of relaunching the browser
+  and the Playwright driver on every `r`; one `flutter run` stays alive for the whole session, as on
+  mobile.
+- **Web develop requires Flutter 3.47.0 or newer**, and now exits with an error below it. Older SDKs
+  report a successful Hot Restart and keep serving the previous test bundle, which lives outside
+  `lib/`, so edits would silently do nothing. Fixed by
+  [flutter/flutter#183838](https://github.com/flutter/flutter/pull/183838).
+- Make the Patrol DevTools extension usable in web develop mode. DevTools resolves extensions from a
+  package root derived from the app's entrypoint, which a Flutter web app has none of, so with
+  `--open-devtools` patrol starts its own Dart Tooling Daemon, registers the project as a workspace
+  root and serves DevTools against it. Nothing extra is started without the flag.
+- Report hot restart outcomes in web develop mode, and warn instead of silently dropping an `r`
+  pressed while `flutter run` is still busy.
+- Stop passing `--verbose` to `flutter run` in web develop mode. The Chrome debugging port is chosen
+  up front with `--web-browser-debug-port` instead of being scraped out of verbose output.
+- Surface Patrol's own develop-mode diagnostics on web, which used to be buried with the Flutter
+  logs behind `--verbose`, and stop repeating the engine's render assertions once the app view is
+  gone, since after that they are all the same one and say nothing.
+- Fix `patrol develop` failing to revert the terminal's interactive mode when stdin is already
+  closed.
 - Fix `idevicesyslog` not being scoped to the device under test, so concurrent runs on a host with
   several real iOS devices attached all streamed the same device's log, corrupting the step
   display, `--show-flutter-logs` output and the test summary. (#3245)
