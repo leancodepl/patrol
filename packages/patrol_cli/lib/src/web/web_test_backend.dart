@@ -19,6 +19,9 @@ import 'package:process/process.dart';
 
 const _kDefaultWebServerTimeoutSeconds = 120;
 
+/// Backstop for the teardown window when no replacement run ever starts.
+const _kRestartTeardownWindow = Duration(seconds: 3);
+
 /// How long to assume a hot restart is still running before another "r"
 /// resends it. A warm restart lands in well under a second, and `flutter run`
 /// ignores a redundant key, so erring towards resending costs nothing.
@@ -72,6 +75,21 @@ class WebTestBackend {
   bool _restartInFlight = false;
 
   DateTime? _restartRequestedAt;
+
+  DateTime? _restartSettledAt;
+
+  /// Whether output still belongs to the run a restart is replacing.
+  ///
+  /// The replacement run announcing its first test closes this; the clock is
+  /// only a backstop for a restart after which no run ever starts.
+  bool get _inRestartTeardown {
+    if (_restartInFlight) {
+      return true;
+    }
+    final settled = _restartSettledAt;
+    return settled != null &&
+        DateTime.now().difference(settled) < _kRestartTeardownWindow;
+  }
 
   /// Set once the resident `flutter run` is gone, so the startup sequence stops
   /// waiting for a Chrome that will never come up.
@@ -236,7 +254,12 @@ class WebTestBackend {
         showFlutterLogs: showFlutterLogs,
         hideTestSteps: hideTestSteps,
         clearTestSteps: clearTestSteps,
-        onLogEntry: onLogEntry,
+        onLogEntry: (entry) {
+          if (entry is TestEntry && entry.status == TestEntryStatus.start) {
+            _restartSettledAt = null;
+          }
+          onLogEntry?.call(entry);
+        },
       );
 
       _markAttached();
@@ -450,6 +473,7 @@ class WebTestBackend {
 
     if (line.startsWith('Restarted application in')) {
       _restartInFlight = false;
+      _restartSettledAt = DateTime.now();
       _logger.success(line);
       return;
     }
@@ -468,10 +492,11 @@ class WebTestBackend {
       return;
     }
 
-    // A restart tears the previous run down mid-flight, so the failure it
-    // reports on the way out belongs to the run being replaced, not to yours.
-    // Only inside that window: a real failure after it must still be shown.
-    if (_restartInFlight &&
+    // A restart tears the previous run down mid-flight, so the failures and
+    // render assertions it reports belong to the run being replaced. The last
+    // of them land just after `flutter run` confirms the restart, hence the
+    // grace period. Outside it a real failure must still reach the user.
+    if (_inRestartTeardown &&
         (line.contains('EXCEPTION CAUGHT BY SCHEDULER LIBRARY') ||
             line.contains('Test failed.') ||
             line.contains('Some tests failed.'))) {
