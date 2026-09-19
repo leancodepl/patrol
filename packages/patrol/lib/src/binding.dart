@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
+import 'package:patrol/src/develop_generation.dart';
 import 'package:patrol/src/develop_view_assertion.dart';
 import 'package:patrol/src/devtools_service_extensions/devtools_service_extensions.dart';
 import 'package:patrol/src/global_state.dart' as global_state;
@@ -46,7 +47,8 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
   ///
   /// You most likely don't want to call it yourself.
   PatrolBinding(PlatformAutomator platform)
-    : _serviceExtensions = DevtoolsServiceExtensions(platform) {
+    : _serviceExtensions = DevtoolsServiceExtensions(platform),
+      _developGeneration = _isDevelopMode ? claimDevelopGeneration() : 0 {
     setUp(() {
       if (_isDevelopMode) {
         return;
@@ -145,6 +147,38 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
       PatrolBinding(platform);
     }
     return _instance!;
+  }
+
+  /// The program generation that created this binding.
+  ///
+  /// A web hot restart re-runs `main()` in the same page, so the previous
+  /// binding stays alive. Claiming here, rather than once a test body starts,
+  /// makes the old one stale as early as possible.
+  @internal
+  int get developGeneration => _developGeneration;
+
+  final int _developGeneration;
+
+  bool get _isStaleGeneration =>
+      _isDevelopMode && !isCurrentDevelopGeneration(_developGeneration);
+
+  @override
+  void handleBeginFrame(Duration? rawTimeStamp) {
+    if (_isStaleGeneration) {
+      return;
+    }
+    super.handleBeginFrame(rawTimeStamp);
+  }
+
+  @override
+  void handleDrawFrame() {
+    // `fullyLive` reschedules from here, so a stale binding would otherwise
+    // render into the disposed view forever, once per frame, for the rest of
+    // the session. Returning early stops both the frame and the next one.
+    if (_isStaleGeneration) {
+      return;
+    }
+    super.handleDrawFrame();
   }
 
   @override
