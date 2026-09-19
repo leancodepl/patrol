@@ -12,6 +12,7 @@ class GetNativeUITreeResponse {
 
   late List<IOSNativeView> iOSroots;
   late List<AndroidNativeView> androidRoots;
+  late List<WebNativeView> webRoots;
 
   Map<String, dynamic> toJson() => _$GetNativeUITreeResponseToJson(this);
 }
@@ -73,4 +74,47 @@ class NativeView {
   late List<NativeView> children;
 
   Map<String, dynamic> toJson() => _$NativeViewToJson(this);
+}
+
+/// A DOM element of the page under test.
+///
+/// Kept in sync by hand with `WebNativeView` in package:patrol -- web contracts
+/// aren't part of schema.dart, same as [NativeView] above.
+@JsonSerializable()
+class WebNativeView {
+  WebNativeView();
+
+  factory WebNativeView.fromJson(Map<String, dynamic> json) =>
+      _$WebNativeViewFromJson(json);
+
+  late String tagName;
+  String? id;
+  String? role;
+  String? ariaLabel;
+  String? testId;
+  String? text;
+  late bool isEnabled;
+  late bool isFocused;
+  late bool isVisible;
+  WebViewBounds? bounds;
+  late int childCount;
+  late List<WebNativeView> children;
+
+  Map<String, dynamic> toJson() => _$WebNativeViewToJson(this);
+}
+
+/// The bounding box of a [WebNativeView].
+@JsonSerializable()
+class WebViewBounds {
+  WebViewBounds();
+
+  factory WebViewBounds.fromJson(Map<String, dynamic> json) =>
+      _$WebViewBoundsFromJson(json);
+
+  late double x;
+  late double y;
+  late double width;
+  late double height;
+
+  Map<String, dynamic> toJson() => _$WebViewBoundsToJson(this);
 }
