@@ -181,12 +181,8 @@ void patrolTest(
         web: platformAutomator.web.configure,
       );
 
-      // Claim the app for this run. On web a hot restart re-runs main() in the
-      // same page, so this invalidates the idle loop left behind by the
-      // previous generation. No-op off the web.
-      final generation = constants.hotRestartEnabled
-          ? claimDevelopGeneration()
-          : 0;
+      // The binding claimed this generation when the program started.
+      final generation = patrolBinding.developGeneration;
 
       patrolLog.log(
         TestEntry(
