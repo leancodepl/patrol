@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol/src/binding.dart';
 import 'package:patrol/src/develop_generation.dart';
+import 'package:patrol/src/develop_view_assertion.dart';
 import 'package:patrol/src/global_state.dart' as global_state;
 import 'package:patrol/src/native/native_automator_config.dart';
 import 'package:patrol/src/platform/contracts/contracts.dart';
@@ -230,7 +231,8 @@ void patrolTest(
       // structured status, without ending the Hot Restart session.
       void reportDevelopException() {
         final caughtException = patrolBinding.takeException();
-        if (caughtException == null) {
+        if (caughtException == null ||
+            isDisposedViewAssertion(caughtException)) {
           return;
         }
         patrolLog.log(
