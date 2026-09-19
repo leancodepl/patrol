@@ -77,6 +77,8 @@ class WebTestBackend {
   /// waiting for a Chrome that will never come up.
   int? _flutterExitCode;
 
+  bool _deadViewReported = false;
+
   /// Set on quit so subprocess kills aren't surfaced as unexpected exits.
   bool _quitting = false;
 
@@ -458,6 +460,26 @@ class WebTestBackend {
         line.contains('Failed to recompile application.')) {
       _restartInFlight = false;
       _logger.err('Hot restart failed. Fix the errors above and press "r".');
+      return;
+    }
+
+    // Patrol's own develop-mode diagnostics reach us as app console output,
+    // which is verbose-only; they are the one thing the user must not miss.
+    if (line.startsWith('Patrol: ')) {
+      if (line.contains('destroyed the app view')) {
+        _deadViewReported = true;
+      }
+      _logger.warn(line.substring('Patrol: '.length));
+      return;
+    }
+
+    // Once the view is gone nothing can run, so the scheduler banners and the
+    // "failed" summary that follow are artifacts of the dead view, not results.
+    if (_deadViewReported &&
+        (line.contains('EXCEPTION CAUGHT BY SCHEDULER LIBRARY') ||
+            line.contains('Test failed.') ||
+            line.contains('Some tests failed.'))) {
+      _logger.detail('Flutter (dead view): $line');
       return;
     }
 

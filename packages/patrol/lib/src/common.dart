@@ -286,12 +286,7 @@ void patrolTest(
         // Still the current generation means the loop ended because the view
         // went away, which on web is a hot restart that died partway.
         if (kIsWeb && isCurrentDevelopGeneration(generation)) {
-          debugPrint(
-            'Patrol: the app view is gone and no hot restart completed. A hot '
-            'restart that fails partway destroys it '
-            '(flutter/flutter#182377). Reload the page, or press "r" here to '
-            'restart from the terminal.',
-          );
+          reportDeadViewOnce();
         }
       }
     },
