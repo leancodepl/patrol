@@ -8,6 +8,12 @@
   with semantics enabled you see the `<flt-semantics>` elements carrying the roles, labels and text that
   web selectors match.
 - Report the failure details of a failing test in `patrol develop`, not just the failure status.
+- Stop a web hot restart from leaving the previous run's binding rendering forever. `fullyLive`
+  reschedules frames from `handleDrawFrame`, so every restart used to leave one more binding
+  drawing into the view that restart disposed, at frame rate, for the rest of the session. Over
+  15 restarts that grew from 583 to over 24 000 assertions between restarts, dragged restarts
+  from 300 ms to 5 s and eventually hung the session. A stale binding now stops drawing and
+  stops rescheduling: the same 15 restarts produce about 70 assertions in total.
 - Stop `patrol develop` on web from flooding the console once a hot restart has destroyed the app
   view ([flutter/flutter#182377](https://github.com/flutter/flutter/issues/182377)). The engine
   asserts on every frame requested after that, and the develop idle loop requests one every 10 ms.
