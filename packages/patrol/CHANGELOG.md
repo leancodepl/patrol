@@ -1,5 +1,9 @@
-## Unreleased
+## 4.11.0-dev.1
 
+- **`patrol develop` on web requires Flutter 3.47.0 or newer.** Web Hot Restart needs
+  [flutter/flutter#183838](https://github.com/flutter/flutter/pull/183838), first released in
+  3.47.0; `patrol_cli` now exits with an error below it. Every other platform keeps working on
+  3.32.0.
 - Support the DevTools extension inspector on web: `patrol.getNativeUITree` returns the page's DOM, so
   with semantics enabled you see the `<flt-semantics>` elements carrying the roles, labels and text that
   web selectors match.

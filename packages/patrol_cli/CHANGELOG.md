@@ -1,9 +1,12 @@
-## Unreleased
+## 4.9.0-dev.1
 
 - `patrol develop -d chrome` now uses a real Flutter hot restart instead of relaunching the browser
   and the Playwright driver on every `r`; one `flutter run` stays alive for the whole session, as on
-  mobile. Requires Flutter 3.47 or newer (flutter/flutter#183838); below it hot restart silently
-  serves stale code for the test bundle, which lives outside `lib/`.
+  mobile.
+- **Web develop requires Flutter 3.47.0 or newer**, and now exits with an error below it. Older SDKs
+  report a successful Hot Restart and keep serving the previous test bundle, which lives outside
+  `lib/`, so edits would silently do nothing. Fixed by
+  [flutter/flutter#183838](https://github.com/flutter/flutter/pull/183838).
 - Make the Patrol DevTools extension usable in web develop mode. DevTools resolves extensions from a
   package root derived from the app's entrypoint, which a Flutter web app has none of, so with
   `--open-devtools` patrol starts its own Dart Tooling Daemon, registers the project as a workspace

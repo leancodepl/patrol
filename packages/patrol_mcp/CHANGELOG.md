@@ -1,5 +1,6 @@
-## Unreleased
+## 0.3.0-dev.1
 
+- Requires `patrol_cli` 4.9.0-dev.1 or newer, and with it Flutter 3.47.0 or newer for web develop.
 - Support web develop sessions: the `devices` tool now lists browsers (e.g. `chrome`) and `run`
   accepts them as `device`. Web is never auto-selected, since a browser is rarely what "run the
   test" means when a phone is attached, so pass it explicitly. `native-tree` remains Android and
