@@ -136,6 +136,7 @@ export type TakeNativeScreenshotRequest = PatrolNativeRequestBase<
     tag: string
   }
 >
+export type GetNativeViewsRequest = PatrolNativeRequestBase<"getNativeViews", {}>
 type UnknownRequest = PatrolNativeRequestBase<`unknown-placeholder-${string}`, unknown>
 
 export type PatrolNativeRequest =
@@ -152,6 +153,7 @@ export type PatrolNativeRequest =
   | GetCookiesRequest
   | GetCurrentPageRequest
   | GetCurrentPageUrlRequest
+  | GetNativeViewsRequest
   | GetPagesRequest
   | GoBackRequest
   | GoForwardRequest

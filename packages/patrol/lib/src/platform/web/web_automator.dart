@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:patrol/src/platform/selector.dart' show WebSelector;
 import 'package:patrol/src/platform/web/upload_file_data.dart';
+import 'package:patrol/src/platform/web/web_native_view.dart';
 
 /// Provides functionality to interact with web applications.
 abstract interface class WebAutomator {
@@ -129,4 +130,8 @@ abstract interface class WebAutomator {
   ///
   /// Prefer `$.takeNativeScreenshot(tag)`, which works across platforms.
   Future<void> takeNativeScreenshot(String tag);
+
+  /// Returns the DOM of the page under test, for the Patrol DevTools
+  /// extension's inspector. Not a test step -- it isn't logged as one.
+  Future<WebGetNativeViewsResponse> getNativeViews();
 }

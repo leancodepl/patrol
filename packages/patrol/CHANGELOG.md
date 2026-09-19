@@ -10,6 +10,13 @@
 - Add R8 consumer rules to the Android plugin, so release-mode tests with minification enabled no
   longer need app-side keep rules for Patrol and the test runners, including `AndroidJUnit4` for the
   tests that build-time discovery generates. (#3334)
+- Support the DevTools extension inspector on web: `patrol.getNativeUITree` returns the page's DOM, so
+  with semantics enabled you see the `<flt-semantics>` elements carrying the roles, labels and text that
+  web selectors match.
+- Report the failure details of a failing test in `patrol develop`, not just the failure status.
+- Fix the develop-mode idle loop leaking across hot restarts on web, which flooded the console with
+  assertions from a disposed `EngineFlutterView`.
+- Fix the Playwright develop driver idling forever after `flutter run` closes the browser.
 
 ## 4.11.0
 
