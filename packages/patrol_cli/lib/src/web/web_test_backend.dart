@@ -19,8 +19,10 @@ import 'package:process/process.dart';
 
 const _kDefaultWebServerTimeoutSeconds = 120;
 
-/// How long a hot restart may run before another "r" is accepted again.
-const _kRestartOutcomeWindow = Duration(seconds: 60);
+/// How long to assume a hot restart is still running before another "r"
+/// resends it. A warm restart lands in well under a second, and `flutter run`
+/// ignores a redundant key, so erring towards resending costs nothing.
+const _kRestartOutcomeWindow = Duration(seconds: 5);
 
 /// Strips the `[  +12 ms]` prefix that `flutter run --verbose` puts on every
 /// line. Harmless on non-verbose output.
@@ -307,7 +309,7 @@ class WebTestBackend {
         _logger.warn('Hot Restart: a restart is already in progress');
         return;
       }
-      // `flutter run` never reported an outcome; don't wedge the session.
+      _logger.detail('No outcome for the previous hot restart; resending.');
       _restartInFlight = false;
     }
 
