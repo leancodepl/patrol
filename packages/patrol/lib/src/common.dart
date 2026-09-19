@@ -272,9 +272,17 @@ void patrolTest(
         // once a newer hot-restart generation claims the app or the engine
         // starts tearing the view down, or this loop keeps pumping frames into
         // a disposed EngineFlutterView and floods the console with assertions.
+        // `fullyLive` drives frames itself, and a pump left in flight by a hot
+        // restart never completes, which freezes this run and everything it holds.
+        final selfDriving =
+            patrolBinding.framePolicy ==
+            LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
+
         while (isCurrentDevelopGeneration(generation) &&
             patrolBinding.platformDispatcher.implicitView != null) {
-          await widgetTester.pump();
+          if (!selfDriving) {
+            await widgetTester.pump();
+          }
           reportDevelopException();
           await Future<void>.delayed(const Duration(milliseconds: 10));
         }
