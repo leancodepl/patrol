@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:meta/meta.dart';
+import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
@@ -17,10 +18,30 @@ import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/macos/macos_test_backend.dart' hide BuildMode;
 import 'package:patrol_cli/src/pubspec_reader.dart';
+import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
 import 'package:patrol_cli/src/web/web_test_backend.dart';
 import 'package:patrol_log/patrol_log.dart';
+import 'package:version/version.dart';
+
+const _minWebDevelopFlutter = '3.47.0';
+
+/// Compared against the lowest 3.47 prerelease, so 3.47 betas pass too.
+final _minWebDevelopFlutterVersion = Version.parse(
+  '$_minWebDevelopFlutter-0.0.pre',
+);
+
+/// Whether [flutterVersion] carries flutter/flutter#183838. An unparseable
+/// version passes, so a format change upstream can't block web develop.
+@visibleForTesting
+bool supportsWebHotRestart(String flutterVersion) {
+  try {
+    return Version.parse(flutterVersion) >= _minWebDevelopFlutterVersion;
+  } on Object {
+    return true;
+  }
+}
 
 /// Result of a completed test execution within a develop session.
 class TestCompletionResult {
@@ -110,6 +131,27 @@ class DevelopService {
   /// The Chrome debugger port used by the web develop session.
   String? get webDebuggerPort => _webTestBackend.debuggerPort;
 
+  /// Fails fast when the SDK predates flutter/flutter#183838. Without it a web
+  /// Hot Restart reports success and keeps serving the previous test bundle.
+  void _assertWebHotRestartSupported(FlutterCommand flutterCommand) {
+    final String version;
+    try {
+      version = FlutterVersion.fromCLI(flutterCommand).version;
+    } on Object catch (err) {
+      _logger.detail('Could not read the Flutter version: $err');
+      return;
+    }
+
+    if (!supportsWebHotRestart(version)) {
+      throwToolExit(
+        'patrol develop on web requires Flutter $_minWebDevelopFlutter or '
+        'newer, but found $version.\n'
+        'Older SDKs report a successful Hot Restart and keep serving the '
+        'previous test bundle, so your changes would silently do nothing.',
+      );
+    }
+  }
+
   /// Runs the full develop flow: discover device, read config, bundle test,
   /// build, execute, and attach for hot restart.
   Future<void> run(DevelopOptions options) async {
@@ -162,6 +204,10 @@ class DevelopService {
     // https://github.com/leancodepl/patrol/issues/1974
     if (device.targetPlatform == TargetPlatform.macOS) {
       throwToolExit('macOS is not supported with develop');
+    }
+
+    if (device.targetPlatform == TargetPlatform.web) {
+      _assertWebHotRestartSupported(options.flutterCommand);
     }
 
     // For web, use the bundle file directly (like the test command does),
