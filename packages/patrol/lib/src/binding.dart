@@ -381,8 +381,9 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
       return;
     }
 
+    // A hot restart disposes the view before the new one exists, so frames
+    // already in flight assert (flutter/flutter#182377). Not the user's bug.
     if (isDisposedViewAssertion(exception.exception)) {
-      reportDeadViewOnce();
       return;
     }
 
