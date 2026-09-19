@@ -25,6 +25,8 @@ import 'package:patrol_cli/src/web/web_test_backend.dart';
 import 'package:patrol_log/patrol_log.dart';
 import 'package:version/version.dart';
 
+// TODO: Drop this gate once patrol's pubspec requires Flutter 3.47.0,
+// which makes it unreachable.
 const _minWebDevelopFlutter = '3.47.0';
 
 /// Compared against the lowest 3.47 prerelease, so 3.47 betas pass too.
