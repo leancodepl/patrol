@@ -13,6 +13,9 @@
   asserts on every frame requested after that, and the develop idle loop requests one every 10 ms.
   Patrol now prints a single line telling you to reload the page, and no longer reports those
   assertions as failures of whichever test you happened to be running.
+- Say so when a hot restart dies partway on web and leaves the app view destroyed, instead of
+  leaving a blank page, a failed test and no explanation. Restarting from DevTools rather than
+  from the terminal is the usual way in.
 - Fix the develop-mode idle loop leaking across hot restarts on web, which flooded the console with
   assertions from a disposed `EngineFlutterView`.
 - Fix the Playwright develop driver idling forever after `flutter run` closes the browser.
