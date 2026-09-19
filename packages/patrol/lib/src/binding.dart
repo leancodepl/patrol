@@ -348,21 +348,12 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
     }
 
     if (isDisposedViewAssertion(exception.exception)) {
-      if (!_reportedDisposedView) {
-        _reportedDisposedView = true;
-        debugPrint(
-          'Patrol: a hot restart did not complete and destroyed the app view '
-          '(flutter/flutter#182377). Reload the page to continue. Further '
-          'render assertions from this session are suppressed.',
-        );
-      }
+      reportDeadViewOnce();
       return;
     }
 
     FlutterError.dumpErrorToConsole(exception, forceReport: true);
   }
-
-  var _reportedDisposedView = false;
 }
 
 /// Representing a failure includes the method name and the failure details.

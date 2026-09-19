@@ -15,6 +15,9 @@
   pressed while `flutter run` is still busy.
 - Stop passing `--verbose` to `flutter run` in web develop mode. The Chrome debugging port is chosen
   up front with `--web-browser-debug-port` instead of being scraped out of verbose output.
+- Surface Patrol's own develop-mode diagnostics on web, which used to be buried with the Flutter
+  logs behind `--verbose`, and stop repeating the engine's render assertions once the app view is
+  gone, since after that they are all the same one and say nothing.
 - Fix `patrol develop` failing to revert the terminal's interactive mode when stdin is already
   closed.
 - Fix `idevicesyslog` not being scoped to the device under test, so concurrent runs on a host with
