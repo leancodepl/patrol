@@ -19,6 +19,8 @@
   rather than refusing every later one.
 - Choose the Chrome debugging port up front with `--web-browser-debug-port` instead of scraping it
   out of `flutter run --verbose`, which is now passed only when patrol itself is verbose.
+- Fix a web develop session crashing out, leaving the terminal in raw mode and the Playwright
+  driver orphaned, when `flutter run` died while the session was still starting up.
 - Fix `patrol develop` failing to revert the terminal's interactive mode when stdin is already
   closed.
 - Fix `idevicesyslog` not being scoped to the device under test, so concurrent runs on a host with
