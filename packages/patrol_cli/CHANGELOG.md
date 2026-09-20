@@ -3,25 +3,22 @@
 - `patrol develop -d chrome` now uses a real Flutter hot restart instead of relaunching the browser
   and the Playwright driver on every `r`; one `flutter run` stays alive for the whole session, as on
   mobile.
-- **Web develop requires Flutter 3.47.0 or newer**, and now exits with an error below it. Older SDKs
-  report a successful Hot Restart and keep serving the previous test bundle, which lives outside
-  `lib/`, so edits would silently do nothing. Fixed by
+- **Web develop requires Flutter 3.47.0 or newer**, and exits with an error below it. Older SDKs
+  report a successful Hot Restart and keep serving the previous test bundle, so your edits would
+  silently do nothing. Fixed by
   [flutter/flutter#183838](https://github.com/flutter/flutter/pull/183838).
-- Make the Patrol DevTools extension usable in web develop mode. DevTools resolves extensions from a
-  package root derived from the app's entrypoint, which a Flutter web app has none of, so with
-  `--open-devtools` patrol starts its own Dart Tooling Daemon, registers the project as a workspace
-  root and serves DevTools against it. Nothing extra is started without the flag.
-- Report hot restart outcomes in web develop mode, and warn instead of silently dropping an `r`
-  pressed while `flutter run` is still busy.
-- Stop passing `--verbose` to `flutter run` in web develop mode. The Chrome debugging port is chosen
-  up front with `--web-browser-debug-port` instead of being scraped out of verbose output.
-- Surface Patrol's own develop-mode diagnostics on web, which used to be buried with the Flutter
-  logs behind `--verbose`, and stop reporting the run a hot restart tears down as a failure of
-  yours. A restart aborts the previous run mid-flight, so the "Some tests failed" it prints on
-  the way out belongs to the run being replaced; it is now hidden for the duration of the
-  restart only, so a genuine failure after it is still shown.
-- Pass `--verbose` through to `flutter run` when patrol itself is verbose, so a restart that
-  never returns leaves a record of which step it stopped at.
+- Make the Patrol DevTools extension usable in web develop mode: DevTools cannot discover extensions
+  for a web app, so with `--open-devtools` patrol serves its own instance against a project it
+  registers itself. Nothing extra is started without the flag.
+- Only accept `r` once the app is up, queueing one pressed earlier, as develop already does on
+  mobile. A restart during startup destroys the app view without completing it
+  ([flutter/flutter#182377](https://github.com/flutter/flutter/issues/182377)).
+- Stop reporting the run a hot restart tears down as a failure of yours. A genuine failure, once the
+  replacement run has started, is still shown.
+- Report hot restart outcomes in web develop mode, and resend an `r` that `flutter run` dropped
+  rather than refusing every later one.
+- Choose the Chrome debugging port up front with `--web-browser-debug-port` instead of scraping it
+  out of `flutter run --verbose`, which is now passed only when patrol itself is verbose.
 - Fix `patrol develop` failing to revert the terminal's interactive mode when stdin is already
   closed.
 - Fix `idevicesyslog` not being scoped to the device under test, so concurrent runs on a host with

@@ -1,29 +1,14 @@
 ## 4.11.0-dev.1
 
-- **`patrol develop` on web requires Flutter 3.47.0 or newer.** Web Hot Restart needs
-  [flutter/flutter#183838](https://github.com/flutter/flutter/pull/183838), first released in
-  3.47.0; `patrol_cli` now exits with an error below it. Every other platform keeps working on
-  3.32.0.
-- Support the DevTools extension inspector on web: `patrol.getNativeUITree` returns the page's DOM, so
-  with semantics enabled you see the `<flt-semantics>` elements carrying the roles, labels and text that
-  web selectors match.
-- Report the failure details of a failing test in `patrol develop`, not just the failure status.
-- Stop a web hot restart from leaving the previous run's binding rendering forever. `fullyLive`
-  reschedules frames from `handleDrawFrame`, so every restart used to leave one more binding
-  drawing into the view that restart disposed, at frame rate, for the rest of the session. Over
-  15 restarts that grew from 583 to over 24 000 assertions between restarts, dragged restarts
-  from 300 ms to 5 s and eventually hung the session. A stale binding now stops drawing and
-  stops rescheduling: the same 15 restarts produce about 70 assertions in total.
-- Stop `patrol develop` on web from flooding the console once a hot restart has destroyed the app
-  view ([flutter/flutter#182377](https://github.com/flutter/flutter/issues/182377)). The engine
-  asserts on every frame requested after that, and the develop idle loop requests one every 10 ms.
-  Patrol now prints a single line telling you to reload the page, and no longer reports those
-  assertions as failures of whichever test you happened to be running.
-- Say so once when a hot restart dies partway on web and leaves the app view destroyed, instead of
-  a blank page, a failed test and no explanation. Restarting from DevTools rather than from the
-  terminal is the usual way in.
-- Fix the develop-mode idle loop leaking across hot restarts on web, which flooded the console with
-  assertions from a disposed `EngineFlutterView`.
+- **`patrol develop` on web requires Flutter 3.47.0 or newer**, and `patrol_cli` exits with an error
+  below it. Every other platform keeps working on 3.32.0.
+- Show the page's DOM in the Patrol DevTools extension on web, where the `flt-semantics` elements
+  carry the roles, labels and text that web selectors match.
+- Report a failing test's details in `patrol develop`, not just that it failed.
+- Fix `patrol develop` on web slowing down and eventually hanging after a handful of hot restarts.
+  Each one left the previous run's binding rendering into the view that same restart had disposed,
+  so the console filled with render assertions and restarts went from 300 ms to seconds.
+- Stop those render assertions being reported as failures of whichever test was running.
 - Fix the Playwright develop driver idling forever after `flutter run` closes the browser.
 
 ## 4.10.0
