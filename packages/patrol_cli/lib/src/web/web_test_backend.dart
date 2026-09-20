@@ -485,13 +485,6 @@ class WebTestBackend {
       return;
     }
 
-    // Patrol's own develop-mode diagnostics reach us as app console output,
-    // which is verbose-only; they are the one thing the user must not miss.
-    if (line.startsWith('Patrol: ')) {
-      _logger.warn(line.substring('Patrol: '.length));
-      return;
-    }
-
     // A restart tears the previous run down mid-flight, so the failures and
     // render assertions it reports belong to the run being replaced. The last
     // of them land just after `flutter run` confirms the restart, hence the
