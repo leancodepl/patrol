@@ -497,7 +497,8 @@ class WebTestBackend {
     // of them land just after `flutter run` confirms the restart, hence the
     // grace period. Outside it a real failure must still reach the user.
     if (_inRestartTeardown &&
-        (line.contains('EXCEPTION CAUGHT BY SCHEDULER LIBRARY') ||
+        (line.contains('EXCEPTION CAUGHT') ||
+            line.contains('RethrownDartError') ||
             line.contains('Test failed.') ||
             line.contains('Some tests failed.'))) {
       _logger.detail('Flutter (restart teardown): $line');
