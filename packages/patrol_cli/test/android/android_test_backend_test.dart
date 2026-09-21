@@ -279,6 +279,57 @@ void main() {
       });
     });
 
+    group('prepareSourcesForAttach', () {
+      const flutterOptions = FlutterAppOptions(
+        command: FlutterCommand('flutter'),
+        target: 'patrol_test/test_bundle.dart',
+        buildMode: BuildMode.debug,
+        flavor: 'dev',
+        buildName: null,
+        buildNumber: null,
+        dartDefines: {'FOO': 'bar'},
+        dartDefineFromFilePaths: [],
+      );
+
+      setUp(() {
+        when(() => logger.task(any())).thenReturn(MockTask());
+      });
+
+      // `flutter build bundle` defines no --flavor option and exits with a
+      // usage error if it is passed one.
+      test('never passes --flavor to flutter build bundle', () async {
+        await androidTestBackend.prepareSourcesForAttach(flutterOptions);
+
+        verify(
+          () => processManager.start([
+            'flutter',
+            'build',
+            'bundle',
+            '--debug',
+            '-t',
+            'patrol_test/test_bundle.dart',
+            '--dart-define',
+            'FOO=bar',
+          ], runInShell: true),
+        );
+      });
+
+      test('skips the build when the registrant already exists', () async {
+        rootDirectory
+            .childDirectory('.dart_tool')
+            .childDirectory('flutter_build')
+            .childFile('dart_plugin_registrant.dart')
+            .createSync(recursive: true);
+
+        await androidTestBackend.prepareSourcesForAttach(flutterOptions);
+
+        verifyNever(
+          () =>
+              processManager.start(any(), runInShell: any(named: 'runInShell')),
+        );
+      });
+    });
+
     group('verifyAndroidSdkResolved', () {
       void writeLocalProperties(String contents) {
         rootDirectory.childDirectory('android').childFile('local.properties')
