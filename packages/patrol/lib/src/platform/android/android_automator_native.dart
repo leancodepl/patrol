@@ -547,6 +547,15 @@ class AndroidAutomator extends NativeMobileAutomator
     });
   }
 
+  @override
+  Future<void> takeNativeScreenshot(String tag) async {
+    await wrapRequest('takeNativeScreenshot', () async {
+      await _client.takeNativeScreenshot(
+        AndroidTakeNativeScreenshotRequest(tag: tag),
+      );
+    });
+  }
+
   /// Pick an image from the gallery
   ///
   /// This method opens the gallery and selects a single image.

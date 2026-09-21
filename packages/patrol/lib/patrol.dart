@@ -32,6 +32,8 @@ export 'src/platform/mobile/mobile_automator_config.dart';
 export 'src/platform/patrol_app_service.dart';
 export 'src/platform/platform_automator.dart';
 export 'src/platform/selector.dart';
+export 'src/platform/target_platform.dart'
+    show PatrolTargetPlatform, patrolTargetPlatform;
 export 'src/platform/web/upload_file_data.dart';
 export 'src/platform/web/web_automator.dart';
 export 'src/platform/web/web_automator_config.dart';

@@ -26,6 +26,17 @@ title: BrowserStack
 
         // ...
         ```
+
+      <Info>
+        `BrowserstackPatrolJUnitRunner` only adds a fallback for devices where the
+        instrumentation cannot reach the app on `localhost`: if the first request
+        fails, it retries through the `tun0` interface. Recent BrowserStack devices
+        reach `localhost` fine, so the plain `pl.leancode.patrol.PatrolJUnitRunner`
+        works there too. Use the plain runner when you enable
+        [build-time test discovery](/documentation/ci/build-time-test-discovery) -
+        the generated test classes drive the runner themselves and the fallback
+        gets in their way.
+      </Info>
     </Step>
   </Steps>
   That's it! You can now use `bs_android` to schedule a test run.
@@ -142,6 +153,74 @@ You can follow BrowserStack's docs and/or follow the code of `bs_android` and `b
 After scheduling the test execution, you can check the status of the test execution in the [App Automate dashboard][bs_app_automate_dashboard].
 
 If you need to change the test configuration, check out full list of available devices and OS versions in the [BrowserStack Browsers & Devices][bs_devices].
+
+## Sharding
+
+BrowserStack runs each shard on its own device, in parallel. The two platforms
+shard differently.
+
+### Android
+
+Espresso shards split automatically: add `shards` to the build request and
+BrowserStack distributes the test classes across that many devices.
+
+```json
+"shards": { "numberOfShards": 3 }
+```
+
+This works with runtime discovery (every test is a parameter of your host test
+class) and with build-time discovery (every Dart test file is its own class).
+BrowserStack balances by test count, not duration, so a shard that got the slow
+tests can still hit the session cap - add shards rather than expecting an even split.
+
+### iOS
+
+XCUITest has no automatic split. BrowserStack needs an explicit list of test
+identifiers per shard, and there is nothing to list under runtime discovery: the
+tests are registered only after the app launches. Enable
+[build-time test discovery](/documentation/ci/build-time-test-discovery) first -
+each Dart test then compiles to a `RunnerUITests/PatrolGeneratedTests_<file>/test_<name>`
+method that you can hand to BrowserStack's `only-testing` strategy.
+
+Generate the identifiers from the `.inc` the build wrote, so they stay
+byte-identical to what XCTest discovers, and distribute them round-robin:
+
+```bash
+# After `patrol build ios` with emit_test_manifest enabled.
+ids=$(awk '/^@implementation /{cls=$2} /^- \(void\)test_/{m=$2; sub(/^\(void\)/,"",m); \
+  print "RunnerUITests/" cls "/" m}' ios/RunnerUITests/PatrolGeneratedTests.inc)
+
+shards=3
+shards_json=$(printf '%s\n' "$ids" | jq -R . | jq -s --argjson n "$shards" '{
+  numberOfShards: $n,
+  mapping: [range(0; $n) as $s | {
+    name: ($s | tostring),
+    strategy: "only-testing",
+    values: [to_entries[] | select(.key % $n == $s) | .value]
+  }]
+}')
+```
+
+Then pass it in the `xctestrun-build` request next to the app and test suite:
+
+```json
+"shards": <shards_json>,
+"singleRunnerInvocation": true
+```
+
+<Warning>
+  The identifier format is `RunnerUITests/<class>/<method>` with slashes on
+  BrowserStack real devices - unlike SauceLabs, which wants a dot between the
+  target and the class there. An identifier that matches nothing does not fail
+  the build: the shard installs the runner and sits on a blank screen until
+  BrowserStack's idle timeout kills it. Regenerate the list on every build,
+  because renaming a test or moving it to another file changes its identifier.
+</Warning>
+
+<Info>
+  Don't request more shards than you have tests - BrowserStack still boots a
+  device for an empty shard. A single test needs no sharding at all.
+</Info>
 
 [BrowserStack App Automate]: https://www.browserstack.com/app-automate
 [mobile-tools]: https://github.com/leancodepl/mobile-tools

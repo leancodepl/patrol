@@ -1,6 +1,23 @@
-## Unreleased
+## 4.10.0
 
-- Android: keep third-party `AccessibilityService`s running during the test session again. `AndroidAutomatorConfig.dontSuppressAccessibilityServices` now defaults to `true` (it was effectively `false` since 4.8.0) and is configurable, also via the `PATROL_ANDROID_DONT_SUPPRESS_ACCESSIBILITY_SERVICES` dart-define. (#3227)
+- Build-time test discovery (experimental): replace the `STATIC_BEGIN`/`_END` pair in
+  `RunnerUITests.m` with `PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE(RunnerUITests)`. Requires
+  `patrol_cli` 4.8.0 or newer. See the
+  [docs](https://patrol.leancode.co/documentation/ci/build-time-test-discovery).
+- Add `patrolTargetPlatform`, for deciding whether a test is registered. (#3241)
+- Add opt-in native failure screenshots and `$.takeNativeScreenshot('tag')` on Android. Requires
+  `patrol_cli` 4.8.0 or newer. See the
+  [docs](https://patrol.leancode.co/cli-commands/test#screenshots). (#3222)
+- Add Korean (ko) language support for native OS interactions. (#2303)
+- Fix third-party `AccessibilityService`s being suppressed during the test session, which regressed
+  in 4.8.0. Configurable with `AndroidAutomatorConfig.dontSuppressAccessibilityServices`. (#3227)
+- Fix every test running twice under tools that instrument the APK directly (Firebase Test Lab,
+  saucectl, emulator.wtf, Marathon) with build-time test discovery on Android.
+- Fix a test name containing `/` crashing Android Test Orchestrator. (#3259)
+- Fix a run hanging on a test the app skips or doesn't have. (#3241)
+- Fix `Failure.details` being `null` for exceptions thrown after the test body. (#3252)
+- Fix `pickImageFromGallery` on Android API 36. (#3254)
+- Fix uncaught exceptions passing silently in `patrol develop`. (#3200)
 
 ## 4.9.0
 

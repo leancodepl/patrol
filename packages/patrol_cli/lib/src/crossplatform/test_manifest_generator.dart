@@ -4,6 +4,7 @@ import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/crossplatform/test_manifest.dart';
+import 'package:patrol_cli/src/devices.dart';
 import 'package:process/process.dart';
 
 /// Discovers Dart tests at build time by running a host `flutter test` in
@@ -36,8 +37,9 @@ class TestManifestGenerator {
   /// `+testInvocations`).
   Future<String?> generate(
     FlutterAppOptions flutter,
-    DisposeScope scope,
-  ) async {
+    DisposeScope scope, {
+    required TargetPlatform targetPlatform,
+  }) async {
     final manifestFile = _rootDirectory
         .childDirectory('build')
         .childDirectory('patrol')
@@ -52,6 +54,7 @@ class TestManifestGenerator {
         await _processManager.start(
             flutter.toFlutterTestDiscoveryInvocation(
               manifestOutputPath: manifestFile.absolute.path,
+              targetPlatform: targetPlatform,
             ),
             runInShell: true,
             workingDirectory: _rootDirectory.path,

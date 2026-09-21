@@ -3,10 +3,12 @@ import Foundation
 /// Simplified objective-c RunDartTestResponse model that we use in PatrolIntegrationTestRunner.h
 @objc(ObjCRunDartTestResponse) public class ObjCRunDartTestResponse: NSObject {
   @objc public dynamic let passed: Bool
+  @objc public dynamic let skipped: Bool
   @objc public dynamic let details: String?
 
-  @objc public init(passed: Bool, details: String?) {
+  @objc public init(passed: Bool, skipped: Bool, details: String?) {
     self.passed = passed
+    self.skipped = skipped
     self.details = details
   }
 }
@@ -84,6 +86,7 @@ import Foundation
       case .success(let result):
         let testResponse = ObjCRunDartTestResponse(
           passed: result.result == .success,
+          skipped: result.result == .skipped,
           details: result.details
         )
         completion(testResponse, nil)
