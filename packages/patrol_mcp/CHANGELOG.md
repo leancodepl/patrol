@@ -1,3 +1,9 @@
+## Unreleased
+
+- Fix the `devices` tool and device auto-selection in `run` on Windows:
+  `flutter devices --machine` is now spawned through a shell, since `flutter`
+  is a `.bat` there and could not be started directly (#3296).
+
 ## 0.2.1
 
 - Wait for the previous develop session to finish before starting a new one.
