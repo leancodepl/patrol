@@ -13,8 +13,6 @@ import 'package:patrol_cli/patrol_cli.dart'
 Future<List<Device>> listAttachedDevices({
   required FlutterCommand flutterCommand,
 }) async {
-  // On Windows `flutter` is a `.bat`, and a batch file only starts through a
-  // shell.
   final result = await Process.run(flutterCommand.executable, [
     ...flutterCommand.arguments,
     'devices',
