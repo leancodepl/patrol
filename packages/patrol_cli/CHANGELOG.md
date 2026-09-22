@@ -1,12 +1,7 @@
-## Unreleased
+## 4.9.0-dev.2
 
-- Add `patrol build web`, which compiles the test app into a self-contained directory (`app/` plus a
-  copy of the Playwright runner) that runs on machines with neither Flutter nor a resolved pub cache.
-  It refuses `--profile` and `--release` without `--force`: outside debug the semantics tree is gone
-  and the tests pass without touching the app.
-- `patrol test-without-building --input <dir>` runs that directory. Patrol serves the app itself,
-  with the MIME types and cross-origin headers `flutter run` sends, and accepts the `--web-*` options
-  that shape a run, so the same artifact can be sharded across machines.
+- Add `patrol build web` and `patrol test-without-building --input`: build a web test app once, run
+  it many times.
 
 ## 4.9.0-dev.1
 
