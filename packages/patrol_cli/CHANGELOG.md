@@ -30,6 +30,13 @@
   driver orphaned, when `flutter run` died while the session was still starting up.
 - Fix `patrol develop` failing to revert the terminal's interactive mode when stdin is already
   closed.
+- Add `patrol build web`, which compiles the test app into a self-contained directory (`app/` plus a
+  copy of the Playwright runner) that runs on machines with neither Flutter nor a resolved pub cache.
+  It refuses `--profile` and `--release` without `--force`: outside debug the semantics tree is gone
+  and the tests pass without touching the app.
+- `patrol test-without-building --input <dir>` runs that directory. Patrol serves the app itself,
+  with the MIME types and cross-origin headers `flutter run` sends, and accepts the `--web-*` options
+  that shape a run, so the same artifact can be sharded across machines.
 
 ## 4.9.0
 
