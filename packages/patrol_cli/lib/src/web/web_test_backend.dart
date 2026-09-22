@@ -103,11 +103,11 @@ class WebTestBackend {
 
   String? _debugServiceUri;
 
-  Future<void> build(WebAppOptions options) async {
+  Future<void> build(WebAppOptions options, {String? output}) async {
     _logger.detail('Building web app for testing...');
 
     final result = await _processManager.run(
-      options.toFlutterBuildInvocation(),
+      options.toFlutterBuildInvocation(output: output),
     );
 
     if (result.exitCode != 0) {
@@ -123,6 +123,32 @@ class WebTestBackend {
   Future<void> buildForDevelop(WebAppOptions options) async {
     // this is just noop, because `flutter run` already builds the web app
   }
+
+  /// Runs an already-built app, served at [baseUrl], with the Playwright runner
+  /// in [runnerPath].
+  ///
+  /// Nothing is bundled, compiled or resolved here, so this works on a machine
+  /// that has Node but no Flutter.
+  Future<void> executePrebuilt(
+    WebAppOptions options, {
+    required String baseUrl,
+    required String runnerPath,
+    bool showFlutterLogs = false,
+    bool hideTestSteps = false,
+    bool clearTestSteps = false,
+  }) {
+    return _runPlaywrightTests(
+      baseUrl,
+      options,
+      runnerPath: runnerPath,
+      showFlutterLogs: showFlutterLogs,
+      hideTestSteps: hideTestSteps,
+      clearTestSteps: clearTestSteps,
+    );
+  }
+
+  /// The `web_runner` directory inside the resolved patrol package.
+  Future<String> resolveWebRunnerPath() => _getWebRunnerPath();
 
   Future<void> execute(
     WebAppOptions options,
@@ -714,14 +740,14 @@ class WebTestBackend {
     required bool showFlutterLogs,
     required bool hideTestSteps,
     required bool clearTestSteps,
+    String? runnerPath,
   }) async {
     _logger.info('Running Playwright tests against: $baseUrl');
     final completer = Completer<void>();
 
     await _disposeScope.run((scope) async {
-      await _ensureWebRunnerExists();
-
-      final webRunnerPath = await _getWebRunnerPath();
+      final webRunnerPath = runnerPath ?? await _getWebRunnerPath();
+      _ensureWebRunnerExists(webRunnerPath);
 
       await _ensureNodeDependencies(webRunnerPath);
 
@@ -813,8 +839,8 @@ class WebTestBackend {
   }) async {
     _logger.info('Running Playwright tests using debugger on port: $port');
 
-    await _ensureWebRunnerExists();
     final webRunnerPath = await _getWebRunnerPath();
+    _ensureWebRunnerExists(webRunnerPath);
     await _ensureNodeDependencies(webRunnerPath);
 
     final testResultsDir =
@@ -905,8 +931,7 @@ class WebTestBackend {
     }
   }
 
-  Future<void> _ensureWebRunnerExists() async {
-    final webRunnerPath = await _getWebRunnerPath();
+  void _ensureWebRunnerExists(String webRunnerPath) {
     final webRunnerDir = Directory(webRunnerPath);
 
     if (!webRunnerDir.existsSync()) {
