@@ -509,6 +509,41 @@
     }
   }
 
+  class SystemDialogMonitor: NSObject, XCTestObservation {
+    private static let observer = SystemDialogMonitor()
+
+    private static let localNetwork = "to find devices on local networks"
+
+    static func register() {
+      XCTestObservationCenter.shared.addTestObserver(observer)
+    }
+
+    func testCaseWillStart(_ testCase: XCTestCase) {
+      testCase.addUIInterruptionMonitor(withDescription: "Local Network prompt") { dialog in
+        let prompt = dialog.descendants(matching: .staticText)
+          .matching(
+            NSPredicate(
+              format: "value CONTAINS[c] %@ OR label CONTAINS[c] %@",
+              Self.localNetwork,
+              Self.localNetwork
+            )
+          )
+        let allow = (try? Localization.getLocalizedString(key: "allow")) ?? "Allow"
+        let accept = dialog.descendants(matching: .button)
+          .matching(NSPredicate(format: "label == %@", allow))
+          .firstMatch
+
+        guard prompt.firstMatch.exists, accept.exists else {
+          return false
+        }
+
+        Logger.shared.i("Accepting the Local Network prompt")
+        accept.click()
+        return true
+      }
+    }
+  }
+
   extension XCUIElement {
     fileprivate func forceClick() {
       if self.isHittable {
