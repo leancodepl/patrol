@@ -102,8 +102,7 @@
             app: app,
             selector: selector,
             index: selector.instance ?? 0,
-            timeout: timeout ?? self.timeout,
-            requireHittable: true)
+            timeout: timeout ?? self.timeout)
         else {
           throw PatrolError.viewNotExists(view)
         }
@@ -387,11 +386,7 @@
     private func waitFor(query: XCUIElementQuery, index: Int, timeout: TimeInterval)
       -> XCUIElement?
     {
-      waitFor(
-        index: index,
-        timeout: timeout,
-        requireHittable: false
-      ) {
+      waitFor(index: index, timeout: timeout) {
         query
       }
     }
@@ -403,14 +398,9 @@
       app: XCUIApplication,
       selector: IOSSelector,
       index: Int,
-      timeout: TimeInterval,
-      requireHittable: Bool
+      timeout: TimeInterval
     ) -> XCUIElement? {
-      waitFor(
-        index: index,
-        timeout: timeout,
-        requireHittable: requireHittable
-      ) {
+      waitFor(index: index, timeout: timeout) {
         self.queryForTap(app: app, selector: selector)
       }
     }
@@ -419,16 +409,13 @@
     private func waitFor(
       index: Int,
       timeout: TimeInterval,
-      requireHittable: Bool,
       query: () -> XCUIElementQuery
     ) -> XCUIElement? {
       var foundElement: XCUIElement?
       let startTime = Date()
 
       while Date().timeIntervalSince(startTime) < timeout {
-        let elements = query().allElementsBoundByIndex.filter { element in
-          element.exists && (!requireHittable || element.isHittable)
-        }
+        let elements = query().allElementsBoundByIndex.filter { $0.exists }
         if index < elements.count {
           foundElement = elements[index]
           break

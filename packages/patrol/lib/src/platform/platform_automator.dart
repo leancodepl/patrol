@@ -69,7 +69,7 @@ class PlatformAutomatorConfig {
 
     /// Bundle identifier of the iOS application under test.
     ///
-    /// iOS only. Use [macosBundleId] for macOS.
+    /// iOS only. Use `macosBundleId` for macOS.
     String? bundleId,
 
     /// Bundle identifier of the macOS application under test.
@@ -284,11 +284,6 @@ class PlatformAutomator {
   /// a no-op elsewhere.
   Future<void> takeNativeScreenshot(String tag) async {
     await action.maybe(android: () => android.takeNativeScreenshot(tag));
-  }
-
-  /// None of the native actions are supported on MacOS, so we will just always throw.
-  static T _throwOnMacOS<T>() {
-    throw UnsupportedError('MacOS native actions are not supported');
   }
 }
 

@@ -6,10 +6,10 @@ void main() {
   patrol('dismisses native NSAlert with macos automator', ($) async {
     await createApp($);
 
+    final showAlertButton = $(K.showNativeAlertButton);
+
     // Avoid settling: NSAlert.runModal blocks until the alert is dismissed.
-    await $(K.showNativeAlertButton).scrollTo().tap(
-      settlePolicy: SettlePolicy.noSettle,
-    );
+    await showAlertButton.scrollTo().tap(settlePolicy: SettlePolicy.noSettle);
 
     expect(await $.platform.macos.isAlertVisible(), isTrue);
     await $.platform.macos.tapAlertButton('OK');
