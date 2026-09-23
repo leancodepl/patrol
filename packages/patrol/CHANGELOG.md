@@ -1,5 +1,8 @@
 ## 4.10.0
 
+- Add the optional self-instrumenting Android `:patrolTest` layout, which runs
+  JUnit outside the app process. The in-app `androidTest` layout remains
+  supported.
 - Build-time test discovery (experimental): replace the `STATIC_BEGIN`/`_END` pair in
   `RunnerUITests.m` with `PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE(RunnerUITests)`. Requires
   `patrol_cli` 4.8.0 or newer. See the

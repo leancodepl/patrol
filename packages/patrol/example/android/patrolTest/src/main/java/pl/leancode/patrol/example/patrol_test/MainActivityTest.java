@@ -1,4 +1,4 @@
-package pl.leancode.patrol.example;
+package pl.leancode.patrol.example.patrol_test;
 
 import androidx.test.platform.app.InstrumentationRegistry;
 import org.junit.Test;
@@ -11,8 +11,9 @@ import pl.leancode.patrol.PatrolJUnitRunner;
 public class MainActivityTest {
     @Parameters(name = "{0}")
     public static Object[] testCases() {
-        PatrolJUnitRunner instrumentation = (PatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
-        instrumentation.setUp(MainActivity.class);
+        PatrolJUnitRunner instrumentation =
+                (PatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
+        instrumentation.setUp();
         instrumentation.waitForPatrolAppService();
         return instrumentation.listDartTests();
     }
@@ -25,7 +26,8 @@ public class MainActivityTest {
 
     @Test
     public void runDartTest() {
-        PatrolJUnitRunner instrumentation = (PatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
+        PatrolJUnitRunner instrumentation =
+                (PatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
         instrumentation.runDartTest(dartTestName);
     }
 }
