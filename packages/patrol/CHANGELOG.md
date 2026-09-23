@@ -1,3 +1,9 @@
+## Unreleased
+
+- Bundle the Patrol [agent skills](https://github.com/leancodepl/patrol/tree/master/skills) with
+  the package. Install them with `dart run skills@ get --agent claude -p patrol --all` (or
+  `--agent cursor`, …).
+
 ## 4.10.0
 
 - Build-time test discovery (experimental): replace the `STATIC_BEGIN`/`_END` pair in
