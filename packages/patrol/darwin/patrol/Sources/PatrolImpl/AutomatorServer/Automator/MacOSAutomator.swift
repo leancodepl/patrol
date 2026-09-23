@@ -529,11 +529,24 @@
             )
           )
         let allow = (try? Localization.getLocalizedString(key: "allow")) ?? "Allow"
-        let accept = dialog.descendants(matching: .button)
-          .matching(NSPredicate(format: "label == %@", allow))
-          .firstMatch
+        let allowPredicate = NSPredicate(
+          format: "label == %@ OR title == %@ OR value == %@",
+          allow,
+          allow,
+          allow
+        )
+        let buttons = dialog.descendants(matching: .button)
+        let accept = buttons.matching(allowPredicate).firstMatch
 
-        guard prompt.firstMatch.exists, accept.exists else {
+        guard prompt.firstMatch.exists else {
+          return false
+        }
+
+        guard accept.exists else {
+          let seen = buttons.allElementsBoundByIndex.map {
+            "\($0.identifier)/\($0.label)/\($0.title)"
+          }
+          Logger.shared.i("No '\(allow)' button in the Local Network prompt, saw: \(seen)")
           return false
         }
 
