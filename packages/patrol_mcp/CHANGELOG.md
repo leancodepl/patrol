@@ -1,3 +1,7 @@
+## Unreleased
+
+- Fix the `devices` tool and device auto-selection in `run` on Windows (#3296).
+
 ## 0.2.1
 
 - Wait for the previous develop session to finish before starting a new one.
