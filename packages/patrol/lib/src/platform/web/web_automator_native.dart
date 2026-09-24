@@ -1,7 +1,6 @@
 import 'dart:collection';
 import 'dart:ui';
 
-import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/src/platform/web/patrol_app_service_web.dart';
 import 'package:patrol/src/platform/web/upload_file_data.dart';
 import 'package:patrol/src/platform/web/web_automator.dart' as web_automator;

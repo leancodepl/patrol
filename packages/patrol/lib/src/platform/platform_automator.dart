@@ -1,4 +1,5 @@
-import 'package:flutter_test/flutter_test.dart';
+import 'dart:ui';
+
 import 'package:patrol/src/platform/android/android_automator.dart';
 import 'package:patrol/src/platform/android/android_automator_config.dart';
 import 'package:patrol/src/platform/android/android_automator_empty.dart'
