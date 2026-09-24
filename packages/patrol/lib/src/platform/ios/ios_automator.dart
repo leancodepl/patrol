@@ -218,6 +218,10 @@ abstract interface class IOSAutomator implements MobileAutomator {
     String? appId,
   });
 
+  /// Captures a native screenshot tagged with [tag] and attaches it to the
+  /// running test's `.xcresult` (for a device farm to collect).
+  Future<void> takeNativeScreenshot(String tag);
+
   /// Take and confirm the photo
   ///
   /// This method taps on the camera shutter button to take a photo, then taps

@@ -492,6 +492,10 @@ public struct AndroidTakeNativeScreenshotRequest: Codable {
   public var tag: String
 }
 
+public struct IOSTakeNativeScreenshotRequest: Codable {
+  public var tag: String
+}
+
 public struct IOSTakeCameraPhotoRequest: Codable {
   public var shutterButtonSelector: IOSSelector?
   public var doneButtonSelector: IOSSelector?

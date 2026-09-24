@@ -1,3 +1,9 @@
+## Unreleased
+
+- Add native screenshots on iOS: `screenshot_on_failure: true` and `$.takeNativeScreenshot('tag')`
+  now work on simulators and physical devices. See the
+  [docs](https://patrol.leancode.co/cli-commands/test#ios). (#3271)
+
 ## 4.10.0
 
 - Build-time test discovery (experimental): replace the `STATIC_BEGIN`/`_END` pair in
