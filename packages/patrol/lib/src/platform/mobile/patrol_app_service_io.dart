@@ -183,6 +183,15 @@ class PatrolAppService extends PatrolAppServiceServer {
   @override
   Future<ListDartTestsResponse> listDartTests() async {
     print('PatrolAppService.listDartTests() called');
+
+    final invalidNames = namesWithPathSeparator(topLevelDartTestGroup);
+    if (invalidNames.isNotEmpty) {
+      final message = pathSeparatorNameError(invalidNames);
+      _patrolLog.log(ErrorEntry(message: message));
+
+      throw StateError(message);
+    }
+
     return ListDartTestsResponse(group: topLevelDartTestGroup);
   }
 

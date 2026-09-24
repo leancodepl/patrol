@@ -205,7 +205,8 @@ video into the iOS `.xcresult`. Pull it from the native artifacts the same way a
 ### Screenshots
 
 Patrol can capture native screenshots on Android and iOS — automatically on test
-failure (opt-in) and on demand from a test:
+failure (opt-in) and on demand from a test. On Android this requires `patrol_cli`
+4.8.0 and `patrol` 4.10.0 or newer:
 
 - Enable failure screenshots by adding `screenshot_on_failure: true` to the
   `patrol` section of your `pubspec.yaml`.

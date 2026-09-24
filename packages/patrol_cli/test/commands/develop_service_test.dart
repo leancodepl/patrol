@@ -2,13 +2,16 @@ import 'dart:async';
 
 import 'package:file/memory.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/commands/develop_options.dart';
 import 'package:patrol_cli/src/commands/develop_service.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
+import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart' show BuildMode;
 import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
+import 'package:patrol_log/patrol_log.dart';
 import 'package:test/test.dart';
 
 import '../src/mocks.dart';
@@ -41,6 +44,13 @@ void main() {
       id: 'iphone-17-pro',
       targetPlatform: TargetPlatform.iOS,
       real: true,
+    );
+
+    const iosSimulator = Device(
+      name: 'iPhone 17 Pro',
+      id: 'iphone-17-pro-simulator',
+      targetPlatform: TargetPlatform.iOS,
+      real: false,
     );
 
     setUpAll(() {
@@ -140,22 +150,24 @@ void main() {
       when(() => androidTestBackend.build(any())).thenAnswer((_) async {});
     });
 
-    DevelopService buildService() => DevelopService(
-      deviceFinder: deviceFinder,
-      testFinderFactory: testFinderFactory,
-      testBundler: testBundler,
-      dartDefinesReader: dartDefinesReader,
-      compatibilityChecker: compatibilityChecker,
-      pubspecReader: pubspecReader,
-      androidTestBackend: androidTestBackend,
-      iosTestBackend: iosTestBackend,
-      macosTestBackend: macosTestBackend,
-      webTestBackend: webTestBackend,
-      flutterTool: flutterTool,
-      logger: logger,
-      stdin: const Stream.empty(),
-      onTestsCompleted: (result) => _lastResult = result,
-    );
+    DevelopService buildService({void Function(Entry entry)? onLogEntry}) =>
+        DevelopService(
+          deviceFinder: deviceFinder,
+          testFinderFactory: testFinderFactory,
+          testBundler: testBundler,
+          dartDefinesReader: dartDefinesReader,
+          compatibilityChecker: compatibilityChecker,
+          pubspecReader: pubspecReader,
+          androidTestBackend: androidTestBackend,
+          iosTestBackend: iosTestBackend,
+          macosTestBackend: macosTestBackend,
+          webTestBackend: webTestBackend,
+          flutterTool: flutterTool,
+          logger: logger,
+          stdin: const Stream.empty(),
+          onTestsCompleted: (result) => _lastResult = result,
+          onLogEntry: onLogEntry,
+        );
 
     const options = DevelopOptions(
       target: 'onboarding_test.dart',
@@ -198,6 +210,7 @@ void main() {
             dartDefines: any(named: 'dartDefines'),
             openDevtools: any(named: 'openDevtools'),
             attachUsingUrl: any(named: 'attachUsingUrl'),
+            debugUrl: any(named: 'debugUrl'),
             forwardFlutterLogs: any(named: 'forwardFlutterLogs'),
             onQuit: any(named: 'onQuit'),
           ),
@@ -250,6 +263,7 @@ void main() {
             dartDefines: any(named: 'dartDefines'),
             openDevtools: any(named: 'openDevtools'),
             attachUsingUrl: any(named: 'attachUsingUrl'),
+            debugUrl: any(named: 'debugUrl'),
             forwardFlutterLogs: any(named: 'forwardFlutterLogs'),
             onQuit: any(named: 'onQuit'),
           ),
@@ -365,41 +379,76 @@ void main() {
       expect((await built.future).emitTestManifest, isFalse);
     });
 
-    group('iOS logs', () {
-      /// Runs a develop session on [iosDevice] and reports where the app's
-      /// logs were routed. The simulator keeps `flutter logs` whatever the
-      /// flavor, because attach reads the VM service URL from them.
-      Future<({bool fromFlutterLogs, bool fromPatrol})> runOnIos({
-        required String? flavor,
-      }) async {
-        bool? fromFlutterLogs;
-        bool? fromPatrol;
+    group('with prebuilt APKs', () {
+      const prebuiltOptions = DevelopOptions(
+        target: 'onboarding_test.dart',
+        flutterCommand: FlutterCommand('flutter'),
+        buildMode: BuildMode.debug,
+        testServerPort: 8081,
+        appServerPort: 8080,
+        generateBundle: false,
+        uninstall: false,
+        checkCompatibility: false,
+        prebuiltApksDir: '/apks',
+        videoConfig: VideoRecordingConfig(
+          enabled: true,
+          outputDirectory: 'videos',
+        ),
+      );
+
+      late Completer<void> attachCompleter;
+      late Completer<void> backendExit;
+      bool Function()? backendAcceptLogEntries;
+      var backendStarted = false;
+      var hotRestarts = 0;
+
+      setUpAll(() {
+        registerFallbackValue(
+          const FlutterAppOptions(
+            command: FlutterCommand('flutter'),
+            target: 'patrol_test/test_bundle.dart',
+            flavor: null,
+            buildMode: BuildMode.debug,
+            dartDefines: <String, String>{},
+            dartDefineFromFilePaths: <String>[],
+            buildName: null,
+            buildNumber: null,
+          ),
+        );
+      });
+
+      setUp(() {
+        attachCompleter = Completer<void>();
+        backendExit = Completer<void>();
+        backendAcceptLogEntries = null;
+        backendStarted = false;
+        hotRestarts = 0;
 
         when(
-          () => deviceFinder.find(
-            any(),
-            flutterCommand: any(named: 'flutterCommand'),
+          () => androidTestBackend.prepareSourcesForAttach(any()),
+        ).thenAnswer((_) async {});
+        when(
+          () => androidTestBackend.installPrebuiltApks(
+            apksDir: any(named: 'apksDir'),
+            device: any(named: 'device'),
           ),
-        ).thenAnswer((_) async => [iosDevice]);
-        when(() => iosTestBackend.build(any())).thenAnswer((_) async {});
+        ).thenAnswer((_) async {});
         when(
-          () => iosTestBackend.getInstalledAppsEnvVariable(any()),
-        ).thenAnswer((_) async => '[]');
-        when(
-          () => iosTestBackend.execute(
+          () => androidTestBackend.executePrebuilt(
             any(),
             any(),
-            interruptible: any(named: 'interruptible'),
             showFlutterLogs: any(named: 'showFlutterLogs'),
             hideTestSteps: any(named: 'hideTestSteps'),
             clearTestSteps: any(named: 'clearTestSteps'),
             onLogEntry: any(named: 'onLogEntry'),
             videoConfig: any(named: 'videoConfig'),
+            acceptLogEntries: any(named: 'acceptLogEntries'),
           ),
         ).thenAnswer((invocation) {
-          fromPatrol =
-              invocation.namedArguments[#showFlutterLogs] as bool? ?? false;
-          return Completer<void>().future;
+          backendAcceptLogEntries =
+              invocation.namedArguments[#acceptLogEntries] as bool Function()?;
+          backendStarted = true;
+          return backendExit.future;
         });
         when(
           () => flutterTool.attachForHotRestart(
@@ -413,9 +462,191 @@ void main() {
             forwardFlutterLogs: any(named: 'forwardFlutterLogs'),
             onQuit: any(named: 'onQuit'),
           ),
+        ).thenAnswer((_) => attachCompleter.future);
+        when(
+          () => flutterTool.hotRestart(
+            onCompleted: any(named: 'onCompleted'),
+            onFailed: any(named: 'onFailed'),
+          ),
+        ).thenAnswer((invocation) {
+          hotRestarts++;
+          // The real FlutterTool fires this once `flutter attach` reports
+          // 'Restarted application ...'.
+          (invocation.namedArguments[#onCompleted] as void Function()?)?.call();
+        });
+      });
+
+      test(
+        'skips the build, prepares the sources and hot restarts once attached',
+        () async {
+          unawaited(buildService().run(prebuiltOptions));
+          await _waitFor(() => backendStarted);
+
+          verifyNever(() => androidTestBackend.build(any()));
+          verify(
+            () => androidTestBackend.prepareSourcesForAttach(any()),
+          ).called(1);
+          final apksDir = verify(
+            () => androidTestBackend.installPrebuiltApks(
+              apksDir: captureAny(named: 'apksDir'),
+              device: any(named: 'device'),
+            ),
+          ).captured.single;
+          expect(apksDir, '/apks');
+          final videoConfig =
+              verify(
+                    () => androidTestBackend.executePrebuilt(
+                      any(),
+                      any(),
+                      showFlutterLogs: any(named: 'showFlutterLogs'),
+                      hideTestSteps: any(named: 'hideTestSteps'),
+                      clearTestSteps: any(named: 'clearTestSteps'),
+                      onLogEntry: any(named: 'onLogEntry'),
+                      videoConfig: captureAny(named: 'videoConfig'),
+                      acceptLogEntries: any(named: 'acceptLogEntries'),
+                    ),
+                  ).captured.single
+                  as VideoRecordingConfig?;
+          // --record-video must keep working with prebuilt APKs.
+          expect(videoConfig, same(prebuiltOptions.videoConfig));
+
+          // The APK runs the test bundled at build time; the requested target
+          // is only hot restarted in once `flutter attach` has connected.
+          expect(hotRestarts, 0);
+          attachCompleter.complete();
+          await _waitFor(() => hotRestarts == 1);
+        },
+      );
+
+      test('opens the log-entry gate only once the requested target is hot '
+          'restarted', () async {
+        unawaited(buildService(onLogEntry: (_) {}).run(prebuiltOptions));
+        await _waitFor(() => backendAcceptLogEntries != null);
+
+        // While the gate is closed the backend drops entries (see
+        // AndroidTestBackend.composeLogEntryCallback), so nothing the
+        // placeholder test emits reaches the caller or starts a recording.
+        expect(backendAcceptLogEntries!(), isFalse);
+
+        attachCompleter.complete();
+        await _waitFor(() => hotRestarts == 1);
+
+        expect(backendAcceptLogEntries!(), isTrue);
+      });
+
+      test(
+        'fails instead of hanging when the instrumentation exits early',
+        () async {
+          // The backend settles immediately (e.g. `am instrument` printed an
+          // error and returned) while attach never connects. Previously the
+          // CLI would sit on `flutter attach` forever.
+          backendExit.complete();
+
+          await expectLater(
+            buildService().run(prebuiltOptions),
+            throwsA(isA<ToolExit>()),
+          );
+          verifyNever(
+            () => flutterTool.hotRestart(
+              onCompleted: any(named: 'onCompleted'),
+              onFailed: any(named: 'onFailed'),
+            ),
+          );
+        },
+      );
+
+      test('is rejected on non-Android devices', () async {
+        const iosDevice = Device(
+          name: 'iPhone',
+          id: 'ios-sim',
+          targetPlatform: TargetPlatform.iOS,
+          real: false,
+        );
+        when(
+          () => deviceFinder.find(
+            any(),
+            flutterCommand: any(named: 'flutterCommand'),
+          ),
+        ).thenAnswer((_) async => [iosDevice]);
+
+        await expectLater(
+          buildService().run(prebuiltOptions),
+          throwsA(isA<ToolExit>()),
+        );
+        verifyNever(() => androidTestBackend.build(any()));
+      });
+    });
+
+    group('iOS logs', () {
+      /// Runs a develop session on [device] and reports where the app's logs
+      /// were routed, plus the Dart VM service URL plumbing between the iOS
+      /// backend and attach (both null when attach reads the URL from
+      /// `flutter logs` itself).
+      Future<
+        ({
+          bool fromFlutterLogs,
+          bool fromPatrol,
+          void Function(String url)? onVmServiceUrl,
+          Future<String>? debugUrl,
+        })
+      >
+      runOnIos({
+        required String? flavor,
+        Device device = iosDevice,
+        Completer<void>? backendExit,
+      }) async {
+        bool? fromFlutterLogs;
+        bool? fromPatrol;
+        void Function(String url)? onVmServiceUrl;
+        Future<String>? debugUrl;
+
+        when(
+          () => deviceFinder.find(
+            any(),
+            flutterCommand: any(named: 'flutterCommand'),
+          ),
+        ).thenAnswer((_) async => [device]);
+        when(() => iosTestBackend.build(any())).thenAnswer((_) async {});
+        when(
+          () => iosTestBackend.getInstalledAppsEnvVariable(any()),
+        ).thenAnswer((_) async => '[]');
+        when(
+          () => iosTestBackend.execute(
+            any(),
+            any(),
+            interruptible: any(named: 'interruptible'),
+            showFlutterLogs: any(named: 'showFlutterLogs'),
+            hideTestSteps: any(named: 'hideTestSteps'),
+            clearTestSteps: any(named: 'clearTestSteps'),
+            onLogEntry: any(named: 'onLogEntry'),
+            onVmServiceUrl: any(named: 'onVmServiceUrl'),
+            videoConfig: any(named: 'videoConfig'),
+          ),
+        ).thenAnswer((invocation) {
+          fromPatrol =
+              invocation.namedArguments[#showFlutterLogs] as bool? ?? false;
+          onVmServiceUrl =
+              invocation.namedArguments[#onVmServiceUrl]
+                  as void Function(String url)?;
+          return backendExit?.future ?? Completer<void>().future;
+        });
+        when(
+          () => flutterTool.attachForHotRestart(
+            flutterCommand: any(named: 'flutterCommand'),
+            deviceId: any(named: 'deviceId'),
+            target: any(named: 'target'),
+            appId: any(named: 'appId'),
+            dartDefines: any(named: 'dartDefines'),
+            openDevtools: any(named: 'openDevtools'),
+            attachUsingUrl: any(named: 'attachUsingUrl'),
+            debugUrl: any(named: 'debugUrl'),
+            forwardFlutterLogs: any(named: 'forwardFlutterLogs'),
+            onQuit: any(named: 'onQuit'),
+          ),
         ).thenAnswer((invocation) {
           fromFlutterLogs =
               invocation.namedArguments[#forwardFlutterLogs] as bool? ?? true;
+          debugUrl = invocation.namedArguments[#debugUrl] as Future<String>?;
           return Completer<void>().future;
         });
 
@@ -436,7 +667,13 @@ void main() {
         );
 
         await _waitFor(() => fromFlutterLogs != null && fromPatrol != null);
-        return (fromFlutterLogs: fromFlutterLogs!, fromPatrol: fromPatrol!);
+
+        return (
+          fromFlutterLogs: fromFlutterLogs!,
+          fromPatrol: fromPatrol!,
+          onVmServiceUrl: onVmServiceUrl,
+          debugUrl: debugUrl,
+        );
       }
 
       // `flutter logs` needs a scheme named Runner, which a flavored project
@@ -446,6 +683,7 @@ void main() {
 
         expect(routing.fromFlutterLogs, isFalse);
         expect(routing.fromPatrol, isTrue);
+        expect(routing.debugUrl, isNull);
       });
 
       test('come from flutter logs when no flavor is set', () async {
@@ -453,6 +691,55 @@ void main() {
 
         expect(routing.fromFlutterLogs, isTrue);
         expect(routing.fromPatrol, isFalse);
+        expect(routing.debugUrl, isNull);
+      });
+
+      // The simulator attaches by Dart VM service URL, which attach normally
+      // reads from `flutter logs`. A flavored project cannot run them, so the
+      // URL has to travel from Patrol's own stream to attach.
+      test(
+        'come from Patrol on a flavored simulator, which also feeds attach the URL',
+        () async {
+          const url = 'http://127.0.0.1:54296/4crAtS2Ux7w=/';
+          final routing = await runOnIos(flavor: 'dev', device: iosSimulator);
+
+          expect(routing.fromFlutterLogs, isFalse);
+          expect(routing.fromPatrol, isTrue);
+
+          final debugUrl = routing.debugUrl;
+          expect(debugUrl, isNotNull);
+
+          routing.onVmServiceUrl?.call(url);
+          routing.onVmServiceUrl?.call('http://127.0.0.1:1/second-launch/');
+
+          await expectLater(debugUrl, completion(url));
+        },
+      );
+
+      test('come from flutter logs on a flavorless simulator', () async {
+        final routing = await runOnIos(flavor: null, device: iosSimulator);
+
+        expect(routing.fromFlutterLogs, isTrue);
+        expect(routing.fromPatrol, isFalse);
+        expect(routing.debugUrl, isNull);
+      });
+
+      // If the app dies before printing the URL, attach must not wait for it
+      // forever.
+      test('fail the URL wait when the app exits before printing it', () async {
+        final backendExit = Completer<void>();
+        final routing = await runOnIos(
+          flavor: 'dev',
+          device: iosSimulator,
+          backendExit: backendExit,
+        );
+
+        final debugUrl = routing.debugUrl;
+        expect(debugUrl, isNotNull);
+
+        backendExit.complete();
+
+        await expectLater(debugUrl, throwsA(isA<ToolExit>()));
       });
     });
 
@@ -462,7 +749,6 @@ void main() {
           targetPlatform: TargetPlatform.iOS,
           flavor: 'dev',
           showFlutterLogs: false,
-          attachUsingUrl: false,
         );
 
         expect(result.showFlutterLogs, isTrue);
@@ -474,7 +760,6 @@ void main() {
           targetPlatform: TargetPlatform.iOS,
           flavor: null,
           showFlutterLogs: false,
-          attachUsingUrl: false,
         );
 
         expect(result.showFlutterLogs, isFalse);
@@ -486,23 +771,9 @@ void main() {
           targetPlatform: TargetPlatform.android,
           flavor: 'dev',
           showFlutterLogs: false,
-          attachUsingUrl: false,
         );
 
         expect(result.showFlutterLogs, isFalse);
-        expect(result.forwardFlutterLogs, isTrue);
-      });
-
-      // `flutter attach` reads the Dart VM service URL from `flutter logs`, so
-      // a flavored iOS simulator cannot drop it.
-      test('keeps flutter logs when attach reads the URL from them', () {
-        final result = DevelopService.resolveFlutterLogs(
-          targetPlatform: TargetPlatform.iOS,
-          flavor: 'dev',
-          showFlutterLogs: false,
-          attachUsingUrl: true,
-        );
-
         expect(result.forwardFlutterLogs, isTrue);
       });
 
@@ -511,7 +782,6 @@ void main() {
           targetPlatform: TargetPlatform.android,
           flavor: null,
           showFlutterLogs: true,
-          attachUsingUrl: false,
         );
 
         expect(result.showFlutterLogs, isTrue);
