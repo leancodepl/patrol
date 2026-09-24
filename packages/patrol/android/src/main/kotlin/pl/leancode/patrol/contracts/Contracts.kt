@@ -15,6 +15,7 @@ class Contracts {
     success,
     skipped,
     failure,
+    continuation,
   }
 
   enum class KeyboardBehavior {
@@ -203,15 +204,28 @@ class Contracts {
   )
 
   data class RunDartTestRequest (
-    val name: String
-  )
+    val name: String,
+    val phaseIndex: Long? = null
+  ){
+    fun hasPhaseIndex(): Boolean {
+      return phaseIndex != null
+    }
+  }
 
   data class RunDartTestResponse (
     val result: RunDartTestResponseResult,
-    val details: String? = null
+    val details: String? = null,
+    val nextPhaseIndex: Long? = null,
+    val nextPhaseLaunchUrl: String? = null
   ){
     fun hasDetails(): Boolean {
       return details != null
+    }
+    fun hasNextPhaseIndex(): Boolean {
+      return nextPhaseIndex != null
+    }
+    fun hasNextPhaseLaunchUrl(): Boolean {
+      return nextPhaseLaunchUrl != null
     }
   }
 
