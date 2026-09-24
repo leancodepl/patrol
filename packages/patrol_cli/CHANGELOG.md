@@ -6,6 +6,10 @@
 - Add native screenshots on iOS, collected by `patrol test` from the `.xcresult` into
   `<test-directory>/screenshots`. Requires Xcode 16 or newer. See the
   [docs](https://patrol.leancode.co/cli-commands/test#ios). (#3271)
+- Add `--record-video` on physical iOS devices: `patrol test` takes each test's recording from the
+  `.xcresult`, named and placed like on Android. Requires Xcode 16 or newer. `patrol develop` still
+  records simulators only. (#3289)
+- Warn when `--video-size` or `--video-bit-rate` is passed on iOS, where they have no effect. (#3289)
 
 ## 4.8.0
 

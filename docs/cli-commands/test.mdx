@@ -180,17 +180,24 @@ Record a video of each test case using `--record-video`:
 patrol test --record-video
 ```
 
-Videos are saved as `.mp4` files in `<test-directory>/videos` (override with
-`--video-output-dir`). Supported on Android emulators and iOS simulators.
+One `.mp4` per test case is saved to `<test-directory>/videos` (override with
+`--video-output-dir`), named `patrol_<test>_<device>_<timestamp>.mp4` on every
+platform.
 
-- Physical Android devices may also work, depending on the vendor (some block `screenrecord`).
-- Physical iOS devices are not supported.
-- `--video-size` and `--video-bit-rate` apply to Android only.
+- **Android**: emulators, and physical devices depending on the vendor (some
+  block `screenrecord`). Recorded with `adb shell screenrecord` while the test
+  runs. `--video-size` and `--video-bit-rate` apply here only.
+- **iOS**: simulators and physical devices. XCTest records the screen of every
+  test on its own; `patrol test` extracts those recordings from the `.xcresult`
+  bundle after the run, so they show up when the run finishes, not while it's
+  going. Requires Xcode 16 or newer (`xcrun xcresulttool export attachments`).
+  `patrol develop` records with `xcrun simctl` instead, on simulators only.
 
 On a device farm like Firebase Test Lab, `--record-video` doesn't apply (the
-tests run via `gcloud`, not `patrol test`), but FTL records its own per-test
-video into the iOS `.xcresult`. Pull it from the native artifacts the same way as
-[iOS screenshots](#ios) — the exported attachments include the `.mp4` recordings.
+tests run via `gcloud`, not `patrol test`), but the iOS `.xcresult` still holds
+the per-test recordings of failing tests. Pull it from the native artifacts the
+same way as [iOS screenshots](#ios) — the exported attachments include the
+`.mp4` recordings.
 
 <Warning>
     Recording is skipped on unsupported devices, and the test still runs.
