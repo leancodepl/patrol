@@ -41,6 +41,42 @@ class FlutterTool {
   var _logsActive = false;
   var _logsSkipped = false;
   var _devtoolsUrl = '';
+  io.Process? _attachProcess;
+  var _pendingHotRestart = false;
+  void Function()? _onRestartCompleted;
+  void Function()? _onRestartFailed;
+
+  /// Sends a Hot Restart to the attached app - the same as pressing `r`.
+  ///
+  /// If `flutter attach` hasn't connected yet the request is queued and sent
+  /// as soon as it does. Dropping it (the previous behaviour) left callers
+  /// such as patrol_mcp waiting for a test run that never started.
+  ///
+  /// [onCompleted] fires once `flutter attach` reports the restart as
+  /// completed ('Restarted application ...'), not when it is requested.
+  /// Callers use it to tell output of the old and the new program apart.
+  /// [onFailed] fires instead when the restart is rejected (compile error);
+  /// exactly one of the two fires, at most once.
+  void hotRestart({void Function()? onCompleted, void Function()? onFailed}) {
+    _onRestartCompleted = onCompleted;
+    _onRestartFailed = onFailed;
+    final process = _attachProcess;
+    if (process == null || !_hotRestartActive) {
+      _logger.warn(
+        'Hot Restart: not attached to the app yet, will restart once attached',
+      );
+      _pendingHotRestart = true;
+      return;
+    }
+    _logger.success('Hot Restart requested...');
+    process.stdin.add('R'.codeUnits);
+  }
+
+  void _settleRestart(void Function()? callback) {
+    _onRestartCompleted = null;
+    _onRestartFailed = null;
+    callback?.call();
+  }
 
   /// Forwards logs and hot restarts the app when "r" is pressed.
   Future<void> attachForHotRestart({
@@ -51,6 +87,7 @@ class FlutterTool {
     required Map<String, String> dartDefines,
     required bool openDevtools,
     bool attachUsingUrl = false,
+    Future<String>? debugUrl,
     bool forwardFlutterLogs = true,
     Future<void> Function()? onQuit,
   }) async {
@@ -58,12 +95,20 @@ class FlutterTool {
 
     StdinModes? previousStdinModes;
     if (io.stdin.hasTerminal) {
-      previousStdinModes = enableInteractiveMode();
+      try {
+        previousStdinModes = enableInteractiveMode();
+      } on io.StdinException catch (err) {
+        _logger.detail('Interactive shell mode unavailable: $err');
+      }
     }
 
     Future<void> onQuitWithRevertInteractiveMode() async {
       if (previousStdinModes != null) {
-        revertInteractiveMode(previousStdinModes);
+        try {
+          revertInteractiveMode(previousStdinModes);
+        } on io.StdinException catch (err) {
+          _logger.detail('Could not restore terminal modes: $err');
+        }
       }
       if (onQuit != null) {
         await onQuit();
@@ -71,13 +116,13 @@ class FlutterTool {
     }
 
     if (attachUsingUrl) {
-      final urlCompleter = Completer<String>();
-      await logs(
-        deviceId,
-        flutterCommand: flutterCommand,
-        observationUrlCompleter: urlCompleter,
-      );
-      final url = await urlCompleter.future;
+      final url =
+          await (debugUrl ??
+              _readDebugUrlFromFlutterLogs(
+                deviceId,
+                flutterCommand: flutterCommand,
+              ));
+
       await attach(
         flutterCommand: flutterCommand,
         target: target,
@@ -102,6 +147,20 @@ class FlutterTool {
         ),
       ]);
     }
+  }
+
+  Future<String> _readDebugUrlFromFlutterLogs(
+    String deviceId, {
+    required FlutterCommand flutterCommand,
+  }) async {
+    final urlCompleter = Completer<String>();
+    await logs(
+      deviceId,
+      flutterCommand: flutterCommand,
+      observationUrlCompleter: urlCompleter,
+    );
+
+    return urlCompleter.future;
   }
 
   /// Attaches to the running app. Returns a [Future] that completes when the
@@ -139,6 +198,7 @@ class FlutterTool {
               ],
             ])
             ..disposedBy(scope);
+      _attachProcess = process;
 
       final completer = Completer<void>();
       scope.addDispose(() {
@@ -153,7 +213,11 @@ class FlutterTool {
             final char = String.fromCharCode(event.first);
             if (char == 'r' || char == 'R') {
               if (!_hotRestartActive) {
-                _logger.warn('Hot Restart: not attached to the app yet!');
+                _logger.warn(
+                  'Hot Restart: not attached to the app yet, will restart once '
+                  'attached',
+                );
+                _pendingHotRestart = true;
                 return;
               }
 
@@ -213,11 +277,24 @@ class FlutterTool {
                 'q Quit (terminate the process and application on the device)',
               );
               _hotRestartActive = true;
+              if (_pendingHotRestart) {
+                _pendingHotRestart = false;
+                _logger.success('Hot Restart: sending the queued restart');
+                process.stdin.add('R'.codeUnits);
+              }
 
               if (!_logsActive && !_logsSkipped) {
                 _logger.warn('Hot Restart: logs are not connected yet');
               }
               completer.complete();
+            }
+
+            if (line.startsWith('Restarted application')) {
+              _settleRestart(_onRestartCompleted);
+            }
+
+            if (line.startsWith('Try again after fixing the above error')) {
+              _settleRestart(_onRestartFailed);
             }
 
             if (line.startsWith('The Flutter DevTools debugger and profiler')) {
@@ -333,18 +410,31 @@ class FlutterTool {
     // disabled for lineMode to be disabled too.
     io.stdin.echoMode = false;
 
-    // Causes the stdin stream to provide the input as soon as it arrives (one
-    // key press at a time).
-    io.stdin.lineMode = false;
+    try {
+      // Causes the stdin stream to provide the input as soon as it arrives (one
+      // key press at a time).
+      io.stdin.lineMode = false;
+    } on io.StdinException {
+      _restoreEchoMode(stdinModes.echoMode);
+      rethrow;
+    }
 
     _logger.detail('Interactive shell mode enabled.');
 
     return stdinModes;
   }
 
+  void _restoreEchoMode(bool echoMode) {
+    try {
+      io.stdin.echoMode = echoMode;
+    } on io.StdinException catch (err) {
+      _logger.detail('Could not restore echo mode: $err');
+    }
+  }
+
   void revertInteractiveMode(StdinModes stdinModes) {
-    io.stdin.echoMode = stdinModes.echoMode;
     io.stdin.lineMode = stdinModes.lineMode;
+    io.stdin.echoMode = stdinModes.echoMode;
 
     _logger.detail('Interactive shell mode disabled.');
   }
@@ -373,7 +463,8 @@ String getDevtoolsUrl(String line) {
   return uri.replace(pathSegments: segments).toString();
 }
 
-@visibleForTesting
+/// Returns the URL that [line] carries, e.g. the Dart VM service URL from
+/// "The Dart VM service is listening on http://…".
 String getObservationUrl(String line) {
   final startIndex = line.indexOf('http');
   if (startIndex == -1) {

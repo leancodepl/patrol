@@ -176,6 +176,12 @@ class DevelopService {
 
     _logger.detail('Received device: ${device.name} (${device.id})');
 
+    final prebuiltApksDir = options.prebuiltApksDir;
+    if (prebuiltApksDir != null &&
+        device.targetPlatform != TargetPlatform.android) {
+      throwToolExit('--use-prebuilt-apks is supported on Android only');
+    }
+
     final packageName = options.packageName ?? config.android.packageName;
     final bundleId = options.bundleId ?? config.ios.bundleId;
     final androidAppName = options.appName ?? config.android.appName;
@@ -298,8 +304,25 @@ class DevelopService {
     final webOpts = WebAppOptions(flutter: flutterOpts);
 
     try {
-      await _build(androidOpts, iosOpts, macosOpts, webOpts, device);
+      if (prebuiltApksDir == null) {
+        await _build(androidOpts, iosOpts, macosOpts, webOpts, device);
+      } else {
+        _logger.info(
+          'Skipping build, using prebuilt APKs from $prebuiltApksDir',
+        );
+        await _androidTestBackend.prepareSourcesForAttach(flutterOpts);
+      }
       await _preExecute(androidOpts, iosOpts, device, options.uninstall);
+      if (prebuiltApksDir != null) {
+        // After _preExecute, so the optional uninstall can't race the install.
+        // Installing here (not inside _execute) makes a bad directory or a
+        // failed install a setup error that aborts the run, instead of an
+        // async failure while the CLI is already waiting on flutter attach.
+        await _androidTestBackend.installPrebuiltApks(
+          apksDir: prebuiltApksDir,
+          device: device,
+        );
+      }
       await _execute(
         flutterOpts,
         androidOpts,
@@ -314,6 +337,7 @@ class DevelopService {
         hideTestSteps: options.hideTestSteps,
         clearTestSteps: options.clearTestSteps,
         videoConfig: options.videoConfig,
+        prebuiltApksDir: prebuiltApksDir,
       );
     } finally {
       for (final sub in signalSubscriptions) {
@@ -388,23 +412,22 @@ class DevelopService {
 
   /// `flutter logs` resolves the iOS app package without a build
   /// configuration, so it needs a scheme named Runner and takes no option to
-  /// pick another: `showFlutterLogs` falls back to Patrol's own log stream,
-  /// and `forwardFlutterLogs` tells `flutter attach` not to open its own.
-  ///
-  /// Attaching by URL reads that URL from `flutter logs`, so it has to stay on.
+  /// pick another - on a flavored iOS project it exits right away. There
+  /// `showFlutterLogs` falls back to Patrol's own log stream, and
+  /// `forwardFlutterLogs` tells `flutter attach` not to open its own. When
+  /// attach needs the Dart VM service URL, it comes from Patrol's stream too.
   @visibleForTesting
   static ({bool showFlutterLogs, bool forwardFlutterLogs}) resolveFlutterLogs({
     required TargetPlatform targetPlatform,
     required String? flavor,
     required bool showFlutterLogs,
-    required bool attachUsingUrl,
   }) {
     final flutterLogsUnavailable =
         targetPlatform == TargetPlatform.iOS && flavor != null;
-    final skipFlutterLogs = flutterLogsUnavailable && !attachUsingUrl;
+
     return (
-      showFlutterLogs: showFlutterLogs || skipFlutterLogs,
-      forwardFlutterLogs: !skipFlutterLogs,
+      showFlutterLogs: showFlutterLogs || flutterLogsUnavailable,
+      forwardFlutterLogs: !flutterLogsUnavailable,
     );
   }
 
@@ -422,32 +445,59 @@ class DevelopService {
     required bool hideTestSteps,
     required bool clearTestSteps,
     VideoRecordingConfig? videoConfig,
+    String? prebuiltApksDir,
   }) async {
     Future<void> Function() action;
     Future<void> Function()? finalizer;
     String? appId;
 
+    final attachUsingUrl = shouldAttachUsingUrl(device);
     final flutterLogs = resolveFlutterLogs(
       targetPlatform: device.targetPlatform,
       flavor: flutterOpts.flavor,
       showFlutterLogs: showFlutterLogs,
-      attachUsingUrl: shouldAttachUsingUrl(device),
     );
+
+    final vmServiceUrlCompleter =
+        attachUsingUrl && !flutterLogs.forwardFlutterLogs
+        ? Completer<String>()
+        : null;
+
+    // Prebuilt APKs carry a placeholder test baked in at build time, which
+    // runs as soon as the app launches. Its log entries would be mistaken for
+    // results of *our* test (e.g. by patrol_mcp) and would start video
+    // recordings of the wrong program, so the backend drops entries until
+    // `flutter attach` reports the restart into the requested target as
+    // COMPLETED. Logcat delivery is asynchronous, so opening the gate when the
+    // restart is merely requested could still let a buffered entry of the
+    // placeholder through.
+    var prebuiltTargetActive = prebuiltApksDir == null;
 
     switch (device.targetPlatform) {
       case TargetPlatform.android:
         appId = android.packageName;
-        action = () => _androidTestBackend.execute(
-          android,
-          device,
-          interruptible: true,
-          showFlutterLogs: showFlutterLogs,
-          hideTestSteps: hideTestSteps,
-          flavor: flutterOpts.flavor,
-          clearTestSteps: clearTestSteps,
-          onLogEntry: onLogEntry,
-          videoConfig: videoConfig,
-        );
+        action = prebuiltApksDir != null
+            ? () => _androidTestBackend.executePrebuilt(
+                android,
+                device,
+                showFlutterLogs: showFlutterLogs,
+                hideTestSteps: hideTestSteps,
+                clearTestSteps: clearTestSteps,
+                onLogEntry: onLogEntry,
+                videoConfig: videoConfig,
+                acceptLogEntries: () => prebuiltTargetActive,
+              )
+            : () => _androidTestBackend.execute(
+                android,
+                device,
+                interruptible: true,
+                showFlutterLogs: showFlutterLogs,
+                hideTestSteps: hideTestSteps,
+                flavor: flutterOpts.flavor,
+                clearTestSteps: clearTestSteps,
+                onLogEntry: onLogEntry,
+                videoConfig: videoConfig,
+              );
         final package = android.packageName;
         if (package != null && uninstall) {
           finalizer = () => _androidTestBackend.uninstall(package, device);
@@ -466,6 +516,13 @@ class DevelopService {
           hideTestSteps: hideTestSteps,
           clearTestSteps: clearTestSteps,
           onLogEntry: onLogEntry,
+          onVmServiceUrl: vmServiceUrlCompleter == null
+              ? null
+              : (url) {
+                  if (!vmServiceUrlCompleter.isCompleted) {
+                    vmServiceUrlCompleter.complete(url);
+                  }
+                },
           videoConfig: videoConfig,
         );
         final bundleId = iosOpts.bundleId;
@@ -503,28 +560,83 @@ class DevelopService {
         onTestsCompleted?.call(result);
       }
 
+      // Once the app is gone that URL will never come, so fail the
+      // wait instead of hanging the session.
+      void failPendingVmServiceUrl() {
+        if (vmServiceUrlCompleter != null &&
+            !vmServiceUrlCompleter.isCompleted) {
+          vmServiceUrlCompleter.completeError(
+            const ToolExit(
+              'The app exited before it printed the Dart VM service URL, so '
+              'hot restart could not attach',
+            ),
+          );
+        }
+      }
+
       unawaited(
         future.then(
-          (_) =>
-              reportTestsCompleted(const TestCompletionResult(success: true)),
-          onError: (Object err, StackTrace st) => reportTestsCompleted(
-            TestCompletionResult(success: false, error: err),
-          ),
+          (_) {
+            reportTestsCompleted(const TestCompletionResult(success: true));
+            failPendingVmServiceUrl();
+          },
+          onError: (Object err, StackTrace st) {
+            reportTestsCompleted(
+              TestCompletionResult(success: false, error: err),
+            );
+            failPendingVmServiceUrl();
+          },
         ),
       );
 
       if (device.targetPlatform != TargetPlatform.web) {
-        await _flutterTool.attachForHotRestart(
+        final attached = _flutterTool.attachForHotRestart(
           flutterCommand: flutterOpts.command,
           deviceId: device.id,
           target: flutterOpts.target,
           appId: appId,
           dartDefines: flutterOpts.dartDefines,
           openDevtools: openDevtools,
-          attachUsingUrl: shouldAttachUsingUrl(device),
+          attachUsingUrl: attachUsingUrl,
+          debugUrl: vmServiceUrlCompleter?.future,
           forwardFlutterLogs: flutterLogs.forwardFlutterLogs,
           onQuit: onQuitCleanup,
         );
+        if (prebuiltApksDir == null) {
+          await attached;
+        } else {
+          // No Gradle ran before this point, so nothing has verified that the
+          // instrumentation actually came up. If the backend settles before
+          // attach connects (instrumentation not found, app crash on launch),
+          // fail instead of waiting forever for an attach that can't succeed.
+          final backendExitedFirst = await Future.any<bool>([
+            attached.then((_) => false),
+            future.then((_) => true, onError: (Object _) => true),
+          ]);
+          if (backendExitedFirst) {
+            throwToolExit(
+              'The instrumentation exited before `flutter attach` could '
+              'connect - the app never came up. See the logs above.',
+            );
+          }
+          _logger.info(
+            'Prebuilt APKs: the app launched with the placeholder test baked '
+            'in at build time; hot restarting with the requested target...',
+          );
+          _flutterTool.hotRestart(
+            onCompleted: () => prebuiltTargetActive = true,
+            // The placeholder is gone once a restart was attempted, so open
+            // the gate anyway; otherwise a compile error in the target would
+            // keep every later entry (after the user's fix + `r`) hidden.
+            onFailed: () {
+              prebuiltTargetActive = true;
+              _logger.warn(
+                'Hot restart into the requested target failed. Fix the '
+                'error above and press r.',
+              );
+            },
+          );
+        }
       }
 
       try {
