@@ -1,3 +1,16 @@
+## 4.11.0-dev.1
+
+- **`patrol develop` on web requires Flutter 3.47.0 or newer**, and `patrol_cli` exits with an error
+  below it. Every other platform keeps working on 3.32.0.
+- Show the page's DOM in the Patrol DevTools extension on web, where the `flt-semantics` elements
+  carry the roles, labels and text that web selectors match.
+- Report a failing test's details in `patrol develop`, not just that it failed.
+- Fix `patrol develop` on web slowing down and eventually hanging after a handful of hot restarts.
+  Each one left the previous run's binding rendering into the view that same restart had disposed,
+  so the console filled with render assertions and restarts went from 300 ms to seconds.
+- Stop those render assertions being reported as failures of whichever test was running.
+- Fix the Playwright develop driver idling forever after `flutter run` closes the browser.
+
 ## 4.10.0
 
 - Build-time test discovery (experimental): replace the `STATIC_BEGIN`/`_END` pair in

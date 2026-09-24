@@ -49,6 +49,25 @@ patrol test \
   --web-headless
 ```
 
+### Building once and running on many machines
+
+Building the app on every CI machine is wasteful when only the shard differs.
+`patrol build web` writes a self-contained directory that
+`patrol test-without-building` runs without Flutter:
+
+```bash
+# build job, needs Flutter
+patrol build web --target patrol_test/ --output build/patrol-web
+
+# test jobs, need only Node
+patrol test-without-building --input build/patrol-web --web-headless --web-shard 1/6
+patrol test-without-building --input build/patrol-web --web-headless --web-shard 2/6
+```
+
+See [`patrol build`](/cli-commands/build) and
+[`patrol test-without-building`](/cli-commands/test-without-building) for the
+details.
+
 ### Supported Native Actions on Web
 
 Patrol supports the following platform actions through Playwright:

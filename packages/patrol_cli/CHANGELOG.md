@@ -1,5 +1,33 @@
-## Unreleased
+## 4.9.0-dev.2
 
+- Add `patrol build web` and `patrol test-without-building --input`: build a web test app once, run
+  it many times.
+
+## 4.9.0-dev.1
+
+- `patrol develop -d chrome` now uses a real Flutter hot restart instead of relaunching the browser
+  and the Playwright driver on every `r`; one `flutter run` stays alive for the whole session, as on
+  mobile.
+- **Web develop requires Flutter 3.47.0 or newer**, and exits with an error below it. Older SDKs
+  report a successful Hot Restart and keep serving the previous test bundle, so your edits would
+  silently do nothing. Fixed by
+  [flutter/flutter#183838](https://github.com/flutter/flutter/pull/183838).
+- Make the Patrol DevTools extension usable in web develop mode: DevTools cannot discover extensions
+  for a web app, so with `--open-devtools` patrol serves its own instance against a project it
+  registers itself. Nothing extra is started without the flag.
+- Only accept `r` once the app is up, queueing one pressed earlier, as develop already does on
+  mobile. A restart during startup destroys the app view without completing it
+  ([flutter/flutter#182377](https://github.com/flutter/flutter/issues/182377)).
+- Stop reporting the run a hot restart tears down as a failure of yours. A genuine failure, once the
+  replacement run has started, is still shown.
+- Report hot restart outcomes in web develop mode, and resend an `r` that `flutter run` dropped
+  rather than refusing every later one.
+- Choose the Chrome debugging port up front with `--web-browser-debug-port` instead of scraping it
+  out of `flutter run --verbose`, which is now passed only when patrol itself is verbose.
+- Fix a web develop session crashing out, leaving the terminal in raw mode and the Playwright
+  driver orphaned, when `flutter run` died while the session was still starting up.
+- Fix `patrol develop` failing to revert the terminal's interactive mode when stdin is already
+  closed.
 - Fix `idevicesyslog` not being scoped to the device under test, so concurrent runs on a host with
   several real iOS devices attached all streamed the same device's log, corrupting the step
   display, `--show-flutter-logs` output and the test summary. (#3245)

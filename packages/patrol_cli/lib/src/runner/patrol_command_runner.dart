@@ -186,6 +186,9 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         androidTestBackend: androidTestBackend,
         iosTestBackend: iosTestBackend,
         macosTestBackend: macosTestBackend,
+        webTestBackend: webTestBackend,
+        projectRoot: rootDirectory,
+        fs: _fs,
         compatibilityChecker: CompatibilityChecker(
           projectRoot: rootDirectory,
           processManager: _processManager,
@@ -267,6 +270,8 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         pubspecReader: PubspecReader(projectRoot: rootDirectory),
         androidTestBackend: androidTestBackend,
         iosTestBackend: iosTestBackend,
+        webTestBackend: webTestBackend,
+        fs: _fs,
         analytics: _analytics,
         logger: _logger,
       ),
