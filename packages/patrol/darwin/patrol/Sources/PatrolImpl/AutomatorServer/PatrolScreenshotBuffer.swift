@@ -45,7 +45,9 @@
     /// [name]. Used on failure paths (e.g. the app never reports readiness)
     /// where the Dart test never runs, so no `failure` screenshot is buffered
     /// but the on-screen state still explains what went wrong.
-    @objc public static func attachCurrentScreen(named name: String, to testCase: XCTestCase) {
+    // Explicit selector: Swift would export `attachCurrentScreenWithNamed:to:`.
+    @objc(attachCurrentScreenNamed:to:)
+    public static func attachCurrentScreen(named name: String, to testCase: XCTestCase) {
       let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
       attachment.name = name
       attachment.lifetime = .keepAlways
