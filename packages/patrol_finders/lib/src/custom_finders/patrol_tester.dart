@@ -704,6 +704,7 @@ class PatrolTester {
           dragDuration ??= config.dragDuration;
           settleBetweenScrollsTimeout ??= config.settleBetweenScrollsTimeout;
 
+          final start = tester.binding.clock.now();
           var iterationsLeft = maxIteration;
           while (iterationsLeft > 0 && finder.evaluate().isEmpty) {
             await tester.timedDrag(viewPatrolFinder, moveStep, dragDuration!);
@@ -717,8 +718,7 @@ class PatrolTester {
           if (iterationsLeft <= 0) {
             throw WaitUntilExistsTimeoutException(
               finder: finder,
-              // TODO: set reasonable duration or create new exception for this case
-              duration: settleBetweenScrollsTimeout!,
+              duration: tester.binding.clock.now().difference(start),
             );
           }
 
@@ -786,6 +786,7 @@ class PatrolTester {
           settleBetweenScrollsTimeout ??= config.settleBetweenScrollsTimeout;
 
           final hitTestableFinder = finder.hitTestable(at: alignment);
+          final start = tester.binding.clock.now();
           var iterationsLeft = maxIteration;
           while (iterationsLeft > 0 && hitTestableFinder.evaluate().isEmpty) {
             await tester.timedDrag(viewPatrolFinder, moveStep, dragDuration!);
@@ -799,8 +800,7 @@ class PatrolTester {
           if (iterationsLeft <= 0) {
             throw WaitUntilVisibleTimeoutException(
               finder: hitTestableFinder,
-              // TODO: set reasonable duration or create new exception for this case
-              duration: settleBetweenScrollsTimeout!,
+              duration: tester.binding.clock.now().difference(start),
             );
           }
 
