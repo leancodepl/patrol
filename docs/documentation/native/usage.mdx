@@ -102,6 +102,30 @@ await $.platform.ios.tap(
 
 </Warning>
 
+#### System sheets (file picker, share sheet)
+
+System sheets presented from your app - like the file picker opened by the
+[file_picker](https://pub.dev/packages/file_picker) plugin, or the share
+sheet - are rendered by a separate system process, but they belong to your
+app's view hierarchy. Interact with them using the default `appId` (your app
+under test):
+
+```dart
+// Open the file picker from your Flutter app first, then:
+await $.platform.ios.tap(IOSSelector(label: 'Browse'));
+await $.platform.ios.tap(IOSSelector(labelContains: 'On My iPhone'));
+await $.platform.ios.tap(IOSSelector(labelContains: 'my_file'));
+```
+
+Don't pass `com.apple.springboard` here - it owns system alerts (like
+permission dialogs), not these sheets. Also don't use process names that show
+up in element identifiers in the Patrol DevTools inspector (like
+`com.apple.FileProvider.LocalStorage`) - they are system extensions, not apps
+that can be automated.
+
+For a complete working example that navigates the file picker and picks a
+file, see [`file_picker_test.dart`] in the Patrol repository.
+
 ### Web-specific actions
 
 For Flutter Web apps, use `$.platform.web` to interact with browser elements and features:
@@ -286,3 +310,4 @@ To build SDK-specific companion packages on top of Patrol, see [extension packag
 
 [example_app]: https://github.com/leancodepl/patrol/tree/master/packages/patrol/example
 [extension_packages]: /documentation/native/extension-packages
+[`file_picker_test.dart`]: https://github.com/leancodepl/patrol/blob/master/dev/e2e_app/patrol_test/native_tests/file_picker_test.dart

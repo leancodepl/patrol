@@ -58,12 +58,6 @@ object AutomatorConstants {
     const val GALLERY_SUB_MENU_LIST_RES_ID = "com.google.android.documentsui:id/sub_menu_list"
 
     /**
-     * Button text for the "Done" action button in gallery on Android API 36+
-     * Used to confirm selection when picking images from gallery
-     */
-    const val GALLERY_DONE_BUTTON_TEXT = "Done"
-
-    /**
      * Resource ID for the "Add" button in gallery on Android API 34-35
      * Used to confirm selection when picking images from gallery
      */

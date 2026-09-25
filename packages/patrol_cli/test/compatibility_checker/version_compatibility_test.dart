@@ -164,6 +164,32 @@ void main() {
       );
     });
 
+    group('patrol_cli 4.7.0 / patrol 4.9.0 split', () {
+      test('patrol_cli 4.7.0 requires patrol 4.9.0 or newer', () {
+        expect(
+          areVersionsCompatible(Version.parse('4.7.0'), Version.parse('4.9.0')),
+          isTrue,
+        );
+        expect(
+          areVersionsCompatible(Version.parse('4.7.0'), Version.parse('4.8.0')),
+          isFalse,
+          reason:
+              'The generated test bundle imports libraries added in patrol 4.9.0',
+        );
+      });
+
+      test('patrol 4.9.0 requires patrol_cli 4.7.0 or newer', () {
+        expect(
+          areVersionsCompatible(Version.parse('4.6.1'), Version.parse('4.9.0')),
+          isFalse,
+        );
+        expect(
+          areVersionsCompatible(Version.parse('4.6.1'), Version.parse('4.8.0')),
+          isTrue,
+        );
+      });
+    });
+
     test('current patrol_cli is compatible with listed patrol versions', () {
       final currentCliVersion = Version.parse(constants.version);
 

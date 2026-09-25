@@ -227,15 +227,17 @@ abstract class PatrolCommand extends Command<int> {
     );
   }
 
-  /// Registers `--only`, which selects individual already-built tests by their
-  /// Dart name. Selection happens natively (the name is mapped to the generated
-  /// test method through the build-time manifest), so it needs no rebuild.
+  /// Registers `--only`, which selects already-built tests by their Dart name or
+  /// by test file. Selection happens natively (the entry is mapped to the
+  /// generated test method or class through the build-time manifest), so it needs
+  /// no rebuild.
   void usesOnlyOption() {
     argParser.addMultiOption(
       'only',
       help:
-          'Run only the test(s) with the given exact Dart name (as printed '
-          'during discovery). Repeatable; omit to run every built test.',
+          'Run only the given test(s): either the exact Dart name (as printed '
+          'during discovery) or the path of a test file, which runs that whole '
+          'file. Repeatable; omit to run every built test.',
       valueHelp: 'example_test logs in',
     );
   }
@@ -546,6 +548,14 @@ abstract class PatrolCommand extends Command<int> {
         'video-bit-rate',
         help: 'Video recording bit rate in bits per second. Android only.',
         valueHelp: '4000000',
+      )
+      ..addOption(
+        'screenshots-output-dir',
+        help:
+            'Directory to save native screenshots pulled from the device '
+            'after an Android `patrol test` run. Defaults to '
+            '<test-directory>/screenshots.',
+        valueHelp: 'path/to/screenshots',
       );
   }
 

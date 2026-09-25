@@ -212,6 +212,7 @@ public struct RunDartTestResponse: Codable {
 
 public struct ConfigureRequest: Codable {
   public var findTimeoutMillis: Int
+  public var androidDontSuppressAccessibilityServices: Bool?
 }
 
 public struct OpenAppRequest: Codable {
@@ -485,6 +486,10 @@ public struct AndroidTakeCameraPhotoRequest: Codable {
   public var shutterButtonSelector: AndroidSelector?
   public var doneButtonSelector: AndroidSelector?
   public var timeoutMillis: Int?
+}
+
+public struct AndroidTakeNativeScreenshotRequest: Codable {
+  public var tag: String
 }
 
 public struct IOSTakeCameraPhotoRequest: Codable {
