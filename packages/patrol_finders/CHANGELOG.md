@@ -2,6 +2,7 @@
 
 - Add optional `description` parameter to Flutter actions (`tap`, `enterText`, `scrollTo`, etc.). When set, it replaces the auto-generated patrol log step text and wraps failures as `failed on: <description>`.
 - Add a regression test for finding widgets by keys containing special characters (diacritics, symbols, emoji). (#3169)
+- Report the elapsed duration when drag helpers exhaust their iterations. (#2103)
 
 ## 3.6.0
 

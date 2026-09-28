@@ -451,7 +451,7 @@ void main() {
       );
 
       patrolWidgetTest(
-        'throws StateError when no widget is found after reaching maxIteration',
+        'reports elapsed duration when maxIteration is reached',
         (tester) async {
           await tester.pumpWidget(
             MaterialApp(
@@ -464,8 +464,17 @@ void main() {
               finder: find.text('three'),
               view: find.byType(Scrollable),
               moveStep: const Offset(0, defaultScrollDelta),
+              maxIteration: 2,
+              dragDuration: const Duration(milliseconds: 100),
+              settlePolicy: SettlePolicy.noSettle,
             ),
-            throwsA(isA<WaitUntilExistsTimeoutException>()),
+            throwsA(
+              isA<WaitUntilExistsTimeoutException>().having(
+                (exception) => exception.duration,
+                'duration',
+                const Duration(milliseconds: 200),
+              ),
+            ),
           );
         },
       );
@@ -622,7 +631,7 @@ void main() {
       );
 
       patrolWidgetTest(
-        'throws StateError when no widget is found after reaching maxIteration',
+        'reports elapsed duration when maxIteration is reached',
         (tester) async {
           await tester.pumpWidget(
             MaterialApp(
@@ -635,8 +644,17 @@ void main() {
               finder: find.text('three'),
               view: find.byType(Scrollable),
               moveStep: const Offset(0, defaultScrollDelta),
+              maxIteration: 2,
+              dragDuration: const Duration(milliseconds: 100),
+              settlePolicy: SettlePolicy.noSettle,
             ),
-            throwsA(isA<WaitUntilVisibleTimeoutException>()),
+            throwsA(
+              isA<WaitUntilVisibleTimeoutException>().having(
+                (exception) => exception.duration,
+                'duration',
+                const Duration(milliseconds: 200),
+              ),
+            ),
           );
         },
       );
