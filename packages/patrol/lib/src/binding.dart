@@ -86,10 +86,9 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
           );
         }
 
-        final nameOfRequestedTest =
-            await patrolAppService.testExecutionRequested;
+        final requestedTest = await patrolAppService.testExecutionRequested;
 
-        if (nameOfRequestedTest == _currentDartTest) {
+        if (requestedTest.name == _currentDartTest) {
           if (const bool.fromEnvironment('COVERAGE_ENABLED')) {
             postEvent('waitForCoverageCollection', {
               'mainIsolateId': Service.getIsolateId(Isolate.current),

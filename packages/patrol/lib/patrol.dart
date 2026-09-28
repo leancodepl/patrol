@@ -11,6 +11,8 @@ export 'src/common.dart';
 export 'src/custom_finders/patrol_integration_tester.dart';
 export 'src/extensions/patrol_extension.dart';
 export 'src/native/native.dart';
+export 'src/phases.dart'
+    show PatrolAppLaunch, PatrolPhase, PatrolPhaseCallback, phases;
 export 'src/platform/android/android_automator.dart';
 export 'src/platform/android/android_automator_config.dart';
 export 'src/platform/contracts/contracts.dart'
