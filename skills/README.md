@@ -10,9 +10,41 @@ These skills are for **users of Patrol** writing tests in their own projects.
 
 ## Installation
 
-Install the skills into your project with the [`skills`](https://github.com/vercel-labs/skills) CLI,
-targeting the agent(s) you use. Claude Code reads `.claude/skills/`, while Cursor, Codex, GitHub
-Copilot, Antigravity, Gemini CLI and most others share `.agents/skills/` (the `universal` target):
+### From your `patrol` dependency (recommended)
+
+The skills ship inside the [`patrol`](https://pub.dev/packages/patrol) package, so the Dart
+[`skills`](https://pub.dev/packages/skills) CLI finds them in your dependency tree. Run it in your
+project root:
+
+```bash
+# Claude Code (.claude/skills/)
+dart run skills@ get --agent claude -p patrol --all
+
+# Cursor (.cursor/skills/)
+dart run skills@ get --agent cursor -p patrol --all
+
+# Antigravity, Gemini CLI and others (.agents/skills/)
+dart run skills@ get --agent generic -p patrol --all
+```
+
+Drop `-p patrol` to also pick up skills from your other dependencies, and `--all` to pick skills
+interactively. The installed skills match the `patrol` version you depend on — rerun the same
+command after upgrading `patrol` to update them, and `dart run skills@ prune` removes them once
+`patrol` is gone.
+
+On a Dart SDK without the `dart run <package>@` syntax, activate the CLI globally instead:
+
+```bash
+dart pub global activate skills
+dart pub global run skills get --agent claude -p patrol --all
+```
+
+### From GitHub
+
+Alternatively, install the skills straight from this repository with the
+[`skills`](https://github.com/vercel-labs/skills) CLI (npm), targeting the agent(s) you use. Claude
+Code reads `.claude/skills/`, while Cursor, Codex, GitHub Copilot, Antigravity, Gemini CLI and most
+others share `.agents/skills/` (the `universal` target):
 
 ```bash
 # Claude Code
@@ -25,7 +57,7 @@ npx skills add leancodepl/patrol/skills -s '*' -a universal -y
 npx skills add leancodepl/patrol/skills -s '*' -a claude-code universal -y
 ```
 
-To update later:
+These track `master` rather than your `patrol` version. To update later:
 
 ```bash
 npx skills update
