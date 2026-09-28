@@ -1,8 +1,11 @@
 import 'package:patrol_cli/patrol_cli.dart' show Device, TargetPlatform;
 
-/// Platforms `patrol develop` can run. Add [TargetPlatform.web] once web
-/// develop lands (feat/patrol-web-develop); macOS is unsupported.
-const developSupportedPlatforms = {TargetPlatform.android, TargetPlatform.iOS};
+/// Platforms `patrol develop` can run. macOS is unsupported.
+const developSupportedPlatforms = {
+  TargetPlatform.android,
+  TargetPlatform.iOS,
+  TargetPlatform.web,
+};
 
 /// Attached devices the MCP can run on (returned by the `devices` tool).
 List<Device> supportedDevices(List<Device> attached) => attached
@@ -10,8 +13,11 @@ List<Device> supportedDevices(List<Device> attached) => attached
     .toList();
 
 /// The best device to run on when none is specified (see [_rank] for the
-/// order), or `null` if nothing auto-selectable is attached. Web is never
-/// auto-selected.
+/// order), or `null` if nothing auto-selectable is attached.
+///
+/// Web is never auto-selected: a browser is almost never what someone means by
+/// "run the test" when a phone is also attached, so it stays opt-in via the
+/// `device` argument.
 Device? autoSelectDevice(List<Device> attached) {
   final ranked =
       attached

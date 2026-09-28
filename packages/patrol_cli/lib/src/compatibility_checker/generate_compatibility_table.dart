@@ -126,6 +126,7 @@ separately here:
 | [Build-time test discovery](/documentation/ci/build-time-test-discovery) — one native class per test file, `PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE` runner macro | 4.8.0 | 4.10.0 |
 | Build-time test discovery — first release, `PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN`/`_END` runner macro | 4.7.0 | 4.9.0 |
 | [Native screenshots](/cli-commands/test#screenshots) — `screenshot_on_failure`, `$.takeNativeScreenshot('tag')` | 4.8.0 | 4.10.0 |
+| [`patrol develop` on web](/cli-commands#web), which also needs Flutter 3.47.0 or newer (`patrol_cli` checks it before starting the session) | 4.9.0-dev.1 | 4.11.0-dev.1 |
 
 The two build-time discovery rows are alternatives, not a range: the runner macro
 changed in the second one, so `patrol_cli` 4.8.0 and newer no longer accept the

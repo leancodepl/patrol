@@ -41,6 +41,13 @@ class _Runner extends ValueNotifier<_State> {
     return serviceManager.connectedApp?.operatingSystem == 'android';
   }
 
+  /// On web the "native" hierarchy is the page's DOM. The connected app's
+  /// operating system is the host OS there, so it can't be used to tell web
+  /// apart -- ask whether the app itself compiles to web.
+  bool get isWebApp {
+    return serviceManager.connectedApp?.isDartWebAppNow ?? false;
+  }
+
   void changeNode(Node? node) {
     value.currentNode = node;
     notifyListeners();
@@ -60,9 +67,13 @@ class _Runner extends ValueNotifier<_State> {
 
     switch (result) {
       case ApiSuccess(:final data):
-        value.roots = isAndroidApp
-            ? data.androidRoots.map((e) => AndroidNode(view: e)).toList()
-            : data.iOSroots.map((e) => IOSNode(view: e)).toList();
+        value.roots = switch (this) {
+          _ when isWebApp =>
+            data.webRoots.map((e) => WebNode(view: e)).toList(),
+          _ when isAndroidApp =>
+            data.androidRoots.map((e) => AndroidNode(view: e)).toList(),
+          _ => data.iOSroots.map((e) => IOSNode(view: e)).toList(),
+        };
 
       case ApiFailure<void> _:
       // TODO: Handle failure

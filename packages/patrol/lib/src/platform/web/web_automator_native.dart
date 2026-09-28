@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -6,6 +7,7 @@ import 'package:patrol/src/platform/web/patrol_app_service_web.dart';
 import 'package:patrol/src/platform/web/upload_file_data.dart';
 import 'package:patrol/src/platform/web/web_automator.dart' as web_automator;
 import 'package:patrol/src/platform/web/web_automator_config.dart';
+import 'package:patrol/src/platform/web/web_native_view.dart';
 import 'package:patrol/src/platform/web/web_selector.dart';
 import 'package:patrol_log/patrol_log.dart';
 
@@ -367,5 +369,21 @@ class WebAutomator implements web_automator.WebAutomator {
       patrolLog: _patrolLog,
     );
     return result as String;
+  }
+
+  @override
+  Future<WebGetNativeViewsResponse> getNativeViews() async {
+    // Deliberately no patrolLog: this is driven by the DevTools extension, not
+    // by the test, so it must not show up among the test's steps.
+    final result = await callPlaywright(
+      'getNativeViews',
+      {},
+      logger: _config.logger,
+    );
+    // `dartify()` hands back nested LinkedMap<Object?, Object?>, which the
+    // generated fromJson can't cast. A JSON round-trip retypes the whole tree
+    // in one go -- the payload is plain JSON by construction.
+    final json = jsonDecode(jsonEncode(result)) as Map<String, dynamic>;
+    return WebGetNativeViewsResponse.fromJson(json);
   }
 }

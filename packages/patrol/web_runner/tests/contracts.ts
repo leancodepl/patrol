@@ -130,6 +130,7 @@ export type GetPagesRequest = PatrolNativeRequestBase<"getPages", {}>
 export type GetCurrentPageRequest = PatrolNativeRequestBase<"getCurrentPage", {}>
 export type GetCurrentPageUrlRequest = PatrolNativeRequestBase<"getCurrentPageUrl", {}>
 export type WaitForPopupRequest = PatrolNativeRequestBase<"waitForPopup", {}>
+export type GetNativeViewsRequest = PatrolNativeRequestBase<"getNativeViews", {}>
 type UnknownRequest = PatrolNativeRequestBase<`unknown-placeholder-${string}`, unknown>
 
 export type PatrolNativeRequest =
@@ -146,6 +147,7 @@ export type PatrolNativeRequest =
   | GetCookiesRequest
   | GetCurrentPageRequest
   | GetCurrentPageUrlRequest
+  | GetNativeViewsRequest
   | GetPagesRequest
   | GoBackRequest
   | GoForwardRequest

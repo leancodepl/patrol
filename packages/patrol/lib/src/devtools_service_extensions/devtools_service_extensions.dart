@@ -24,6 +24,7 @@ class DevtoolsServiceExtensions {
             'androidRoots': roots,
             'iOSroots': <Map<String, dynamic>>[],
             'roots': roots,
+            'webRoots': <Map<String, dynamic>>[],
           };
         },
         ios: () async {
@@ -34,6 +35,19 @@ class DevtoolsServiceExtensions {
             'androidRoots': <Map<String, dynamic>>[],
             'iOSroots': roots,
             'roots': <Map<String, dynamic>>[],
+            'webRoots': <Map<String, dynamic>>[],
+          };
+        },
+        web: () async {
+          // On web the DOM is the view hierarchy -- see WebNativeView.
+          final response = await platform.web.getNativeViews();
+          final roots = response.roots.map((e) => e.toJson()).toList();
+
+          return {
+            'androidRoots': <Map<String, dynamic>>[],
+            'iOSroots': <Map<String, dynamic>>[],
+            'roots': <Map<String, dynamic>>[],
+            'webRoots': roots,
           };
         },
       );

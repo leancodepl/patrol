@@ -5,6 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol/src/binding.dart';
+import 'package:patrol/src/develop_generation.dart';
+import 'package:patrol/src/develop_view_assertion.dart';
 import 'package:patrol/src/global_state.dart' as global_state;
 import 'package:patrol/src/native/native_automator_config.dart';
 import 'package:patrol/src/platform/contracts/contracts.dart';
@@ -179,6 +181,9 @@ void patrolTest(
         web: platformAutomator.web.configure,
       );
 
+      // The binding claimed this generation when the program started.
+      final generation = patrolBinding.developGeneration;
+
       patrolLog.log(
         TestEntry(
           name: global_state.currentTestFullName,
@@ -192,7 +197,7 @@ void patrolTest(
       );
       try {
         await callback(patrolTester);
-      } catch (_) {
+      } catch (err, st) {
         // Capture the failing screen before teardown pumps the next frame.
         if (constants.screenshotOnFailureEnabled) {
           await patrolTester.takeNativeScreenshot('failure');
@@ -204,6 +209,13 @@ void patrolTest(
               status: TestEntryStatus.failure,
             ),
           );
+          final details = switch (err) {
+            TestFailure(:final message?) => message,
+            _ => '$err\n$st',
+          };
+          details
+              .split('\n')
+              .forEach((line) => patrolLog.log(ErrorEntry(message: line)));
         }
         rethrow;
       }
@@ -215,7 +227,8 @@ void patrolTest(
       // structured status, without ending the Hot Restart session.
       void reportDevelopException() {
         final caughtException = patrolBinding.takeException();
-        if (caughtException == null) {
+        if (caughtException == null ||
+            isDisposedViewAssertion(caughtException)) {
           return;
         }
         patrolLog.log(
@@ -254,11 +267,22 @@ void patrolTest(
           ..log(
             ConfigEntry(config: const {ConfigEntry.developCompletedKey: true}),
           );
-        // Wait indefinitely in develop mode after the last test. The app stays
-        // interactive here, so keep reporting exceptions (e.g. from manual taps
-        // while iterating) as they happen instead of losing them.
-        while (true) {
-          await widgetTester.pump();
+        // Wait indefinitely in develop mode after the last test, reporting
+        // exceptions from manual interactions as they happen. On web, bail out
+        // once a newer hot-restart generation claims the app or the engine
+        // starts tearing the view down, or this loop keeps pumping frames into
+        // a disposed EngineFlutterView and floods the console with assertions.
+        // `fullyLive` drives frames itself, and a pump left in flight by a hot
+        // restart never completes, which freezes this run and everything it holds.
+        final selfDriving =
+            patrolBinding.framePolicy ==
+            LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
+
+        while (isCurrentDevelopGeneration(generation) &&
+            patrolBinding.platformDispatcher.implicitView != null) {
+          if (!selfDriving) {
+            await widgetTester.pump();
+          }
           reportDevelopException();
           await Future<void>.delayed(const Duration(milliseconds: 10));
         }

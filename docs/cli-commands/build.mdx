@@ -9,10 +9,11 @@ Build app binaries for integration testing.
 ```
 patrol build android
 patrol build ios
+patrol build web
 ```
 
-To see all available options and flags, run `patrol build android --help` or
-`patrol build ios --help`.
+To see all available options and flags, run `patrol build android --help`,
+`patrol build ios --help` or `patrol build web --help`.
 
 <Info>
   For `patrol build` to work, you must complete [native setup].
@@ -94,6 +95,36 @@ See [Build-time test discovery][discovery] for setup (including the required iOS
 `RunnerUITests.m` change) and trade-offs.
 
 [discovery]: /documentation/ci/build-time-test-discovery
+
+### Building for web
+
+`patrol build web` compiles the test app into a self-contained directory, so CI
+can build once and run the tests on machines that have neither Flutter nor a
+resolved pub cache:
+
+```
+patrol build web --target patrol_test/web/ --output build/patrol-web
+```
+
+```
+build/patrol-web/
+  app/      the compiled web app, with the test bundle as its entrypoint
+  runner/   the Playwright runner, without node_modules
+```
+
+Run it with [`patrol test-without-building --input`](/cli-commands/test-without-building),
+which serves `app/` itself and drives it with `runner/`. Only Node is needed
+there.
+
+The project must be configured for the web, which `patrol test` does not require:
+run `flutter create . --platforms web` once if there is no `web/` directory.
+
+<Info>
+  Web tests only work in debug mode. Profile and release builds drop the
+  semantics tree Patrol types and taps through, so the tests run green without
+  touching the app. `patrol build web` refuses `--profile` and `--release`
+  unless you pass `--force`.
+</Info>
 
 ### Building for a `patrol develop` session on another machine
 

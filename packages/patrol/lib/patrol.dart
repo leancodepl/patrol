@@ -37,3 +37,4 @@ export 'src/platform/target_platform.dart'
 export 'src/platform/web/upload_file_data.dart';
 export 'src/platform/web/web_automator.dart';
 export 'src/platform/web/web_automator_config.dart';
+export 'src/platform/web/web_native_view.dart';

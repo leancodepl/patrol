@@ -629,7 +629,10 @@ class WebAppOptions {
   }
 
   /// Translates these options into a proper flutter build invocation.
-  List<String> toFlutterBuildInvocation() {
+  ///
+  /// [output] is the absolute directory to compile into; Flutter's default of
+  /// `build/web` is used when it is null.
+  List<String> toFlutterBuildInvocation({String? output}) {
     final cmd = [
       flutter.command.executable,
       ...flutter.command.arguments,
@@ -637,6 +640,7 @@ class WebAppOptions {
       'web',
       '--target=${flutter.target}',
       '--${flutter.buildMode.name}',
+      if (output != null) '--output=$output',
       // Note: --flavor is not supported for web, so we don't include it
       ...flutter.dartDefines.entries.map(
         (e) => '--dart-define=${e.key}=${e.value}',

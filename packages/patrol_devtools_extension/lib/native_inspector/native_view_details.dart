@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:patrol_devtools_extension/api/contracts.dart';
+import 'package:patrol_devtools_extension/api/native_views.dart';
 import 'package:patrol_devtools_extension/native_inspector/nodes/node.dart';
 import 'package:patrol_devtools_extension/native_inspector/widgets/overflowing_flex.dart';
 
@@ -132,6 +133,19 @@ class _NodeDetails extends HookWidget {
         ('placeholderValue:', n.view.placeholderValue),
         ('value:', n.view.value),
         ('frame:', n.view.frame._toDisplayValue()),
+      ],
+      final WebNode n => [
+        ('tagName:', n.view.tagName),
+        ('id:', n.view.id),
+        ('role:', n.view.role),
+        ('ariaLabel:', n.view.ariaLabel),
+        ('testId:', n.view.testId),
+        ('text:', n.view.text),
+        ('isEnabled:', n.view.isEnabled),
+        ('isFocused:', n.view.isFocused),
+        ('isVisible:', n.view.isVisible),
+        ('childCount:', n.view.childCount),
+        ('bounds:', n.view.bounds?._toDisplayValue()),
       ],
     };
 
@@ -266,6 +280,13 @@ extension _RectangleExtension on Rectangle {
 extension _Point2DExtension on Point2D {
   String _toDisplayValue() {
     return 'x: ${x.toInt()}, y: ${y.toInt()}';
+  }
+}
+
+extension _WebViewBoundsExtension on WebViewBounds {
+  String _toDisplayValue() {
+    return 'x: ${x.toInt()}, y: ${y.toInt()}, '
+        'w: ${width.toInt()}, h: ${height.toInt()}';
   }
 }
 

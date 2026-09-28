@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:meta/meta.dart';
+import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
@@ -17,10 +18,32 @@ import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/macos/macos_test_backend.dart' hide BuildMode;
 import 'package:patrol_cli/src/pubspec_reader.dart';
+import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
 import 'package:patrol_cli/src/web/web_test_backend.dart';
 import 'package:patrol_log/patrol_log.dart';
+import 'package:version/version.dart';
+
+// TODO: Drop this gate once patrol's pubspec requires Flutter 3.47.0,
+// which makes it unreachable.
+const _minWebDevelopFlutter = '3.47.0';
+
+/// Compared against the lowest 3.47 prerelease, so 3.47 betas pass too.
+final _minWebDevelopFlutterVersion = Version.parse(
+  '$_minWebDevelopFlutter-0.0.pre',
+);
+
+/// Whether [flutterVersion] carries flutter/flutter#183838. An unparseable
+/// version passes, so a format change upstream can't block web develop.
+@visibleForTesting
+bool supportsWebHotRestart(String flutterVersion) {
+  try {
+    return Version.parse(flutterVersion) >= _minWebDevelopFlutterVersion;
+  } on Object {
+    return true;
+  }
+}
 
 /// Result of a completed test execution within a develop session.
 class TestCompletionResult {
@@ -107,6 +130,33 @@ class DevelopService {
   /// The device discovered during the last [run] call.
   Device? get device => _device;
 
+  /// The Chrome debugger port used by the web develop session.
+  String? get webDebuggerPort => _webTestBackend.debuggerPort;
+
+  /// Fails fast when the SDK predates flutter/flutter#183838. Without it a web
+  /// Hot Restart reports success and keeps serving the previous test bundle.
+  void _assertWebHotRestartSupported(FlutterCommand flutterCommand) {
+    final String version;
+    try {
+      version = FlutterVersion.fromCLI(flutterCommand).version;
+    } on Object catch (err) {
+      _logger.detail('Could not read the Flutter version: $err');
+      return;
+    }
+
+    if (!supportsWebHotRestart(version)) {
+      throwToolExit(
+        'patrol develop on web requires Flutter $_minWebDevelopFlutter or '
+        'newer, but found $version.\n'
+        'Older SDKs report a successful Hot Restart and keep serving the '
+        'previous test bundle, so your changes would silently do nothing.\n'
+        'patrol runs the `flutter` on PATH. If your project pins a newer SDK, '
+        'point patrol at it with --flutter-command, '
+        'e.g. --flutter-command "fvm flutter".',
+      );
+    }
+  }
+
   /// Runs the full develop flow: discover device, read config, bundle test,
   /// build, execute, and attach for hot restart.
   Future<void> run(DevelopOptions options) async {
@@ -123,12 +173,6 @@ class DevelopService {
 
     if (options.generateBundle) {
       _testBundler.createDevelopTestBundle(testDirectory, target);
-    }
-    _testBundler.ensureEntrypoint(testDirectory);
-    final entrypoint = _testBundler.getEntrypointFile(testDirectory);
-    final signalSubscriptions = _registerProxyCleanupOnSignals(testDirectory);
-    Future<void> cleanupProxy() async {
-      _testBundler.deleteEntrypointProxy(testDirectory);
     }
 
     final androidFlavor = options.flavor ?? config.android.flavor;
@@ -167,11 +211,24 @@ class DevelopService {
       throwToolExit('macOS is not supported with develop');
     }
 
-    // Changes applied outside `/lib` directory are not 'hot-restarted'.
-    // This is a blocker from applying changes to test code.
-    // https://github.com/flutter/flutter/issues/175318
     if (device.targetPlatform == TargetPlatform.web) {
-      throwToolExit('Web is not supported with develop');
+      _assertWebHotRestartSupported(options.flutterCommand);
+    }
+
+    // For web, use the bundle file directly (like the test command does),
+    // because the proxy entrypoint in integration_test/ causes broken
+    // relative imports under the web compiler.
+    final isWeb = device.targetPlatform == TargetPlatform.web;
+    final File entrypoint;
+    if (isWeb) {
+      entrypoint = _testBundler.getBundledTestFile(testDirectory);
+    } else {
+      _testBundler.ensureEntrypoint(testDirectory);
+      entrypoint = _testBundler.getEntrypointFile(testDirectory);
+    }
+    final signalSubscriptions = _registerProxyCleanupOnSignals(testDirectory);
+    Future<void> cleanupProxy() async {
+      _testBundler.deleteEntrypointProxy(testDirectory);
     }
 
     _logger.detail('Received device: ${device.name} (${device.id})');
@@ -542,6 +599,8 @@ class DevelopService {
           hideTestSteps: hideTestSteps,
           clearTestSteps: clearTestSteps,
           stdin: _stdin,
+          onLogEntry: onLogEntry,
+          openDevtools: openDevtools,
         );
     }
 
