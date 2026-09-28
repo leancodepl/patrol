@@ -22,9 +22,27 @@ guessing:
 Follow the **Setup** steps, deep-linking to the relevant point:
 
 - Add the `patrol` dev dependency and the `patrol:` block in `pubspec.yaml` — https://patrol.leancode.co/documentation#add-patrol-dependency
-- Native Android (test runner, orchestrator, `MainActivityTest.java`) — https://patrol.leancode.co/documentation#android-setup
-  (Groovy build files: https://patrol.leancode.co/documentation#old-android-setup)
+- Native Android (self-instrumenting `:patrolTest` module,
+  `:patrol_test_harness`, and `MainActivityTest.java`) —
+  https://patrol.leancode.co/documentation#android-setup
 - Build flavors, if the project uses them — https://patrol.leancode.co/documentation#flavors
+
+For Android, verify all of the following:
+
+- `settings.gradle(.kts)` includes `:patrolTest` and resolves
+  `:patrol_test_harness` relative to Flutter's existing `:patrol` project.
+- `patrolTest` applies `com.android.test`, targets `:app`, enables
+  `android.experimental.self-instrumenting`, and mirrors the app's SDK levels,
+  flavor dimensions, product flavors, and build types.
+- The orchestrator (`testOptions.execution` plus the `androidTestUtil`
+  dependency) is configured on `:patrolTest`. Set
+  `testInstrumentationRunnerArguments["clearPackageData"] = "true"` there to
+  clear the app before each test.
+- The host is under `android/patrolTest/src/main` and calls
+  `instrumentation.setUp()`.
+- The harness supplies the standard networking and package-visibility
+  permissions.
+- The app module contains the Flutter app configuration.
 
 ## 2. Write a first minimal test
 
@@ -49,8 +67,10 @@ green run confirms the setup.
 
 ## Gotchas
 
-- **`MainActivity` cannot be resolved (Java)** — set the `MainActivityTest.java`
-  `package` to the app's `applicationId`.
+- **`MainActivity` cannot be resolved in `:patrolTest`** — use the
+  self-instrumenting host template and call `setUp()`.
+- **Flavor task missing** — ensure the `:patrolTest` build file mirrors flavor
+  dimensions and product flavors from `:app`; do not hardcode flavor names.
 - **Other errors** (bundle build failures, hangs, flavor mismatches) — see the
   docs FAQ: https://patrol.leancode.co/documentation#faq
 

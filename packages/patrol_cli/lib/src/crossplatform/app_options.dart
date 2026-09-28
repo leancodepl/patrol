@@ -2,6 +2,7 @@ import 'dart:convert' show base64Encode, utf8;
 
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' show basename;
+import 'package:patrol_cli/src/android/android_test_layout.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
@@ -109,6 +110,7 @@ class AndroidAppOptions {
     required this.appServerPort,
     required this.testServerPort,
     required this.uninstall,
+    this.testLayout = AndroidTestLayout.selfInstrumenting,
     this.emitTestManifest = false,
   });
 
@@ -117,6 +119,7 @@ class AndroidAppOptions {
   final int appServerPort;
   final int testServerPort;
   final bool uninstall;
+  final AndroidTestLayout testLayout;
 
   /// Whether to discover Dart tests at build time (host `flutter test`) and
   /// generate static JUnit test methods, so each Dart test becomes a real,
@@ -129,15 +132,19 @@ class AndroidAppOptions {
     // for example: assembleDevDebug, assembleRelease
     return _toGradleInvocation(
       isWindows: isWindows,
+      projectPath: ':app',
       task: 'assemble$_effectiveFlavor$_buildMode',
     );
   }
 
   List<String> toGradleAssembleTestInvocation({required bool isWindows}) {
-    // for example: assembleDevDebugAndroidTest, assembleReleaseAndroidTest
+    final selfInstrumenting = testLayout == AndroidTestLayout.selfInstrumenting;
     return _toGradleInvocation(
       isWindows: isWindows,
-      task: 'assemble$_effectiveFlavor${_buildMode}AndroidTest',
+      projectPath: selfInstrumenting ? ':patrolTest' : ':app',
+      task: selfInstrumenting
+          ? 'assemble$_effectiveFlavor$_buildMode'
+          : 'assemble$_effectiveFlavor${_buildMode}AndroidTest',
       noUninstallAfterTests: !uninstall,
     );
   }
@@ -145,20 +152,25 @@ class AndroidAppOptions {
   List<String> toGradleConnectedTestInvocation({
     required bool isWindows,
     String? onlyTestClass,
+    String? targetAppId,
   }) {
-    // for example: connectedDevDebugAndroidTest, connectedReleaseAndroidTest
+    final projectPath = testLayout == AndroidTestLayout.selfInstrumenting
+        ? ':patrolTest'
+        : ':app';
     return _toGradleInvocation(
       isWindows: isWindows,
+      projectPath: projectPath,
       task: 'connected$_effectiveFlavor${_buildMode}AndroidTest',
       noUninstallAfterTests: !uninstall,
       // Restrict the run to the generated static class (the Android analog of
       // iOS `-only-testing`). This also stops the parameterized host class from
       // performing its runtime discovery launch.
       onlyTestClass: onlyTestClass,
+      targetAppId: targetAppId,
     );
   }
 
-  List<String> toGradleAppDependencies({required bool isWindows}) {
+  List<String> toGradleTestDependencies({required bool isWindows}) {
     final List<String> cmd;
     if (isWindows) {
       cmd = <String>[r'.\gradlew.bat'];
@@ -167,7 +179,10 @@ class AndroidAppOptions {
     }
 
     // Add Gradle task
-    cmd.add(':app:dependencies');
+    final projectPath = testLayout == AndroidTestLayout.selfInstrumenting
+        ? ':patrolTest'
+        : ':app';
+    cmd.add('$projectPath:dependencies');
 
     return cmd;
   }
@@ -185,9 +200,11 @@ class AndroidAppOptions {
   /// Translates these options into a proper Gradle invocation.
   List<String> _toGradleInvocation({
     required bool isWindows,
+    required String projectPath,
     required String task,
     bool noUninstallAfterTests = false,
     String? onlyTestClass,
+    String? targetAppId,
   }) {
     final List<String> cmd;
     if (isWindows) {
@@ -197,7 +214,7 @@ class AndroidAppOptions {
     }
 
     // Add Gradle task
-    cmd.add(':app:$task');
+    cmd.add('$projectPath:$task');
 
     // Add Dart test target
     final target = '-Ptarget=${flutter.target}';
@@ -251,7 +268,11 @@ class AndroidAppOptions {
         '-Pandroid.testInstrumentationRunnerArguments.class=$onlyTestClass',
       );
     }
-
+    if (targetAppId != null) {
+      cmd.add(
+        '-Pandroid.testInstrumentationRunnerArguments.patrolAppId=$targetAppId',
+      );
+    }
     return cmd;
   }
 }

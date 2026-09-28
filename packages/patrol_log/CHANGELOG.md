@@ -1,3 +1,8 @@
+## Unreleased
+
+- Omit the report line from the test summary when `PatrolLogReader.reportPath` is empty
+  (used when Android tests run without Gradle, e.g. `patrol test-without-building`).
+
 ## 0.10.1
 
 - Fix first word of a test description being displayed as the test file name when the finished test entry name has no file prefix. (#3167)

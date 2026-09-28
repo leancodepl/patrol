@@ -37,16 +37,10 @@ android {
 
     defaultConfig {
         applicationId = "pl.leancode.patrol.example"
-        minSdk = 23
+        minSdk = flutter.minSdkVersion
         targetSdk = 35
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-        testInstrumentationRunner = "pl.leancode.patrol.PatrolJUnitRunner"
-        testInstrumentationRunnerArguments["clearPackageData"] = "true"
-    }
-
-    testOptions {
-        execution = "ANDROIDX_TEST_ORCHESTRATOR"
     }
 
     buildTypes {
@@ -62,5 +56,4 @@ flutter {
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
-    androidTestUtil("androidx.test:orchestrator:1.5.1")
 }
