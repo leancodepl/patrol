@@ -1,3 +1,10 @@
+## Unreleased
+
+- Add macOS platform automation via `$.platform.macos`:
+    - `tap` / `waitUntilVisible` for native views
+    - `isAlertVisible` / `tapAlertButton` for `NSAlert`
+    - `tapMenu` for the application menu bar
+
 ## 4.10.0
 
 - Build-time test discovery (experimental): replace the `STATIC_BEGIN`/`_END` pair in

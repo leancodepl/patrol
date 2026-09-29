@@ -170,17 +170,60 @@ class PatrolFinder implements MatchFinder {
   final PatrolTester tester;
 
   /// Wraps a function with a log entry for the start and end of the function.
+  ///
+  /// If [description] is provided, it replaces the auto-generated step text in
+  /// the patrol log. On failure, the error is wrapped in [PatrolStepException]
+  /// with that description (e.g. `failed on: …`).
   Future<T> wrapWithPatrolLog<T>({
     required String action,
     String? value,
+    String? description,
     required String color,
     required Future<T> Function() function,
     bool enablePatrolLog = true,
   }) async {
-    if (!(tester.config.printLogs && enablePatrolLog)) {
+    final shouldLog = tester.config.printLogs && enablePatrolLog;
+    if (!shouldLog && description == null) {
       return function();
     }
 
+    final text =
+        description ??
+        _defaultStepText(action: action, value: value, color: color);
+    if (shouldLog) {
+      tester.patrolLog.log(
+        StepEntry(action: text, status: StepEntryStatus.start),
+      );
+    }
+    try {
+      final result = await function();
+      if (shouldLog) {
+        tester.patrolLog.log(
+          StepEntry(action: text, status: StepEntryStatus.success),
+        );
+      }
+      return result;
+    } catch (err, st) {
+      if (shouldLog) {
+        tester.patrolLog.log(
+          StepEntry(action: text, status: StepEntryStatus.failure),
+        );
+      }
+      if (description != null) {
+        Error.throwWithStackTrace(
+          PatrolStepException(description: description, cause: err),
+          st,
+        );
+      }
+      rethrow;
+    }
+  }
+
+  String _defaultStepText({
+    required String action,
+    String? value,
+    required String color,
+  }) {
     final finderText = finder
         .toString(describeSelf: true)
         .replaceAll('A finder that searches for', '')
@@ -188,22 +231,7 @@ class PatrolFinder implements MatchFinder {
         .replaceAll(' (ignoring all but first)', '');
 
     final valueText = value != null ? ' "$value"' : '';
-    final text = '$color$action${AnsiCodes.reset}$valueText$finderText';
-    tester.patrolLog.log(
-      StepEntry(action: text, status: StepEntryStatus.start),
-    );
-    try {
-      final result = await function();
-      tester.patrolLog.log(
-        StepEntry(action: text, status: StepEntryStatus.success),
-      );
-      return result;
-    } catch (err) {
-      tester.patrolLog.log(
-        StepEntry(action: text, status: StepEntryStatus.failure),
-      );
-      rethrow;
-    }
+    return '$color$action${AnsiCodes.reset}$valueText$finderText';
   }
 
   /// Waits until this finder finds at least 1 visible widget and then taps on
@@ -231,14 +259,19 @@ class PatrolFinder implements MatchFinder {
   ///  - [PatrolFinder.waitUntilVisible], which is used to wait for the widget
   ///    to appear
   ///  - [WidgetController.tap]
+  ///
+  /// If [description] is provided, it replaces the auto-generated step text in
+  /// the patrol log and is included in the error message on failure.
   Future<void> tap({
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimeout,
     Alignment alignment = Alignment.center,
+    String? description,
   }) => wrapWithPatrolLog(
     action: 'tap',
     color: AnsiCodes.yellow,
+    description: description,
     function: () => tester.tap(
       this,
       settlePolicy: settlePolicy,
@@ -274,14 +307,19 @@ class PatrolFinder implements MatchFinder {
   ///  - [PatrolFinder.waitUntilVisible], which is used to wait for the widget
   ///    to appear
   ///  - [WidgetController.longPress]
+  ///
+  /// If [description] is provided, it replaces the auto-generated step text in
+  /// the patrol log and is included in the error message on failure.
   Future<void> longPress({
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimeout,
     Alignment alignment = Alignment.center,
+    String? description,
   }) => wrapWithPatrolLog(
     action: 'longPress',
     color: AnsiCodes.yellow,
+    description: description,
     function: () => tester.longPress(
       this,
       settlePolicy: settlePolicy,
@@ -317,6 +355,9 @@ class PatrolFinder implements MatchFinder {
   ///  - [PatrolFinder.waitUntilVisible], which is used to wait for the widget
   ///    to appear
   ///  - [WidgetTester.enterText]
+  ///
+  /// If [description] is provided, it replaces the auto-generated step text in
+  /// the patrol log and is included in the error message on failure.
   Future<void> enterText(
     String text, {
     SettlePolicy? settlePolicy,
@@ -324,9 +365,11 @@ class PatrolFinder implements MatchFinder {
     Duration? settleTimeout,
     Alignment alignment = Alignment.center,
     bool hideKeyboard = true,
+    String? description,
   }) => wrapWithPatrolLog(
     action: 'enterText',
     color: AnsiCodes.magenta,
+    description: description,
     function: () => tester.enterText(
       this,
       text,
@@ -349,6 +392,9 @@ class PatrolFinder implements MatchFinder {
   ///
   /// See also:
   ///  - [PatrolTester.scrollUntilVisible], which this method wraps
+  ///
+  /// If [description] is provided, it replaces the auto-generated step text in
+  /// the patrol log and is included in the error message on failure.
   Future<PatrolFinder> scrollTo({
     Finder? view,
     double step = defaultScrollDelta,
@@ -358,10 +404,12 @@ class PatrolFinder implements MatchFinder {
     Duration? dragDuration,
     SettlePolicy? settlePolicy,
     Alignment alignment = Alignment.center,
+    String? description,
   }) {
     return wrapWithPatrolLog(
       action: 'scrollTo',
       color: AnsiCodes.green,
+      description: description,
       function: () {
         return tester.scrollUntilVisible(
           finder: this,
@@ -386,16 +434,18 @@ class PatrolFinder implements MatchFinder {
   /// Timeout is globally set by [PatrolTesterConfig.visibleTimeout] inside
   /// [PatrolTester.config]. If you want to override this global setting, set
   /// [timeout].
-  Future<PatrolFinder> waitUntilExists({Duration? timeout}) =>
-      wrapWithPatrolLog(
-        action: 'waitUntilExists',
-        color: AnsiCodes.cyan,
-        function: () => tester.waitUntilExists(
-          this,
-          timeout: timeout,
-          enablePatrolLog: false,
-        ),
-      );
+  /// If [description] is provided, it replaces the auto-generated step text in
+  /// the patrol log and is included in the error message on failure.
+  Future<PatrolFinder> waitUntilExists({
+    Duration? timeout,
+    String? description,
+  }) => wrapWithPatrolLog(
+    action: 'waitUntilExists',
+    color: AnsiCodes.cyan,
+    description: description,
+    function: () =>
+        tester.waitUntilExists(this, timeout: timeout, enablePatrolLog: false),
+  );
 
   /// Waits until this finder finds at least one visible widget.
   ///
@@ -407,13 +457,17 @@ class PatrolFinder implements MatchFinder {
   /// [PatrolTester.config]. If you want to override this global setting, set
   /// [timeout].
   /// {@macro patrol_tester.alignment_on_visible_check}
+  /// If [description] is provided, it replaces the auto-generated step text in
+  /// the patrol log and is included in the error message on failure.
   Future<PatrolFinder> waitUntilVisible({
     Duration? timeout,
     bool enablePatrolLog = true,
     Alignment alignment = Alignment.center,
+    String? description,
   }) => wrapWithPatrolLog(
     action: 'waitUntilVisible',
     color: AnsiCodes.cyan,
+    description: description,
     function: () => tester.waitUntilVisible(
       this,
       timeout: timeout,
@@ -678,12 +732,14 @@ extension ActionCombiner on Future<PatrolFinder> {
     Duration? visibleTimeout,
     Duration? settleTimeout,
     Alignment alignment = Alignment.center,
+    String? description,
   }) async {
     await (await this).tap(
       settlePolicy: settlePolicy,
       visibleTimeout: visibleTimeout,
       settleTimeout: settleTimeout,
       alignment: alignment,
+      description: description,
     );
   }
 
@@ -696,6 +752,7 @@ extension ActionCombiner on Future<PatrolFinder> {
     Duration? settleTimeout,
     Alignment alignment = Alignment.center,
     bool hideKeyboard = true,
+    String? description,
   }) async {
     await (await this).enterText(
       text,
@@ -704,6 +761,7 @@ extension ActionCombiner on Future<PatrolFinder> {
       settleTimeout: settleTimeout,
       alignment: alignment,
       hideKeyboard: hideKeyboard,
+      description: description,
     );
   }
 }
