@@ -384,7 +384,7 @@ class PatrolFinder implements MatchFinder {
 
   /// Shorthand for [PatrolTester.scrollUntilVisible].
   ///
-  /// Scrolls [view] in [scrollDirection] until this finders finds
+  /// Scrolls [view] in [scrollDirection] until this finder finds
   /// at least one visible widget.
   ///
   /// It also ensures that [view] is visible, by calling

@@ -581,7 +581,7 @@ class PatrolTester {
 
   /// Waits until this finder finds at least one widget.
   ///
-  /// Throws a [WaitUntilExistsTimeoutException] if no widgets  found.
+  /// Throws a [WaitUntilExistsTimeoutException] if no widgets found.
   ///
   /// Timeout is globally set by [PatrolTesterConfig.existsTimeout] inside
   /// [PatrolTester.config]. If you want to override this global setting, set
@@ -711,7 +711,7 @@ class PatrolTester {
   /// This is a reimplementation of [WidgetController.dragUntilVisible] that
   /// differs from the original in the following ways:
   ///
-  ///  * scrolls until until [finder] finds at least one *existing* widget
+  ///  * scrolls until [finder] finds at least one *existing* widget
   ///
   ///  * waits until [view] is visible
   ///
@@ -723,7 +723,7 @@ class PatrolTester {
   ///
   ///  * can drag any widget, not only a [Scrollable]
   ///
-  ///  * performed drag is slower (it takes some time to performe dragging
+  ///  * performed drag is slower (it takes some time to perform dragging
   ///    gesture, [PatrolTesterConfig.dragDuration] by default)
   ///
   ///  * you can configure, which version of pumping is performed between
@@ -870,7 +870,7 @@ class PatrolTester {
     );
   }
 
-  /// Scrolls [view] in its scrolling direction until this finders finds
+  /// Scrolls [view] in its scrolling direction until this finder finds
   /// at least one existing widget.
   ///
   /// If [view] is null, it defaults to the first found [Scrollable].
@@ -942,7 +942,7 @@ class PatrolTester {
     );
   }
 
-  /// Scrolls [view] in [scrollDirection] until this finders finds
+  /// Scrolls [view] in [scrollDirection] until this finder finds
   /// at least one visible widget.
   ///
   /// If [view] is null, it defaults to the first found [Scrollable].
