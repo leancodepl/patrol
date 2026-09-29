@@ -581,9 +581,9 @@ class PatrolTester {
 
   /// Waits until this finder finds at least one widget.
   ///
-  /// Throws a [WaitUntilVisibleTimeoutException] if no widgets  found.
+  /// Throws a [WaitUntilExistsTimeoutException] if no widgets  found.
   ///
-  /// Timeout is globally set by [PatrolTesterConfig.visibleTimeout] inside
+  /// Timeout is globally set by [PatrolTesterConfig.existsTimeout] inside
   /// [PatrolTester.config]. If you want to override this global setting, set
   /// [timeout].
   Future<PatrolFinder> waitUntilExists(
@@ -634,7 +634,7 @@ class PatrolTester {
   /// Provide [alignment] to fine tune the visibility check by calling
   /// [Finder.hitTestable] at this [alignment] of the [Widget].
   /// This might be helpful in case the tested [Widget] is or contains a [Row]
-  /// or a [Column]. The default [Alignment.center] might always be the best
+  /// or a [Column]. The default [Alignment.center] might not always be the best
   ///  choice as the following example demonstrates:
   ///
   /// ```dart
@@ -724,7 +724,7 @@ class PatrolTester {
   ///  * can drag any widget, not only a [Scrollable]
   ///
   ///  * performed drag is slower (it takes some time to performe dragging
-  ///    gesture, half a second by default)
+  ///    gesture, [PatrolTesterConfig.dragDuration] by default)
   ///
   ///  * you can configure, which version of pumping is performed between
   ///    each drag gesture ([pump], [pumpAndSettle] or [pumpAndTrySettle]),
@@ -806,7 +806,7 @@ class PatrolTester {
   ///  * can drag any widget, not only a [Scrollable]
   ///
   ///  * performed drag is slower (it takes some time to perform dragging
-  ///    gesture, half a second by default)
+  ///    gesture, [PatrolTesterConfig.dragDuration] by default)
   ///
   ///  * you can configure, which version of pumping is performed between
   ///    each drag gesture ([pump], [pumpAndSettle] or [pumpAndTrySettle])
@@ -943,7 +943,7 @@ class PatrolTester {
   }
 
   /// Scrolls [view] in [scrollDirection] until this finders finds
-  /// at least one existing widget.
+  /// at least one visible widget.
   ///
   /// If [view] is null, it defaults to the first found [Scrollable].
   ///

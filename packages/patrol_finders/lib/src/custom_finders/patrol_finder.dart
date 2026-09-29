@@ -429,9 +429,9 @@ class PatrolFinder implements MatchFinder {
 
   /// Waits until this finder finds at least one widget.
   ///
-  /// Throws a [WaitUntilVisibleTimeoutException] if no widgets found.
+  /// Throws a [WaitUntilExistsTimeoutException] if no widgets found.
   ///
-  /// Timeout is globally set by [PatrolTesterConfig.visibleTimeout] inside
+  /// Timeout is globally set by [PatrolTesterConfig.existsTimeout] inside
   /// [PatrolTester.config]. If you want to override this global setting, set
   /// [timeout].
   /// If [description] is provided, it replaces the auto-generated step text in
