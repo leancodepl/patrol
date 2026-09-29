@@ -440,7 +440,7 @@ class PatrolTester {
   /// Example:
   /// ```dart
   /// // enters text into the first widget having Key('email')
-  /// await $(#email).enterText(user@example.com);
+  /// await $(#email).enterText('user@example.com');
   /// ```
   ///
   /// If the finder finds more than 1 widget, you can choose which one to enter
@@ -653,7 +653,7 @@ class PatrolTester {
   ///          SizedBox(height: 48),
   ///          Text('Bar'),
   ///        ],
-  ///      )
+  ///      );
   ///  }
   /// }
   /// ```

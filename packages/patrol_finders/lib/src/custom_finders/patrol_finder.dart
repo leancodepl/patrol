@@ -336,7 +336,7 @@ class PatrolFinder implements MatchFinder {
   /// Example:
   /// ```dart
   /// // enters text into the first widget having Key('email')
-  /// await $(#email).enterText(user@example.com);
+  /// await $(#email).enterText('user@example.com');
   /// ```
   ///
   /// If the finder finds more than 1 widget, you can choose which one to enter
@@ -509,7 +509,7 @@ class PatrolFinder implements MatchFinder {
   /// [waitUntilVisible] method:
   ///
   /// ```dart
-  /// expect(await $(Key('Sign in Button')).waitUntilVisible().text, 'Sign in');
+  /// expect((await $(Key('Sign in Button')).waitUntilVisible()).text, 'Sign in');
   /// ```
   ///
   /// Otherwise it throws a [PatrolFinderException].
