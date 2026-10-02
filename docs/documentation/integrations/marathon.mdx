@@ -29,7 +29,12 @@ brew install malinskiy/tap/marathon
 
 Patrol emits standard instrumentation APKs. Set `testParserConfiguration.type` to
 `remote` so Marathon discovers Dart tests at runtime through `PatrolJUnitRunner`
-(the same mechanism Android Test Orchestrator uses).
+(the same mechanism Android Test Orchestrator uses). Marathon's default `local`
+parser reads the bytecode without a device, and your Dart tests are not in there.
+
+`remote` already reports one entry per Dart test, so there is nothing here that
+[build-time test discovery](/documentation/ci/build-time-test-discovery) needs to
+fix.
 
 ### 1. Add Marathonfile
 
@@ -61,8 +66,17 @@ Marathon discovers connected emulators automatically. Reports are written to
 ## iOS (simulator)
 
 Patrol registers XCTest methods at runtime, so set
-`testParserConfiguration.type` to `xctest`. Marathon's default parser will not
-find any tests.
+`testParserConfiguration.type` to `xctest`. Marathon's default `nm` parser reads
+the compiled bundle, where none of your Dart tests exist yet, and finds nothing.
+
+<Info>
+  On iOS, [build-time test discovery](/documentation/ci/build-time-test-discovery)
+  is the better setup for Marathon. It compiles a real XCTest method per Dart test,
+  so Marathon lists them straight off the bundle with its default `nm` parser,
+  without booting a simulator and launching your app to enumerate them, and it's
+  what per-test sharding across machines needs. The config below keeps the `xctest`
+  parser, so it works either way.
+</Info>
 
 Set `batchingStrategy` to run multiple Patrol tests per `xcodebuild` invocation
 — Marathon's default is one test per batch, which is significantly slower.

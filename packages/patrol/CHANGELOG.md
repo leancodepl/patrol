@@ -2,11 +2,32 @@
 
 - Make `PATROL_BS_COVERAGE_FORCE_COMPILE=true` affordable. Patrol now pushes `PATROL_BS_COVERAGE_PACKAGES` down to the VM as `libraryFilters` when the patterns are plain anchored prefixes, so force-compilation no longer walks the Flutter framework and the SDK, and it passes `librariesAlreadyCompiled` so the compile is paid once per app process instead of once per test. (#3066)
 - Fix BrowserStack Dart coverage being lost when a session is killed mid-dump. The runner assembled the `.ec` in place - truncating it, writing the JaCoCo dump, then appending the Dart blocks - so a process killed in that window (e.g. the BrowserStack session timeout) left a Dart-less file. It now stages the whole file and swaps it in with a single rename. Per-process Dart LCOVs are also merged on device instead of concatenated, so the embedded payload stays the size of one cumulative snapshot instead of growing with the test count. (#3066)
-- Add BrowserStack-friendly Dart coverage collection. With `--dart-define=PATROL_BS_COVERAGE=true` (optional `PATROL_BS_COVERAGE_PACKAGES=<regexp>`, `PATROL_BS_COVERAGE_FORCE_COMPILE=true`), patrol gathers Dart line coverage from the running VM service and the Android test runner merges it into the JaCoCo `.exec` that BrowserStack collects. Requires `enableAndroidTestCoverage true` on the app's debug build type and `clearPackageData:false` in the BrowserStack build — `pm clear` between tests revokes the app's permission to write the coverage file, so only the first test would be reported (the runner logs an error when it sees `clearPackageData=true`). Works with the Android test orchestrator on or off; when off, the app service now serves every test from one process. A missing JaCoCo runtime warns loudly instead of silently skipping. (#3066)
-- Fix `pickImageFromGallery` on Android API 36: when the photo picker keeps the picker open after selecting a single image, tap the confirm button to finish. The tap is best-effort, so devices/emulators whose picker auto-confirms (no confirm button) keep working. The button label is resolved per device language (en/de/fr/pl/ja) so it works beyond English. (#3254)
-- Android: keep third-party `AccessibilityService`s running during the test session again. `AndroidAutomatorConfig.dontSuppressAccessibilityServices` now defaults to `true` (it was effectively `false` since 4.8.0) and is configurable, also via the `PATROL_ANDROID_DONT_SUPPRESS_ACCESSIBILITY_SERVICES` dart-define. (#3227)
-- Report uncaught exceptions (e.g. from `onPressed`) in `patrol develop` instead of silently passing. (#3200)
-- Add opt-in native failure screenshots on Android for device farms (e.g. BrowserStack, Firebase Test Lab): set `screenshot_on_failure: true` in the pubspec's `patrol` section to capture the failing screen from the Dart failure path (before teardown). The screenshot is written to the folder named after the running JUnit test (read from its `Description`), so it matches what the farm reports. Also adds `$.takeNativeScreenshot('tag')` for on-demand captures. Off by default; iOS is a no-op for now. (#3222)
+- Add BrowserStack-friendly Dart coverage collection. With `--dart-define=PATROL_BS_COVERAGE=true` (optional `PATROL_BS_COVERAGE_PACKAGES=<regexp>`, `PATROL_BS_COVERAGE_FORCE_COMPILE=true`), patrol gathers Dart line coverage from the running VM service and the Android test runner merges it into the JaCoCo `.exec` that BrowserStack collects. Requires `enableAndroidTestCoverage true` on the app's debug build type and `clearPackageData:false` in the BrowserStack build. Works with the Android test orchestrator on or off; when off, the app service now serves every test from one process. (#3066)
+- Add macOS platform automation via `$.platform.macos`:
+    - `tap` / `waitUntilVisible` for native views
+    - `isAlertVisible` / `tapAlertButton` for `NSAlert`
+    - `tapMenu` for the application menu bar
+
+## 4.10.0
+
+- Build-time test discovery (experimental): replace the `STATIC_BEGIN`/`_END` pair in
+  `RunnerUITests.m` with `PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE(RunnerUITests)`. Requires
+  `patrol_cli` 4.8.0 or newer. See the
+  [docs](https://patrol.leancode.co/documentation/ci/build-time-test-discovery).
+- Add `patrolTargetPlatform`, for deciding whether a test is registered. (#3241)
+- Add opt-in native failure screenshots and `$.takeNativeScreenshot('tag')` on Android. Requires
+  `patrol_cli` 4.8.0 or newer. See the
+  [docs](https://patrol.leancode.co/cli-commands/test#screenshots). (#3222)
+- Add Korean (ko) language support for native OS interactions. (#2303)
+- Fix third-party `AccessibilityService`s being suppressed during the test session, which regressed
+  in 4.8.0. Configurable with `AndroidAutomatorConfig.dontSuppressAccessibilityServices`. (#3227)
+- Fix every test running twice under tools that instrument the APK directly (Firebase Test Lab,
+  saucectl, emulator.wtf, Marathon) with build-time test discovery on Android.
+- Fix a test name containing `/` crashing Android Test Orchestrator. (#3259)
+- Fix a run hanging on a test the app skips or doesn't have. (#3241)
+- Fix `Failure.details` being `null` for exceptions thrown after the test body. (#3252)
+- Fix `pickImageFromGallery` on Android API 36. (#3254)
+- Fix uncaught exceptions passing silently in `patrol develop`. (#3200)
 
 ## 4.9.0
 

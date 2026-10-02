@@ -35,8 +35,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ObjCRunDartTestResponse : NSObject
 @property(nonatomic, readonly) BOOL passed;
+@property(nonatomic, readonly) BOOL skipped;
 @property(nonatomic, readonly, nullable) NSString *details;
-- (instancetype)initWithPassed:(BOOL)passed details:(NSString *_Nullable)details;
+- (instancetype)initWithPassed:(BOOL)passed skipped:(BOOL)skipped details:(NSString *_Nullable)details;
 @end
 
 @interface ObjCPatrolAppServiceClient : NSObject

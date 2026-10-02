@@ -1,10 +1,36 @@
 ## Unreleased
 
 - Add `patrol bs pull-coverage` subcommand. Downloads a BrowserStack Espresso coverage `.ec` and splits it into a standard JaCoCo `jacoco.exec` plus a Dart `patrol_lcov.info` produced by patrol's BS coverage hook. Omit `--session-id` to pull and merge every session (shard) in the build; duplicate `SF:` records for the same file across tests/shards are merged into one. Fails fast on builds that ran with `clearPackageData:true`, which is incompatible with coverage on BrowserStack. (#3066)
-- Add `screenshot_on_failure` option to the pubspec's `patrol` section, forwarded to the app (via a dart-define) for `build` and `test` so patrol can capture native failure screenshots on Android device farms (e.g. BrowserStack, Firebase Test Lab). Not collected by `patrol develop`. Off by default. (#3222)
-- `patrol test` (Android) now pulls native screenshots (failure and on-demand) from the device into `<test-directory>/screenshots` after the run (override with `--screenshots-output-dir`), so they are available from local/emulator runs, not only device farms. (#3222)
-- Allow the latest `package_config` (3.x), `cli_completion` (0.6.x) and `pub_updater` (0.6.x), without raising the minimum Dart SDK. (#3225)
-- Fix an issue when building iOS tests from different directory than project's root - we were looking in a wrong place for .xctestrun file. (#3250)
+- Fix `idevicesyslog` not being scoped to the device under test, so concurrent runs on a host with
+  several real iOS devices attached all streamed the same device's log, corrupting the step
+  display, `--show-flutter-logs` output and the test summary. (#3245)
+
+## 4.8.0
+
+- Build-time test discovery (experimental) now generates one native test class per Dart test file,
+  which renames every generated native test — regenerate any saved shard lists, native test filters
+  or dashboard mappings. Requires `patrol` 4.10.0 or newer. See the
+  [docs](https://patrol.leancode.co/documentation/ci/build-time-test-discovery).
+- Add `patrol build android --develop`, which builds the APKs a develop session needs so they can
+  be handed to another machine. (#3266)
+- Add `patrol develop --use-prebuilt-apks <dir>` (Android only), which runs a develop session
+  against those APKs instead of building with Gradle. (#3266)
+- Add support for a test file path in `--only`, which runs the whole file.
+- Add native screenshots on Android, enabled with `screenshot_on_failure` in the pubspec's `patrol`
+  section and collected by `patrol test` into `<test-directory>/screenshots`. Requires `patrol`
+  4.10.0 or newer. See the [docs](https://patrol.leancode.co/cli-commands/test#screenshots). (#3222)
+- Allow the latest `package_config`, `cli_completion` and `pub_updater`. (#3225)
+- Constrain `platform` below 3.2.0, which ships a non-backwards-compatible API. (#3288)
+- Report `--only` entries that match nothing instead of dropping them silently.
+- Report a `RunnerUITests.m` that disagrees with the build-time discovery setting, instead of
+  failing the build on a missing `.inc`.
+- Fix `patrolTargetPlatform` reporting the host's platform during build-time discovery. (#3241)
+- Fix `patrol develop` ignoring build-time test discovery.
+- Fix looking for the `.xctestrun` file in the wrong place when building iOS tests from outside the
+  project root. (#3250)
+- Fix hot restart dying on flavored `patrol develop`, which regressed in 4.6.1. (#3223)
+- Fix flavored iOS `patrol develop` losing logs on devices and failing on simulators. (#2465, #3279)
+- Fix `patrol develop` crashing on hosts whose terminal modes can't be changed. (#3278)
 
 ## 4.7.0
 

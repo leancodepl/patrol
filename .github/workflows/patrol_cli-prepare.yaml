@@ -55,9 +55,11 @@ jobs:
 
       - name: Run analyzer
         if: success() || failure()
-        run: |
-          flutter analyze
-          dart run custom_lint
+        run: flutter analyze
+
+      - name: Run custom_lint
+        if: success() || failure()
+        run: dart run custom_lint
 
       - name: dart format
         run: dart format --set-exit-if-changed .

@@ -358,6 +358,9 @@
         }                                                                                                           \
         BOOL passed = response ? response.passed : NO;                                                              \
         NSString *details = response ? response.details : @"(no details - app likely crashed)";                     \
+        if (response && response.skipped) {                                                                         \
+          XCTSkip(@"%@", details);                                                                                  \
+        }                                                                                                           \
         XCTAssertTrue(passed, @"%@", details);                                                                      \
       });                                                                                                           \
       SEL selector = NSSelectorFromString(selectorName);                                                            \
@@ -392,20 +395,25 @@
   static ObjCPatrolAppServiceClient *_patrolStaticClient = nil;                                                        \
   static int _patrolStaticTestIndex = 0;                                                                               \
                                                                                                                        \
+  /* XCTest calls +setUp once per class, and the generated per-file classes all                                        \
+   * share one server and one port. */                                                                                 \
   +(void)setUp {                                                                                                       \
     [super setUp];                                                                                                     \
-    _patrolStaticServer = [[PatrolServer alloc] init];                                                                 \
-    NSError *err = nil;                                                                                                \
-    [_patrolStaticServer startAndReturnError:&err];                                                                    \
-    if (err != nil) {                                                                                                  \
-      NSLog(@"patrolServer.start(): failed, err: %@", err);                                                            \
-    }                                                                                                                  \
-    _patrolStaticClient = [[ObjCPatrolAppServiceClient alloc] initWithPort:_patrolStaticServer.boundAppPort];          \
+    static dispatch_once_t patrolServerOnce;                                                                           \
+    dispatch_once(&patrolServerOnce, ^{                                                                                \
+      _patrolStaticServer = [[PatrolServer alloc] init];                                                               \
+      NSError *err = nil;                                                                                              \
+      [_patrolStaticServer startAndReturnError:&err];                                                                  \
+      if (err != nil) {                                                                                                \
+        NSLog(@"patrolServer.start(): failed, err: %@", err);                                                          \
+      }                                                                                                                \
+      _patrolStaticClient = [[ObjCPatrolAppServiceClient alloc] initWithPort:_patrolStaticServer.boundAppPort];        \
                                                                                                                        \
-    XCUIApplication *springboard = [[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"];        \
-    if (springboard.alerts.buttons[@"Allow"].exists) {                                                                 \
-      [springboard.alerts.buttons[@"Allow"] tap];                                                                      \
-    }                                                                                                                  \
+      XCUIApplication *springboard = [[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"];      \
+      if (springboard.alerts.buttons[@"Allow"].exists) {                                                               \
+        [springboard.alerts.buttons[@"Allow"] tap];                                                                    \
+      }                                                                                                                \
+    });                                                                                                                \
   }                                                                                                                    \
                                                                                                                        \
   +(void)launchPatrolApp {                                                                                             \
@@ -577,7 +585,17 @@
     }                                                                                                                  \
     BOOL passed = response ? response.passed : NO;                                                                     \
     NSString *details = response ? response.details : @"(no details - app likely crashed)";                            \
+    if (response && response.skipped) {                                                                                \
+      XCTSkip(@"%@", details);                                                                                         \
+    }                                                                                                                  \
     XCTAssertTrue(passed, @"%@", details);                                                                             \
   }
 
 #define PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_END @end
+
+// Base class for the generated per-file test classes: shared infrastructure, no
+// tests of its own. The generated `.inc` is included AFTER it and declares one
+// XCTestCase subclass per Dart test file, so reports group by file.
+#define PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE(__test_class) \
+  PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN(__test_class)      \
+  PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_END

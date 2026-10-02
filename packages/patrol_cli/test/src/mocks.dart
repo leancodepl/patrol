@@ -25,6 +25,8 @@ class MockPubUpdater extends Mock implements pub.PubUpdater {}
 
 class MockProcess extends Mock implements io.Process {}
 
+class MockStdin extends Mock implements io.Stdin {}
+
 class MockProcessManager extends Mock implements process.ProcessManager {}
 
 class MockProgress extends Mock implements logger.Progress {}
