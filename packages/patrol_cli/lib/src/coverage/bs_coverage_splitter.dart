@@ -95,9 +95,10 @@ BsCoverageSplitResult splitJacocoExec(Uint8List bytes) {
           assert(start <= dump || dump <= start);
         }
       case _blockExecutionData:
-        reader.readInt64(); // classId
-        reader.readUtf(); // name
-        reader.readBooleanArray(); // probes
+        reader
+          ..readInt64() // classId
+          ..readUtf() // name
+          ..readBooleanArray(); // probes
         out.add(bytes.sublist(blockStart, reader.offset));
         execData++;
       default:
