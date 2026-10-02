@@ -38,6 +38,7 @@ class DevelopSessionFactory {
   /// [onTestsCompleted] is forwarded to [DevelopService] for test completion
   /// notifications.
   /// [onLogEntry] is called for every parsed log entry during the session.
+  /// [onPrebuiltTargetActive] is forwarded to [DevelopService].
   /// [verbose] enables verbose logging when `true`.
   static DevelopService create({
     required String projectRoot,
@@ -46,6 +47,7 @@ class DevelopSessionFactory {
     Future<void> Function()? onExit,
     void Function(TestCompletionResult result)? onTestsCompleted,
     void Function(Entry entry)? onLogEntry,
+    void Function()? onPrebuiltTargetActive,
     bool verbose = false,
   }) {
     const fs = LocalFileSystem();
@@ -112,6 +114,7 @@ class DevelopSessionFactory {
       stdin: stdin,
       onTestsCompleted: onTestsCompleted,
       onLogEntry: onLogEntry,
+      onPrebuiltTargetActive: onPrebuiltTargetActive,
     );
   }
 }

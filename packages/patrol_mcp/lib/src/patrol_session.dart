@@ -202,6 +202,12 @@ final class PatrolSession {
   var _isRunning = false;
   String? _currentTestFile;
   final _outputs = <String>[];
+
+  /// With prebuilt APKs, what the session printed before the hot restart into
+  /// the requested target settled. It all comes from the placeholder test baked
+  /// into the APK, so it is held back from the output and patrol.log and
+  /// dropped once the target is live. `null` when nothing is held.
+  List<String>? _placeholderLines;
   TestState _testState = TestState.idle;
 
   /// Set while quitting so a backend exit we caused isn't reported as a crash.
@@ -382,6 +388,7 @@ final class PatrolSession {
       },
       onLogEntry: _handleEntry,
       onTestsCompleted: _handleTestsCompleted,
+      onPrebuiltTargetActive: () => _placeholderLines = null,
     );
     _developService = developService;
 
@@ -392,6 +399,7 @@ final class PatrolSession {
     _quitRequested = false;
     _finishWarning = null;
     _outputs.clear();
+    _placeholderLines = options.prebuiltApksDir != null ? [] : null;
     // Create the completer eagerly so callbacks can signal it even if
     // test completion happens before _waitForFinish is called.
     _finishCompleter = Completer<void>();
@@ -436,6 +444,7 @@ final class PatrolSession {
             if (_testState == TestState.running) {
               _testState = TestState.idle;
             }
+            _releasePlaceholderLines();
             _completeFinish();
             await _cleanup();
             // On quit, exitCompleter settles this chain while run() is still
@@ -444,6 +453,7 @@ final class PatrolSession {
           })
           .catchError((Object err, StackTrace st) async {
             logger.warning('Develop session error: $err\n$st');
+            _releasePlaceholderLines();
             _pushOutput('ERROR: $err');
             if (_testState == TestState.running) {
               _testState = TestState.finishedFailed;
@@ -499,7 +509,24 @@ final class PatrolSession {
     logger.fine('Develop session ended');
   }
 
+  /// A session that ended before its target went live has nothing else to
+  /// explain why, so what the placeholder printed is kept after all.
+  void _releasePlaceholderLines() {
+    final held = _placeholderLines;
+    _placeholderLines = null;
+    held?.forEach(_pushOutput);
+  }
+
   void _pushOutput(String line) {
+    final held = _placeholderLines;
+    if (held != null) {
+      held.add(line);
+      if (held.length > _maxOutputLines) {
+        held.removeRange(0, held.length - _maxOutputLines);
+      }
+      return;
+    }
+
     _outputs.add(line);
     if (_outputs.length > _maxOutputLines) {
       _outputs.removeRange(0, _outputs.length - _maxOutputLines);

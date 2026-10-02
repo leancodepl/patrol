@@ -150,24 +150,27 @@ void main() {
       when(() => androidTestBackend.build(any())).thenAnswer((_) async {});
     });
 
-    DevelopService buildService({void Function(Entry entry)? onLogEntry}) =>
-        DevelopService(
-          deviceFinder: deviceFinder,
-          testFinderFactory: testFinderFactory,
-          testBundler: testBundler,
-          dartDefinesReader: dartDefinesReader,
-          compatibilityChecker: compatibilityChecker,
-          pubspecReader: pubspecReader,
-          androidTestBackend: androidTestBackend,
-          iosTestBackend: iosTestBackend,
-          macosTestBackend: macosTestBackend,
-          webTestBackend: webTestBackend,
-          flutterTool: flutterTool,
-          logger: logger,
-          stdin: const Stream.empty(),
-          onTestsCompleted: (result) => _lastResult = result,
-          onLogEntry: onLogEntry,
-        );
+    DevelopService buildService({
+      void Function(Entry entry)? onLogEntry,
+      void Function()? onPrebuiltTargetActive,
+    }) => DevelopService(
+      deviceFinder: deviceFinder,
+      testFinderFactory: testFinderFactory,
+      testBundler: testBundler,
+      dartDefinesReader: dartDefinesReader,
+      compatibilityChecker: compatibilityChecker,
+      pubspecReader: pubspecReader,
+      androidTestBackend: androidTestBackend,
+      iosTestBackend: iosTestBackend,
+      macosTestBackend: macosTestBackend,
+      webTestBackend: webTestBackend,
+      flutterTool: flutterTool,
+      logger: logger,
+      stdin: const Stream.empty(),
+      onTestsCompleted: (result) => _lastResult = result,
+      onLogEntry: onLogEntry,
+      onPrebuiltTargetActive: onPrebuiltTargetActive,
+    );
 
     const options = DevelopOptions(
       target: 'onboarding_test.dart',
@@ -520,18 +523,26 @@ void main() {
 
       test('opens the log-entry gate only once the requested target is hot '
           'restarted', () async {
-        unawaited(buildService(onLogEntry: (_) {}).run(prebuiltOptions));
+        var targetActive = 0;
+        unawaited(
+          buildService(
+            onLogEntry: (_) {},
+            onPrebuiltTargetActive: () => targetActive++,
+          ).run(prebuiltOptions),
+        );
         await _waitFor(() => backendAcceptLogEntries != null);
 
         // While the gate is closed the backend drops entries (see
         // AndroidTestBackend.composeLogEntryCallback), so nothing the
         // placeholder test emits reaches the caller or starts a recording.
         expect(backendAcceptLogEntries!(), isFalse);
+        expect(targetActive, 0);
 
         attachCompleter.complete();
         await _waitFor(() => hotRestarts == 1);
 
         expect(backendAcceptLogEntries!(), isTrue);
+        expect(targetActive, 1);
       });
 
       test(
