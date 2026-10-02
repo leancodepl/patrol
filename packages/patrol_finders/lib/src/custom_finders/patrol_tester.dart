@@ -440,7 +440,7 @@ class PatrolTester {
   /// Example:
   /// ```dart
   /// // enters text into the first widget having Key('email')
-  /// await $(#email).enterText(user@example.com);
+  /// await $(#email).enterText('user@example.com');
   /// ```
   ///
   /// If the finder finds more than 1 widget, you can choose which one to enter
@@ -581,9 +581,9 @@ class PatrolTester {
 
   /// Waits until this finder finds at least one widget.
   ///
-  /// Throws a [WaitUntilVisibleTimeoutException] if no widgets  found.
+  /// Throws a [WaitUntilExistsTimeoutException] if no widgets found.
   ///
-  /// Timeout is globally set by [PatrolTesterConfig.visibleTimeout] inside
+  /// Timeout is globally set by [PatrolTesterConfig.existsTimeout] inside
   /// [PatrolTester.config]. If you want to override this global setting, set
   /// [timeout].
   Future<PatrolFinder> waitUntilExists(
@@ -634,7 +634,7 @@ class PatrolTester {
   /// Provide [alignment] to fine tune the visibility check by calling
   /// [Finder.hitTestable] at this [alignment] of the [Widget].
   /// This might be helpful in case the tested [Widget] is or contains a [Row]
-  /// or a [Column]. The default [Alignment.center] might always be the best
+  /// or a [Column]. The default [Alignment.center] might not always be the best
   ///  choice as the following example demonstrates:
   ///
   /// ```dart
@@ -653,7 +653,7 @@ class PatrolTester {
   ///          SizedBox(height: 48),
   ///          Text('Bar'),
   ///        ],
-  ///      )
+  ///      );
   ///  }
   /// }
   /// ```
@@ -711,7 +711,7 @@ class PatrolTester {
   /// This is a reimplementation of [WidgetController.dragUntilVisible] that
   /// differs from the original in the following ways:
   ///
-  ///  * scrolls until until [finder] finds at least one *existing* widget
+  ///  * scrolls until [finder] finds at least one *existing* widget
   ///
   ///  * waits until [view] is visible
   ///
@@ -723,8 +723,8 @@ class PatrolTester {
   ///
   ///  * can drag any widget, not only a [Scrollable]
   ///
-  ///  * performed drag is slower (it takes some time to performe dragging
-  ///    gesture, half a second by default)
+  ///  * performed drag is slower (it takes some time to perform dragging
+  ///    gesture, [PatrolTesterConfig.dragDuration] by default)
   ///
   ///  * you can configure, which version of pumping is performed between
   ///    each drag gesture ([pump], [pumpAndSettle] or [pumpAndTrySettle]),
@@ -806,7 +806,7 @@ class PatrolTester {
   ///  * can drag any widget, not only a [Scrollable]
   ///
   ///  * performed drag is slower (it takes some time to perform dragging
-  ///    gesture, half a second by default)
+  ///    gesture, [PatrolTesterConfig.dragDuration] by default)
   ///
   ///  * you can configure, which version of pumping is performed between
   ///    each drag gesture ([pump], [pumpAndSettle] or [pumpAndTrySettle])
@@ -870,7 +870,7 @@ class PatrolTester {
     );
   }
 
-  /// Scrolls [view] in its scrolling direction until this finders finds
+  /// Scrolls [view] in its scrolling direction until this finder finds
   /// at least one existing widget.
   ///
   /// If [view] is null, it defaults to the first found [Scrollable].
@@ -942,8 +942,8 @@ class PatrolTester {
     );
   }
 
-  /// Scrolls [view] in [scrollDirection] until this finders finds
-  /// at least one existing widget.
+  /// Scrolls [view] in [scrollDirection] until this finder finds
+  /// at least one visible widget.
   ///
   /// If [view] is null, it defaults to the first found [Scrollable].
   ///
