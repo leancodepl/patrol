@@ -18,9 +18,9 @@ class ScrollingScreen extends StatelessWidget {
               key: K.topText,
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: MediaQuery.of(context).size.height),
+            SizedBox(height: MediaQuery.sizeOf(context).height),
             const Text('Some text in the middle'),
-            SizedBox(height: MediaQuery.of(context).size.height),
+            SizedBox(height: MediaQuery.sizeOf(context).height),
             const Text(
               'Some text at the bottom',
               key: K.bottomText,
