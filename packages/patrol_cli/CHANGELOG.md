@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Add `patrol bs pull-coverage` subcommand. Downloads a BrowserStack Espresso coverage `.ec` and splits it into a standard JaCoCo `jacoco.exec` plus a Dart `patrol_lcov.info` produced by patrol's BS coverage hook. Omit `--session-id` to pull and merge every session (shard) in the build; duplicate `SF:` records for the same file across tests/shards are merged into one. Fails fast on builds that ran with `clearPackageData:true`, which is incompatible with coverage on BrowserStack. (#3066)
 - Fix `idevicesyslog` not being scoped to the device under test, so concurrent runs on a host with
   several real iOS devices attached all streamed the same device's log, corrupting the step
   display, `--show-flutter-logs` output and the test summary. (#3245)

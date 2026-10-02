@@ -1,5 +1,8 @@
 ## Unreleased
 
+- Make `PATROL_BS_COVERAGE_FORCE_COMPILE=true` affordable. Patrol now pushes `PATROL_BS_COVERAGE_PACKAGES` down to the VM as `libraryFilters` when the patterns are plain anchored prefixes, so force-compilation no longer walks the Flutter framework and the SDK, and it passes `librariesAlreadyCompiled` so the compile is paid once per app process instead of once per test. (#3066)
+- Fix BrowserStack Dart coverage being lost when a session is killed mid-dump. The runner assembled the `.ec` in place - truncating it, writing the JaCoCo dump, then appending the Dart blocks - so a process killed in that window (e.g. the BrowserStack session timeout) left a Dart-less file. It now stages the whole file and swaps it in with a single rename. Per-process Dart LCOVs are also merged on device instead of concatenated, so the embedded payload stays the size of one cumulative snapshot instead of growing with the test count. (#3066)
+- Add BrowserStack-friendly Dart coverage collection. With `--dart-define=PATROL_BS_COVERAGE=true` (optional `PATROL_BS_COVERAGE_PACKAGES=<regexp>`, `PATROL_BS_COVERAGE_FORCE_COMPILE=true`), patrol gathers Dart line coverage from the running VM service and the Android test runner merges it into the JaCoCo `.exec` that BrowserStack collects. Requires `enableAndroidTestCoverage true` on the app's debug build type and `clearPackageData:false` in the BrowserStack build. Works with the Android test orchestrator on or off; when off, the app service now serves every test from one process. (#3066)
 - Add macOS platform automation via `$.platform.macos`:
     - `tap` / `waitUntilVisible` for native views
     - `isAlertVisible` / `tapAlertButton` for `NSAlert`

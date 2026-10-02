@@ -55,7 +55,10 @@ Future<void> runAppService(PatrolAppService service) async {
 /// the generated code can access it.
 class PatrolAppService extends PatrolAppServiceServer {
   /// Creates a new [PatrolAppService].
-  PatrolAppService({required this.topLevelDartTestGroup});
+  PatrolAppService({
+    required this.topLevelDartTestGroup,
+    this.reuseAcrossTests = _reuseAcrossTestsDefault,
+  });
 
   /// Port the server will use to listen for incoming HTTP traffic.
   int get port => _resolveAppServerPort();
@@ -75,15 +78,31 @@ class PatrolAppService extends PatrolAppServiceServer {
   /// bundled Dart test file.
   final DartGroupEntry topLevelDartTestGroup;
 
+  /// Whether one process serves more than one Dart test against this single
+  /// [PatrolAppService] instance.
+  ///
+  /// Patrol's normal flow runs with the Android test orchestrator ON: every
+  /// test gets a fresh process (and a fresh app service), so the per-test
+  /// completers below are used exactly once. BrowserStack Dart coverage runs
+  /// with the orchestrator OFF so JaCoCo accumulates in a single process — then
+  /// the same app service serves every `runDartTest`, and the completers must be
+  /// recreated after each test (see [markDartTestAsCompleted]). Gated on the
+  /// coverage dart-define so the normal flow is byte-for-byte unchanged.
+  final bool reuseAcrossTests;
+
+  static const _reuseAcrossTestsDefault = bool.fromEnvironment(
+    'PATROL_BS_COVERAGE',
+  );
+
   /// A completer that completes with the name of the Dart test file that was
   /// requested to execute by the native side.
-  final _testExecutionRequested = Completer<String>();
+  var _testExecutionRequested = Completer<String>();
 
   /// A future that completes with the name of the Dart test file that was
   /// requested to execute by the native side.
   Future<String> get testExecutionRequested => _testExecutionRequested.future;
 
-  final _testExecutionCompleted = Completer<_TestExecutionResult>();
+  var _testExecutionCompleted = Completer<_TestExecutionResult>();
 
   /// A future that completes when the Dart test file (whose execution was
   /// requested by the native side) completes.
@@ -117,9 +136,18 @@ class PatrolAppService extends PatrolAppServiceServer {
       'that was most recently requested to run was $requestedDartTestName',
     );
 
-    _testExecutionCompleted.complete(
-      _TestExecutionResult(passed: passed, details: details),
-    );
+    final completed = _testExecutionCompleted;
+    if (reuseAcrossTests) {
+      // The orchestrator is off, so this same app service will serve the next
+      // test too. Swap in fresh completers *before* unblocking runDartTest, so
+      // the next waitForExecutionRequest/runDartTest pair gets a clean pair.
+      // The in-flight runDartTest already holds a reference to `completed`, and
+      // this runs synchronously (no await) before the suite advances to the
+      // next test's waitForExecutionRequest, so there is no race.
+      _testExecutionRequested = Completer<String>();
+      _testExecutionCompleted = Completer<_TestExecutionResult>();
+    }
+    completed.complete(_TestExecutionResult(passed: passed, details: details));
   }
 
   /// Returns when the native side requests execution of a Dart test. If the
