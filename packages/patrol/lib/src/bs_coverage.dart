@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:path_provider/path_provider.dart';
+import 'package:flutter/services.dart';
 import 'package:vm_service/vm_service.dart' as vms;
 import 'package:vm_service/vm_service_io.dart' as vms;
 
@@ -90,6 +90,7 @@ class BrowserStackCoverage {
   static final _runId = '${DateTime.now().millisecondsSinceEpoch}_$pid';
 
   static var _forceCompileWarned = false;
+  static const _channel = MethodChannel('pl.leancode.patrol/main');
   static String? _cachedDir;
   static vms.VmService? _service;
   static Future<vms.VmService>? _serviceFuture;
@@ -335,12 +336,14 @@ class BrowserStackCoverage {
       return _cachedDir;
     }
     try {
-      // path_provider is auto-registered in any host app that depends on it
-      // directly (or transitively via flutter plugins); on Android it returns
-      // `Context.filesDir`, which is the same path the patrol native test
-      // runner reads from at instrumentation shutdown.
-      final dir = await getApplicationSupportDirectory();
-      final coverageDir = Directory('${dir.path}/patrol_coverage');
+      // Asked from PatrolPlugin rather than path_provider: it returns the same
+      // `Context.filesDir` BrowserStackCoverage.kt reads from, without pulling
+      // path_provider's native (FFI/JNI) dependencies into every patrol user.
+      final filesDir = await _channel.invokeMethod<String>('getFilesDir');
+      if (filesDir == null) {
+        return null;
+      }
+      final coverageDir = Directory('$filesDir/patrol_coverage');
       if (!coverageDir.existsSync()) {
         coverageDir.createSync(recursive: true);
       }
@@ -348,9 +351,7 @@ class BrowserStackCoverage {
       return _cachedDir;
     } catch (err) {
       // ignore: avoid_print -- coverage diagnostics must not fail the test.
-      print(
-        'BrowserStackCoverage: getApplicationSupportDirectory failed: $err',
-      );
+      print('BrowserStackCoverage: resolving the files dir failed: $err');
       return null;
     }
   }
