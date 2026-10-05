@@ -34,6 +34,7 @@ async function setup(config: FullConfig) {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             return window.__patrol__getTests?.()!
           },
+          undefined,
           { timeout: 120000 },
         )
         .then(v => v.jsonValue()),
