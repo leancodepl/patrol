@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Add `--web-browser` to run web tests in Firefox or WebKit (the engine of Safari and every iOS
+  browser) instead of Chromium. Requires `patrol` with the matching `web_runner` change.
 - Fix `idevicesyslog` not being scoped to the device under test, so concurrent runs on a host with
   several real iOS devices attached all streamed the same device's log, corrupting the step
   display, `--show-flutter-logs` output and the test summary. (#3245)
