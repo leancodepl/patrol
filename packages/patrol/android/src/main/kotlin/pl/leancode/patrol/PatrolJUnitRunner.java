@@ -12,16 +12,17 @@ import android.content.Intent;
 import android.os.Bundle;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnitRunner;
+import androidx.test.uiautomator.UiDevice;
 
 import pl.leancode.patrol.contracts.Contracts;
 import pl.leancode.patrol.contracts.PatrolAppServiceClientException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 import static pl.leancode.patrol.contracts.Contracts.DartGroupEntry;
 import static pl.leancode.patrol.contracts.Contracts.RunDartTestResponse;
@@ -32,12 +33,20 @@ import static pl.leancode.patrol.contracts.Contracts.RunDartTestResponse;
  * </p>
  */
 public class PatrolJUnitRunner extends AndroidJUnitRunner {
+    private static final String TARGET_APP_ID_ARGUMENT = "patrolAppId";
+    private static final String TARGET_APP_ID_METADATA = "pl.leancode.patrol.APP_ID";
+    private static final String CLEAR_APP_DATA_ARGUMENT = "patrolClearAppData";
+    private static final String CLEAR_APP_DATA_METADATA = "pl.leancode.patrol.CLEAR_APP_DATA";
+
     public PatrolAppServiceClient patrolAppServiceClient;
     private Map<String, Boolean> dartTestCaseSkipMap = new HashMap<>();
     private boolean generatedSetUpDone = false;
 
     /** Simple name of the class written by build-time test discovery (`patrol build android --emit-test-manifest`). */
     private static final String GENERATED_TESTS_CLASS = "PatrolGeneratedTests";
+
+    private String targetAppId;
+    private boolean clearAppData;
 
     @Override
     protected boolean shouldWaitForActivitiesToComplete() {
@@ -46,6 +55,9 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
 
     @Override
     public void onCreate(Bundle arguments) {
+        targetAppId = arguments.getString(TARGET_APP_ID_ARGUMENT);
+        final String clearAppDataArgument = arguments.getString(CLEAR_APP_DATA_ARGUMENT);
+
         // Register the listener that records each test's JUnit name for screenshots.
         String listeners = arguments.getString("listener");
         String patrolListener = PatrolTestNameListener.class.getName();
@@ -57,6 +69,17 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         );
 
         super.onCreate(arguments);
+
+        if (targetAppId == null || targetAppId.isEmpty()) {
+            targetAppId = readInstrumentationMetadata(TARGET_APP_ID_METADATA);
+        }
+        if (clearAppDataArgument == null) {
+            clearAppData = Boolean.parseBoolean(
+                    readInstrumentationMetadata(CLEAR_APP_DATA_METADATA)
+            );
+        } else {
+            clearAppData = Boolean.parseBoolean(clearAppDataArgument);
+        }
 
         // This is only true when the ATO requests a list of tests from the app during the initial run.
         boolean isInitialRun = Boolean.parseBoolean(arguments.getString("listTestsForOrchestrator"));
@@ -78,19 +101,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
     }
 
     /**
-     * <p>
-     * The native test runner needs to know what tests exist before it can execute them.
-     * To gather the tests, the native test runner (by default: AndroidJUnitRunner) runs
-     * the instrumentation during the ATO's initial run and collects the tests.
-     * </p>
-     *
-     * <p>
-     * This default behavior doesn't work with Flutter apps. That's because in Flutter
-     * apps, the tests are in the app itself, so running only the instrumentation
-     * during the initial run is not enough.
-     * The app must also be run, and queried for Dart tests.
-     * That's what this method does.
-     * </p>
+     * Starts Patrol and launches the supplied activity in the instrumentation target.
      */
     public void setUp(Class<?> activityClass) {
         if (isSupersededByGeneratedTests()) {
@@ -98,7 +109,23 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             return;
         }
 
-        launchAppUnderTest(activityClass);
+        Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
+        setUp(
+                instrumentation.getTargetContext().getPackageName(),
+                activityClass.getCanonicalName()
+        );
+    }
+
+    /**
+     * Starts Patrol and launches the configured app under test.
+     */
+    public void setUp() {
+        if (isSupersededByGeneratedTests()) {
+            Logger.INSTANCE.i("PatrolJUnitRunner.setUp(): standing down, " + GENERATED_TESTS_CLASS + " runs these tests");
+            return;
+        }
+
+        setUp(requireTargetAppId(), null);
     }
 
     /**
@@ -116,49 +143,199 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
      * </p>
      */
     public void setUpGenerated(Class<?> activityClass) {
-        // Each generated class calls this from @BeforeClass, and without the ATO
-        // they all share one instrumentation process. The server binds a fixed
-        // port, so launch once and reuse it (same as the iOS static runner).
-        if (generatedSetUpDone) {
+        if (!beginGeneratedSetUp()) {
             return;
         }
-        generatedSetUpDone = true;
 
-        launchAppUnderTest(activityClass);
+        Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
+        setUp(
+                instrumentation.getTargetContext().getPackageName(),
+                activityClass.getCanonicalName()
+        );
         awaitPatrolAppService();
     }
 
-    private void launchAppUnderTest(Class<?> activityClass) {
-        Logger.INSTANCE.i("PatrolJUnitRunner.setUp(): activityClass = " + activityClass.getCanonicalName());
+    /**
+     * <p>
+     * {@link #setUpGenerated(Class)} for the self-instrumenting {@code :patrolTest} layout, where
+     * the app under test is a different package and its ID comes from the test APK's metadata
+     * instead of an activity class.
+     * </p>
+     */
+    public void setUpGenerated() {
+        if (!beginGeneratedSetUp()) {
+            return;
+        }
 
-        // This code launches the app under test. It's based on ActivityTestRule#launchActivity.
-        // It's simpler because we don't have the need for that much synchronization.
-        // Currently, the only synchronization point we're interested in is when the app under test returns the list of tests.
+        setUp(requireTargetAppId(), null);
+        awaitPatrolAppService();
+    }
+
+    /**
+     * Whether this is the call that should launch the app for the generated test classes.
+     */
+    private boolean beginGeneratedSetUp() {
+        // Each generated class calls setUpGenerated from @BeforeClass, and without the ATO
+        // they all share one instrumentation process. The server binds a fixed
+        // port, so launch once and reuse it (same as the iOS static runner).
+        if (generatedSetUpDone) {
+            return false;
+        }
+        generatedSetUpDone = true;
+        return true;
+    }
+
+    private String requireTargetAppId() {
+        if (targetAppId == null || targetAppId.isEmpty()) {
+            throw new IllegalStateException(
+                    "Missing the app under test's application ID. Apply "
+                            + "patrol_test.gradle from :patrolTest so it can bake "
+                            + TARGET_APP_ID_METADATA
+                            + " into the test APK, or pass instrumentation argument '"
+                            + TARGET_APP_ID_ARGUMENT
+                            + "'."
+            );
+        }
+        return targetAppId;
+    }
+
+    public void setUp(String appId) {
+        setUp(appId, null);
+    }
+
+    public void setUp(String appId, String activityClassName) {
+        Logger.INSTANCE.i(
+                "PatrolJUnitRunner.setUp(): appId = " + appId
+                        + ", activityClassName = " + activityClassName
+        );
+        targetAppId = appId;
+
+        if (clearAppData) {
+            clearAppData(appId);
+        } else if (isSelfInstrumenting()) {
+            // Orchestrator starts a new tester process per JUnit case. A launcher
+            // intent only foregrounds an already-running app, whose Dart explorer
+            // will not signal ready again. Stop it so this process gets a fresh one.
+            forceStopApp(appId);
+        }
+
         Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
 
         PatrolServer patrolServer = new PatrolServer();
-        patrolServer.start(); // Gets killed when the instrumentation process dies. We're okay with this.
+        patrolServer.start();
 
-
-
-        // Try to get the launcher intent first, which handles activity aliases properly
-        Intent intent = instrumentation.getTargetContext().getPackageManager()
-                .getLaunchIntentForPackage(instrumentation.getTargetContext().getPackageName());
+        // Launcher intents support activities declared through aliases.
+        Intent intent = instrumentation.getContext().getPackageManager()
+                .getLaunchIntentForPackage(appId);
         
-        if (intent == null) {
-            // Fallback to the original approach if no launcher intent is found
+        if (intent == null && activityClassName != null) {
             intent = new Intent(Intent.ACTION_MAIN);
-            intent.setClassName(instrumentation.getTargetContext(), activityClass.getCanonicalName());
+            intent.setClassName(appId, activityClassName);
+        }
+
+        if (intent == null) {
+            throw new IllegalStateException("No launch intent found for " + appId);
         }
         
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        instrumentation.getTargetContext().startActivity(intent);
+        instrumentation.getContext().startActivity(intent);
 
         patrolAppServiceClient = createAppServiceClient();
     }
 
     public PatrolAppServiceClient createAppServiceClient() {
         return new PatrolAppServiceClient();
+    }
+
+    /**
+     * <p>
+     * Whether the instrumentation targets its own package, i.e. the runner runs in a
+     * separate process from the app under test.
+     * </p>
+     */
+    private boolean isSelfInstrumenting() {
+        return getContext().getPackageName().equals(getTargetContext().getPackageName());
+    }
+
+    /**
+     * Reads a value embedded in the test APK at assemble time.
+     */
+    private String readInstrumentationMetadata(String name) {
+        try {
+            android.content.pm.ApplicationInfo info =
+                    getContext()
+                            .getPackageManager()
+                            .getApplicationInfo(
+                                    getContext().getPackageName(),
+                                    android.content.pm.PackageManager.GET_META_DATA
+                            );
+            if (info.metaData == null) {
+                return null;
+            }
+            Object value = info.metaData.get(name);
+            return value == null ? null : String.valueOf(value);
+        } catch (android.content.pm.PackageManager.NameNotFoundException e) {
+            return null;
+        }
+    }
+
+    /**
+     * <p>
+     * Wipes the app's data (shared preferences, databases, files, granted runtime
+     * permissions) so the next Dart test starts from a clean install-like state.
+     * </p>
+     *
+     * <p>
+     * This is only possible when the runner lives outside the app process. Clearing
+     * the package that hosts the instrumentation would kill the test run itself.
+     * </p>
+     */
+    private void clearAppData(String appId) {
+        if (!appId.matches("[A-Za-z0-9._]+")) {
+            throw new IllegalArgumentException("Invalid Android package name: " + appId);
+        }
+
+        if (!isSelfInstrumenting()) {
+            throw new IllegalStateException(
+                    "Clearing app data requires the Patrol test module, because clearing "
+                            + appId + " would also kill the instrumentation hosted in it."
+            );
+        }
+
+        Logger.INSTANCE.i("PatrolJUnitRunner: clearing app data of " + appId);
+
+        final String output;
+        try {
+            output = UiDevice.getInstance(this).executeShellCommand("pm clear " + appId);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to clear app data of " + appId, e);
+        }
+
+        // A missing or not-yet-installed package reports "Failed"; treat that as fatal
+        // rather than silently running without isolation.
+        if (output == null || !output.contains("Success")) {
+            throw new IllegalStateException(
+                    "Failed to clear app data of " + appId + ": " + output
+            );
+        }
+    }
+
+    /**
+     * Stops the app under test without wiping its data. Safe only when the runner
+     * is not hosted in that app.
+     */
+    private void forceStopApp(String appId) {
+        if (!appId.matches("[A-Za-z0-9._]+")) {
+            throw new IllegalArgumentException("Invalid Android package name: " + appId);
+        }
+
+        Logger.INSTANCE.i("PatrolJUnitRunner: force-stopping " + appId);
+
+        try {
+            UiDevice.getInstance(this).executeShellCommand("am force-stop " + appId);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to force-stop " + appId, e);
+        }
     }
 
     /**

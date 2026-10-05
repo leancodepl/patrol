@@ -145,6 +145,7 @@ class TestWithoutBuildingCommand extends PatrolCommand {
               appServerPort: super.appServerPort,
               testServerPort: super.testServerPort,
               uninstall: false,
+              testLayout: _androidTestBackend.detectTestLayout(),
               emitTestManifest: true,
             ),
             device,

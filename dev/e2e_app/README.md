@@ -26,7 +26,7 @@ $ patrol build android
 This builds 2 APKs:
 
 - the app under test: `<app_project_root>/build/app/outputs/apk/debug/app-debug.apk`
-- the instrumentation app: `<app_project_root>/build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk`
+- the instrumentation app: `<app_project_root>/build/patrolTest/outputs/apk/debug/patrolTest-debug.apk`
 
 ### iOS device
 

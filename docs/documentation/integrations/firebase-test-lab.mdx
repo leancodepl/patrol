@@ -26,6 +26,13 @@ Farm][aws_device_farm].
     patrol build android --target patrol_test/example_test.dart
     ```
 
+    The command prints the two APK paths. For an unflavored debug build they are:
+
+    ```
+    build/app/outputs/apk/debug/app-debug.apk
+    build/patrolTest/outputs/apk/debug/patrolTest-debug.apk
+    ```
+
     Once you have built the apks, use the [gcloud] tool to run them on Firebase
     Test Lab:
 
@@ -34,11 +41,10 @@ Farm][aws_device_farm].
         --type instrumentation \
         --use-orchestrator \
         --app build/app/outputs/apk/debug/app-debug.apk \
-        --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+        --test build/patrolTest/outputs/apk/debug/patrolTest-debug.apk \
         --timeout 1m \
         --device model=MediumPhone.arm,version=34,locale=en,orientation=portrait \
-        --record-video \
-        --environment-variables clearPackageData=true
+        --record-video
     ```
 
     <Info>
@@ -46,11 +52,9 @@ Farm][aws_device_farm].
       more about all available options and flags.
     </Info>
 
-    <Info>
-      The environment variable `clearPackageData=true` tells orchestrator to clear the
-      package data between test runs. Keep in mind that it clears only the data of your
-      app, not other data on the device, e.g. Chrome.
-    </Info>
+    The test APK already contains the app under test's application ID and, if you
+    set `clearPackageData` in `:patrolTest`, the per-test app wipe. No
+    `--environment-variables` are required.
 
     <Info>
       To collect Patrol's native failure screenshots (set `screenshot_on_failure: true`
@@ -59,8 +63,7 @@ Farm][aws_device_farm].
       them directly in the **Screenshots** tab of the matrix in the console. They're
       also copied into the results bucket at
       `.../<device-model>/artifacts/sdcard/Download/screenshots/<class>/<method>/<timestamp>_failure.png`.
-      This works alongside `--use-orchestrator` and `clearPackageData=true`: the PNGs
-      live in shared storage, so the per-test data clear doesn't remove them.
+      The PNGs remain available in shared storage across per-test app data clears.
     </Info>
 
     It's convenient to create a shell script to avoid typing that long command

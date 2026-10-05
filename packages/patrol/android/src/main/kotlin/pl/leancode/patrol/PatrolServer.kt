@@ -17,7 +17,7 @@ class PatrolServer {
 
     val port: Int
         get() {
-            val portStr = BuildConfig.PATROL_TEST_PORT
+            val portStr = patrolBuildConfigString("PATROL_TEST_PORT")
             if (portStr == null) {
                 Logger.i("PATROL_TEST_PORT is null, falling back to default ($defaultPort)")
                 return defaultPort
