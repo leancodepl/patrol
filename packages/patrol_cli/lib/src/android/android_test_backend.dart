@@ -584,7 +584,6 @@ class AndroidTestBackend {
               'build',
               'bundle',
               '--debug',
-              if (options.flavor case final flavor?) ...['--flavor', flavor],
               ...['-t', options.target],
               for (final dartDefine in options.dartDefines.entries) ...[
                 '--dart-define',

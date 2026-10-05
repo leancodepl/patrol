@@ -1,5 +1,9 @@
 ## Unreleased
 
+- Fix `patrol develop --use-prebuilt-apks` failing with `flutter build bundle failed with code 64` on
+  projects with a flavor, by no longer passing `--flavor` to `flutter build bundle`, which defines no
+  such option. Only a checkout that had never generated the Dart plugin registrant was affected, which
+  is every fresh CI checkout.
 - Fix `idevicesyslog` not being scoped to the device under test, so concurrent runs on a host with
   several real iOS devices attached all streamed the same device's log, corrupting the step
   display, `--show-flutter-logs` output and the test summary. (#3245)
