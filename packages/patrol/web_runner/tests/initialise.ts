@@ -13,6 +13,7 @@ export async function initialise(page: Page) {
 
       return true
     },
+    undefined,
     { timeout: 60000 },
   )
 }
