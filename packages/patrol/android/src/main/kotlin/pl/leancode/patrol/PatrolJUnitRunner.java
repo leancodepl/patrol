@@ -16,6 +16,10 @@ import androidx.test.runner.AndroidJUnitRunner;
 import pl.leancode.patrol.contracts.Contracts;
 import pl.leancode.patrol.contracts.PatrolAppServiceClientException;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -34,6 +38,8 @@ import static pl.leancode.patrol.contracts.Contracts.RunDartTestResponse;
 public class PatrolJUnitRunner extends AndroidJUnitRunner {
     public PatrolAppServiceClient patrolAppServiceClient;
     private Map<String, Boolean> dartTestCaseSkipMap = new HashMap<>();
+    private String coverageFilePath;
+    private boolean coverageEnabled;
     private boolean generatedSetUpDone = false;
 
     /** Simple name of the class written by build-time test discovery (`patrol build android --emit-test-manifest`). */
@@ -46,6 +52,32 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
 
     @Override
     public void onCreate(Bundle arguments) {
+        // Capture coverage configuration before AGP wires up its own dump-on-
+        // finish flow. We then disable AGP's auto-dump because AGP performs it
+        // during finish() — by which time the process is being torn down and
+        // we have no reliable window to append Dart-side coverage blocks.
+        // Instead we drive the dump ourselves from runDartTest() while the
+        // process is fully alive (see writeMergedCoverage).
+        coverageFilePath = arguments.getString("coverageFile");
+        coverageEnabled = "true".equalsIgnoreCase(arguments.getString("coverage"));
+        if (coverageEnabled) {
+            Logger.INSTANCE.i(
+                "BS coverage: taking over JaCoCo dump → " + coverageFilePath
+            );
+            arguments.putString("coverage", "false");
+            // Best-effort: the orchestrator forwards its own args to us, but a
+            // farm may strip this one. `patrol bs pull-coverage` checks too.
+            if ("true".equalsIgnoreCase(arguments.getString("clearPackageData"))) {
+                Logger.INSTANCE.e(
+                    "BS coverage: clearPackageData=true is incompatible with "
+                        + "coverage — pm clear between tests revokes this app's "
+                        + "permission to write the coverage file, so only the "
+                        + "first test will be reported. Run coverage builds with "
+                        + "clearPackageData:false."
+                );
+            }
+        }
+
         // Register the listener that records each test's JUnit name for screenshots.
         String listeners = arguments.getString("listener");
         String patrolListener = PatrolTestNameListener.class.getName();
@@ -58,9 +90,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
 
         super.onCreate(arguments);
 
-        // This is only true when the ATO requests a list of tests from the app during the initial run.
         boolean isInitialRun = Boolean.parseBoolean(arguments.getString("listTestsForOrchestrator"));
-
         Logger.INSTANCE.i("--------------------------------");
         Logger.INSTANCE.i("PatrolJUnitRunner.onCreate() " + (isInitialRun ? "(initial run)" : ""));
     }
@@ -75,6 +105,106 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             }
         }
         super.finish(resultCode, results);
+    }
+
+    /**
+     * BrowserStack's `coverageFile` (shared storage) when given — that's the
+     * only place its coverage API picks the file up from. Writing there works
+     * only with `clearPackageData:false`: `pm clear` between tests revokes the
+     * app's permission and the write fails with EACCES from the second test on
+     * (see the check in onCreate).
+     */
+    private File resolveCoverageFile() {
+        if (coverageFilePath != null && !coverageFilePath.isEmpty()) {
+            return new File(coverageFilePath);
+        }
+        // getFilesDir() is available on all supported API levels (unlike
+        // getDataDir(), API 24+) and matches the <filesDir>/patrol_coverage
+        // location the Dart side and BrowserStackCoverage use.
+        return new File(getTargetContext().getFilesDir(), "coverage.ec");
+    }
+
+    /**
+     * Dumps JaCoCo coverage data (collected by the runtime agent) into
+     * `coverageFilePath`, then appends patrol's Dart-side LCOV blocks. Called
+     * after each Dart test from runDartTest() — at that point the process is
+     * fully alive and we have unbounded time, unlike the AGP-driven dump
+     * inside `finish()` which races against process teardown.
+     *
+     * If the JaCoCo runtime classes are absent (e.g. testCoverageEnabled=false
+     * on the app under test), this method is a silent no-op.
+     */
+    private void writeMergedCoverage() {
+        if (!coverageEnabled) return;
+        File covFile = resolveCoverageFile();
+        if (covFile == null) return;
+
+        try {
+            // org.jacoco.agent.rt.RT is added by AGP when testCoverageEnabled=true.
+            Class<?> rtClass = Class.forName("org.jacoco.agent.rt.RT");
+            Object agent = rtClass.getMethod("getAgent").invoke(null);
+            byte[] data = (byte[]) agent.getClass()
+                .getMethod("getExecutionData", boolean.class)
+                .invoke(agent, false);
+
+            File parent = covFile.getParentFile();
+            if (parent != null && !parent.exists()) {
+                parent.mkdirs();
+            }
+
+            // Assemble the whole file (JaCoCo dump + Dart blocks) in a staging
+            // file next to the destination, then swap it in with a single
+            // rename. Writing straight into covFile leaves it holding JaCoCo
+            // and zero Dart blocks for the entire duration of the append; a
+            // process killed in that window - e.g. by the BrowserStack session
+            // timeout - hands the farm a Dart-less .ec, losing every earlier
+            // test's Dart coverage.
+            File staging = new File(covFile.getAbsolutePath() + ".patrol-staging");
+            try (FileOutputStream fos = new FileOutputStream(staging, /* append= */ false)) {
+                fos.write(data);
+                fos.flush();
+                fos.getFD().sync();
+            }
+            Logger.INSTANCE.i("BS coverage: staged " + data.length + " JaCoCo bytes in " + staging.getAbsolutePath());
+
+            BrowserStackCoverage.INSTANCE.appendDartCoverage(getTargetContext(), staging);
+
+            if (!staging.renameTo(covFile)) {
+                // A same-directory rename is atomic on the filesystems Android
+                // uses here. If it is refused anyway, fall back to a copy so
+                // the run still produces coverage.
+                Logger.INSTANCE.e("BS coverage: rename to " + covFile.getAbsolutePath() + " failed, copying instead", null);
+                copyFile(staging, covFile);
+                staging.delete();
+            }
+            Logger.INSTANCE.i("BS coverage: merged file now " + covFile.length() + " bytes");
+        } catch (ClassNotFoundException e) {
+            // coverage=true was requested but the JaCoCo runtime is missing: the
+            // app under test wasn't instrumented. Warn loudly — a silent skip
+            // means no coverage leaves the device and the misconfig is invisible.
+            Logger.INSTANCE.e(
+                "BS coverage: JaCoCo runtime absent, no coverage collected. "
+                    + "Set `enableAndroidTestCoverage true` (AGP 8+) or "
+                    + "`testCoverageEnabled true` (AGP 7) on the app's debug "
+                    + "build type.",
+                e
+            );
+        } catch (Throwable t) {
+            Logger.INSTANCE.e("BS coverage: writeMergedCoverage failed " + t.getMessage(), t);
+        }
+    }
+
+    private static void copyFile(File from, File to) throws IOException {
+        try (FileInputStream in = new FileInputStream(from);
+             FileOutputStream out = new FileOutputStream(to, /* append= */ false)) {
+            byte[] buf = new byte[8192];
+            int read;
+            while ((read = in.read(buf)) > 0) {
+                out.write(buf, 0, read);
+            }
+            out.flush();
+            out.getFD().sync();
+        }
     }
 
     /**
@@ -290,6 +420,10 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         try {
             Logger.INSTANCE.i(TAG + "Requested execution");
             RunDartTestResponse response = patrolAppServiceClient.runDartTest(name);
+            // Dump coverage NOW — Dart side has written its per-test LCOV in
+            // tearDown(), and the instrumentation process is alive. Doing this
+            // here instead of in finish() avoids racing the process teardown.
+            writeMergedCoverage();
             if (response.getResult() == Contracts.RunDartTestResponseResult.failure) {
                 throw new AssertionError("Dart test failed: " + name + "\n" + response.getDetails());
             }
