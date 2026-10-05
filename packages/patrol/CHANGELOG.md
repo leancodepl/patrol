@@ -1,5 +1,8 @@
 ## Unreleased
 
+- Fix `web_runner` setup ignoring its 60 s / 120 s waits for the app to initialise and report its
+  tests: the timeouts were passed as the page function argument, so Playwright's 30 s default
+  applied and slow first loads failed.
 - Add macOS platform automation via `$.platform.macos`:
     - `tap` / `waitUntilVisible` for native views
     - `isAlertVisible` / `tapAlertButton` for `NSAlert`
