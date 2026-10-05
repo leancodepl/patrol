@@ -1,11 +1,12 @@
-import { chromium, type FullConfig } from "@playwright/test"
+import { chromium, firefox, webkit, type FullConfig } from "@playwright/test"
 import { initialise } from "./initialise"
 import { DartTestEntry, PatrolTestEntry } from "./types"
 
 async function setup(config: FullConfig) {
-  const { baseURL, channel, launchOptions, locale } = config.projects[0].use
+  const { baseURL, browserName, channel, launchOptions, locale } = config.projects[0].use
 
-  const browser = await chromium.launch({ ...launchOptions, channel })
+  const browserType = { chromium, firefox, webkit }[browserName ?? "chromium"]
+  const browser = await browserType.launch({ ...launchOptions, channel })
 
   const page = await browser.newPage({ locale })
 

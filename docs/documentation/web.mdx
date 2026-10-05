@@ -11,7 +11,7 @@ browser interactions in your tests.
 When you run Patrol tests on web, the following happens:
 
 1. **Flutter Web Server**: Patrol starts a Flutter web server that serves your application
-2. **Playwright Test Runner**: Patrol automatically launches Chromium using Playwright
+2. **Playwright Test Runner**: Patrol automatically launches Chromium using Playwright (or Firefox / WebKit, see [Choosing the browser](#choosing-the-browser))
 3. **Platform Actions Bridge**: For platform automation calls (like `$.platform.web.grantPermissions()`), your Dart test code sends requests to Playwright with actions to be executed
 4. **Results Collection**: Test results are collected and reported back in Patrol's standard format
 
@@ -48,6 +48,17 @@ patrol test \
   --target patrol_test/login_test.dart \
   --web-headless
 ```
+
+### Choosing the browser
+
+Tests run in Chromium by default. Pass `--web-browser` to run them in Firefox or WebKit, the
+engine of Safari and of every iOS browser:
+
+```bash
+patrol test --device chrome --web-browser webkit
+```
+
+Patrol installs the selected browser on the first run. `patrol develop` always uses Chromium.
 
 ### Supported Native Actions on Web
 
