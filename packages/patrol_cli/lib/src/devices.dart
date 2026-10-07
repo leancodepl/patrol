@@ -38,6 +38,7 @@ class DeviceFinder {
       if (!targetPlatform.startsWith('android-') &&
           targetPlatform != 'ios' &&
           targetPlatform != 'darwin' &&
+          !targetPlatform.startsWith('linux-') &&
           targetPlatform != 'web-javascript') {
         continue;
       }
@@ -79,7 +80,8 @@ class DeviceFinder {
   ///   [wantDevices] is empty, and running in an interactive terminal.
   ///
   /// * Returns the first attached device if [wantDevices] is empty and not
-  ///   in an interactive environment.
+  ///   in an interactive environment. Linux desktop devices come last, so a
+  ///   Linux host keeps defaulting to Chrome (Flutter lists Linux first).
   ///
   /// * Returns all attached devices if [wantDevices] contains a single element
   ///   `'all'`.
@@ -100,9 +102,20 @@ class DeviceFinder {
     }
 
     if (wantDevices.isEmpty) {
+      // Flutter lists the Linux desktop before Chrome. Put it last, so that
+      // adding Linux support doesn't change the default device of web users.
+      final candidates = [
+        ...attachedDevices.where(
+          (d) => d.targetPlatform != TargetPlatform.linux,
+        ),
+        ...attachedDevices.where(
+          (d) => d.targetPlatform == TargetPlatform.linux,
+        ),
+      ];
+
       // Check if we should show interactive device selection
-      if (attachedDevices.length > 1 && _shouldShowInteractiveSelection()) {
-        final selectedDevice = _promptForDeviceSelection(attachedDevices);
+      if (candidates.length > 1 && _shouldShowInteractiveSelection()) {
+        final selectedDevice = _promptForDeviceSelection(candidates);
         if (selectedDevice == null) {
           throwToolExit('Device selection was cancelled');
         }
@@ -110,7 +123,7 @@ class DeviceFinder {
       }
 
       // Default behavior: use first device
-      final firstDevice = attachedDevices.first;
+      final firstDevice = candidates.first;
       _logger.info(
         'No device specified, using the first one (${firstDevice.name})',
       );
@@ -248,7 +261,7 @@ class Device {
         }
       case TargetPlatform.iOS:
         return '$platformDescription $name';
-      case TargetPlatform.macOS:
+      case TargetPlatform.macOS || TargetPlatform.linux:
         return '$platformDescription $name';
       case TargetPlatform.web:
         return '$platformDescription $name';
@@ -261,7 +274,7 @@ class Device {
         return real ? 'device' : '';
       case TargetPlatform.iOS:
         return real ? 'device' : 'simulator';
-      case TargetPlatform.macOS:
+      case TargetPlatform.macOS || TargetPlatform.linux:
         return 'desktop';
       case TargetPlatform.web:
         return 'browser';
@@ -281,7 +294,7 @@ const _testBundledDevices = {
 /// The port the native automator listens on unless a run says otherwise.
 const defaultTestServerPort = 8081;
 
-enum TargetPlatform { iOS, android, macOS, web }
+enum TargetPlatform { iOS, android, macOS, web, linux }
 
 extension TargetPlatformX on TargetPlatform {
   static TargetPlatform fromString(String platform) {
@@ -293,6 +306,9 @@ extension TargetPlatformX on TargetPlatform {
       return TargetPlatform.macOS;
     } else if (platform == 'web-javascript') {
       return TargetPlatform.web;
+    } else if (platform.startsWith('linux-')) {
+      // `linux-x64` or `linux-arm64`
+      return TargetPlatform.linux;
     } else {
       throw Exception('Unsupported platform $platform');
     }
