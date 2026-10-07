@@ -9,6 +9,7 @@ on:
       - 'packages/patrol_log/**'
       - 'packages/patrol_cli/**'
       - 'dev/e2e_app/**'
+      - '.github/workflows/test-linux.yaml'
       - '!**.md'
       - '!**.mdx'
 
