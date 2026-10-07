@@ -29,6 +29,7 @@ This document describes all GitHub Actions workflows used in the Patrol project.
 |--------------|-----------|----------------|------|-------------|
 | [test flutter main channel][test-flutter-main] | Weekly Tue 4:00 UTC, manual | Flutter master | — | Rebases `fix/flutter-patrol-tests` onto `master`, then runs internal tests (`flutter analyze` + `flutter test` on `patrol_finders` and `patrol_cli`) against Flutter main channel. Always creates a PR with test results. Sends Slack notification on failure when triggered by schedule. |
 | [test web][test-web] | No | Flutter 3.38.x (stable) | — | Runs web-specific E2E tests on Chrome in headless mode. Triggers on PR for web-related changes. Uses target file instead of tags. |
+| [test linux][test-linux] | PR | Flutter 3.38.x (stable) | — | Runs E2E tests on Linux desktop under Xvfb on `ubuntu-latest`. Triggers on PR for changes to packages and e2e_app (excludes docs). Runs tests from `patrol_test/linux` directory (Dart-only, no native automation). Uploads the run log. |
 | [test macos][test-macos] | PR, daily at 00:00 UTC | Flutter 3.38.x (stable) | — | Runs E2E tests on macOS desktop platform. Triggers on PR for changes to packages, e2e_app, and schema (excludes docs). Runs tests from `patrol_test/macos` directory. Uses xcresultparser to generate JUnit reports and converts them to CTRF format for test reporting. |
 | [test patrol develop][test-patrol-develop] | PR (opened/synchronize on package, e2e_app, and schema changes; excludes docs), manual | Flutter 3.38.x (stable) | — | Tests `patrol develop` command on Linux (Android emulator, API 34) and macOS (iOS simulator: iPhone 17 on iOS 26.2). The macOS job pins simulator runtime and passes `--ios 26.2` to `patrol_develop_test.dart` to keep xcode destination selection deterministic. Timeout: 30 minutes per job. |
 
@@ -125,7 +126,7 @@ Test workflows use a tag-based system to select which tests to run. Tests are ta
 All tests in both the main `patrol_test` directory and the `patrol_test/native_tests` directory use the same tagging system.
 
 **Common tags:**
-- **Platform**: `android`, `ios`, `web`, `macos`
+- **Platform**: `android`, `ios`, `web`, `macos`, `linux`
 - **Environment**: `physical_device`, `emulator`, `simulator`
 - **Features**: `webview`, `locale_testing_android`, `locale_testing_ios`
 
@@ -160,6 +161,7 @@ A test is selected if it matches ALL conditions in the boolean expression (AND o
 [test-ios-simulator-webview]: workflows/test-ios-simulator-webview.yaml
 [test-ios-locales]: workflows/test-ios-locales.yaml
 [test-web]: workflows/test-web.yaml
+[test-linux]: workflows/test-linux.yaml
 [test-macos]: workflows/test-macos.yaml
 [test-patrol-develop]: workflows/test-patrol-develop.yaml
 [patrol-prepare]: workflows/patrol-prepare.yaml
