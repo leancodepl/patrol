@@ -60,6 +60,8 @@ TargetPlatform? _targetPlatform(String platform) {
     return TargetPlatform.macOS;
   } else if (platform == 'web-javascript') {
     return TargetPlatform.web;
+  } else if (platform.startsWith('linux-')) {
+    return TargetPlatform.linux;
   }
   return null;
 }

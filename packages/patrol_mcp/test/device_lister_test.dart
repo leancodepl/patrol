@@ -49,6 +49,22 @@ void main() {
       );
     });
 
+    test('maps Linux desktop devices of both architectures', () {
+      const json = '''
+[
+  {"name":"Linux","id":"linux","targetPlatform":"linux-arm64","emulator":false},
+  {"name":"Linux","id":"linux","targetPlatform":"linux-x64","emulator":false},
+  {"name":"Windows","id":"windows","targetPlatform":"windows-x64","emulator":false}
+]''';
+
+      final devices = parseFlutterDevices(json);
+
+      expect(devices.map((d) => (d.targetPlatform, d.real)), [
+        (TargetPlatform.linux, true),
+        (TargetPlatform.linux, true),
+      ]);
+    });
+
     test('empty list in, empty list out', () {
       expect(parseFlutterDevices('[]'), isEmpty);
     });
