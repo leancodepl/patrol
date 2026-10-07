@@ -78,12 +78,11 @@ class PatrolRuntimePorts {
   static int? appServerPort() => _appServerPort;
 
   static int? _parsePort(Object? value) {
-    if (value is int) {
-      return value;
-    }
-    if (value is String) {
-      return int.tryParse(value);
-    }
-    return null;
+    final port = switch (value) {
+      final int port => port,
+      final String text => int.tryParse(text),
+      _ => null,
+    };
+    return port != null && port >= 1 && port <= 65535 ? port : null;
   }
 }

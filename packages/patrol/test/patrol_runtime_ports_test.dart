@@ -30,11 +30,13 @@ void main() {
       expect(_service().port, 9102);
     });
 
-    test('missing or malformed environment ports fall back to the '
-        'defaults', () {
+    test('missing, malformed or out-of-range environment ports fall back to '
+        'the defaults', () {
       for (final environment in [
         {'UNRELATED': '1'},
         {'PATROL_TEST_SERVER_PORT': 'not-a-port', 'PATROL_APP_SERVER_PORT': ''},
+        {'PATROL_TEST_SERVER_PORT': '0', 'PATROL_APP_SERVER_PORT': '-1'},
+        {'PATROL_TEST_SERVER_PORT': '65536', 'PATROL_APP_SERVER_PORT': '70000'},
       ]) {
         PatrolRuntimePorts.loadFromEnvironment(environment);
 
