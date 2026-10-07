@@ -29,6 +29,7 @@ This document describes all GitHub Actions workflows used in the Patrol project.
 |--------------|-----------|----------------|------|-------------|
 | [test flutter main channel][test-flutter-main] | Weekly Tue 4:00 UTC, manual | Flutter master | — | Rebases `fix/flutter-patrol-tests` onto `master`, then runs internal tests (`flutter analyze` + `flutter test` on `patrol_finders` and `patrol_cli`) against Flutter main channel. Always creates a PR with test results. Sends Slack notification on failure when triggered by schedule. |
 | [test web][test-web] | No | Flutter 3.44.x (stable) | — | Runs web-specific E2E tests on Chrome in headless mode. Triggers on PR for web-related changes. Uses target file instead of tags. |
+| [test linux][test-linux] | PR | Flutter 3.44.x (stable) | — | Runs E2E tests on Linux desktop under Xvfb on `ubuntu-24.04`. Triggers on PR for changes to packages and e2e_app (excludes docs). Runs tests from `patrol_test/linux` directory (Dart-only, no native automation). Uploads the run log. |
 | [test macos][test-macos] | PR, daily at 00:00 UTC | Flutter 3.44.x (stable) | — | Runs E2E tests on macOS desktop platform. Triggers on PR for changes to packages, e2e_app, and schema (excludes docs). Runs tests from `patrol_test/macos` directory. Uses xcresultparser to generate JUnit reports and converts them to CTRF format for test reporting. |
 | [test patrol develop][test-patrol-develop] | PR (opened/synchronize on package, e2e_app, and schema changes; excludes docs), manual | Flutter 3.44.x (stable) | — | Tests `patrol develop` command on Linux (Android emulator, API 34) and macOS (iOS simulator: iPhone 17 on iOS 26.2). The macOS job pins simulator runtime and passes `--ios 26.2` to `patrol_develop_test.dart` to keep xcode destination selection deterministic. Timeout: 30 minutes per job. |
 | [test discovery modes][test-discovery-modes] | PR (on package and e2e_app changes; excludes docs), manual | Flutter 3.44.x (stable) | none | Runs two e2e test files on an Android emulator and an iOS simulator with build-time test discovery (the default), checks the generated per-file test classes, runs one file with `patrol test-without-building --only`, then runs the same tests with runtime discovery: `--no-emit-test-manifest` on Android, and on iOS a pre-5.0 `RunnerUITests.m` that must fall back to runtime discovery with a warning, without the file being edited. |
@@ -131,7 +132,7 @@ All three use the local [check-semver][check-semver-action] composite action. It
 Test workflows use a tag-based system to select which tests to run. Tests are tagged in their source files using the `tags` parameter.
 
 **Common tags:**
-- **Platform**: `android`, `ios`, `web`, `macos`
+- **Platform**: `android`, `ios`, `web`, `macos`, `linux`
 - **Environment**: `physical_device`, `emulator`, `simulator`
 - **Features**: `webview`, `locale_testing_android`, `locale_testing_ios`
 
@@ -162,6 +163,7 @@ A test is selected if it matches ALL conditions in the boolean expression (AND o
 [test-ios-simulator-webview]: workflows/test-ios-simulator-webview.yaml
 [test-ios-locales]: workflows/test-ios-locales.yaml
 [test-web]: workflows/test-web.yaml
+[test-linux]: workflows/test-linux.yaml
 [test-macos]: workflows/test-macos.yaml
 [test-patrol-develop]: workflows/test-patrol-develop.yaml
 [test-discovery-modes]: workflows/test-build-time-discovery.yaml
