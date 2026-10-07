@@ -12,6 +12,7 @@ import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
+import 'package:patrol_cli/src/linux/linux_test_backend.dart';
 import 'package:patrol_cli/src/macos/macos_test_backend.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
@@ -31,6 +32,7 @@ class DevelopCommand extends PatrolCommand {
     required IOSTestBackend iosTestBackend,
     required MacOSTestBackend macosTestBackend,
     required WebTestBackend webTestBackend,
+    required LinuxTestBackend linuxTestBackend,
     required FlutterTool flutterTool,
     required Analytics analytics,
     required Logger logger,
@@ -47,6 +49,7 @@ class DevelopCommand extends PatrolCommand {
          iosTestBackend: iosTestBackend,
          macosTestBackend: macosTestBackend,
          webTestBackend: webTestBackend,
+         linuxTestBackend: linuxTestBackend,
          flutterTool: flutterTool,
          logger: logger,
          stdin: stdin,

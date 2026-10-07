@@ -490,6 +490,77 @@ class MacOSAppOptions {
   }
 }
 
+class LinuxAppOptions {
+  const LinuxAppOptions({
+    required this.flutter,
+    required this.appServerPort,
+    required this.testServerPort,
+  });
+
+  final FlutterAppOptions flutter;
+  final int appServerPort;
+  final int testServerPort;
+
+  String get description {
+    return 'app with entrypoint ${basename(flutter.target)} for linux';
+  }
+
+  /// Translates these options into a `flutter build linux` invocation, which
+  /// builds the app bundle that the Linux driver launches once per test.
+  List<String> toFlutterBuildInvocation(BuildMode buildMode) {
+    return [
+      ...[flutter.command.executable, ...flutter.command.arguments],
+      ...['build', 'linux'],
+      '--no-version-check',
+      '--suppress-analytics',
+      '--${buildMode.name}', // for example '--debug',
+      if (flutter.flavor case final flavor?) ...['--flavor', flavor],
+      if (flutter.buildName case final buildName?) ...[
+        '--build-name',
+        buildName,
+      ],
+      if (flutter.buildNumber case final buildNumber?) ...[
+        '--build-number',
+        buildNumber,
+      ],
+      if (flutter.noTreeShakeIcons) '--no-tree-shake-icons',
+      ...['--target', flutter.target],
+      ..._dartDefineArgs,
+    ];
+  }
+
+  /// Translates these options into a `flutter run` invocation for
+  /// `patrol develop`.
+  ///
+  /// `flutter attach` can't find the Dart VM service of a desktop app it
+  /// didn't start, so develop runs the app through `flutter run` and forwards
+  /// the hot restart keys to it.
+  List<String> toFlutterRunInvocation({required String deviceId}) {
+    return [
+      ...[flutter.command.executable, ...flutter.command.arguments],
+      'run',
+      '--no-version-check',
+      '--suppress-analytics',
+      ...['-d', deviceId],
+      '--${flutter.buildMode.name}',
+      if (flutter.flavor case final flavor?) ...['--flavor', flavor],
+      ...['--target', flutter.target],
+      ..._dartDefineArgs,
+    ];
+  }
+
+  List<String> get _dartDefineArgs => [
+    for (final dartDefine in flutter.dartDefines.entries) ...[
+      '--dart-define',
+      '${dartDefine.key}=${dartDefine.value}',
+    ],
+    for (final dartDefineFromFilePath in flutter.dartDefineFromFilePaths) ...[
+      '--dart-define-from-file',
+      dartDefineFromFilePath,
+    ],
+  ];
+}
+
 class WebAppOptions {
   const WebAppOptions({
     required this.flutter,

@@ -11,6 +11,7 @@ import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
+import 'package:patrol_cli/src/linux/linux_test_backend.dart';
 import 'package:patrol_cli/src/macos/macos_test_backend.dart' hide BuildMode;
 import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/test_bundler.dart';
@@ -104,6 +105,13 @@ class DevelopSessionFactory {
       ),
       webTestBackend: WebTestBackend(
         processManager: processManager,
+        parentDisposeScope: disposeScope,
+        logger: logger,
+      ),
+      linuxTestBackend: LinuxTestBackend(
+        processManager: processManager,
+        platform: platform,
+        rootDirectory: rootDirectory,
         parentDisposeScope: disposeScope,
         logger: logger,
       ),

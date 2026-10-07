@@ -694,6 +694,77 @@ void main() {
     });
   });
 
+  group('LinuxAppOptions', () {
+    test('encodes a customized flutter build linux invocation', () {
+      const options = LinuxAppOptions(
+        flutter: FlutterAppOptions(
+          command: FlutterCommand('fvm', ['flutter']),
+          target: 'patrol_test/test_bundle.dart',
+          buildMode: BuildMode.profile,
+          flavor: 'staging',
+          buildName: '2.1.0',
+          buildNumber: '210',
+          dartDefines: {'ENV': 'staging', 'PATROL_APP_SERVER_PORT': '8082'},
+          dartDefineFromFilePaths: ['config/staging.json'],
+          noTreeShakeIcons: true,
+        ),
+        appServerPort: 8082,
+        testServerPort: 8081,
+      );
+
+      expect(
+        options.toFlutterBuildInvocation(BuildMode.profile),
+        equals([
+          ...['fvm', 'flutter', 'build', 'linux'],
+          '--no-version-check',
+          '--suppress-analytics',
+          '--profile',
+          ...['--flavor', 'staging'],
+          ...['--build-name', '2.1.0'],
+          ...['--build-number', '210'],
+          '--no-tree-shake-icons',
+          ...['--target', 'patrol_test/test_bundle.dart'],
+          ...['--dart-define', 'ENV=staging'],
+          ...['--dart-define', 'PATROL_APP_SERVER_PORT=8082'],
+          ...['--dart-define-from-file', 'config/staging.json'],
+        ]),
+      );
+    });
+
+    test('encodes a flutter run invocation for develop', () {
+      const options = LinuxAppOptions(
+        flutter: FlutterAppOptions(
+          command: flutterCommand,
+          target: 'patrol_test/develop_bundle.dart',
+          buildMode: BuildMode.debug,
+          flavor: 'dev',
+          // flutter run doesn't take these, so they're left out.
+          buildName: '1.0.0',
+          buildNumber: '1',
+          dartDefines: {'PATROL_HOT_RESTART': 'true'},
+          dartDefineFromFilePaths: ['config/dev.json'],
+        ),
+        appServerPort: 8082,
+        testServerPort: 8081,
+      );
+
+      expect(
+        options.toFlutterRunInvocation(deviceId: 'linux'),
+        equals([
+          ...['flutter', 'run'],
+          '--no-version-check',
+          '--suppress-analytics',
+          ...['-d', 'linux'],
+          '--debug',
+          ...['--flavor', 'dev'],
+          ...['--target', 'patrol_test/develop_bundle.dart'],
+          ...['--dart-define', 'PATROL_HOT_RESTART=true'],
+          ...['--dart-define-from-file', 'config/dev.json'],
+        ]),
+      );
+    });
+  });
+
   group('WebAppOptions', () {
     late WebAppOptions options;
 
