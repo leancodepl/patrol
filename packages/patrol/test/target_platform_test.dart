@@ -11,6 +11,7 @@ void main() {
       expect(parsePatrolTargetPlatform('ios'), PatrolTargetPlatform.iOS);
       expect(parsePatrolTargetPlatform('macos'), PatrolTargetPlatform.macOS);
       expect(parsePatrolTargetPlatform('web'), PatrolTargetPlatform.web);
+      expect(parsePatrolTargetPlatform('linux'), PatrolTargetPlatform.linux);
     });
 
     test('explains an old patrol_cli that reports no platform', () {

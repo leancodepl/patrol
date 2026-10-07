@@ -29,6 +29,7 @@ void main() {
     late MockIOSTestBackend iosTestBackend;
     late MockMacOSTestBackend macosTestBackend;
     late MockWebTestBackend webTestBackend;
+    late MockLinuxTestBackend linuxTestBackend;
     late MockFlutterTool flutterTool;
     late MockLogger logger;
 
@@ -110,6 +111,7 @@ void main() {
       iosTestBackend = MockIOSTestBackend();
       macosTestBackend = MockMacOSTestBackend();
       webTestBackend = MockWebTestBackend();
+      linuxTestBackend = MockLinuxTestBackend();
       flutterTool = MockFlutterTool();
       logger = MockLogger();
 
@@ -162,6 +164,7 @@ void main() {
           iosTestBackend: iosTestBackend,
           macosTestBackend: macosTestBackend,
           webTestBackend: webTestBackend,
+          linuxTestBackend: linuxTestBackend,
           flutterTool: flutterTool,
           logger: logger,
           stdin: const Stream.empty(),
@@ -377,6 +380,101 @@ void main() {
       );
 
       expect((await built.future).emitTestManifest, isFalse);
+    });
+
+    group('on Linux', () {
+      const linuxDevice = Device(
+        name: 'Linux',
+        id: 'linux',
+        targetPlatform: TargetPlatform.linux,
+        real: true,
+      );
+
+      setUpAll(() {
+        registerFallbackValue(
+          const LinuxAppOptions(
+            flutter: FlutterAppOptions(
+              command: FlutterCommand('flutter'),
+              target: 'patrol_test/test_bundle.dart',
+              flavor: null,
+              buildMode: BuildMode.debug,
+              dartDefines: <String, String>{},
+              dartDefineFromFilePaths: <String>[],
+              buildName: null,
+              buildNumber: null,
+            ),
+            appServerPort: 8080,
+            testServerPort: 8081,
+          ),
+        );
+        registerFallbackValue(MockFlutterTool());
+        registerFallbackValue(const Stream<List<int>>.empty());
+      });
+
+      setUp(() {
+        when(
+          () => deviceFinder.find(
+            any(),
+            flutterCommand: any(named: 'flutterCommand'),
+          ),
+        ).thenAnswer((_) async => [linuxDevice]);
+      });
+
+      test('runs the app with the Linux backend and never calls flutter '
+          'attach', () async {
+        LinuxAppOptions? developOptions;
+        when(
+          () => linuxTestBackend.develop(
+            any(),
+            any(),
+            any(),
+            stdin: any(named: 'stdin'),
+            showFlutterLogs: any(named: 'showFlutterLogs'),
+            hideTestSteps: any(named: 'hideTestSteps'),
+            clearTestSteps: any(named: 'clearTestSteps'),
+            onLogEntry: any(named: 'onLogEntry'),
+          ),
+        ).thenAnswer((invocation) async {
+          developOptions = invocation.positionalArguments[1] as LinuxAppOptions;
+        });
+
+        _lastResult = null;
+        // Completes on its own: nothing waits for `flutter attach`.
+        await buildService().run(
+          const DevelopOptions(
+            target: 'onboarding_test.dart',
+            flutterCommand: FlutterCommand('flutter'),
+            buildMode: BuildMode.debug,
+            flavor: 'staging',
+            testServerPort: 8081,
+            appServerPort: 8080,
+            generateBundle: false,
+            uninstall: false,
+            checkCompatibility: false,
+          ),
+        );
+
+        expect(_lastResult?.success, isTrue);
+        expect(developOptions?.flutter.flavor, 'staging');
+        expect(
+          developOptions?.flutter.dartDefines['PATROL_HOT_RESTART'],
+          'true',
+        );
+        verifyNever(
+          () => flutterTool.attachForHotRestart(
+            flutterCommand: any(named: 'flutterCommand'),
+            deviceId: any(named: 'deviceId'),
+            target: any(named: 'target'),
+            appId: any(named: 'appId'),
+            dartDefines: any(named: 'dartDefines'),
+            openDevtools: any(named: 'openDevtools'),
+            attachUsingUrl: any(named: 'attachUsingUrl'),
+            debugUrl: any(named: 'debugUrl'),
+            forwardFlutterLogs: any(named: 'forwardFlutterLogs'),
+            onQuit: any(named: 'onQuit'),
+          ),
+        );
+      });
     });
 
     group('with prebuilt APKs', () {

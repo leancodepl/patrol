@@ -1,3 +1,7 @@
+## Unreleased
+
+- Recognize Linux desktop devices reported by `flutter devices`. (#3272)
+
 ## 0.2.1
 
 - Wait for the previous develop session to finish before starting a new one.

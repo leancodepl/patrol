@@ -28,6 +28,7 @@ export 'src/platform/contracts/contracts.dart'
         Rectangle;
 export 'src/platform/ios/ios_automator.dart';
 export 'src/platform/ios/ios_automator_config.dart';
+export 'src/platform/linux/linux_automator.dart';
 export 'src/platform/macos/macos_automator.dart';
 export 'src/platform/macos/macos_automator_config.dart';
 export 'src/platform/mobile/mobile_automator_config.dart';

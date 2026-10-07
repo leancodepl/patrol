@@ -1,16 +1,23 @@
+import 'dart:async';
+import 'dart:io' show IOOverrides;
+
 import 'package:dispose_scope/dispose_scope.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/devices.dart';
+import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:test/test.dart';
 
+import '../src/fakes.dart';
 import '../src/fixtures.dart';
 import '../src/mocks.dart';
 
 void main() {
   late DeviceFinder deviceFinder;
+  late MockProcessManager processManager;
 
   setUp(() {
-    final processManager = MockProcessManager();
+    processManager = MockProcessManager();
     final disposeScope = DisposeScope();
     final logger = MockLogger();
     deviceFinder = DeviceFinder(
@@ -47,6 +54,44 @@ void main() {
         expect(devicesToUse, [androidDevice]);
       },
     );
+
+    test('prefers a non-Linux device when no devices are wanted', () {
+      const linux = Device(
+        name: 'Linux',
+        id: 'linux',
+        targetPlatform: TargetPlatform.linux,
+        real: true,
+      );
+      const chrome = Device(
+        name: 'Chrome',
+        id: 'chrome',
+        targetPlatform: TargetPlatform.web,
+        real: true,
+      );
+
+      // No terminal: no interactive device selection.
+      final stdin = MockStdin();
+      when(() => stdin.hasTerminal).thenReturn(false);
+
+      // `flutter devices` lists the Linux desktop before Chrome.
+      expect(
+        IOOverrides.runZoned(
+          () => deviceFinder.findDevicesToUse(
+            attachedDevices: [linux, chrome],
+            wantDevices: [],
+          ),
+          stdin: () => stdin,
+        ),
+        [chrome],
+      );
+      expect(
+        deviceFinder.findDevicesToUse(
+          attachedDevices: [linux],
+          wantDevices: [],
+        ),
+        [linux],
+      );
+    });
 
     test(
       'returns the device when 1 device is attached and it is also wanted',
@@ -172,5 +217,43 @@ void main() {
     test('returns null for a device that is not bundled', () {
       expect(Device.bundledForTest('emulator-5554'), isNull);
     });
+  });
+
+  group('getAttachedDevices()', () {
+    // Trimmed output of `flutter devices --machine` on a Linux arm64 host.
+    const machineOutput = '''
+[
+  {"name": "Linux", "id": "linux", "isSupported": true, "targetPlatform": "linux-arm64", "emulator": false, "sdk": "Ubuntu 24.04 LTS 6.10.14-linuxkit"},
+  {"name": "Linux x64", "id": "linux-x64", "isSupported": true, "targetPlatform": "linux-x64", "emulator": false, "sdk": "Ubuntu 24.04 LTS"},
+  {"name": "Windows", "id": "windows", "isSupported": true, "targetPlatform": "windows-x64", "emulator": false, "sdk": "Windows 11"},
+  {"name": "Pixel 5", "id": "emulator-5554", "isSupported": true, "targetPlatform": "android-arm64", "emulator": true, "sdk": "Android 14 (API 34)"}
+]
+''';
+
+    test(
+      'keeps Linux desktop devices and maps them to TargetPlatform.linux',
+      () async {
+        final process = FakeProcess();
+        when(
+          () =>
+              processManager.start(any(), runInShell: any(named: 'runInShell')),
+        ).thenAnswer((_) async {
+          process.writeStdout(machineOutput.replaceAll('\n', ' '));
+          // Exit only after the output went through the line decoder.
+          Timer(const Duration(milliseconds: 10), () => process.exit(0));
+          return process;
+        });
+
+        final devices = await deviceFinder.getAttachedDevices(
+          flutterCommand: const FlutterCommand('flutter'),
+        );
+
+        expect(devices.map((d) => (d.id, d.targetPlatform, d.description)), [
+          ('linux', TargetPlatform.linux, 'desktop Linux'),
+          ('linux-x64', TargetPlatform.linux, 'desktop Linux x64'),
+          ('emulator-5554', TargetPlatform.android, 'emulator-5554'),
+        ]);
+      },
+    );
   });
 }

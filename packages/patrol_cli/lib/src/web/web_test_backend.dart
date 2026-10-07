@@ -9,6 +9,7 @@ import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
+import 'package:patrol_cli/src/crossplatform/hot_restart_stdin.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_log/patrol_log_reader.dart';
 import 'package:process/process.dart';
@@ -130,12 +131,18 @@ class WebTestBackend {
         serverTimeout: options.serverTimeout,
       );
 
-      _attachForHotRestart(flutterProcess, switch (previousStdinModes) {
-        final stdinModes? => () => flutterTool.revertInteractiveMode(
-          stdinModes,
-        ),
-        _ => null,
-      }, stdin: stdin);
+      forwardHotRestartKeys(
+        flutterProcess: flutterProcess,
+        stdin: stdin,
+        logger: _logger,
+        revertInteractiveMode: switch (previousStdinModes) {
+          final stdinModes? => () => flutterTool.revertInteractiveMode(
+            stdinModes,
+          ),
+          _ => null,
+        },
+        listenFor: const Duration(minutes: 2),
+      );
 
       // Run Playwright tests
       await _runPlaywrightDevelop(port, options);
@@ -358,63 +365,6 @@ class WebTestBackend {
     });
 
     return completer.future;
-  }
-
-  void _attachForHotRestart(
-    Process flutterProcess,
-    void Function()? revertInteractiveMode, {
-    required Stream<List<int>> stdin,
-  }) {
-    final streamSubscription = stdin.listen((event) {
-      final char = String.fromCharCode(event.first);
-
-      _logger.detail('Flutter stdin: $char');
-
-      if (char == 'r' || char == 'R') {
-        // if (!_hotRestartActive) {
-        //   _logger.warn('Hot Restart: not attached to the app yet!');
-        //   return;
-        // }
-
-        // _logger.success(
-        //   'Hot Restart for entrypoint ${basename(target)}...',
-        // );
-        flutterProcess.stdin.add('R'.codeUnits);
-      } else if (char == 'h' || char == 'H') {
-        final helpText = StringBuffer(
-          'Patrol develop key commands:\n'
-          'r Hot restart\n'
-          'h Print this help message\n'
-          'q Quit (terminate the process and application on the device)',
-        );
-
-        // if (_devtoolsUrl.isNotEmpty) {
-        //   helpText.writeln('\nDevTools: $_devtoolsUrl');
-        // } else {
-        //   helpText.writeln('\nDevTools: not available yet');
-        // }
-
-        _logger.success(helpText.toString());
-      } else if (char == 'q' || char == 'Q') {
-        revertInteractiveMode?.call();
-
-        _logger.success('Quitting process...');
-        flutterProcess.kill();
-
-        // Call the uninstall function if provided
-        // if (onQuit != null) {
-        //   try {
-        //     await onQuit();
-        //   } catch (err) {
-        //     _logger.err('Failed to clean up app: $err');
-        //   }
-        // }
-
-        exit(0);
-      }
-    });
-
-    Timer(const Duration(minutes: 2), streamSubscription.cancel);
   }
 
   Future<void> _runPlaywrightTests(

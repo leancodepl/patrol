@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Add Linux desktop support (Dart-only, native actions throw `UnsupportedError`). (#3272)
 - Add macOS platform automation via `$.platform.macos`:
     - `tap` / `waitUntilVisible` for native views
     - `isAlertVisible` / `tapAlertButton` for `NSAlert`

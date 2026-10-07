@@ -11,6 +11,7 @@ import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
+import 'package:patrol_cli/src/linux/linux_test_backend.dart';
 import 'package:patrol_cli/src/macos/macos_test_backend.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/test_bundler.dart';
@@ -44,6 +45,8 @@ class MockIOSTestBackend extends Mock implements IOSTestBackend {}
 class MockMacOSTestBackend extends Mock implements MacOSTestBackend {}
 
 class MockWebTestBackend extends Mock implements WebTestBackend {}
+
+class MockLinuxTestBackend extends Mock implements LinuxTestBackend {}
 
 class MockFlutterTool extends Mock implements FlutterTool {}
 
