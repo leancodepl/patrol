@@ -15,6 +15,9 @@ enum PatrolTargetPlatform {
 
   /// Web.
   web,
+
+  /// Linux desktop.
+  linux,
 }
 
 /// The platform this test run targets.
@@ -51,6 +54,9 @@ PatrolTargetPlatform get patrolTargetPlatform {
   if (current_platform.isMacOS) {
     return PatrolTargetPlatform.macOS;
   }
+  if (current_platform.isLinux) {
+    return PatrolTargetPlatform.linux;
+  }
 
   throw UnsupportedError('Patrol does not support the current platform');
 }
@@ -63,6 +69,7 @@ PatrolTargetPlatform parsePatrolTargetPlatform(String name) {
     'ios' => PatrolTargetPlatform.iOS,
     'macos' => PatrolTargetPlatform.macOS,
     'web' => PatrolTargetPlatform.web,
+    'linux' => PatrolTargetPlatform.linux,
     '' => throw StateError(
       'patrolTargetPlatform was used during build-time test discovery, but the '
       'discovery run did not report which platform it builds for. Update '
