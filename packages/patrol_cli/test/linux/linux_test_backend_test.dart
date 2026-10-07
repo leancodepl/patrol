@@ -335,6 +335,58 @@ set(APPLICATION_ID "pl.leancode.example_app")
     expect(usedPort, isNot(busySocket.port));
   });
 
+  test('fails at once when the app answers listDartTests with invalid '
+      'JSON', () async {
+    final backend = createBackend(
+      MockClient((request) async => http.Response('<html>proxy</html>', 200)),
+      readyTimeout: const Duration(seconds: 30),
+    );
+
+    await expectLater(
+      backend.execute(_options(), _linuxDevice),
+      throwsA(
+        isA<ToolExit>().having(
+          (e) => e.message,
+          'message',
+          contains('listDartTests returned an invalid response'),
+        ),
+      ),
+    );
+    expect(launched, hasLength(1));
+  }, timeout: const Timeout(Duration(seconds: 5)));
+
+  test('stops waiting for the app at the ready deadline when a request '
+      'hangs', () async {
+    const readyTimeout = Duration(seconds: 1);
+    final stopwatch = Stopwatch()..start();
+    final backend = createBackend(
+      MockClient((request) {
+        // The server is not up at first, then it accepts the connection but
+        // never answers.
+        if (stopwatch.elapsed < const Duration(milliseconds: 700)) {
+          return Future.error(
+            http.ClientException('Connection refused', request.url),
+          );
+        }
+        return Completer<http.Response>().future;
+      }),
+      readyTimeout: readyTimeout,
+    );
+
+    await expectLater(
+      backend.execute(_options(), _linuxDevice),
+      throwsA(
+        isA<ToolExit>().having(
+          (e) => e.message,
+          'message',
+          contains('did not respond within 1s'),
+        ),
+      ),
+    );
+    // A request that starts at 700 ms must not get a full second of its own.
+    expect(stopwatch.elapsed, lessThan(const Duration(milliseconds: 1400)));
+  });
+
   test('fails at once when the app server answers with an error', () async {
     final backend = createBackend(
       MockClient((request) async => http.Response('boom', 500)),
@@ -430,11 +482,17 @@ set(APPLICATION_ID "pl.leancode.example_app")
     final backend = createBackend(
       appServer(
         onRun: (name, app) {
+          app.writeStdout(
+            _patrolLog(TestEntry(name: name, status: TestEntryStatus.start)),
+          );
           if (name == 'example_test taps') {
             // The app crashes: no response ever comes.
             app.exit(139);
             return Completer<http.Response>().future;
           }
+          app.writeStdout(
+            _patrolLog(TestEntry(name: name, status: TestEntryStatus.success)),
+          );
           return Future.value(
             http.Response(jsonEncode({'result': 'success'}), 200),
           );
@@ -462,18 +520,70 @@ set(APPLICATION_ID "pl.leancode.example_app")
       contains('  - example_test taps (app crashed (exit 139))'),
     );
     expect(logger.errors.join('\n'), isNot(contains('scrolls')));
+    // The app could not report the crash, so the summary counts it.
+    final summary = logger.lines.singleWhere(
+      (line) => line.contains('Test summary'),
+    );
+    expect(summary, contains('Total: 2'));
+    expect(summary, contains('Successful: 1'));
+    expect(summary, contains('Failed: 1\n  - taps '));
+  });
+
+  test('counts a test whose app does not become ready as failed in the '
+      'summary', () async {
+    final handler = appHandler();
+    final backend = createBackend(
+      MockClient((request) async {
+        // Launch #1 runs "example_test taps": its server answers with an
+        // error.
+        if (launched.length == 2 && request.url.path == '/listDartTests') {
+          return http.Response('boom', 500);
+        }
+        return handler(request);
+      }),
+    );
+
+    await expectLater(
+      backend.execute(_options(), _linuxDevice),
+      throwsA(isA<ToolExit>()),
+    );
+
+    expect(requestedTests, ['example_test scrolls']);
+    final summary = logger.lines.singleWhere(
+      (line) => line.contains('Test summary'),
+    );
+    expect(summary, contains('Total: 2'));
+    expect(summary, contains('Successful: 1'));
+    expect(summary, contains('Failed: 1\n  - taps '));
   });
 
   test('fails the test when the app reports a failure', () async {
     final backend = createBackend(
       appServer(
-        onRun: (name, app) async => http.Response(
-          jsonEncode({
-            'result': name.endsWith('scrolls') ? 'failure' : 'success',
-            'details': 'Expected: true',
-          }),
-          200,
-        ),
+        onRun: (name, app) async {
+          final failed = name.endsWith('scrolls');
+          app
+            ..writeStdout(
+              _patrolLog(TestEntry(name: name, status: TestEntryStatus.start)),
+            )
+            ..writeStdout(
+              _patrolLog(
+                TestEntry(
+                  name: name,
+                  status: failed
+                      ? TestEntryStatus.failure
+                      : TestEntryStatus.success,
+                ),
+              ),
+            );
+          return http.Response(
+            jsonEncode({
+              'result': failed ? 'failure' : 'success',
+              'details': 'Expected: true',
+            }),
+            200,
+          );
+        },
       ),
     );
 
@@ -485,6 +595,12 @@ set(APPLICATION_ID "pl.leancode.example_app")
       'Failed tests:',
       '  - example_test scrolls (failed)',
     ]);
+    // The app reported the failure itself, so it is counted once.
+    final summary = logger.lines.singleWhere(
+      (line) => line.contains('Test summary'),
+    );
+    expect(summary, contains('Total: 2'));
+    expect(summary, contains('Failed: 1\n'));
   });
 
   test('kills an app with SIGKILL when it ignores SIGTERM', () async {

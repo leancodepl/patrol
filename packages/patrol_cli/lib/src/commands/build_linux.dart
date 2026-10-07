@@ -167,6 +167,7 @@ class BuildLinuxCommand extends PatrolCommand {
       dartDefineFromFilePaths: stringsArg('dart-define-from-file'),
       buildName: buildName,
       buildNumber: buildNumber,
+      noTreeShakeIcons: boolArg('no-tree-shake-icons'),
     );
 
     final linuxOpts = LinuxAppOptions(

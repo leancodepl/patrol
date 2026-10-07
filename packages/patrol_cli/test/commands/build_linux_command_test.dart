@@ -139,5 +139,18 @@ void main() {
             logger.info('build/linux/x64/staging/release/bundle (app bundle)'),
       ).called(1);
     });
+
+    test('passes --no-tree-shake-icons to flutter build linux', () async {
+      final result = await run(['--no-tree-shake-icons']);
+
+      expect(result, 0);
+      final options =
+          verify(() => linuxTestBackend.build(captureAny())).captured.single
+              as LinuxAppOptions;
+      expect(
+        options.toFlutterBuildInvocation(BuildMode.debug),
+        contains('--no-tree-shake-icons'),
+      );
+    });
   });
 }

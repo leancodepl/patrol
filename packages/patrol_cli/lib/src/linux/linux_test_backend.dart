@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io' as io;
 
 import 'package:dispose_scope/dispose_scope.dart';
@@ -244,6 +245,9 @@ class LinuxTestBackend {
           })
           .disposedBy(scope);
 
+      // Names of the tests that the app reported as started and as finished.
+      final startedByApp = <String>{};
+      final finishedByApp = <String>{};
       final patrolLogReader =
           PatrolLogReader(
               listenStdOut: appOutput.stream.listen,
@@ -253,10 +257,46 @@ class LinuxTestBackend {
               showFlutterLogs: showFlutterLogs,
               hideTestSteps: hideTestSteps,
               clearTestSteps: clearTestSteps,
-              onLogEntry: onLogEntry,
+              onLogEntry: (entry) {
+                if (entry is TestEntry) {
+                  if (entry.status == TestEntryStatus.start) {
+                    startedByApp.add(entry.name);
+                  } else if (entry.isFinished) {
+                    finishedByApp.add(entry.name);
+                  }
+                }
+                onLogEntry?.call(entry);
+              },
             )
             ..listen()
             ..startTimer();
+
+      // Gives the log reader the failure of a test that the app could not
+      // report (for example, because it crashed), so that the summary counts
+      // it. A result that the app reported is already counted.
+      Future<void> reportFailureToLogReader(String name, String reason) async {
+        // Let the log reader process the remaining output of the app.
+        await Future<void>.delayed(Duration.zero);
+        if (startedByApp.contains(name) && finishedByApp.contains(name)) {
+          return;
+        }
+        if (!startedByApp.contains(name)) {
+          patrolLogReader.parse(
+            _patrolLogLine(
+              TestEntry(name: name, status: TestEntryStatus.start),
+            ),
+          );
+        }
+        patrolLogReader.parse(
+          _patrolLogLine(
+            TestEntry(
+              name: name,
+              status: TestEntryStatus.failure,
+              error: reason,
+            ),
+          ),
+        );
+      }
 
       final client = PatrolAppServiceClient(
         httpClient: _httpClient ?? http.Client(),
@@ -308,9 +348,12 @@ class LinuxTestBackend {
         _throwIfInterrupted('test "${test.dartName}"');
         if (failure != null) {
           failures[test.dartName] = failure;
+          await reportFailureToLogReader(test.dartName, failure);
         }
       }
 
+      // Let the log reader process the last entries before the summary.
+      await Future<void>.delayed(Duration.zero);
       patrolLogReader.stopTimer();
       // There is no report file on Linux, so drop the empty "Report:" line.
       _logger.info(
@@ -399,27 +442,38 @@ class LinuxTestBackend {
         throw _AppNotReady('app crashed (exit $exitCode)');
       }
 
-      try {
-        return await client.listDartTests(timeout: _readyTimeout);
-      } on PatrolAppServiceException catch (err) {
-        // The server is up but answered with an error. Retrying won't help.
-        throw _AppNotReady(
-          'listDartTests returned ${err.statusCode}: ${err.body}',
-        );
-      } on Exception catch (err) {
-        // Most likely the server is not up yet.
-        lastError = err;
-      }
-
-      if (stopwatch.elapsed >= _readyTimeout) {
+      // Each request gets only the time that remains until the deadline.
+      final remaining = _readyTimeout - stopwatch.elapsed;
+      if (remaining <= Duration.zero) {
         throw _AppNotReady(
           'the app did not respond within ${_readyTimeout.inSeconds}s '
           '(last error: $lastError)',
         );
       }
 
+      try {
+        return await client.listDartTests(timeout: remaining);
+      } on PatrolAppServiceException catch (err) {
+        // The server is up but answered with an error. Retrying won't help.
+        throw _AppNotReady(
+          'listDartTests returned ${err.statusCode}: ${err.body}',
+        );
+      } on FormatException catch (err) {
+        // The server is up but the answer is not a test list. Retrying won't
+        // help.
+        throw _AppNotReady(
+          'listDartTests returned an invalid response: ${err.message}',
+        );
+      } on Exception catch (err) {
+        // Most likely the server is not up yet.
+        lastError = err;
+      }
+
+      final untilDeadline = _readyTimeout - stopwatch.elapsed;
       await Future.any<void>([
-        Future<void>.delayed(_pollInterval),
+        Future<void>.delayed(
+          untilDeadline < _pollInterval ? untilDeadline : _pollInterval,
+        ),
         app.exitCode,
       ]);
     }
@@ -572,6 +626,9 @@ Future<bool> _canBind(io.InternetAddress address, int port) async {
     return false;
   }
 }
+
+String _patrolLogLine(Entry entry) =>
+    'PATROL_LOG ${jsonEncode(entry.toJson())}';
 
 class _AppProcess {
   _AppProcess(this.process) {
