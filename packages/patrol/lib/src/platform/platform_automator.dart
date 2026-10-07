@@ -16,6 +16,7 @@ import 'package:patrol/src/platform/ios/ios_automator_empty.dart'
 import 'package:patrol/src/platform/ios/ios_automator_empty.dart'
     if (dart.library.io) 'package:patrol/src/platform/ios/ios_automator_native.dart'
     as native_ios_automator;
+import 'package:patrol/src/platform/linux/linux_automator.dart';
 import 'package:patrol/src/platform/macos/macos_automator.dart';
 import 'package:patrol/src/platform/macos/macos_automator_config.dart';
 import 'package:patrol/src/platform/macos/macos_automator_empty.dart'
@@ -239,6 +240,10 @@ class PlatformAutomator {
 
   /// macOS-specific automator.
   late final MacOSAutomator macos;
+
+  /// Linux-specific automator. It has no actions: Linux supports only
+  /// Dart-side (Flutter) interactions.
+  final linux = const LinuxAutomator();
 
   /// Mobile automator that works on both Android and iOS.
   late final MobileAutomator mobile;
@@ -1136,6 +1141,7 @@ class PlatformAction {
     T Function()? ios,
     T Function()? web,
     T Function()? macos,
+    T Function()? linux,
     T Function()? mobile,
   }) {
     final value = maybe(
@@ -1143,11 +1149,14 @@ class PlatformAction {
       ios: ios,
       web: web,
       macos: macos,
+      linux: linux,
       mobile: mobile,
     );
 
     if (value == null) {
-      throw UnsupportedError('Unsupported platform');
+      throw UnsupportedError(
+        'This action is not supported on ${_currentPlatformName()}',
+      );
     }
 
     return value;
@@ -1159,6 +1168,7 @@ class PlatformAction {
     T Function()? ios,
     T Function()? web,
     T Function()? macos,
+    T Function()? linux,
     T Function()? mobile,
   }) {
     T? empty() => null;
@@ -1168,6 +1178,7 @@ class PlatformAction {
       ios: ios ?? mobile ?? empty,
       web: web ?? empty,
       macos: macos ?? empty,
+      linux: linux ?? empty,
     );
   }
 
@@ -1177,6 +1188,7 @@ class PlatformAction {
     T Function()? ios,
     T Function()? web,
     T Function()? macos,
+    T Function()? linux,
     T Function()? mobile,
     required T Function() fallback,
   }) {
@@ -1185,17 +1197,23 @@ class PlatformAction {
           ios: ios,
           web: web,
           macos: macos,
+          linux: linux,
           mobile: mobile,
         ) ??
         fallback();
   }
 
   /// Safely calls the platform-specific action for current platform.
+  ///
+  /// [linux] is optional because Linux supports only Dart-side (Flutter)
+  /// interactions. If [linux] is null on Linux, an [UnsupportedError] is
+  /// thrown.
   T safe<T>({
     required T Function() android,
     required T Function() ios,
     required T Function() web,
     required T Function() macos,
+    T Function()? linux,
   }) {
     if (current_platform.isAndroid) {
       return android();
@@ -1205,15 +1223,47 @@ class PlatformAction {
       return macos();
     } else if (current_platform.isWeb) {
       return web();
+    } else if (current_platform.isLinux) {
+      if (linux == null) {
+        throw UnsupportedError(
+          'This action is not supported on Linux. Patrol supports only '
+          'Dart-side (Flutter) interactions on Linux.',
+        );
+      }
+      return linux();
     }
 
-    throw UnsupportedError('Unkown platform');
+    throw UnsupportedError('Unknown platform');
   }
 
   /// Calls the action for mobile platforms (Android or iOS).
   T mobile<T>({required T Function() android, required T Function() ios}) {
-    T error() => throw UnsupportedError('Unsupported platform');
+    T error() => throw UnsupportedError(
+      'This action is supported only on Android and iOS, not on '
+      '${_currentPlatformName()}',
+    );
 
-    return safe(android: android, ios: ios, web: error, macos: error);
+    return safe(
+      android: android,
+      ios: ios,
+      web: error,
+      macos: error,
+      linux: error,
+    );
+  }
+
+  static String _currentPlatformName() {
+    if (current_platform.isAndroid) {
+      return 'Android';
+    } else if (current_platform.isIOS) {
+      return 'iOS';
+    } else if (current_platform.isMacOS) {
+      return 'macOS';
+    } else if (current_platform.isWeb) {
+      return 'web';
+    } else if (current_platform.isLinux) {
+      return 'Linux';
+    }
+    return 'an unknown platform';
   }
 }

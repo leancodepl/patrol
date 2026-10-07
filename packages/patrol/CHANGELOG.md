@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Add Linux desktop support (Dart-only, native actions throw `UnsupportedError`). (#3272)
 - **Breaking:** Remove the native API deprecated in 4.0: `$.native`, `$.native2`, `NativeAutomator`,
   `NativeAutomator2`, `NativeAutomatorConfig`, `NativeSelector`, `GetNativeViewsResult` and the
   `nativeAutomatorConfig` parameter of `patrolTest`. Use `$.platform`. `dart fix --apply` rewrites

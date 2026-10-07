@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Add `isLinux` getter to `PatrolTester`. (#3272)
 - Add `PatrolTesterConfig.dragWithoutFling`. When true, scrolling methods such as `scrollTo()`
   end each drag without a fling and cover 3 steps per drag, so they no longer wait for the scroll
   to coast to a stop between drags. Off by default; `scrollTo()`, `scrollUntilVisible()`,
