@@ -67,6 +67,7 @@ class DevelopService {
     required Stream<List<int>> stdin,
     this.onTestsCompleted,
     this.onLogEntry,
+    this.onPrebuiltTargetActive,
   }) : _deviceFinder = deviceFinder,
        _testFinderFactory = testFinderFactory,
        _testBundler = testBundler,
@@ -87,6 +88,11 @@ class DevelopService {
   /// (including flutter attach) to tear down.
   final void Function(TestCompletionResult result)? onTestsCompleted;
   final void Function(Entry entry)? onLogEntry;
+
+  /// With prebuilt APKs, called once the hot restart into the requested
+  /// target settles, whether it succeeded or not. Everything the session
+  /// printed before came from the placeholder test baked into the APK.
+  final void Function()? onPrebuiltTargetActive;
 
   final DeviceFinder _deviceFinder;
   final TestFinderFactory _testFinderFactory;
@@ -624,12 +630,16 @@ class DevelopService {
             'in at build time; hot restarting with the requested target...',
           );
           _flutterTool.hotRestart(
-            onCompleted: () => prebuiltTargetActive = true,
+            onCompleted: () {
+              prebuiltTargetActive = true;
+              onPrebuiltTargetActive?.call();
+            },
             // The placeholder is gone once a restart was attempted, so open
             // the gate anyway; otherwise a compile error in the target would
             // keep every later entry (after the user's fix + `r`) hidden.
             onFailed: () {
               prebuiltTargetActive = true;
+              onPrebuiltTargetActive?.call();
               _logger.warn(
                 'Hot restart into the requested target failed. Fix the '
                 'error above and press r.',

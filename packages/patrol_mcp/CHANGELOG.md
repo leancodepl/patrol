@@ -1,3 +1,11 @@
+## Unreleased
+
+- With `PATROL_FLAGS=--use-prebuilt-apks=<dir>`, leave the placeholder test baked into the APK
+  out of `patrol.log` and the tools' `output`: both now start at the hot restart into the
+  requested file. An agent reading the log took the placeholder's failure for its own test's. If
+  the session ends before that restart, the placeholder's lines are kept. Requires the
+  `patrol_cli` release that adds `onPrebuiltTargetActive`.
+
 ## 0.2.1
 
 - Wait for the previous develop session to finish before starting a new one.
