@@ -66,7 +66,7 @@ class PatrolIntegrationTester extends finders.PatrolTester {
   }
 
   /// Captures a native screenshot ([tag] is added to the file name) for a device
-  /// farm to collect. Android only (a no-op elsewhere); never throws.
+  /// farm to collect. Android and web only (a no-op elsewhere); never throws.
   Future<void> takeNativeScreenshot(String tag) async {
     try {
       await platformAutomator.takeNativeScreenshot(tag);
