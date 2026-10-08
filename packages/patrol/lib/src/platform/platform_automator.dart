@@ -280,10 +280,16 @@ class PlatformAutomator {
     );
   }
 
-  /// Captures a native screenshot (for a device farm to collect). Android only;
-  /// a no-op elsewhere.
+  /// Captures a native screenshot (for a device farm to collect). Android and
+  /// web only; a no-op elsewhere.
+  ///
+  /// On web, the screenshot is taken by Playwright and saved to the per-test
+  /// output directory (under `PATROL_TEST_RESULTS_DIR`).
   Future<void> takeNativeScreenshot(String tag) async {
-    await action.maybe(android: () => android.takeNativeScreenshot(tag));
+    await action.maybe(
+      android: () => android.takeNativeScreenshot(tag),
+      web: () => web.takeNativeScreenshot(tag),
+    );
   }
 }
 

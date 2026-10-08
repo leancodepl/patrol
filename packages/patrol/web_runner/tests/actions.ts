@@ -24,6 +24,7 @@ import { setClipboard } from "./actions/setClipboard"
 import { startTest } from "./actions/startTest"
 import { switchToInitialPage } from "./actions/switchToInitialPage"
 import { switchToPage } from "./actions/switchToPage"
+import { takeNativeScreenshot } from "./actions/takeNativeScreenshot"
 import { tap } from "./actions/tap"
 import { uploadFile } from "./actions/uploadFile"
 import { verifyFileDownloads } from "./actions/verifyFileDownloads"
@@ -57,6 +58,7 @@ export const actions = {
   startTest,
   switchToInitialPage,
   switchToPage,
+  takeNativeScreenshot,
   tap,
   uploadFile,
   verifyFileDownloads,
