@@ -59,61 +59,78 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
     });
 
     tearDown(() async {
-      if (_isDevelopMode) {
-        // Sending results ends the test, which we don't want for Hot Restart
-        return;
-      }
-
-      final testName = global_state.currentTestIndividualName;
-      if (testName == 'patrol_test_explorer') {
-        return;
-      } else {
-        logger(
-          'tearDown(): count: ${_testResults.length}, results: $_testResults',
-        );
-      }
-
-      final nameOfRequestedTest = await patrolAppService.testExecutionRequested;
-
-      if (nameOfRequestedTest == _currentDartTest) {
-        if (const bool.fromEnvironment('COVERAGE_ENABLED')) {
-          postEvent('waitForCoverageCollection', {
-            'mainIsolateId': Service.getIsolateId(Isolate.current),
-          });
-
-          final testCompleter = Completer<void>();
-
-          registerExtension('ext.patrol.markTestCompleted', (
-            method,
-            parameters,
-          ) async {
-            testCompleter.complete();
-            return ServiceExtensionResponse.result(jsonEncode({}));
-          });
-
-          await testCompleter.future;
+      // _wrapTestBodyWithExceptionGatherer() intentionally leaves its
+      // FlutterError.onError override installed past the end of the test
+      // body: errors can still be reported asynchronously while the test
+      // framework tears down the widget tree (e.g. a widget's dispose()
+      // throwing, or an unmanaged RestorationBucket assertion firing once
+      // its owner is unmounted). package:test's own LiveTest result already
+      // reflects such late errors (see global_state.isCurrentTestPassing
+      // below), but until this callback runs, Patrol's _testResults map -
+      // used only to produce a human-readable `details` message - would
+      // have missed them, silently reporting `details: null` for a test
+      // that (correctly) failed. So we only stop gathering exceptions once
+      // we're done reading _testResults, right before returning.
+      try {
+        if (_isDevelopMode) {
+          // Sending results ends the test, which we don't want for Hot Restart
+          return;
         }
 
-        logger(
-          'finished test $_currentDartTest. Will report its status back to the native side',
-        );
+        final testName = global_state.currentTestIndividualName;
+        if (testName == 'patrol_test_explorer') {
+          return;
+        } else {
+          logger(
+            'tearDown(): count: ${_testResults.length}, results: $_testResults',
+          );
+        }
 
-        final passed = global_state.isCurrentTestPassing;
-        logger(
-          'tearDown(): test "$testName" in group "$_currentDartTest", passed: $passed',
-        );
+        final nameOfRequestedTest =
+            await patrolAppService.testExecutionRequested;
 
-        await patrolAppService.markDartTestAsCompleted(
-          dartFileName: _currentDartTest!,
-          passed: passed,
-          details: _testResults[_currentDartTest!] is Failure
-              ? (_testResults[_currentDartTest!] as Failure?)?.details
-              : null,
-        );
-      } else {
-        logger(
-          'finished test $_currentDartTest, but it was not requested, so its status will not be reported back to the native side',
-        );
+        if (nameOfRequestedTest == _currentDartTest) {
+          if (const bool.fromEnvironment('COVERAGE_ENABLED')) {
+            postEvent('waitForCoverageCollection', {
+              'mainIsolateId': Service.getIsolateId(Isolate.current),
+            });
+
+            final testCompleter = Completer<void>();
+
+            registerExtension('ext.patrol.markTestCompleted', (
+              method,
+              parameters,
+            ) async {
+              testCompleter.complete();
+              return ServiceExtensionResponse.result(jsonEncode({}));
+            });
+
+            await testCompleter.future;
+          }
+
+          logger(
+            'finished test $_currentDartTest. Will report its status back to the native side',
+          );
+
+          final passed = global_state.isCurrentTestPassing;
+          logger(
+            'tearDown(): test "$testName" in group "$_currentDartTest", passed: $passed',
+          );
+
+          await patrolAppService.markDartTestAsCompleted(
+            dartFileName: _currentDartTest!,
+            passed: passed,
+            details: _testResults[_currentDartTest!] is Failure
+                ? (_testResults[_currentDartTest!] as Failure?)?.details
+                : null,
+          );
+        } else {
+          logger(
+            'finished test $_currentDartTest, but it was not requested, so its status will not be reported back to the native side',
+          );
+        }
+      } finally {
+        _stopGatheringExceptions();
       }
     });
   }
@@ -154,6 +171,13 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
   /// Keys are the test descriptions, and values are either [_success] or a
   /// [Failure].
   final _testResults = <String, Object>{};
+
+  /// Restores whatever [FlutterError.onError] handler was installed before
+  /// [_wrapTestBodyWithExceptionGatherer] ran for the current test.
+  ///
+  /// Defaults to a no-op because in Hot Restart / develop mode
+  /// [_wrapTestBodyWithExceptionGatherer] is never invoked (see [runTest]).
+  void Function() _stopGatheringExceptions = () {};
 
   final DevtoolsServiceExtensions _serviceExtensions;
 
@@ -220,6 +244,12 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
 
   /// Wraps the test body with a function that gathers exceptions and reports
   /// them to the native side of Patrol.
+  ///
+  /// The installed [FlutterError.onError] override is deliberately *not*
+  /// restored when [testBody] returns: errors reported after that point but
+  /// before our `tearDown()` callback runs (e.g. during widget-tree
+  /// disposal) must still be captured, or [Failure.details] silently ends up
+  /// null for a test that otherwise correctly failed. See [_stopGatheringExceptions].
   Future<void> _wrapTestBodyWithExceptionGatherer(
     Future<void> Function() testBody,
   ) async {
@@ -242,10 +272,9 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
         previousOnError?.call(details);
       }
     };
+    _stopGatheringExceptions = () => FlutterError.onError = previousOnError;
 
     await testBody();
-
-    FlutterError.onError = previousOnError;
   }
 
   @override

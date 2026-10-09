@@ -24,14 +24,14 @@ object Localization {
 
     /**
      * Gets localized string based on device language
-     * Supports English (en), German (de), French (fr), Polish (pl) and Japanese (ja) languages
+     * Supports English (en), German (de), French (fr), Polish (pl), Japanese (ja) and Korean (ko) languages
      */
     fun getLocalizedString(context: Context, resourceId: Int): String {
         val language = getDeviceLanguage(context)
         Logger.d("Device language: $language")
 
         // Check if the detected language is supported
-        val supportedLanguages = setOf("en", "de", "fr", "pl", "ja")
+        val supportedLanguages = setOf("en", "de", "fr", "pl", "ja", "ko")
         if (language !in supportedLanguages) {
             throw UnsupportedOperationException(
                 "Language '$language' is not supported. Supported languages: ${supportedLanguages.joinToString(", ")}"
