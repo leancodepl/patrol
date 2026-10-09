@@ -1,0 +1,162 @@
+---
+title: Install Patrol
+---
+
+<Info>
+     If you want to use Patrol finders in your existing widget or golden
+     tests, go to [Using Patrol finders in widget tests].
+</Info>
+
+## Setup
+
+<Info>
+     **Want your AI agent to set Patrol up for you?** Install the [`patrol-setup` agent skill],
+     or simply paste [this prompt] into the conversation — either way it follows the steps
+     below and gets a first test passing on an Android emulator.
+</Info>
+
+<Steps>
+    <Step id="install-patrol-cli">
+    Install `patrol_cli`:
+    ```
+      flutter pub global activate patrol_cli
+    ```
+    
+    [Patrol CLI] (command-line interface) is a small program that enables running
+    Patrol UI tests. It is necessary to run UI tests (`flutter test` won't work! [Here's why]).
+      <Info>
+        Make sure to add `patrol` to your `PATH` environment variable.
+        It's explained in the [README].
+      </Info>
+    </Step>
+
+    <Step id="verify-installation">
+    Verify that installation was successful and your environment is set up properly:
+
+      ```
+      patrol doctor
+      ```
+      Example output:
+      ```
+      Patrol CLI version: 2.3.1+1
+      Android:
+      • Program adb found in /Users/username/Library/Android/sdk/platform-tools/adb
+      • Env var $ANDROID_HOME set to /Users/username/Library/Android/sdk
+      iOS / macOS:
+      • Program xcodebuild found in /usr/bin/xcodebuild
+      • Program ideviceinstaller found in /opt/homebrew/bin/ideviceinstaller
+      Web:
+      • Program node found in /usr/bin/node
+      • Program npm found in /usr/bin/npm
+      ```
+      Be sure that for the platform you want to run the test on, all the checks are green.
+    
+
+      <Warning>
+      Patrol CLI invokes the Flutter CLI for certain commands. To override the command used,
+      pass the `--flutter-command` argument or set the `PATROL_FLUTTER_COMMAND` environment
+      variable. This supports FVM (by setting the value to `fvm flutter`), puro (`puro flutter`)
+      and potentially other version managers.
+      </Warning>
+    </Step>
+
+    <Step id="add-patrol-dependency">
+    Add a dependency on the `patrol` package in the
+    `dev_dependencies` section of `pubspec.yaml`.  `patrol` package requires
+    Android SDK version 21 or higher.
+
+    ```
+    flutter pub add patrol --dev
+    ```
+    </Step>
+
+    <Step id="configure-pubspec">
+    Create `patrol` section in your `pubspec.yaml`:
+
+    ```yaml title="pubspec.yaml"
+    dependencies:
+      # ...
+
+    dev_dependencies:
+      # ...
+
+    patrol:
+      app_name: My App
+      android:
+        package_name: com.example.myapp
+      ios:
+        bundle_id: com.example.MyApp
+      macos:
+        bundle_id: com.example.macos.MyApp
+    ```
+
+    <Info>
+        **Test Directory Configuration**: By default, Patrol looks for tests in the `patrol_test/` directory. 
+        You can customize this by adding `test_directory: your_custom_directory` to your `patrol` section in `pubspec.yaml`.
+
+        ```yaml title="pubspec.yaml (optional customization)"
+        patrol:
+          app_name: My App
+          test_directory: integration_test  # Use custom directory
+          android:
+            package_name: com.example.myapp
+          ios:
+            bundle_id: com.example.MyApp
+          macos:
+            bundle_id: com.example.macos.MyApp
+        ```
+    </Info>
+
+    <Info>
+        **Native failure screenshots (device farms)**: set
+        `screenshot_on_failure: true` to capture the failing screen and collect
+        it from your device-farm run (Android only, off by default). See
+        [Screenshots](/reference/cli/test#screenshots) for setup and the per-farm
+        details.
+    </Info>
+
+    <Warning>
+        In this tutorial, we are using example app, which has package name
+        `com.example.myapp` on Android, bundle id `com.example.MyApp` on iOS,
+        `com.example.macos.MyApp` on macOS and `My App` name on all platforms.
+        Replace any occurences of those names with proper values.
+    </Warning>
+
+    <Info>
+    If you don't know where to get `package_name` and `bundle_id` from, see the [FAQ] section.
+    </Info>
+
+    </Step>
+
+    <Step id="integrate-native-side">
+    Integrate with native side
+
+    The 3 first steps were common across platforms. The rest is platform-specific. Follow the setup for every platform you want to test on:
+
+    - [Android setup](/get-started/android-setup)
+    - [iOS setup](/get-started/ios-setup)
+    - [macOS setup](/get-started/macos-setup)
+
+    Psst... Android is a bit easier to set up, so we recommend starting with it! When you're done, continue with [Write your first test](/get-started/write-your-first-test).
+    </Step>
+</Steps>
+
+[native automation]: /guides/platform-automation
+[Patrol MCP]: /guides/mcp
+[agent skills]: /guides/agent-skills
+[this prompt]: https://raw.githubusercontent.com/leancodepl/patrol/refs/heads/master/skills/patrol-setup/SKILL.md
+[`patrol-setup` agent skill]: https://github.com/leancodepl/patrol/tree/master/skills
+[Setup for physical iOS Devices]: /guides/physical-ios-devices
+[finders]: /guides/finders
+[Using Patrol finders in widget tests]: /guides/finders-in-widget-tests
+[Here's why]: /reference/configuration#embrace-the-native-tests
+[Patrol CLI]: https://pub.dev/packages/patrol_cli
+[FAQ]: /reference/troubleshooting
+[Compatibility table]: /reference/compatibility-table
+[README]: https://pub.dev/packages/patrol_cli#installation
+[example app]: https://github.com/leancodepl/patrol/tree/master/packages/patrol/example
+[example]: https://github.com/leancodepl/patrol/blob/d2c7493f9399a028e39cb94fd204affdb932c5fc/dev/e2e_app/patrol_test/common.dart#L17-L33
+[Learn more]: https://developer.android.com/build/jdks
+[this video]: https://www.youtube.com/watch?v=9LdEJR59fW4
+[Patrol Discord Server]: https://discord.gg/ukBK5t4EZg
+[Initializing app inside a test]: /get-started/write-your-first-test#initializing-app-inside-a-test

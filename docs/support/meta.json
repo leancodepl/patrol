@@ -1,0 +1,11 @@
+{
+  "title": "Support & Services",
+  "root": true,
+  "pages": [
+    "---Support & Services---",
+    "index",
+    "services",
+    "articles",
+    "external:[GitHub issues](https://github.com/leancodepl/patrol/issues)"
+  ]
+}

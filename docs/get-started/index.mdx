@@ -1,0 +1,58 @@
+---
+title: Getting started
+---
+
+Patrol is an end-to-end UI testing framework for Flutter apps. It runs your tests on real devices and simulators and, unlike `integration_test` alone, lets a test interact with the native side: permission dialogs, notifications, WebViews, device settings.
+
+Check out our video version of the setup tutorial on YouTube!
+
+<YouTube id="zwQB8LfnTN8" />
+
+## Your path
+
+1. [Prerequisites](/get-started/prerequisites)
+2. [Install Patrol](/get-started/install)
+3. [Android setup](/get-started/android-setup)
+4. [iOS setup](/get-started/ios-setup)
+5. [macOS setup](/get-started/macos-setup)
+6. [Write your first test](/get-started/write-your-first-test)
+7. [Run and debug tests](/get-started/run-and-debug)
+8. [Run on CI](/get-started/run-on-ci)
+
+
+Try out Patrol's capabilities with few clicks! Follow this tutorial and get to know our framework.
+
+## Try it out in Firebase Studio
+
+<Steps>
+
+<Step>
+
+export const FirebaseStudioButton = props => {
+  return <a href="https://idx.google.com/import?url=https%3A%2F%2Fgithub.com%2Fleancodepl%2Fpatrol-idx-demo" target="_blank">
+  <img
+    height="32"
+    alt="Try in Firebase Studio"
+    src="https://cdn.firebasestudio.dev/btn/open_light_32.svg"/>
+</a>;
+};
+
+Create new project in Firebase Studio with Patrol demo project by clicking button below.
+<FirebaseStudioButton/>
+
+
+</Step>
+
+<Step>
+Check **`Mobile SDK Support (Flutter + Android Emulator)`** checkbox when creating a project.
+</Step>
+
+<Step>
+Click **Import**.
+</Step>
+
+Android emulator will open as preview and a test will start in develop mode. It takes a while, you can see logs in terminal 
+(it's called `onStart`, may be hidden by default). After test is finished, you can change test's or app's code and type `r` 
+in terminal to rerun it.
+
+</Steps>

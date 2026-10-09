@@ -1,0 +1,67 @@
+---
+title: iOS
+---
+
+## Where do I get `bundle_id` from? [#faq-ios-bundle-id]
+  For iOS go to `ios/Runner.xcodeproj/project.pbxproj` and look for `PRODUCT_BUNDLE_IDENTIFIER`.
+  For macOS go to `macos/Runner.xcodeproj/project.pbxproj` and look for `PRODUCT_BUNDLE_IDENTIFIER`.
+
+## When I run tests the simulator is getting cloned [#faq-simulator-cloned]
+  Make sure that you disabled "Paralell execution" for **all schemes** in Xcode.
+  See [this video] for details.
+
+## Running test stops on 'Wait for com.example.myapp to idle' [#faq-test-stops-wait-for-idle]
+  Search for a `FLUTTER_TARGET` in your project files and remove it (both value and key)
+  from *.xcconfig and *.pbxproj files.
+
+## When running a test, real app without test is opened instead [#faq-real-app-opened-instead]
+  Search for a `FLUTTER_TARGET` in your project files and remove it (both value and key)
+  from *.xcconfig and *.pbxproj files.
+
+## Build is failing with errors on mismatching iOS deployment versions [#faq-ios-deployment-version-mismatch]
+  Check if this line in `Podfile` is present and uncommented.
+  ```
+  platform :ios, '12.0'
+  ```
+  If yes, then check if **iOS deployment version** in Xcode project's **Build Settings**
+  section for all targets (Runner and RunnerUITests) are set to the same value as in Podfile
+  (in case presented in snippet above, all should be set to 12.0).
+
+## How to generate FLUTTER_TARGET after removing it from *.xcconfig [#faq-generate-flutter-target]
+  After removing `FLUTTER_TARGET` from `*.xcconfig`, you need to run the following command to generate it:
+
+  ```
+  flutter build ios --config-only patrol_test/example_test.dart
+  ```
+
+  Make sure to replace `patrol_test/example_test.dart` with the path to your test file.
+
+## Build fails with 'release/profile builds are only supported for physical devices' when using a flavor [#faq-release-profile-physical-devices]
+  This almost always means the Xcode **build configuration** name doesn't match the
+  convention Patrol expects. Patrol looks for a configuration named
+  `<BuildMode>-<flavor>` (for example `Debug-development`). If it doesn't exist,
+  `xcodebuild` silently falls back to its default and produces this misleading error.
+  Open your Xcode project and make sure your build configurations are named
+  `Debug-<flavor>`, `Profile-<flavor>` and `Release-<flavor>`. See the
+  [Flavors](/guides/flavors) section for the full convention.
+
+
+[native automation]: /guides/platform-automation
+[Patrol MCP]: /guides/mcp
+[agent skills]: /guides/agent-skills
+[this prompt]: https://raw.githubusercontent.com/leancodepl/patrol/refs/heads/master/skills/patrol-setup/SKILL.md
+[`patrol-setup` agent skill]: https://github.com/leancodepl/patrol/tree/master/skills
+[Setup for physical iOS Devices]: /guides/physical-ios-devices
+[finders]: /guides/finders
+[Using Patrol finders in widget tests]: /guides/finders-in-widget-tests
+[Here's why]: /reference/configuration#embrace-the-native-tests
+[Patrol CLI]: https://pub.dev/packages/patrol_cli
+[FAQ]: /reference/troubleshooting
+[Compatibility table]: /reference/compatibility-table
+[README]: https://pub.dev/packages/patrol_cli#installation
+[example app]: https://github.com/leancodepl/patrol/tree/master/packages/patrol/example
+[example]: https://github.com/leancodepl/patrol/blob/d2c7493f9399a028e39cb94fd204affdb932c5fc/dev/e2e_app/patrol_test/common.dart#L17-L33
+[Learn more]: https://developer.android.com/build/jdks
+[this video]: https://www.youtube.com/watch?v=9LdEJR59fW4
+[Patrol Discord Server]: https://discord.gg/ukBK5t4EZg
+[Initializing app inside a test]: /get-started/write-your-first-test#initializing-app-inside-a-test

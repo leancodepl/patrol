@@ -1,0 +1,187 @@
+---
+title: macOS setup
+---
+
+
+    <Warning>
+        Support for macOS is in alpha stage. Please be aware that some features
+        may not work as expected. There is also no native automation support
+        for macOS yet. If you encounter any issues, please report them on
+        GitHub.
+    </Warning>
+
+      <Steps>
+        <Step id="open-xcworkspace">
+          Open `macos/Runner.xcworkspace` in Xcode.
+        </Step>
+
+        <Step id="create-test-target">
+          Create a test target if you do not already have one via `File > New > Target...`
+            and select `UI Testing Bundle`. Change the `Product Name` to `RunnerUITests`. Make
+            sure `Target to be Tested` is set to `Runner` and language is set to `Objective-C`.
+            Select `Finish`.
+        </Step>
+
+        <Step id="delete-launch-tests">
+          2 files are created: `RunnerUITests.m` and `RunnerUITestsLaunchTests.m`.
+            Delete `RunnerUITestsLaunchTests.m` **through Xcode**.
+        </Step>
+
+        <Step id="set-min-macos-version">
+          Make sure that the **macOS Deployment Target** of `RunnerUITests` within the
+            **Build Settings** section is the same as `Runner`.
+            The minimum supported **macOS Deployment Target** is `10.14`.
+
+          ![Xcode macOS deployment target](/assets/macos_deployment_target.png)
+
+          ![Xcode macOS deployment target 2](/assets/macos_deployment_target_2.png)
+        </Step>
+
+        <Step id="configure-runner-uitests">
+          Replace contents of `RunnerUITests.m` file with the following:
+
+          ```objective-c title="macos/RunnerUITests/RunnerUITests.m"
+          @import XCTest;
+          @import patrol;
+          @import ObjectiveC.runtime;
+
+          #if !defined(PATROL_INTEGRATION_TEST_MACOS_RUNNER)
+          #import "PatrolIntegrationTestMacosRunner.h"
+          #endif
+
+          PATROL_INTEGRATION_TEST_MACOS_RUNNER(RunnerUITests)
+          ```
+
+          <Tabs
+            defaultIndex={0}
+            items={['CocoaPods', 'Swift Package Manager']}
+          >
+            <Tab value="CocoaPods">
+              Add the newly created target to `macos/Podfile` by embedding in the existing
+              `Runner` target.
+
+              ```ruby title="macos/Podfile"
+              target 'Runner' do
+                # Do not change existing lines.
+                ...
+
+                target 'RunnerUITests' do
+                  inherit! :complete
+                end
+              end
+              ```
+            </Tab>
+            <Tab value="Swift Package Manager">
+              If you haven't yet migrated your project to Swift Package Manager, follow the Flutter docs for
+              [integrating SPM with your app](https://docs.flutter.dev/packages-and-plugins/swift-package-manager/for-app-developers).
+
+              <Info>Following the Flutter docs will allow you to run or build the app itself (Runner target) but we still need to do some configuration for Patrol tests (RunnerUITests target).</Info>
+
+              To add the `FlutterGeneratedPluginSwiftPackage` to the **RunnerUITests**
+              target, in Xcode go to **RunnerUITests > General > Frameworks and Libraries**,
+              click **+**, and select `FlutterGeneratedPluginSwiftPackage`.
+
+              ![Xcode RunnerUITests Frameworks and Libraries](/assets/ios_spm_frameworks.png)
+            </Tab>
+          </Tabs>
+        </Step>
+
+        <Step id="build-macos-config">
+          Create an empty file `patrol_test/example_test.dart` in the root of your Flutter project. From the command line, run:
+
+          ```
+          flutter build macos --config-only patrol_test/example_test.dart
+          ```
+        </Step>
+
+        <Step id="pod-install">
+           **(CocoaPods only)** Go to your `macos` directory and run:
+
+          ```
+          pod install --repo-update
+          ```
+        </Step>
+
+        <Step id="add-build-phases">
+          Go to **RunnerUITests** -> **Build Phases** and add 2 new "Run Script Phase" Build Phases.
+            Rename them to `xcode_backend build` and `xcode_backend embed_and_thin` by double clicking
+            on their names.
+
+          ![Xcode config setup](/assets/macos_runner_build_phases_create.png)
+        </Step>
+
+        <Step id="order-build-phases">
+          Arrange the newly created Build Phases in the order shown in the screenshot below.
+
+          ![Xcode config setup](/assets/macos_runner_build_phases.png)
+        </Step>
+
+        <Step id="set-macos-assemble-build">
+          Paste this code into the first `macos_assemble build` Build Phase:
+
+          ```
+          /bin/sh "$FLUTTER_ROOT/packages/flutter_tools/bin/macos_assemble.sh" build
+          ```
+        </Step>
+
+        <Step id="set-macos-assemble-embed">
+          Paste this code into the second `macos_assemble embed` Build Phase:
+
+          ```
+          /bin/sh "$FLUTTER_ROOT/packages/flutter_tools/bin/macos_assemble.sh" embed
+          ```
+        </Step>
+
+        <Step id="disable-parallel-execution">
+          Xcode by default also enables a "parallel execution" setting, which
+            breaks Patrol. Disable it **for all schemes** (if you have more than one):
+
+          <YouTube id="9LdEJR59fW4" />
+        </Step>
+
+        <Step id="disable-script-sandboxing">
+          Go to **RunnerUITests** -> **Build Settings**, search for **User Script Sandboxing**
+            and make sure it's set to **No**.
+        </Step>
+
+        <Step id="enable-app-sandbox-connections">
+          Go to **Runner** -> **Signing & Capabilities**. Make sure that in all **App Sandbox**
+            sections, **Incoming Connections (Server)** and **Outgoing Connections (Client)** checkboxes
+            are checked.
+
+          ![Xcode entitlements setup](/assets/macos_entitlements.png)
+        </Step>
+
+        <Step id="copy-entitlements">
+          **Copy** `DebugProfile.entitlements` and `Release.entitlements` files from `macos/Runner`
+            to `macos/RunnerUITests` directory.
+        </Step>
+
+        <Step id="set-signing-entitlements">
+          Go to **RunnerUITests** -> **Build Settings** and set **Code Signing Entitlements** to
+            `RunnerUITests/DebugProfile.entitlements` for **Debug** and **Profile** configuration and to
+            `RunnerUITests/Release.entitlements` for **Release** configuration.
+
+          ![Xcode RunnerUITests entitlements setup](/assets/macos_ui_entitlements.png)
+        </Step>
+      </Steps>
+
+[native automation]: /guides/platform-automation
+[Patrol MCP]: /guides/mcp
+[agent skills]: /guides/agent-skills
+[this prompt]: https://raw.githubusercontent.com/leancodepl/patrol/refs/heads/master/skills/patrol-setup/SKILL.md
+[`patrol-setup` agent skill]: https://github.com/leancodepl/patrol/tree/master/skills
+[Setup for physical iOS Devices]: /guides/physical-ios-devices
+[finders]: /guides/finders
+[Using Patrol finders in widget tests]: /guides/finders-in-widget-tests
+[Here's why]: /reference/configuration#embrace-the-native-tests
+[Patrol CLI]: https://pub.dev/packages/patrol_cli
+[FAQ]: /reference/troubleshooting
+[Compatibility table]: /reference/compatibility-table
+[README]: https://pub.dev/packages/patrol_cli#installation
+[example app]: https://github.com/leancodepl/patrol/tree/master/packages/patrol/example
+[example]: https://github.com/leancodepl/patrol/blob/d2c7493f9399a028e39cb94fd204affdb932c5fc/dev/e2e_app/patrol_test/common.dart#L17-L33
+[Learn more]: https://developer.android.com/build/jdks
+[this video]: https://www.youtube.com/watch?v=9LdEJR59fW4
+[Patrol Discord Server]: https://discord.gg/ukBK5t4EZg
+[Initializing app inside a test]: /get-started/write-your-first-test#initializing-app-inside-a-test
