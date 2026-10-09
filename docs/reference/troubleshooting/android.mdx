@@ -1,0 +1,39 @@
+---
+title: Android
+---
+
+## Where do I get 'package_name' from? [#faq-android-package-name]
+  Go to `android/app/build.gradle` and look for `applicationId` in `defaultConfig` section.
+
+## Running patrol test fails containing 'Unsupported class file major version' error [#faq-unsupported-class-file-version]
+  It's most likely caused by using incompatible JDK version.
+  Run `javac -version` to check your JDK version. Patrol officially works on JDK 17,
+  so unexpected errors may occur on other versions.
+  If you have AndroidStudio or Intellij IDEA installed, you can find the path to JDK by
+  opening your project's android directory in AS/Intellij and going to
+  **Settings** -> **Build, Execution, Deployment** -> **Build Tools** -> **Gradle** -> **Gradle JDK**.
+  [Learn more]
+
+## Build gets stuck during 'patrol test' or 'patrol build android' [#faq-build-stuck]
+  If the build hangs and running with `--verbose` shows it stuck at `$ flutter build apk --config-only`, updating orchestrator to `1.6.1` in your `build.gradle` might help.
+
+
+[native automation]: /guides/platform-automation
+[Patrol MCP]: /guides/mcp
+[agent skills]: /guides/agent-skills
+[this prompt]: https://raw.githubusercontent.com/leancodepl/patrol/refs/heads/master/skills/patrol-setup/SKILL.md
+[`patrol-setup` agent skill]: https://github.com/leancodepl/patrol/tree/master/skills
+[Setup for physical iOS Devices]: /guides/physical-ios-devices
+[finders]: /guides/finders
+[Using Patrol finders in widget tests]: /guides/finders-in-widget-tests
+[Here's why]: /reference/configuration#embrace-the-native-tests
+[Patrol CLI]: https://pub.dev/packages/patrol_cli
+[FAQ]: /reference/troubleshooting
+[Compatibility table]: /reference/compatibility-table
+[README]: https://pub.dev/packages/patrol_cli#installation
+[example app]: https://github.com/leancodepl/patrol/tree/master/packages/patrol/example
+[example]: https://github.com/leancodepl/patrol/blob/d2c7493f9399a028e39cb94fd204affdb932c5fc/dev/e2e_app/patrol_test/common.dart#L17-L33
+[Learn more]: https://developer.android.com/build/jdks
+[this video]: https://www.youtube.com/watch?v=9LdEJR59fW4
+[Patrol Discord Server]: https://discord.gg/ukBK5t4EZg
+[Initializing app inside a test]: /get-started/write-your-first-test#initializing-app-inside-a-test

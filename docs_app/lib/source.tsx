@@ -19,20 +19,6 @@ const commonLinks = [
     external: true,
     icon: <FontAwesomeIcon icon={faDiscord} />,
   },
-  {
-    type: "page" as const,
-    name: "patrol API reference",
-    url: "https://pub.dev/documentation/patrol/latest/index.html",
-    external: true,
-    icon: <FontAwesomeIcon icon={faCode} />,
-  },
-  {
-    type: "page" as const,
-    name: "patrol_finders API reference",
-    url: "https://pub.dev/documentation/patrol_finders/latest/index.html",
-    external: true,
-    icon: <FontAwesomeIcon icon={faCode} />,
-  },
 ]
 
 // See https://fumadocs.dev/docs/headless/source-api for more info

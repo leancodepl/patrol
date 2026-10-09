@@ -18,36 +18,29 @@ export function baseOptions(): Partial<DocsLayoutProps> {
     sidebar: {
       tabs: [
         {
-          title: "Overview",
-          url: "/",
+          title: "Get Started",
+          url: "/get-started",
         },
         {
-          title: "Documentation",
-          url: "/documentation",
+          title: "Guides",
+          url: "/guides",
         },
         {
-          title: "CLI commands",
-          url: "/cli-commands",
+          title: "Reference",
+          url: "/reference",
         },
         {
-          title: "Patrol Feature Guide",
-          url: "/feature-guide",
-        },
-        {
-          title: "Articles & Resources",
-          url: "/articles",
-        },
-        {
-          title: "Pricing",
-          url: "/pricing",
-        },
-        {
-          title: "Contact us",
-          url: "/contact",
+          title: "Support & Services",
+          url: "/support",
         },
       ],
     },
     links: [
+      {
+        text: "API",
+        url: "https://pub.dev/documentation/patrol/latest/index.html",
+        external: true,
+      },
       {
         type: "custom",
         children: <GithubInfo owner="leancodepl" repo="patrol" className="lg:-mx-2" />,

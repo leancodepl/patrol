@@ -1,0 +1,16 @@
+{
+  "title": "Get Started",
+  "root": true,
+  "pages": [
+    "---Get Started---",
+    "index",
+    "prerequisites",
+    "install",
+    "android-setup",
+    "ios-setup",
+    "macos-setup",
+    "write-your-first-test",
+    "run-and-debug",
+    "run-on-ci"
+  ]
+}

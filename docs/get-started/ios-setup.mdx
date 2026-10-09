@@ -1,0 +1,187 @@
+---
+title: iOS setup
+---
+
+      <Steps>
+        <Step id="open-xcworkspace">
+          Open `ios/Runner.xcworkspace` in Xcode.
+        </Step>
+          
+        <Step id="create-test-target">
+          Create a test target if you do not already have one (see the screenshot below
+            for the reference). Select `File > New > Target...` and select `UI Testing Bundle`.
+            Change the `Product Name` to `RunnerUITests`. Set the `Organization Identifier`
+            to be the same as for the `Runner` (no matter if you app has flavors or not).
+            For our example app, it's `com.example.MyApp` just as in the `pubspec.yaml` file.
+            Make sure `Target to be Tested` is set to `Runner` and language is set to `Objective-C`.
+            Select `Finish`.
+
+          ![Xcode iOS test target](/assets/ios_test_target.png)
+        </Step>
+
+        <Step id="delete-launch-tests">
+          2 files are created: `RunnerUITests.m` and `RunnerUITestsLaunchTests.m`.
+            Delete `RunnerUITestsLaunchTests.m` **through Xcode** by clicking on it and
+            selecting `Move to Trash`.
+        </Step>
+
+        <Step id="set-min-ios-version">
+          Make sure that the **iOS Deployment Target** of `RunnerUITests` within the
+            **Build Settings** section is the same as `Runner`.
+            The minimum supported **iOS Deployment Target** is `13.0`.
+
+          ![Xcode iOS deployment target](/assets/ios_deployment_target.png)
+
+          ![Xcode iOS deployment target 2](/assets/ios_deployment_target_2.png)
+        </Step>
+
+        <Step id="configure-runner-uitests">
+          Replace contents of `RunnerUITests.m` file with the following:
+
+          ```objective-c title="ios/RunnerUITests/RunnerUITests.m"
+          @import XCTest;
+          @import patrol;
+          @import ObjectiveC.runtime;
+
+          #if !defined(PATROL_INTEGRATION_TEST_IOS_RUNNER)
+          #import "PatrolIntegrationTestIosRunner.h"
+          #endif
+
+          PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerUITests)
+          ```
+
+          <Tabs
+            defaultIndex={0}
+            items={['CocoaPods', 'Swift Package Manager']}
+          >
+            <Tab value="CocoaPods">
+              Add the newly created target to `ios/Podfile` by embedding in the existing
+              `Runner` target.
+
+              ```ruby title="ios/Podfile"
+              target 'Runner' do
+                # Do not change existing lines.
+                ...
+
+                target 'RunnerUITests' do
+                  inherit! :complete
+                end
+              end
+              ```
+            </Tab>
+            <Tab value="Swift Package Manager">
+              If you haven't yet migrated your project to Swift Package Manager, follow the Flutter docs for
+              [integrating SPM with your app](https://docs.flutter.dev/packages-and-plugins/swift-package-manager/for-app-developers).
+
+              <Info>Following the Flutter docs will allow you to run or build the app itself (Runner target) but we still need to do some configuration for Patrol tests (RunnerUITests target).</Info>
+
+              To add the `FlutterGeneratedPluginSwiftPackage` to the **RunnerUITests**
+              target, in Xcode go to **RunnerUITests > General > Frameworks and Libraries**,
+              click **+**, and select `FlutterGeneratedPluginSwiftPackage`.
+
+              ![Xcode RunnerUITests Frameworks and Libraries](/assets/ios_spm_frameworks.png)
+            </Tab>
+          </Tabs>
+        </Step>
+
+        <Step id="build-ios-config">
+          Create an empty file `patrol_test/example_test.dart` in the root of your Flutter project. From the command line, run
+            the following command and make sure it completes with no errors:
+
+          ```
+          flutter build ios --config-only patrol_test/example_test.dart
+          ```
+        </Step>
+
+        <Step id="pod-install">
+           **(CocoaPods only)** Go to your `ios` directory and run:
+
+          ```
+          pod install --repo-update
+          ```
+        </Step>
+
+        <Step id="match-build-configs">
+          Open your Xcode project and Make sure that for each build configuration,
+            the `RunnerUITests` have the same Configuration Set selected as the `Runner`:
+
+          ![Xcode config setup](/assets/ios_runner_configs.png)
+        </Step>
+
+        <Step id="add-build-phases">
+          Go to **RunnerUITests** -> **Build Phases** and add 2 new "Run Script Phase" Build Phases.
+            Name them `xcode_backend build` and `xcode_backend embed_and_thin`.
+
+          ![Xcode config setup](/assets/ios_runner_build_phases_create.png)
+        </Step>
+
+        <Step id="order-build-phases">
+          Arrange the newly created Build Phases in the order shown in the screenshot below.
+
+          ![Xcode config setup](/assets/ios_runner_build_phases.png)
+        </Step>
+
+        <Step id="set-xcode-backend-build">
+          Paste this code into the `xcode_backend build` Build Phase:
+
+          ```
+          /bin/sh "$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh" build
+          ```
+        </Step>
+
+        <Step id="set-xcode-backend-embed">
+          Paste this code into the `xcode_backend embed_and_thin` Build Phase:
+
+          ```
+          /bin/sh "$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh" embed_and_thin
+          ```
+        </Step>
+
+        <Step id="disable-parallel-execution">
+          Xcode by default also enables a "parallel execution" setting, which
+            breaks Patrol. Disable it **for all schemes** (if you have more than one):
+
+          <YouTube id="9LdEJR59fW4" />
+
+          <Info>
+            The video shows a scheme that does not use test plans, which is the
+            default for schemes generated by Flutter. If the **Test** tab of your
+            scheme editor lists test plans instead of test targets (for example,
+            after you converted the scheme with **Convert to use Test Plans...**
+            or set up BrowserStack), disable parallel execution in the test plan
+            instead: open the `.xctestplan` file, go to the **Tests** tab, click
+            **Options** next to `RunnerUITests` and uncheck
+            **Execute in parallel (if possible)**. In the JSON file this removes
+            `"parallelizable" : true` from the `RunnerUITests` entry in `testTargets`.
+          </Info>
+        </Step>
+
+        <Step id="disable-script-sandboxing">
+          Go to **RunnerUITests** -> **Build Settings**, search for **User Script Sandboxing**
+            and make sure it's set to **No**.
+        </Step>
+
+        You're ready to run tests on iOS simulator but using real devices is a bit
+        more complicated.
+        Check out [Setup for physical iOS Devices] to learn how to set up Patrol for physical iOS devices.
+      </Steps>
+
+[native automation]: /guides/platform-automation
+[Patrol MCP]: /guides/mcp
+[agent skills]: /guides/agent-skills
+[this prompt]: https://raw.githubusercontent.com/leancodepl/patrol/refs/heads/master/skills/patrol-setup/SKILL.md
+[`patrol-setup` agent skill]: https://github.com/leancodepl/patrol/tree/master/skills
+[Setup for physical iOS Devices]: /guides/physical-ios-devices
+[finders]: /guides/finders
+[Using Patrol finders in widget tests]: /guides/finders-in-widget-tests
+[Here's why]: /reference/configuration#embrace-the-native-tests
+[Patrol CLI]: https://pub.dev/packages/patrol_cli
+[FAQ]: /reference/troubleshooting
+[Compatibility table]: /reference/compatibility-table
+[README]: https://pub.dev/packages/patrol_cli#installation
+[example app]: https://github.com/leancodepl/patrol/tree/master/packages/patrol/example
+[example]: https://github.com/leancodepl/patrol/blob/d2c7493f9399a028e39cb94fd204affdb932c5fc/dev/e2e_app/patrol_test/common.dart#L17-L33
+[Learn more]: https://developer.android.com/build/jdks
+[this video]: https://www.youtube.com/watch?v=9LdEJR59fW4
+[Patrol Discord Server]: https://discord.gg/ukBK5t4EZg
+[Initializing app inside a test]: /get-started/write-your-first-test#initializing-app-inside-a-test

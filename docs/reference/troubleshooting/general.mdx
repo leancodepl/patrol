@@ -1,0 +1,52 @@
+---
+title: General
+---
+
+## Testing fails with error inside 'patrol_test/test_bundle.dart' [#faq-test-bundle-error]
+  The reason is probably a mismatch of `patrol` and `patrol_cli` versions. Go to [Compatibility table]
+  and make sure that the versions of `patrol` and `patrol_cli` you are using are compatible.
+
+## 'example_test.dart' passed but I can't get my application to run within the patrol test. [#faq-app-not-running-in-test]
+  To run your application within the patrol test, you need to call `$.pumpWidgetAndSettle()`,
+  and pass your application's main widget to it. Be sure that you registered all the
+  necessary services before calling `$.pumpWidgetAndSettle()`.
+  Here's the example of running an app within the patrol test:
+  ```dart
+
+  void main() {
+    patrolTest('real app test', ($) async {
+
+    // Do all the necessary setup here (DI, services, etc.)
+
+    await $.pumpWidgetAndSettle(const MyApp()); // Your's app main widget
+
+    // Start testing your app here
+
+    });
+  }
+
+  ```
+  It's a good practice to create a setup wrapper function for your tests, so you don't have to
+  repeat the same code in every test. Look at the [example]
+  of a wrapper function. Find out more in [Initializing app inside a test] section above.
+
+
+[native automation]: /guides/platform-automation
+[Patrol MCP]: /guides/mcp
+[agent skills]: /guides/agent-skills
+[this prompt]: https://raw.githubusercontent.com/leancodepl/patrol/refs/heads/master/skills/patrol-setup/SKILL.md
+[`patrol-setup` agent skill]: https://github.com/leancodepl/patrol/tree/master/skills
+[Setup for physical iOS Devices]: /guides/physical-ios-devices
+[finders]: /guides/finders
+[Using Patrol finders in widget tests]: /guides/finders-in-widget-tests
+[Here's why]: /reference/configuration#embrace-the-native-tests
+[Patrol CLI]: https://pub.dev/packages/patrol_cli
+[FAQ]: /reference/troubleshooting
+[Compatibility table]: /reference/compatibility-table
+[README]: https://pub.dev/packages/patrol_cli#installation
+[example app]: https://github.com/leancodepl/patrol/tree/master/packages/patrol/example
+[example]: https://github.com/leancodepl/patrol/blob/d2c7493f9399a028e39cb94fd204affdb932c5fc/dev/e2e_app/patrol_test/common.dart#L17-L33
+[Learn more]: https://developer.android.com/build/jdks
+[this video]: https://www.youtube.com/watch?v=9LdEJR59fW4
+[Patrol Discord Server]: https://discord.gg/ukBK5t4EZg
+[Initializing app inside a test]: /get-started/write-your-first-test#initializing-app-inside-a-test

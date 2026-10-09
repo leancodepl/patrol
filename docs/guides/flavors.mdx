@@ -1,0 +1,70 @@
+---
+title: Flavors and dart-define
+---
+
+  If your app is using flavors, then you can pass them like so:
+
+  ```
+  patrol test --target patrol_test/example_test.dart --flavor development
+  ```
+
+  or you can specify them in `pubspec.yaml` (recommended):
+
+  ```yaml title="pubspec.yaml"
+  patrol:
+    app_name: My App
+    flavor: development
+    android:
+      package_name: com.example.myapp
+    ios:
+      bundle_id: com.example.MyApp
+      app_name: The Awesome App
+    macos:
+      bundle_id: com.example.macos.MyApp
+  ```
+
+  ### iOS and macOS naming convention
+
+  On iOS and macOS, Patrol derives the Xcode **scheme** and **build configuration**
+  names from the flavor and build mode using a fixed convention. Your Xcode project
+  must match it exactly:
+
+  | Patrol input | Xcode object | Expected name |
+  |---|---|---|
+  | `--flavor development` | Scheme | `development` |
+  | `--flavor development` (debug) | Build Configuration | `Debug-development` |
+  | `--flavor development` (profile) | Build Configuration | `Profile-development` |
+  | `--flavor development` (release) | Build Configuration | `Release-development` |
+
+  The build configuration format is always `<BuildMode>-<flavor>`, with `BuildMode`
+  capitalized (`Debug`, `Profile`, `Release`). This is the same convention Flutter
+  uses for iOS flavors.
+
+  <Warning>
+    If your build configurations use a different format (for example
+    `Development-debug` instead of `Debug-development`), `xcodebuild` silently falls
+    back to its default configuration and the build fails with a misleading error
+    such as *"release/profile builds are only supported for physical devices."*
+    Rename (or duplicate) your configurations to match the convention above.
+  </Warning>
+
+
+[native automation]: /guides/platform-automation
+[Patrol MCP]: /guides/mcp
+[agent skills]: /guides/agent-skills
+[this prompt]: https://raw.githubusercontent.com/leancodepl/patrol/refs/heads/master/skills/patrol-setup/SKILL.md
+[`patrol-setup` agent skill]: https://github.com/leancodepl/patrol/tree/master/skills
+[Setup for physical iOS Devices]: /guides/physical-ios-devices
+[finders]: /guides/finders
+[Using Patrol finders in widget tests]: /guides/finders-in-widget-tests
+[Here's why]: /reference/configuration#embrace-the-native-tests
+[Patrol CLI]: https://pub.dev/packages/patrol_cli
+[FAQ]: /reference/troubleshooting
+[Compatibility table]: /reference/compatibility-table
+[README]: https://pub.dev/packages/patrol_cli#installation
+[example app]: https://github.com/leancodepl/patrol/tree/master/packages/patrol/example
+[example]: https://github.com/leancodepl/patrol/blob/d2c7493f9399a028e39cb94fd204affdb932c5fc/dev/e2e_app/patrol_test/common.dart#L17-L33
+[Learn more]: https://developer.android.com/build/jdks
+[this video]: https://www.youtube.com/watch?v=9LdEJR59fW4
+[Patrol Discord Server]: https://discord.gg/ukBK5t4EZg
+[Initializing app inside a test]: /get-started/write-your-first-test#initializing-app-inside-a-test

@@ -1,17 +1,5 @@
 {
-  "title": "Overview",
+  "title": "Patrol",
   "root": true,
-  "pages": [
-    "---Overview---",
-    "overview/getting-started",
-    "external:[LeanCode](https://leancode.co)",
-    "---Announcements---",
-    "spm-announcement",
-    "patrol-mcp-announcement",
-    "v4",
-    "native-to-platform-migration",
-    "logs-announcement",
-    "v3",
-    "patrol-finders-release"
-  ]
+  "pages": ["index"]
 }

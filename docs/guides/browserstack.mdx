@@ -1,0 +1,243 @@
+---
+title: BrowserStack
+---
+
+## Setup
+
+[BrowserStack App Automate] is a popular cloud device farm. You can use it to run your tests on real devices.
+
+<Accordions>
+<Accordion title="Android setup">
+  <Steps>
+    <Step>
+      ### Change runner
+
+        Modify the **app-level build.gradle.kts**:
+
+        ```groovy title="android/app/build.gradle.kts"
+        android {
+          // ...
+          defaultConfig {
+            //...
+            testInstrumentationRunner = "pl.leancode.patrol.BrowserstackPatrolJUnitRunner"
+          }
+          // ...
+        }
+
+        // ...
+        ```
+
+      <Info>
+        `BrowserstackPatrolJUnitRunner` only adds a fallback for devices where the
+        instrumentation cannot reach the app on `localhost`: if the first request
+        fails, it retries through the `tun0` interface. Recent BrowserStack devices
+        reach `localhost` fine, so the plain `pl.leancode.patrol.PatrolJUnitRunner`
+        works there too. Use the plain runner when you enable
+        [build-time test discovery](/guides/build-time-test-discovery) -
+        the generated test classes drive the runner themselves and the fallback
+        gets in their way.
+      </Info>
+    </Step>
+  </Steps>
+  That's it! You can now use `bs_android` to schedule a test run.
+</Accordion>
+<Accordion title="iOS setup">
+  <Warning>
+    You need to do a [Setup for physical iOS devices] first.
+  </Warning>
+
+  We need to convert your tests to use [Xcode test plans].
+  <Warning>
+    Make sure that the project name is "Runner" and the scheme is named "Runner" - this is the default name for the Flutter project.
+  </Warning>
+
+  <Steps>
+    <Step>
+      Open your project in Xcode and edit the scheme:
+      ![Edit scheme](/assets/edit_scheme.png)
+    </Step>
+
+    <Step>
+      Go to the **Test** tab and convert your tests to use test plans:
+
+      ![Convert to test plans](/assets/convert_to_use_test_plans.png)
+    </Step>
+
+    <Step>
+      Create from scheme:
+      ![Create from scheme](/assets/create_test_plan_from_scheme.png)
+    </Step>
+
+    <Step>
+      Rename to "TestPlan" and save:
+      ![Rename to test plan](/assets/rename_to_testplan.png)
+      <Warning>
+        It has to be named "TestPlan" to work with the `bs_ios` script.
+      </Warning>
+    </Step>
+
+      Now, you can schedule a test run using the `bs_ios` script.
+  </Steps>
+</Accordion>
+</Accordions>
+
+You can choose between running tests in a recommended way using scripts or manually:
+
+<Accordions>
+<Accordion title="Running tests using scripts (recommended)">
+## Schedule tests using scripts
+
+We recommend using the [bs_android] and [bs_ios] scripts to schedule test runs.
+They are part of LeanCode's [mobile-tools]. If you're using Homebrew, you can install it with:
+
+```bash
+brew tap leancodepl/tools
+brew install mobile-tools
+```
+
+The scripts require the `BS_CREDENTIALS` environment variable
+to be set so it can authenticate with BrowserStack:
+
+```bash
+export BS_CREDENTIALS="YOUR_USERNAME:YOUR_ACCESS_KEY"
+```
+
+Get your username and access on [BrowserStack's account page][bs_account].
+
+Now reload your shell (e.g. `exec zsh`)
+
+### Usage
+
+The scripts forward all its options and flags to `patrol build`, so you can use it like this:
+
+```bash
+bs_android \
+  --target patrol_test/example_test.dart,patrol_test/another_test.dart \
+  --verbose \
+  --dart-define 'KEY_EXAMPLE=VALUE_EXAMPLE'
+```
+
+Full example:
+
+```
+$ export BS_PROJECT=AwesomeApp # optional
+$ export BS_ANDROID_DEVICES="[\"Google Pixel 4-10.0\"]" # optional
+$ bs_android
+• Building apk with entrypoint test_bundle.dart...
+✓ Completed building apk with entrypoint test_bundle.dart (11.0s)
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100 87.4M  100   235  100 87.4M      7  2857k  0:00:33  0:00:31  0:00:02 2052k
+Uploaded app, url: bs://fb61a714e1a0c60e2578d940dad52b74da244d54
+Uploaded test, url: bs://a715b1231d41ac627bd683f1b16c28476babd72e
+{"message":"Success","build_id":"a30440db559fcab65554ab0273437f3bd45d761b"}
+Scheduled test execution
+```
+
+That's all! "Success" means that the test execution was scheduled successfully.
+
+</Accordion>
+
+<Accordion title="Running tests manually">
+
+You can follow BrowserStack's docs and/or follow the code of `bs_android` and `bs_ios` scripts:
+
+1. Build the app under test and the instrumentation app ([see docs][patrol build])
+1. Upload the app under test APK to BrowserStack ([see Android docs][bs_android_app_docs]) ([see iOS docs][bs_ios_app_docs])
+1. Upload the instrumentation app APK to BrowserStack ([see Android docs][bs_android_test_docs]) ([see iOS docs][bs_ios_test_docs])
+1. Start test execution on BrowserStack ([see Android docs][bs_execute_android_docs]) ([see iOS docs][bs_execute_ios_docs])
+
+</Accordion>
+</Accordions>
+
+After scheduling the test execution, you can check the status of the test execution in the [App Automate dashboard][bs_app_automate_dashboard].
+
+If you need to change the test configuration, check out full list of available devices and OS versions in the [BrowserStack Browsers & Devices][bs_devices].
+
+## Sharding
+
+BrowserStack runs each shard on its own device, in parallel. The two platforms
+shard differently.
+
+### Android
+
+Espresso shards split automatically: add `shards` to the build request and
+BrowserStack distributes the test classes across that many devices.
+
+```json
+"shards": { "numberOfShards": 3 }
+```
+
+This works with runtime discovery (every test is a parameter of your host test
+class) and with build-time discovery (every Dart test file is its own class).
+BrowserStack balances by test count, not duration, so a shard that got the slow
+tests can still hit the session cap - add shards rather than expecting an even split.
+
+### iOS
+
+XCUITest has no automatic split. BrowserStack needs an explicit list of test
+identifiers per shard, and there is nothing to list under runtime discovery: the
+tests are registered only after the app launches. Enable
+[build-time test discovery](/guides/build-time-test-discovery) first -
+each Dart test then compiles to a `RunnerUITests/PatrolGeneratedTests_<file>/test_<name>`
+method that you can hand to BrowserStack's `only-testing` strategy.
+
+Generate the identifiers from the `.inc` the build wrote, so they stay
+byte-identical to what XCTest discovers, and distribute them round-robin:
+
+```bash
+# After `patrol build ios` with emit_test_manifest enabled.
+ids=$(awk '/^@implementation /{cls=$2} /^- \(void\)test_/{m=$2; sub(/^\(void\)/,"",m); \
+  print "RunnerUITests/" cls "/" m}' ios/RunnerUITests/PatrolGeneratedTests.inc)
+
+shards=3
+shards_json=$(printf '%s\n' "$ids" | jq -R . | jq -s --argjson n "$shards" '{
+  numberOfShards: $n,
+  mapping: [range(0; $n) as $s | {
+    name: ($s | tostring),
+    strategy: "only-testing",
+    values: [to_entries[] | select(.key % $n == $s) | .value]
+  }]
+}')
+```
+
+Then pass it in the `xctestrun-build` request next to the app and test suite:
+
+```json
+"shards": <shards_json>,
+"singleRunnerInvocation": true
+```
+
+<Warning>
+  The identifier format is `RunnerUITests/<class>/<method>` with slashes on
+  BrowserStack real devices - unlike SauceLabs, which wants a dot between the
+  target and the class there. An identifier that matches nothing does not fail
+  the build: the shard installs the runner and sits on a blank screen until
+  BrowserStack's idle timeout kills it. Regenerate the list on every build,
+  because renaming a test or moving it to another file changes its identifier.
+</Warning>
+
+<Info>
+  Don't request more shards than you have tests - BrowserStack still boots a
+  device for an empty shard. A single test needs no sharding at all.
+</Info>
+
+[BrowserStack App Automate]: https://www.browserstack.com/app-automate
+[mobile-tools]: https://github.com/leancodepl/mobile-tools
+[bs_account]: https://www.browserstack.com/accounts/profile
+[bs_app_automate_dashboard]: https://app-automate.browserstack.com/dashboard/v2
+[Setup for physical iOS devices]: /guides/physical-ios-devices
+[Xcode test plans]: https://developer.apple.com/documentation/xcode/organizing-tests-to-improve-feedback
+[bs_android]: https://github.com/leancodepl/mobile-tools/blob/master/bin/bs_android
+[bs_ios]: https://github.com/leancodepl/mobile-tools/blob/master/bin/bs_ios
+[bs_devices]: https://www.browserstack.com/list-of-browsers-and-platforms/app_automate
+
+[patrol build]: /reference/cli/build
+
+[bs_android_app_docs]: https://www.browserstack.com/docs/app-automate/api-reference/espresso/apps#upload-an-app
+[bs_android_test_docs]: https://www.browserstack.com/docs/app-automate/api-reference/espresso/tests#upload-a-test-suite
+[bs_execute_android_docs]: https://www.browserstack.com/docs/app-automate/api-reference/espresso/builds#execute-a-build
+
+[bs_ios_app_docs]: https://www.browserstack.com/docs/app-automate/api-reference/xcuitest/apps#upload-an-app
+[bs_ios_test_docs]: https://www.browserstack.com/docs/app-automate/api-reference/xcuitest/tests#upload-a-test-suite
+[bs_execute_ios_docs]: https://www.browserstack.com/docs/app-automate/api-reference/xcuitest/builds#execute-a-build
