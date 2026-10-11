@@ -9,6 +9,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 import 'package:patrol/src/devtools_service_extensions/devtools_service_extensions.dart';
+import 'package:patrol/src/devtools_service_extensions/flutter_tree.dart';
 import 'package:patrol/src/global_state.dart' as global_state;
 import 'package:patrol/src/platform/current.dart' as current_platform;
 
@@ -216,6 +217,17 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
     registerServiceExtension(
       name: 'patrol.getNativeUITree',
       callback: _serviceExtensions.getNativeUITree,
+    );
+
+    registerServiceExtension(
+      name: 'patrol.getFlutterTree',
+      callback: (_) async {
+        try {
+          return {'result': jsonEncode(const FlutterTree().collect())};
+        } catch (err) {
+          return {'error': err.toString()};
+        }
+      },
     );
   }
 

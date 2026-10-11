@@ -41,6 +41,11 @@ class FlutterTool {
   var _logsActive = false;
   var _logsSkipped = false;
   var _devtoolsUrl = '';
+  String? _vmServiceUrl;
+
+  /// The Dart VM service URL of the attached app, once `flutter attach` has
+  /// printed it; null before that.
+  String? get vmServiceUrl => _vmServiceUrl;
   io.Process? _attachProcess;
   var _pendingHotRestart = false;
   void Function()? _onRestartCompleted;
@@ -295,6 +300,10 @@ class FlutterTool {
 
             if (line.startsWith('Try again after fixing the above error')) {
               _settleRestart(_onRestartFailed);
+            }
+
+            if (line.startsWith('A Dart VM Service on ')) {
+              _vmServiceUrl = getObservationUrl(line);
             }
 
             if (line.startsWith('The Flutter DevTools debugger and profiler')) {

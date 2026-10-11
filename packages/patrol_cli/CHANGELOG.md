@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Expose the app's Dart VM service URL on `DevelopService.vmServiceUrl` once `patrol develop` has
+  attached for hot restart, for tools such as `patrol_mcp`.
 - Fix `idevicesyslog` not being scoped to the device under test, so concurrent runs on a host with
   several real iOS devices attached all streamed the same device's log, corrupting the step
   display, `--show-flutter-logs` output and the test summary. (#3245)

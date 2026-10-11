@@ -231,6 +231,9 @@ final class PatrolSession {
   Device? get device => _developService?.device;
   int? get testServerPort => _testServerPort;
 
+  /// The Dart VM service URL of the app under test, once attached.
+  String? get vmServiceUrl => _developService?.vmServiceUrl;
+
   /// Returns null if started successfully, or a warning message if blocked
   Future<String?> _start(String testFile, {String? device}) async {
     _deviceSelectionNote = null;

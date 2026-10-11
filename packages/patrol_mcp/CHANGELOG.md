@@ -1,3 +1,10 @@
+## Unreleased
+
+- Add the `flutter-tree` tool: the Flutter widgets on screen with their keys, text and form state
+  (typed text, checkbox and switch values), read through the app's VM service. Unlike
+  `native-tree` it lists widget keys, which is what Patrol finders target. After a failed test it
+  shows the screen the test failed on. Needs `patrol` 4.11.0+ in the app under test.
+
 ## 0.2.1
 
 - Wait for the previous develop session to finish before starting a new one.
