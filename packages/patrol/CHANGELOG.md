@@ -1,5 +1,8 @@
 ## Unreleased
 
+- Add the `patrol.getFlutterTree` service extension: the interactive, keyed and text widgets on
+  screen with their keys, text and form state (typed text, checkbox and switch values). It is what
+  `patrol_mcp`'s new `flutter-tree` tool reads.
 - Add macOS platform automation via `$.platform.macos`:
     - `tap` / `waitUntilVisible` for native views
     - `isAlertVisible` / `tapAlertButton` for `NSAlert`

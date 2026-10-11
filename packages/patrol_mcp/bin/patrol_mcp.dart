@@ -10,6 +10,7 @@ import 'package:patrol_cli/patrol_cli.dart' show FlutterCommand;
 import 'package:patrol_mcp/src/device_lister.dart';
 import 'package:patrol_mcp/src/device_selection.dart';
 import 'package:patrol_mcp/src/flutter_command_resolver.dart';
+import 'package:patrol_mcp/src/flutter_tree_service.dart';
 import 'package:patrol_mcp/src/native_tree_service.dart';
 import 'package:patrol_mcp/src/patrol_session.dart';
 import 'package:patrol_mcp/src/screenshot_service.dart';
@@ -327,6 +328,26 @@ Future<int> main(List<String> args) async {
               return NativeTreeService.handleGetNativeTreeRequest(
                 patrolSession.device,
                 patrolSession.testServerPort,
+              );
+            },
+          )
+          ..registerTool(
+            'flutter-tree',
+            description:
+                'Fetch the Flutter widget tree of the app under test: '
+                'interactive widgets, keyed widgets and visible text, with '
+                'keys, text and form state (typed text, checkbox and switch '
+                'values). Use it to find the keys and texts to target in '
+                'Patrol finders. After a failed test it shows the screen the '
+                'test failed on; after a passed test the app is gone. '
+                'Requires an active patrol develop session and patrol 4.11.0+.',
+            annotations: const ToolAnnotations(
+              title: 'Get Flutter Widget Tree',
+              readOnlyHint: true,
+            ),
+            callback: (args, extra) {
+              return FlutterTreeService.handleGetFlutterTreeRequest(
+                patrolSession.vmServiceUrl,
               );
             },
           );

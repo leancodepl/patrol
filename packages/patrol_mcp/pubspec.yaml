@@ -22,6 +22,7 @@ dependencies:
   mcp_dart: ^2.1.0
   path: ^1.9.1
   patrol_cli: ^4.8.0
+  vm_service: ^15.0.0
 
 dev_dependencies:
   leancode_lint: ^17.0.0

@@ -163,6 +163,9 @@ See [VS Code's MCP docs][vscode_mcp] for starting the server.
 - `status`: Returns session state and recent output.
 - `screenshot`: Captures screenshot from active session device.
 - `native-tree`: Fetches native UI tree from active session device.
+- `flutter-tree`: Fetches the Flutter widgets on screen with their keys, text and form state
+  (typed text, checkbox and switch values). After a failed test it shows the screen the test
+  failed on. Needs `patrol` 4.11.0+ in the app under test.
 
 ## Agent skills
 
