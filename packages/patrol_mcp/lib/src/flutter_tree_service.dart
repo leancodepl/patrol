@@ -80,10 +80,14 @@ abstract final class FlutterTreeService {
     }
   }
 
-  /// The WebSocket URI of a VM service HTTP URL, e.g.
-  /// `http://127.0.0.1:61070/abc=/` -> `ws://127.0.0.1:61070/abc=/ws`.
-  static String wsUri(String httpUrl) {
-    final uri = Uri.parse(httpUrl);
+  /// The WebSocket URI of a VM service URL, e.g.
+  /// `http://127.0.0.1:61070/abc=/` -> `ws://127.0.0.1:61070/abc=/ws`. A
+  /// `ws://` URI is returned as is.
+  static String wsUri(String url) {
+    final uri = Uri.parse(url);
+    if (uri.scheme == 'ws' || uri.scheme == 'wss') {
+      return url;
+    }
     final segments = [...uri.pathSegments.where((s) => s.isNotEmpty), 'ws'];
     return uri
         .replace(

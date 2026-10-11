@@ -76,40 +76,6 @@ void main() {
       },
     );
 
-    test('vmServiceUrl is read from the attach output', () async {
-      final process = MockProcess();
-      final processStdout = StreamController<List<int>>();
-      when(() => process.stdout).thenAnswer((_) => processStdout.stream);
-      when(
-        () => process.stderr,
-      ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
-      when(() => process.stdin).thenReturn(_MockIOSink());
-      when(() => processManager.start(any())).thenAnswer((_) async => process);
-
-      final attach = flutterTool.attach(
-        flutterCommand: flutterCommand,
-        deviceId: 'testDeviceId',
-        target: 'target',
-        appId: 'appId',
-        dartDefines: {},
-        openBrowser: false,
-      );
-      expect(flutterTool.vmServiceUrl, isNull);
-
-      processStdout
-        ..add(
-          utf8.encode(
-            'A Dart VM Service on iPhone 15 Pro is available at: '
-            'http://127.0.0.1:61070/PKRQ6tMLkV8=/\n',
-          ),
-        )
-        ..add(utf8.encode('Flutter run key commands.\n'));
-      await attach;
-
-      expect(flutterTool.vmServiceUrl, 'http://127.0.0.1:61070/PKRQ6tMLkV8=/');
-      await processStdout.close();
-    });
-
     test(
       'hotRestart onCompleted fires when the restart completes, not sooner',
       () async {

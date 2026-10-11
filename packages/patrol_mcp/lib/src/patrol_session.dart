@@ -231,8 +231,10 @@ final class PatrolSession {
   Device? get device => _developService?.device;
   int? get testServerPort => _testServerPort;
 
-  /// The Dart VM service URL of the app under test, once attached.
-  String? get vmServiceUrl => _developService?.vmServiceUrl;
+  /// The Dart VM service URL of the app under test, read from the session
+  /// output once `patrol develop` has attached; null before that.
+  String? get vmServiceUrl => _vmServiceUrl;
+  String? _vmServiceUrl;
 
   /// Returns null if started successfully, or a warning message if blocked
   Future<String?> _start(String testFile, {String? device}) async {
@@ -395,6 +397,7 @@ final class PatrolSession {
     _quitRequested = false;
     _finishWarning = null;
     _outputs.clear();
+    _vmServiceUrl = null;
     // Create the completer eagerly so callbacks can signal it even if
     // test completion happens before _waitForFinish is called.
     _finishCompleter = Completer<void>();
@@ -512,6 +515,7 @@ final class PatrolSession {
     if (cleanLine.isNotEmpty) {
       _logStreaming.writeLog(cleanLine);
     }
+    _vmServiceUrl = vmServiceUrlFromLine(cleanLine) ?? _vmServiceUrl;
   }
 
   /// Structured signal from patrol framework (via PATROL_LOG ConfigEntry) that
@@ -721,4 +725,27 @@ final class PatrolSession {
       logger.warning('Failed to start log streaming or terminal: $e');
     }
   }
+}
+
+/// The app's Dart VM service URL from a line of `patrol develop` output, or
+/// null if the line has none.
+///
+/// Reads Patrol's own "Patrol DevTools extension is available at …?uri=ws://…"
+/// line (printed by every `patrol_cli` this package supports) and Flutter's
+/// "A Dart VM Service on … is available at: http://…" line (printed in
+/// verbose mode).
+String? vmServiceUrlFromLine(String line) {
+  const devtools = 'Patrol DevTools extension is available at ';
+  const vmService = 'A Dart VM Service on ';
+  final devtoolsAt = line.indexOf(devtools);
+  if (devtoolsAt != -1) {
+    final url = Uri.tryParse(line.substring(devtoolsAt + devtools.length));
+    return url?.queryParameters['uri'];
+  }
+  final vmServiceAt = line.indexOf(vmService);
+  if (vmServiceAt != -1) {
+    final httpAt = line.indexOf('http', vmServiceAt);
+    return httpAt == -1 ? null : line.substring(httpAt).trim();
+  }
+  return null;
 }

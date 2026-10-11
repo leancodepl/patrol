@@ -107,10 +107,6 @@ class DevelopService {
   /// The device discovered during the last [run] call.
   Device? get device => _device;
 
-  /// The Dart VM service URL of the app under test, once attached for hot
-  /// restart; null before that and on web.
-  String? get vmServiceUrl => _flutterTool.vmServiceUrl;
-
   /// Runs the full develop flow: discover device, read config, bundle test,
   /// build, execute, and attach for hot restart.
   Future<void> run(DevelopOptions options) async {

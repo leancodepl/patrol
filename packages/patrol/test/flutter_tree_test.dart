@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/src/devtools_service_extensions/flutter_tree.dart';
@@ -78,9 +80,11 @@ void main() {
         home: const Scaffold(body: Text('First page')),
       ),
     );
-    navigator.currentState!.push(
-      MaterialPageRoute<void>(
-        builder: (_) => const Scaffold(body: Text('Second page')),
+    unawaited(
+      navigator.currentState!.push(
+        MaterialPageRoute<void>(
+          builder: (_) => const Scaffold(body: Text('Second page')),
+        ),
       ),
     );
     await tester.pumpAndSettle();
@@ -115,5 +119,122 @@ void main() {
 
     expect(tree.where((e) => e['text'] == 'Sign up'), hasLength(1));
     expect(tree.where((e) => e['key'] != null), isEmpty);
+  });
+
+  testWidgets('lists keyed controls inside another control', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Column(
+            children: [
+              TextField(
+                key: const ValueKey('password'),
+                decoration: InputDecoration(
+                  suffixIcon: IconButton(
+                    key: const ValueKey('reveal'),
+                    onPressed: () {},
+                    icon: const Icon(Icons.visibility),
+                  ),
+                ),
+              ),
+              ListTile(
+                key: const ValueKey('row'),
+                title: const Text('Wi-Fi'),
+                onTap: () {},
+                trailing: TextButton(
+                  key: const ValueKey('forget'),
+                  onPressed: () {},
+                  child: const Text('Forget'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    final tree = const FlutterTree().collect();
+    final keys = tree.map((e) => e['key']).whereType<String>();
+
+    expect(keys, containsAll(['password', 'reveal', 'row', 'forget']));
+    expect(
+      _byType(tree, 'ListTile')['text'],
+      'Wi-Fi',
+      reason: 'the keyed trailing button is listed with its own text',
+    );
+    expect(
+      tree.where((e) => e['type'] == 'InkWell'),
+      isEmpty,
+      reason: 'the InkWells the buttons build are parts of them',
+    );
+  });
+
+  testWidgets('leaves hidden text out of a control', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: ElevatedButton(
+            onPressed: () {},
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Save'),
+                Visibility(visible: false, child: Text('Saving…')),
+                Offstage(child: Text('Saved')),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(
+      _byType(const FlutterTree().collect(), 'ElevatedButton')['text'],
+      'Save',
+    );
+  });
+
+  testWidgets('reports disabled radio, dropdown and popup menu', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Column(
+            children: [
+              // A radio outside a RadioGroup, disabled the pre-3.35 way.
+              // ignore: deprecated_member_use
+              const Radio<int>(value: 1, groupValue: 1),
+              DropdownButton<int>(items: const [], onChanged: null),
+              PopupMenuButton<int>(
+                enabled: false,
+                itemBuilder: (_) => const [],
+              ),
+              RadioGroup<int>(
+                groupValue: 1,
+                onChanged: (_) {},
+                child: const Radio<int>(key: ValueKey('grouped'), value: 2),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    final tree = const FlutterTree().collect();
+
+    expect(
+      tree.firstWhere(
+        (e) => e['type'] == 'Radio<int>' && e['key'] == null,
+      )['enabled'],
+      false,
+    );
+    expect(_byType(tree, 'DropdownButton<int>')['enabled'], false);
+    expect(_byType(tree, 'PopupMenuButton<int>')['enabled'], false);
+    expect(
+      tree.firstWhere((e) => e['key'] == 'grouped').containsKey('enabled'),
+      isFalse,
+      reason: 'a radio in a RadioGroup is enabled without onChanged',
+    );
   });
 }

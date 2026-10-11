@@ -8,8 +8,10 @@ import 'package:flutter/rendering.dart';
 /// `type`) and the state an assertion needs (`value`, `enabled`). Interactive
 /// widgets absorb the text of their descendants (`ElevatedButton` with a
 /// `Text('Save')` child is one element with `text: 'Save'`), so the listing
-/// stays short. Elements that a tap at their center would not reach (hidden
-/// behind a route, offstage, covered) are left out.
+/// stays short; widgets with an app key inside them (an `IconButton` in a
+/// `TextField.suffixIcon`) are still listed on their own. Elements that a tap
+/// at their center would not reach (hidden behind a route, offstage, covered)
+/// are left out.
 class FlutterTree {
   /// Creates a collector.
   const FlutterTree();
@@ -25,31 +27,41 @@ class FlutterTree {
     return out;
   }
 
-  void _visit(Element element, List<Map<String, Object>> out) {
+  void _visit(
+    Element element,
+    List<Map<String, Object>> out, {
+    bool inControl = false,
+  }) {
     final widget = element.widget;
-    if (widget is Offstage && widget.offstage) {
-      return;
-    }
-    if (widget is Visibility && !widget.visible) {
+    if (_isHidden(widget)) {
       return;
     }
 
     final interactive = isInteractive(widget);
     final key = _keyValue(widget.key);
     final ownText = _ownText(widget);
-    if (interactive || key != null || ownText != null) {
+    // Inside an interactive widget only widgets with an app key are listed.
+    // The rest (the InkWell an ElevatedButton builds, the Checkbox of a
+    // CheckboxListTile, the Text of a button) are parts of that one control,
+    // and their texts are already in its `text`.
+    final listed = inControl
+        ? key != null
+        : interactive || key != null || ownText != null;
+    var childrenInControl = inControl;
+    if (listed) {
       final data = _describe(element, interactive: interactive, key: key);
       if (data != null) {
         out.add(data);
-        if (interactive || ownText != null) {
-          // Its texts are already in `text`; its inner widgets (the
-          // EditableText of a TextField, the Text of a button, the RichText
-          // a Text builds) are parts of this one element.
+        if (ownText != null && !interactive) {
+          // The RichText a Text builds carries the same words.
           return;
         }
+        childrenInControl = childrenInControl || interactive;
       }
     }
-    element.visitChildren((child) => _visit(child, out));
+    element.visitChildren(
+      (child) => _visit(child, out, inControl: childrenInControl),
+    );
   }
 
   Map<String, Object>? _describe(
@@ -79,7 +91,7 @@ class FlutterTree {
     if (value != null) {
       data['value'] = value;
     }
-    if (interactive && !_isEnabled(widget)) {
+    if (interactive && !_isEnabled(element)) {
       data['enabled'] = false;
     }
 
@@ -147,7 +159,14 @@ class FlutterTree {
     }
     final texts = <String>[];
     void visit(Element child) {
-      final text = _ownText(child.widget);
+      final inner = child.widget;
+      // Hidden texts are not on screen, and a keyed control inside this one is
+      // listed with its own text.
+      if (_isHidden(inner) ||
+          (isInteractive(inner) && _keyValue(inner.key) != null)) {
+        return;
+      }
+      final text = _ownText(inner);
       if (text != null && text.trim().isNotEmpty) {
         texts.add(text.trim());
         return;
@@ -218,8 +237,12 @@ class FlutterTree {
     return label == null || label.isEmpty ? null : label;
   }
 
-  static bool _isEnabled(Widget widget) => switch (widget) {
-    ButtonStyleButton() => widget.enabled,
+  static bool _isHidden(Widget widget) =>
+      (widget is Offstage && widget.offstage) ||
+      (widget is Visibility && !widget.visible);
+
+  static bool _isEnabled(Element element) => switch (element.widget) {
+    ButtonStyleButton(:final enabled) => enabled,
     IconButton(:final onPressed) => onPressed != null,
     FloatingActionButton(:final onPressed) => onPressed != null,
     InkWell(:final onTap, :final onLongPress) =>
@@ -233,8 +256,30 @@ class FlutterTree {
     Switch(:final onChanged) => onChanged != null,
     SwitchListTile(:final onChanged) => onChanged != null,
     Slider(:final onChanged) => onChanged != null,
+    // A radio in a RadioGroup (Flutter 3.35+) has no onChanged of its own;
+    // the deprecated onChanged still enables a radio outside a group.
+    // ignore: deprecated_member_use
+    Radio(:final onChanged) => onChanged != null || _inRadioGroup(element),
+    // Same as Radio above.
+    // ignore: deprecated_member_use
+    RadioListTile(:final onChanged) =>
+      onChanged != null || _inRadioGroup(element),
+    DropdownButton(:final onChanged, :final items) =>
+      onChanged != null && (items?.isNotEmpty ?? false),
+    PopupMenuButton(:final enabled) => enabled,
     _ => true,
   };
+
+  /// Matched by name: RadioGroup does not exist in the oldest Flutter
+  /// versions Patrol supports.
+  static bool _inRadioGroup(Element element) {
+    var found = false;
+    element.visitAncestorElements((ancestor) {
+      found = ancestor.widget.runtimeType.toString().startsWith('RadioGroup<');
+      return !found;
+    });
+    return found;
+  }
 
   static RenderBox? _renderBox(Element element) {
     final renderObject = element.renderObject;
