@@ -231,16 +231,16 @@ Patrol can collect Dart line coverage on BrowserStack and hand it back through B
     Instrument the app under test: in **android/app/build.gradle.kts** set `enableAndroidTestCoverage = true` (AGP 8+; `testCoverageEnabled = true` on AGP 7) on the debug build type.
   </Step>
   <Step>
-    Build with `--dart-define=PATROL_BS_COVERAGE=true`. Optionally narrow what's collected with `--dart-define=PATROL_BS_COVERAGE_PACKAGES=<regexp>,<regexp>`.
+    Build with `--dart-define=PATROL_BS_COVERAGE=true` and `--dart-define=PATROL_BS_COVERAGE_PACKAGES=^package:my_app/` (comma-separate several prefixes).
 
-    By default only code the VM has already compiled is reported — that is, what the suite actually exercised. Add `--dart-define=PATROL_BS_COVERAGE_FORCE_COMPILE=true` to also force-compile untouched functions so never-executed lines count towards the denominator.
+    With `PATROL_BS_COVERAGE_PACKAGES` set to plain anchored prefixes, Patrol force-compiles your own libraries before collecting, so never-executed lines count towards the total, the same way `flutter test --coverage` counts them. The prefixes are handed to the VM as library filters, so only your code is compiled, and only once per app process.
+
+    Override the default with `--dart-define=PATROL_BS_COVERAGE_FORCE_COMPILE=false` to report only the code the suite executed. It is the cheapest mode, and the percentage is relative to loaded code, not the whole app.
 
     <Warning>
-      `PATROL_BS_COVERAGE_FORCE_COMPILE=true` is expensive, and how expensive depends on `PATROL_BS_COVERAGE_PACKAGES`.
+      Leave `PATROL_BS_COVERAGE_PACKAGES` unset, or use regexp syntax such as `^package:(a|b)/`, and the filter cannot be passed to the VM. Patrol then falls back to executed-code-only coverage, because force-compiling without a filter walks the whole program, Flutter framework and SDK included, on every collection — minutes per test instead of seconds. Forcing it anyway with `PATROL_BS_COVERAGE_FORCE_COMPILE=true` logs a warning.
 
-      Set `PATROL_BS_COVERAGE_PACKAGES` to plain anchored prefixes (`^package:my_app/`, comma-separated) and Patrol hands them to the VM as library filters, so force-compilation only ever touches your own code. Leave it unset, or use real regexp syntax such as `^package:(a|b)/`, and the filter cannot be pushed down — the VM then force-compiles the whole program, Flutter framework and SDK included, on every collection. That is the difference between seconds and minutes per test.
-
-      Within one app process the compile is paid once: Patrol tells the VM which libraries it has already compiled, so later collections skip straight to reporting. With `useOrchestrator:true` every test is a fresh process, so there is nothing to amortise and the first-collection cost is paid per test — for a large suite prefer `useOrchestrator:false` for force-compile runs.
+      With `useOrchestrator:true` every test runs in a fresh process, so the compile is paid per test rather than once per shard. For large suites, prefer `useOrchestrator:false` or add shards.
     </Warning>
   </Step>
   <Step>

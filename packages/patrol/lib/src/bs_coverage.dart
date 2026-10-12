@@ -34,14 +34,19 @@ class BrowserStackCoverage {
     'PATROL_BS_COVERAGE_PACKAGES',
   );
 
-  /// Whether to force-compile not-yet-compiled functions when collecting
-  /// coverage. `true` reports every line (including never-executed ones) but is
-  /// far slower on large apps; `false` (the default) reports only what the VM
-  /// has already compiled, which is the right, cheaper choice for "what did the
-  /// suite exercise". Wired via `--dart-define=PATROL_BS_COVERAGE_FORCE_COMPILE`.
-  static const _forceCompile = bool.fromEnvironment(
+  static const _forceCompileSet = bool.hasEnvironment(
     'PATROL_BS_COVERAGE_FORCE_COMPILE',
   );
+  static const _forceCompileEnv = bool.fromEnvironment(
+    'PATROL_BS_COVERAGE_FORCE_COMPILE',
+  );
+
+  /// Whether never-executed lines are reported too, like `flutter test
+  /// --coverage`. `PATROL_BS_COVERAGE_FORCE_COMPILE` wins when set; unset, it
+  /// is on only if [_libraryFilters] keep the compile to the app's own code.
+  static final bool _forceCompile = _forceCompileSet
+      ? _forceCompileEnv
+      : _libraryFilters.isNotEmpty;
 
   /// Package-name regexps from [_packagesEnv], compiled once (this is consulted
   /// for every source range in every report).
@@ -89,7 +94,7 @@ class BrowserStackCoverage {
   /// previous one's snapshot. `pid` alone could be reused within a session.
   static final _runId = '${DateTime.now().millisecondsSinceEpoch}_$pid';
 
-  static var _forceCompileWarned = false;
+  static var _forceCompileModeLogged = false;
   static const _channel = MethodChannel('pl.leancode.patrol/main');
   static String? _cachedDir;
   static vms.VmService? _service;
@@ -135,7 +140,7 @@ class BrowserStackCoverage {
       return;
     }
 
-    _warnAboutForceCompileOnce();
+    _logForceCompileModeOnce();
 
     final stopwatch = Stopwatch()..start();
 
@@ -208,26 +213,31 @@ class BrowserStackCoverage {
     }
   }
 
-  /// `forceCompile: true` recompiles every function in scope on each call. In
-  /// a fresh process that is the whole package graph, so under the Android test
-  /// orchestrator - one process per test - nothing is ever reused and the cost
-  /// is paid in full for every test. Measured at ~90s/test on a 2.7k-file app,
-  /// which overruns BrowserStack's session cap well before a large suite ends.
-  /// Warn once so the run's logs say why it is slow.
-  static void _warnAboutForceCompileOnce() {
-    if (!_forceCompile || _forceCompileWarned) {
+  /// Explains, once per process, a force-compile mode that is slow or that
+  /// differs from the default users may expect.
+  static void _logForceCompileModeOnce() {
+    if (_forceCompileModeLogged) {
       return;
     }
-    _forceCompileWarned = true;
+    _forceCompileModeLogged = true;
+
+    final String message;
+    if (_forceCompile && _libraryFilters.isEmpty) {
+      message =
+          'PATROL_BS_COVERAGE_FORCE_COMPILE=true without plain-prefix '
+          'PATROL_BS_COVERAGE_PACKAGES (e.g. ^package:my_app/) force-compiles '
+          'the whole program, Flutter and the SDK included, on every '
+          'collection. Large suites will hit the device-farm session limit.';
+    } else if (!_forceCompile && !_forceCompileSet) {
+      message =
+          'force-compile is off because PATROL_BS_COVERAGE_PACKAGES is not a '
+          'list of plain prefixes (e.g. ^package:my_app/), so only executed '
+          'code is reported. Set it to also count never-executed lines.';
+    } else {
+      return;
+    }
     // ignore: avoid_print -- coverage diagnostics go through stdout/logcat.
-    print(
-      'BrowserStackCoverage: PATROL_BS_COVERAGE_FORCE_COMPILE=true recompiles '
-      'the whole package graph on every collection. Under the Android test '
-      'orchestrator each test is a fresh process, so this cost is paid per '
-      'test and large suites will hit the device-farm session limit. Prefer '
-      'useOrchestrator:false for force-compile runs, and narrow the scope with '
-      'PATROL_BS_COVERAGE_PACKAGES.',
-    );
+    print('BrowserStackCoverage: $message');
   }
 
   /// The in-scope libraries currently loaded in [isolateId] — i.e. the ones a
