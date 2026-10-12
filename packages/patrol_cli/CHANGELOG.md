@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Detect and support both Android test layouts: the self-instrumenting
+  `:patrolTest` module and the in-app `:app` androidTest source set.
 - Fix `idevicesyslog` not being scoped to the device under test, so concurrent runs on a host with
   several real iOS devices attached all streamed the same device's log, corrupting the step
   display, `--show-flutter-logs` output and the test summary. (#3245)

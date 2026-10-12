@@ -1,4 +1,4 @@
-import 'dart:io' show Platform;
+import 'dart:io' show InternetAddress, InternetAddressType, Platform;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -16,6 +16,12 @@ class PatrolRuntimePorts {
 
   static int? _testServerPort;
   static int? _appServerPort;
+  static String? _nativeServerHost;
+
+  static const _configuredNativeServerHost = String.fromEnvironment(
+    'PATROL_HOST',
+    defaultValue: 'localhost',
+  );
 
   /// Loads ports from the native side.
   ///
@@ -31,6 +37,22 @@ class PatrolRuntimePorts {
   /// would land here. If that happens we fall back to default 8081/8082 ports,
   /// which still works for Patrol testing on a single device.
   static Future<void> ensureLoaded() async {
+    if (Platform.isAndroid &&
+        _configuredNativeServerHost == 'localhost' &&
+        _nativeServerHost == null) {
+      try {
+        final addresses = await InternetAddress.lookup(
+          _configuredNativeServerHost,
+          type: InternetAddressType.IPv4,
+        );
+        if (addresses.isNotEmpty) {
+          _nativeServerHost = addresses.first.address;
+        }
+      } on Object catch (error) {
+        debugPrint('Failed to resolve Patrol native server host: $error');
+      }
+    }
+
     if (!(Platform.isIOS || Platform.isMacOS)) {
       return;
     }
@@ -53,6 +75,15 @@ class PatrolRuntimePorts {
 
   /// Port of `PatrolAppService` inside the app under test, or null if not injected.
   static int? appServerPort() => _appServerPort;
+
+  /// Address of the native automation server.
+  ///
+  /// On Android, `localhost` is resolved while the app is foregrounded and the
+  /// numeric address is cached. This avoids a DNS lookup after another app has
+  /// backgrounded the app under test, while preserving device-farm-specific
+  /// localhost resolution.
+  static String nativeServerHost() =>
+      _nativeServerHost ?? _configuredNativeServerHost;
 
   static int? _parsePort(Object? value) {
     if (value is int) {

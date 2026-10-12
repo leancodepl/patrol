@@ -41,7 +41,7 @@ void main() {
         ).called(1);
         verify(
           () => mockLogger.info(
-            '${join('build', 'app', 'outputs', 'apk', 'androidTest', 'debug', 'app-debug-androidTest.apk')} (test instrumentation app)',
+            '${join('build', 'patrolTest', 'outputs', 'apk', 'debug', 'patrolTest-debug.apk')} (test instrumentation app)',
           ),
         ).called(1);
       });
@@ -56,7 +56,7 @@ void main() {
         ).called(1);
         verify(
           () => mockLogger.info(
-            '${join('build', 'app', 'outputs', 'apk', 'androidTest', 'release', 'app-release-androidTest.apk')} (test instrumentation app)',
+            '${join('build', 'patrolTest', 'outputs', 'apk', 'release', 'patrolTest-release.apk')} (test instrumentation app)',
           ),
         ).called(1);
       });
@@ -71,7 +71,7 @@ void main() {
         ).called(1);
         verify(
           () => mockLogger.info(
-            '${join('build', 'app', 'outputs', 'apk', 'androidTest', 'dev', 'debug', 'app-dev-debug-androidTest.apk')} (test instrumentation app)',
+            '${join('build', 'patrolTest', 'outputs', 'apk', 'dev', 'debug', 'patrolTest-dev-debug.apk')} (test instrumentation app)',
           ),
         ).called(1);
       });
@@ -86,7 +86,7 @@ void main() {
         ).called(1);
         verify(
           () => mockLogger.info(
-            '${join('build', 'app', 'outputs', 'apk', 'androidTest', 'prod', 'release', 'app-prod-release-androidTest.apk')} (test instrumentation app)',
+            '${join('build', 'patrolTest', 'outputs', 'apk', 'prod', 'release', 'patrolTest-prod-release.apk')} (test instrumentation app)',
           ),
         ).called(1);
       });
@@ -101,7 +101,7 @@ void main() {
         ).called(1);
         verify(
           () => mockLogger.info(
-            '${join('build', 'app', 'outputs', 'apk', 'androidTest', 'profile', 'app-profile-androidTest.apk')} (test instrumentation app)',
+            '${join('build', 'patrolTest', 'outputs', 'apk', 'profile', 'patrolTest-profile.apk')} (test instrumentation app)',
           ),
         ).called(1);
       });
@@ -116,7 +116,7 @@ void main() {
         ).called(1);
         verify(
           () => mockLogger.info(
-            '${join('build', 'app', 'outputs', 'apk', 'androidTest', 'staging', 'profile', 'app-staging-profile-androidTest.apk')} (test instrumentation app)',
+            '${join('build', 'patrolTest', 'outputs', 'apk', 'staging', 'profile', 'patrolTest-staging-profile.apk')} (test instrumentation app)',
           ),
         ).called(1);
       });
@@ -131,7 +131,7 @@ void main() {
         ).called(1);
         verify(
           () => mockLogger.info(
-            '${join('build', 'app', 'outputs', 'apk', 'androidTest', 'debug', 'app-debug-androidTest.apk')} (test instrumentation app)',
+            '${join('build', 'patrolTest', 'outputs', 'apk', 'debug', 'patrolTest-debug.apk')} (test instrumentation app)',
           ),
         ).called(1);
       });
@@ -146,7 +146,7 @@ void main() {
         ).called(1);
         verify(
           () => mockLogger.info(
-            '${join('build', 'app', 'outputs', 'apk', 'androidTest', 'Dev', 'release', 'app-Dev-release-androidTest.apk')} (test instrumentation app)',
+            '${join('build', 'patrolTest', 'outputs', 'apk', 'Dev', 'release', 'patrolTest-Dev-release.apk')} (test instrumentation app)',
           ),
         ).called(1);
       });
@@ -161,7 +161,7 @@ void main() {
         ).called(1);
         verify(
           () => mockLogger.info(
-            '${join('build', 'app', 'outputs', 'apk', 'androidTest', 'staging-prod', 'release', 'app-staging-prod-release-androidTest.apk')} (test instrumentation app)',
+            '${join('build', 'patrolTest', 'outputs', 'apk', 'staging-prod', 'release', 'patrolTest-staging-prod-release.apk')} (test instrumentation app)',
           ),
         ).called(1);
       });
@@ -176,7 +176,7 @@ void main() {
         ).called(1);
         verify(
           () => mockLogger.info(
-            '${join('build', 'app', 'outputs', 'apk', 'androidTest', 'debug', 'app-debug-androidTest.apk')} (test instrumentation app)',
+            '${join('build', 'patrolTest', 'outputs', 'apk', 'debug', 'patrolTest-debug.apk')} (test instrumentation app)',
           ),
         ).called(1);
       });
@@ -207,15 +207,7 @@ void main() {
         expect(
           captured[1],
           contains(
-            join(
-              'build',
-              'app',
-              'outputs',
-              'apk',
-              'androidTest',
-              'dev',
-              'debug',
-            ),
+            join('build', 'patrolTest', 'outputs', 'apk', 'dev', 'debug'),
           ),
         );
       });

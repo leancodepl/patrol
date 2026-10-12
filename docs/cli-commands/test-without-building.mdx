@@ -16,9 +16,9 @@ To see all available options and flags, run
 ### Description
 
 This command runs the tests produced by a previous `patrol build`, reusing its
-artifacts. Nothing is bundled, compiled or reinstalled — it only asks the native
-test runner to execute tests, using `xcodebuild test-without-building` on iOS and
-`adb shell am instrument` on Android.
+artifacts. Nothing is bundled or compiled. Android installs the previously built
+app and test APKs before invoking `adb shell am instrument`; iOS uses
+`xcodebuild test-without-building`.
 
 It requires [build-time test discovery][discovery]
 (`patrol.emit_test_manifest: true`), because selecting individual tests natively
@@ -61,6 +61,6 @@ accepted, because they select **which built artifacts** to run.
 
 On Android, the instrumentation to run is resolved from the device
 (`pm list instrumentation`), so a custom `testApplicationId` or a custom runner is
-picked up automatically once installed.
+picked up automatically after the prebuilt APKs are installed.
 
 [discovery]: /documentation/ci/build-time-test-discovery

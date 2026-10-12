@@ -814,7 +814,7 @@ class Automator private constructor() {
         currentLatitude = latitude
         currentLongitude = longitude
 
-        executeShellCommand("appops set $packageName android:mock_location allow")
+        executeShellCommand("appops set ${targetContext.packageName} android:mock_location allow")
         val locationManager = targetContext.getSystemService(LOCATION_SERVICE) as LocationManager
 
         val mockLocationProvider = LocationManager.GPS_PROVIDER
