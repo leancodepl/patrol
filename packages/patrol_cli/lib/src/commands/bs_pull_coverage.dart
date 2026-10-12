@@ -9,8 +9,8 @@ import 'package:patrol_cli/src/coverage/bs_build_check.dart';
 import 'package:patrol_cli/src/coverage/bs_coverage_splitter.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 
-/// Downloads the JaCoCo `.ec` file produced by an Espresso BrowserStack run,
-/// splits the JaCoCo standard blocks from the Dart blocks appended by patrol's
+/// Splits the JaCoCo `.ec` coverage of a patrol Android run into the standard
+/// JaCoCo blocks and the Dart blocks appended by patrol's
 /// `BrowserStackCoverage` runtime, and writes two outputs:
 ///
 ///   * `<output>/jacoco.exec` — a valid JaCoCo binary file with only the
@@ -20,14 +20,15 @@ import 'package:patrol_cli/src/runner/patrol_command.dart';
 ///     `PATROL_DART_COV:` session blocks, with duplicate `SF:` records for the
 ///     same file (common across tests/shards) merged into one.
 ///
-/// Pass `--session-id` for a single session, or omit it to pull every session
-/// (shard) in the build and merge them into one `jacoco.exec` + one
-/// `patrol_lcov.info`.
+/// The `.ec` files come either from BrowserStack (`--build-id`, optionally
+/// `--session-id`; every session is merged when it is omitted) or from disk
+/// (`--input`, a file or a directory searched recursively), e.g. the outputs of
+/// emulator.wtf or Firebase Test Lab.
 ///
-/// Refuses builds that ran with `clearPackageData:true`: coverage and
-/// `clearPackageData` are mutually exclusive on BrowserStack (see
-/// [buildUsedClearPackageData]), and a first-test-only result is worse than
-/// an error.
+/// Refuses BrowserStack builds that ran with `clearPackageData:true`: coverage
+/// and `clearPackageData` are mutually exclusive there (see
+/// [buildUsedClearPackageData]), and a first-test-only result is worse than an
+/// error.
 class BsPullCoverageCommand extends PatrolCommand {
   BsPullCoverageCommand({required Logger logger, required FileSystem fs})
     : _logger = logger,
@@ -35,8 +36,16 @@ class BsPullCoverageCommand extends PatrolCommand {
     argParser
       ..addOption(
         'build-id',
-        help: 'BrowserStack App Automate Espresso build id.',
-        mandatory: true,
+        help:
+            'BrowserStack App Automate Espresso build id to download coverage '
+            'from. Use either this or --input.',
+      )
+      ..addOption(
+        'input',
+        help:
+            'A local .ec file, or a directory searched recursively for .ec '
+            'files (e.g. emulator.wtf or Firebase Test Lab outputs). Use either '
+            'this or --build-id.',
       )
       ..addOption(
         'session-id',
@@ -66,38 +75,99 @@ class BsPullCoverageCommand extends PatrolCommand {
 
   @override
   String get description =>
-      'Download and split a BrowserStack JaCoCo coverage file produced by a patrol Espresso run.';
+      'Split the JaCoCo coverage of a patrol Android run into jacoco.exec '
+      'and patrol_lcov.info, downloading it from BrowserStack or reading '
+      'local .ec files.';
 
   static const _apiBase =
       'https://api-cloud.browserstack.com/app-automate/espresso/v2';
 
   @override
   Future<int> run() async {
-    final buildId = stringArg('build-id')!;
+    final buildId = stringArg('build-id');
+    final input = stringArg('input');
+    if ((buildId == null) == (input == null)) {
+      _logger.err(
+        'Pass either --build-id (download from BrowserStack) or --input '
+        '(a local .ec file or a directory of them).',
+      );
+      return 1;
+    }
+
+    final sources = input != null
+        ? _readLocal(input)
+        : await _downloadFromBrowserStack(buildId!);
+    if (sources == null) {
+      return 1;
+    }
+
+    final outputDir = _fs.directory(stringArg('output'))
+      ..createSync(recursive: true);
+    return _splitAndWrite(sources, outputDir);
+  }
+
+  List<_CoverageSource>? _readLocal(String path) {
+    if (stringArg('session-id') != null) {
+      _logger.err('--session-id only applies to --build-id.');
+      return null;
+    }
+
+    final List<File> files;
+    switch (_fs.typeSync(path)) {
+      case FileSystemEntityType.directory:
+        files =
+            _fs
+                .directory(path)
+                .listSync(recursive: true)
+                .whereType<File>()
+                .where((file) => file.path.endsWith('.ec'))
+                .toList()
+              ..sort((a, b) => a.path.compareTo(b.path));
+      case FileSystemEntityType.file:
+        files = [_fs.file(path)];
+      default:
+        _logger.err('--input $path does not exist.');
+        return null;
+    }
+    if (files.isEmpty) {
+      _logger.err('No .ec files found under $path.');
+      return null;
+    }
+
+    _logger.info('Reading ${files.length} coverage file(s) from $path.');
+    return [
+      for (final file in files)
+        (
+          label: _fs.path.relative(file.path, from: _fs.path.dirname(path)),
+          bytes: file.readAsBytesSync(),
+        ),
+    ];
+  }
+
+  Future<List<_CoverageSource>?> _downloadFromBrowserStack(
+    String buildId,
+  ) async {
     final sessionId = stringArg('session-id');
-    final outputDir = _fs.directory(stringArg('output'));
     final creds =
         stringArg('creds') ?? io.Platform.environment['BROWSERSTACK_CREDS'];
     if (creds == null || creds.isEmpty) {
       _logger.err(
         'Missing BrowserStack credentials. Pass --creds or set BROWSERSTACK_CREDS.',
       );
-      return 1;
+      return null;
     }
     if (!creds.contains(':')) {
       _logger.err('--creds must be in the form USERNAME:ACCESS_KEY.');
-      return 1;
+      return null;
     }
     final authHeader = 'Basic ${base64Encode(utf8.encode(creds))}';
-
-    outputDir.createSync(recursive: true);
 
     final Map<String, dynamic> build;
     try {
       build = await _fetchBuild(buildId, authHeader);
     } on _BsHttpException catch (e) {
       _logger.err(e.message);
-      return 1;
+      return null;
     }
 
     if (buildUsedClearPackageData(build) ?? false) {
@@ -108,7 +178,7 @@ class BsPullCoverageCommand extends PatrolCommand {
         'coverage would be reported. Re-run the coverage build with '
         'clearPackageData:false (keep it true for regular runs).',
       );
-      return 1;
+      return null;
     }
 
     // Without --session-id, pull and merge every session (shard) in the build.
@@ -119,34 +189,41 @@ class BsPullCoverageCommand extends PatrolCommand {
       sessionIds = _sessionIdsFrom(build);
       if (sessionIds.isEmpty) {
         _logger.err('No sessions found in build $buildId.');
-        return 1;
+        return null;
       }
       _logger.info(
         'Merging coverage from ${sessionIds.length} session(s) in build $buildId.',
       );
     }
 
-    final mergedJacoco = BytesBuilder();
-    final mergedLcov = StringBuffer();
-    var jacocoSessions = 0;
-    var execBlocks = 0;
-    var dartChunks = 0;
-
+    final sources = <_CoverageSource>[];
     for (final sid in sessionIds) {
       final Uint8List bytes;
       try {
         bytes = await _fetchCoverage(buildId, sid, authHeader);
       } on _BsHttpException catch (e) {
         _logger.err(e.message);
-        return 1;
+        return null;
       }
       _logger.info('Session $sid: downloaded ${bytes.length} bytes');
+      sources.add((label: 'Session $sid', bytes: bytes));
+    }
+    return sources;
+  }
 
+  int _splitAndWrite(List<_CoverageSource> sources, Directory outputDir) {
+    final mergedJacoco = BytesBuilder();
+    final mergedLcov = StringBuffer();
+    var jacocoSessions = 0;
+    var execBlocks = 0;
+    var dartChunks = 0;
+
+    for (final source in sources) {
       final BsCoverageSplitResult split;
       try {
-        split = splitJacocoExec(bytes);
+        split = splitJacocoExec(source.bytes);
       } on FormatException catch (e) {
-        _logger.err('Session $sid: failed to parse coverage: ${e.message}');
+        _logger.err('${source.label}: failed to parse coverage: ${e.message}');
         return 1;
       }
       mergedJacoco.add(split.jacocoBytes);
@@ -158,12 +235,13 @@ class BsPullCoverageCommand extends PatrolCommand {
 
     _logger.info(
       'Parsed: $jacocoSessions JaCoCo session(s), $execBlocks class probe(s), '
-      '$dartChunks Dart chunk(s) across ${sessionIds.length} session(s).',
+      '$dartChunks Dart chunk(s) from ${sources.length} coverage file(s).',
     );
     if (dartChunks == 0) {
       _logger.warn(
         'No Dart coverage found. Was the app built with '
-        '--dart-define=PATROL_BS_COVERAGE=true?',
+        '--dart-define=PATROL_BS_COVERAGE=true, and the instrumentation run '
+        'with coverage=true?',
       );
     }
 
@@ -243,3 +321,5 @@ class _BsHttpException implements Exception {
 
   final String message;
 }
+
+typedef _CoverageSource = ({String label, Uint8List bytes});
