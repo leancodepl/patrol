@@ -1,6 +1,8 @@
 package pl.leancode.patrol
 
 import android.content.Context
+import android.system.ErrnoException
+import android.system.Os
 import java.io.DataOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -37,6 +39,22 @@ internal object BrowserStackCoverage {
 
     const val ID_PREFIX = "PATROL_DART_COV:"
 
+    // Read by bs_coverage.dart; set in the app process before Flutter starts.
+    const val DART_COVERAGE_DIR_ENV = "PATROL_COVERAGE_DIR"
+
+    fun dartCoverageDir(context: Context): File = File(context.filesDir, "patrol_coverage")
+
+    /** Tells the Dart side, via the process environment, where to write LCOV. */
+    fun exportDartCoverageDir(context: Context) {
+        val dir = dartCoverageDir(context)
+        try {
+            Os.setenv(DART_COVERAGE_DIR_ENV, dir.absolutePath, true)
+            Logger.i("$TAG: Dart coverage dir -> ${dir.absolutePath}")
+        } catch (e: ErrnoException) {
+            Logger.e("$TAG: could not export $DART_COVERAGE_DIR_ENV", e)
+        }
+    }
+
     /**
      * Reads any LCOV files in `<filesDir>/patrol_coverage/`, encodes them, and
      * appends JaCoCo session blocks to [coverageFile]. Safe to call even when
@@ -44,7 +62,7 @@ internal object BrowserStackCoverage {
      */
     fun appendDartCoverage(context: Context, coverageFile: File) {
         val t0 = android.os.SystemClock.elapsedRealtime()
-        val sourceDir = File(context.filesDir, "patrol_coverage")
+        val sourceDir = dartCoverageDir(context)
         if (!sourceDir.exists() || !sourceDir.isDirectory) {
             Logger.i("$TAG: no patrol_coverage dir at ${sourceDir.absolutePath}, skipping")
             return

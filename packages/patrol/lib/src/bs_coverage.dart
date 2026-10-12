@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:flutter/services.dart';
 import 'package:vm_service/vm_service.dart' as vms;
 import 'package:vm_service/vm_service_io.dart' as vms;
 
@@ -95,7 +94,7 @@ class BrowserStackCoverage {
   static final _runId = '${DateTime.now().millisecondsSinceEpoch}_$pid';
 
   static var _forceCompileModeLogged = false;
-  static const _channel = MethodChannel('pl.leancode.patrol/main');
+  static var _missingDirLogged = false;
   static String? _cachedDir;
   static vms.VmService? _service;
   static Future<vms.VmService>? _serviceFuture;
@@ -341,19 +340,34 @@ class BrowserStackCoverage {
     return buf.toString();
   }
 
+  static void _logMissingDirOnce() {
+    if (_missingDirLogged) {
+      return;
+    }
+    _missingDirLogged = true;
+    // ignore: avoid_print -- coverage diagnostics go through stdout/logcat.
+    print(
+      'BrowserStackCoverage: PATROL_COVERAGE_DIR is not set, so the native '
+      'runner is not collecting coverage. Pass coverage=true to the '
+      'instrumentation (BrowserStack "coverage": true, emulator.wtf '
+      '--with-coverage, Firebase Test Lab --environment-variables '
+      'coverage=true).',
+    );
+  }
+
   static Future<String?> _resolveOutputDir() async {
     if (_cachedDir != null) {
       return _cachedDir;
     }
     try {
-      // Asked from PatrolPlugin rather than path_provider: it returns the same
-      // `Context.filesDir` BrowserStackCoverage.kt reads from, without pulling
-      // path_provider's native (FFI/JNI) dependencies into every patrol user.
-      final filesDir = await _channel.invokeMethod<String>('getFilesDir');
-      if (filesDir == null) {
+      // Exported by the native runner (BrowserStackCoverage.kt) only when the
+      // instrumentation runs with coverage=true.
+      final dir = Platform.environment['PATROL_COVERAGE_DIR'];
+      if (dir == null) {
+        _logMissingDirOnce();
         return null;
       }
-      final coverageDir = Directory('$filesDir/patrol_coverage');
+      final coverageDir = Directory(dir);
       if (!coverageDir.existsSync()) {
         coverageDir.createSync(recursive: true);
       }
@@ -361,7 +375,7 @@ class BrowserStackCoverage {
       return _cachedDir;
     } catch (err) {
       // ignore: avoid_print -- coverage diagnostics must not fail the test.
-      print('BrowserStackCoverage: resolving the files dir failed: $err');
+      print('BrowserStackCoverage: creating the coverage dir failed: $err');
       return null;
     }
   }
