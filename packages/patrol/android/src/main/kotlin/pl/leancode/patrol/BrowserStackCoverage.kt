@@ -23,7 +23,7 @@ import java.io.FileOutputStream
  *
  * Each appended block uses the id format:
  *   `PATROL_DART_COV:<sequence>:<total>:<base64_chunk>`
- * which `patrol bs pull-coverage` reassembles on the host side.
+ * which `patrol coverage pull` reassembles on the host side.
  */
 internal object BrowserStackCoverage {
     private const val TAG = "BrowserStackCoverage"
@@ -138,7 +138,7 @@ internal object BrowserStackCoverage {
 /**
  * Merges LCOV records from several sources into one, keeping the highest hit
  * count seen for each line. Mirrors `mergeLcovRecords` on the
- * `patrol bs pull-coverage` side.
+ * `patrol coverage pull` side.
  *
  * Under the Android test orchestrator each test runs in a fresh process and
  * leaves its own LCOV file behind. Concatenating them would re-embed every

@@ -20,8 +20,9 @@ import 'package:patrol_cli/src/runner/patrol_command.dart';
 ///     `PATROL_DART_COV:` session blocks, with duplicate `SF:` records for the
 ///     same file (common across tests/shards) merged into one.
 ///
-/// The `.ec` files come either from BrowserStack (`--build-id`, optionally
-/// `--session-id`; every session is merged when it is omitted) or from disk
+/// The `.ec` files come either from BrowserStack (`--browserstack-build-id`,
+/// optionally `--browserstack-session-id`; every session is merged when it is
+/// omitted) or from disk
 /// (`--input`, a file or a directory searched recursively), e.g. the outputs of
 /// emulator.wtf or Firebase Test Lab.
 ///
@@ -29,29 +30,17 @@ import 'package:patrol_cli/src/runner/patrol_command.dart';
 /// and `clearPackageData` are mutually exclusive there (see
 /// [buildUsedClearPackageData]), and a first-test-only result is worse than an
 /// error.
-class BsPullCoverageCommand extends PatrolCommand {
-  BsPullCoverageCommand({required Logger logger, required FileSystem fs})
+class CoveragePullCommand extends PatrolCommand {
+  CoveragePullCommand({required Logger logger, required FileSystem fs})
     : _logger = logger,
       _fs = fs {
     argParser
-      ..addOption(
-        'build-id',
-        help:
-            'BrowserStack App Automate Espresso build id to download coverage '
-            'from. Use either this or --input.',
-      )
       ..addOption(
         'input',
         help:
             'A local .ec file, or a directory searched recursively for .ec '
             'files (e.g. emulator.wtf or Firebase Test Lab outputs). Use either '
-            'this or --build-id.',
-      )
-      ..addOption(
-        'session-id',
-        help:
-            'BrowserStack session id within the build. If omitted, every '
-            'session (shard) in the build is pulled and merged.',
+            'this or --browserstack-build-id.',
       )
       ..addOption(
         'output',
@@ -60,7 +49,19 @@ class BsPullCoverageCommand extends PatrolCommand {
         defaultsTo: 'coverage',
       )
       ..addOption(
-        'creds',
+        'browserstack-build-id',
+        help:
+            'BrowserStack App Automate Espresso build id to download coverage '
+            'from. Use either this or --input.',
+      )
+      ..addOption(
+        'browserstack-session-id',
+        help:
+            'BrowserStack session id within the build. If omitted, every '
+            'session (shard) in the build is pulled and merged.',
+      )
+      ..addOption(
+        'browserstack-creds',
         help:
             'BrowserStack basic-auth credentials as USERNAME:ACCESS_KEY. '
             'Falls back to the BROWSERSTACK_CREDS env var.',
@@ -71,7 +72,10 @@ class BsPullCoverageCommand extends PatrolCommand {
   final FileSystem _fs;
 
   @override
-  String get name => 'pull-coverage';
+  String get name => 'pull';
+
+  @override
+  String get docsName => 'coverage';
 
   @override
   String get description =>
@@ -84,11 +88,12 @@ class BsPullCoverageCommand extends PatrolCommand {
 
   @override
   Future<int> run() async {
-    final buildId = stringArg('build-id');
+    final buildId = stringArg('browserstack-build-id');
     final input = stringArg('input');
     if ((buildId == null) == (input == null)) {
       _logger.err(
-        'Pass either --build-id (download from BrowserStack) or --input '
+        'Pass either --browserstack-build-id (download from BrowserStack) or '
+        '--input '
         '(a local .ec file or a directory of them).',
       );
       return 1;
@@ -107,8 +112,10 @@ class BsPullCoverageCommand extends PatrolCommand {
   }
 
   List<_CoverageSource>? _readLocal(String path) {
-    if (stringArg('session-id') != null) {
-      _logger.err('--session-id only applies to --build-id.');
+    if (stringArg('browserstack-session-id') != null) {
+      _logger.err(
+        '--browserstack-session-id only applies to --browserstack-build-id.',
+      );
       return null;
     }
 
@@ -147,17 +154,21 @@ class BsPullCoverageCommand extends PatrolCommand {
   Future<List<_CoverageSource>?> _downloadFromBrowserStack(
     String buildId,
   ) async {
-    final sessionId = stringArg('session-id');
+    final sessionId = stringArg('browserstack-session-id');
     final creds =
-        stringArg('creds') ?? io.Platform.environment['BROWSERSTACK_CREDS'];
+        stringArg('browserstack-creds') ??
+        io.Platform.environment['BROWSERSTACK_CREDS'];
     if (creds == null || creds.isEmpty) {
       _logger.err(
-        'Missing BrowserStack credentials. Pass --creds or set BROWSERSTACK_CREDS.',
+        'Missing BrowserStack credentials. Pass --browserstack-creds or set '
+        'BROWSERSTACK_CREDS.',
       );
       return null;
     }
     if (!creds.contains(':')) {
-      _logger.err('--creds must be in the form USERNAME:ACCESS_KEY.');
+      _logger.err(
+        '--browserstack-creds must be in the form USERNAME:ACCESS_KEY.',
+      );
       return null;
     }
     final authHeader = 'Basic ${base64Encode(utf8.encode(creds))}';

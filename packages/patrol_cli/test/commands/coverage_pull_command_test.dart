@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:args/command_runner.dart';
 import 'package:file/memory.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:patrol_cli/src/commands/bs_pull_coverage.dart';
+import 'package:patrol_cli/src/commands/coverage_pull.dart';
 import 'package:patrol_cli/src/coverage/bs_coverage_splitter.dart';
 import 'package:test/test.dart';
 
@@ -22,7 +22,7 @@ Uint8List _ec({String? lcov, String className = 'com/example/Foo'}) {
 }
 
 void main() {
-  group('BsPullCoverageCommand --input', () {
+  group('CoveragePullCommand --input', () {
     late MemoryFileSystem fs;
     late MockLogger logger;
     late CommandRunner<int> runner;
@@ -31,7 +31,7 @@ void main() {
       fs = MemoryFileSystem.test();
       logger = MockLogger();
       runner = CommandRunner<int>('patrol', 'test')
-        ..addCommand(BsPullCoverageCommand(logger: logger, fs: fs));
+        ..addCommand(CoveragePullCommand(logger: logger, fs: fs));
     });
 
     void writeFile(String path, List<int> bytes) {
@@ -55,7 +55,7 @@ void main() {
         writeFile('ew-out/Pixel7_api34/1/logcat.txt', [1, 2, 3]);
 
         final code = await runner.run([
-          'pull-coverage',
+          'pull',
           '--input',
           'ew-out',
           '--output',
@@ -80,11 +80,7 @@ void main() {
         _ec(lcov: 'SF:package:app/a.dart\nDA:1,1\nend_of_record\n'),
       );
 
-      final code = await runner.run([
-        'pull-coverage',
-        '--input',
-        'coverage.ec',
-      ]);
+      final code = await runner.run(['pull', '--input', 'coverage.ec']);
 
       expect(code, 0);
       expect(
@@ -96,11 +92,7 @@ void main() {
     test('warns, but succeeds, when there is no Dart coverage', () async {
       writeFile('coverage.ec', _ec());
 
-      final code = await runner.run([
-        'pull-coverage',
-        '--input',
-        'coverage.ec',
-      ]);
+      final code = await runner.run(['pull', '--input', 'coverage.ec']);
 
       expect(code, 0);
       verify(
@@ -111,7 +103,7 @@ void main() {
     test('fails on a malformed file and names it', () async {
       writeFile('out/broken.ec', [0x01, 0x02]);
 
-      final code = await runner.run(['pull-coverage', '--input', 'out']);
+      final code = await runner.run(['pull', '--input', 'out']);
 
       expect(code, 1);
       verify(() => logger.err(any(that: contains('broken.ec')))).called(1);
@@ -120,12 +112,12 @@ void main() {
     test('fails when the directory has no .ec files', () async {
       writeFile('out/logcat.txt', [1]);
 
-      expect(await runner.run(['pull-coverage', '--input', 'out']), 1);
+      expect(await runner.run(['pull', '--input', 'out']), 1);
       verify(() => logger.err(any(that: contains('No .ec files')))).called(1);
     });
 
     test('fails when the input does not exist', () async {
-      expect(await runner.run(['pull-coverage', '--input', 'missing']), 1);
+      expect(await runner.run(['pull', '--input', 'missing']), 1);
       verify(() => logger.err(any(that: contains('does not exist')))).called(1);
     });
 
@@ -133,10 +125,10 @@ void main() {
       writeFile('coverage.ec', _ec());
 
       final code = await runner.run([
-        'pull-coverage',
+        'pull',
         '--input',
         'coverage.ec',
-        '--session-id',
+        '--browserstack-session-id',
         'abc',
       ]);
 
@@ -145,9 +137,15 @@ void main() {
     });
 
     test('requires exactly one of --input and --build-id', () async {
-      expect(await runner.run(['pull-coverage']), 1);
+      expect(await runner.run(['pull']), 1);
       expect(
-        await runner.run(['pull-coverage', '--input', 'x', '--build-id', 'y']),
+        await runner.run([
+          'pull',
+          '--input',
+          'x',
+          '--browserstack-build-id',
+          'y',
+        ]),
         1,
       );
       verify(() => logger.err(any(that: contains('Pass either')))).called(2);

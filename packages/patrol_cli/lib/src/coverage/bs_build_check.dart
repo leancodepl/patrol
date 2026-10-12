@@ -4,7 +4,7 @@
 /// Coverage and `clearPackageData:true` are mutually exclusive on BrowserStack:
 /// `pm clear` between orchestrator-driven tests revokes the app's permission to
 /// write the shared coverage file, so only the first test's coverage survives.
-/// `patrol bs pull-coverage` fails fast rather than hand back that result.
+/// `patrol coverage pull` fails fast rather than hand back that result.
 bool? buildUsedClearPackageData(Map<String, dynamic> build) {
   final caps = build['input_capabilities'];
   if (caps is! Map<String, dynamic>) {

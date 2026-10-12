@@ -31,7 +31,7 @@ Credentials come from `--token` or the `EW_API_TOKEN` env var. See the
 
 Patrol can collect Dart line coverage on emulator.wtf the same way it does on
 [BrowserStack][bs coverage]: the app embeds it into the JaCoCo `.ec` files
-emulator.wtf already collects, and `patrol bs pull-coverage` turns them into a
+emulator.wtf already collects, and `patrol coverage pull` turns them into a
 `patrol_lcov.info`.
 
 <Steps>
@@ -86,7 +86,7 @@ emulator.wtf already collects, and `patrol bs pull-coverage` turns them into a
     Split and merge the downloaded files:
 
     ```bash
-    patrol bs pull-coverage --input ew-out --output coverage
+    patrol coverage pull --input ew-out --output coverage
     ```
 
     This reads every `.ec` file under `ew-out` and writes

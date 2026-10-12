@@ -67,7 +67,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             arguments.putString("coverage", "false");
             BrowserStackCoverage.INSTANCE.exportDartCoverageDir(getTargetContext());
             // Best-effort: the orchestrator forwards its own args to us, but a
-            // farm may strip this one. `patrol bs pull-coverage` checks too.
+            // farm may strip this one. `patrol coverage pull` checks too.
             if ("true".equalsIgnoreCase(arguments.getString("clearPackageData"))) {
                 Logger.INSTANCE.e(
                     "BS coverage: clearPackageData=true is incompatible with "

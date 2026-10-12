@@ -252,17 +252,17 @@ Nothing on the device side is BrowserStack-specific: the same setup works on oth
     Pull and merge the result once the build finishes:
 
     ```bash
-    patrol bs pull-coverage --build-id <build_id> --output coverage
+    patrol coverage pull --browserstack-build-id <build_id> --output coverage
     ```
 
-    Credentials come from `--creds USERNAME:ACCESS_KEY` or the `BROWSERSTACK_CREDS` env var. This writes `coverage/jacoco.exec` (Java) and `coverage/patrol_lcov.info` (Dart, merged across all shards).
+    Credentials come from `--browserstack-creds USERNAME:ACCESS_KEY` or the `BROWSERSTACK_CREDS` env var. This writes `coverage/jacoco.exec` (Java) and `coverage/patrol_lcov.info` (Dart, merged across all shards).
   </Step>
 </Steps>
 
 <Warning>
   Coverage and `clearPackageData:true` are mutually exclusive on BrowserStack. `pm clear` between tests revokes the app's permission to write the shared coverage file, so only the first test's coverage survives — and the one remaining workaround (letting the orchestrator collect per-test coverage) is blocked by a long-standing Android bug ([android-test#829]). This is a platform limitation, not a Patrol one.
 
-  Keep `clearPackageData:true` for your regular and nightly runs. Run coverage as a separate, periodic build with `clearPackageData:false`, accepting that a few tests which rely on a clean app/permission state may fail there. `patrol bs pull-coverage` refuses builds that ran with `clearPackageData:true` instead of handing back a misleading first-test-only result.
+  Keep `clearPackageData:true` for your regular and nightly runs. Run coverage as a separate, periodic build with `clearPackageData:false`, accepting that a few tests which rely on a clean app/permission state may fail there. `patrol coverage pull` refuses builds that ran with `clearPackageData:true` instead of handing back a misleading first-test-only result.
 </Warning>
 [BrowserStack App Automate]: https://www.browserstack.com/app-automate
 [mobile-tools]: https://github.com/leancodepl/mobile-tools
