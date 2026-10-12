@@ -19,7 +19,7 @@ class PatrolAppServiceClient {
     private val defaultPort = 8082
     val port: Int
         get() {
-            val portStr = BuildConfig.PATROL_APP_PORT
+            val portStr = patrolBuildConfigString("PATROL_APP_PORT")
             if (portStr == null) {
                 Logger.i("PATROL_APP_PORT is null, falling back to default ($defaultPort)")
                 return defaultPort
