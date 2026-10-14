@@ -3,6 +3,9 @@
 - Fix `idevicesyslog` not being scoped to the device under test, so concurrent runs on a host with
   several real iOS devices attached all streamed the same device's log, corrupting the step
   display, `--show-flutter-logs` output and the test summary. (#3245)
+- Fix `patrol test` on web timing out when the Flutter web server serves https (set up with
+  `web_dev_config.yaml`): the server URL is now detected, and the readiness check accepts a
+  self-signed certificate from that server. (#XXXX)
 
 ## 4.8.0
 
