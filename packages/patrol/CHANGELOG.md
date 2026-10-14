@@ -4,6 +4,8 @@
     - `tap` / `waitUntilVisible` for native views
     - `isAlertVisible` / `tapAlertButton` for `NSAlert`
     - `tapMenu` for the application menu bar
+- Fix the web runner ignoring `--web-ignore-https-errors` while it reads the list of tests, which
+  ended a run against an https web server with `Total: 0`. (#XXXX)
 
 ## 4.10.0
 
