@@ -43,6 +43,7 @@ class WebCoverageTool {
     required Set<RegExp> packagesRegExps,
     required Set<Glob> ignoreGlobs,
     bool includeWorkspacePackages = false,
+    bool perTest = false,
   }) async {
     final dir = dataDirectory;
     final files = dir.existsSync()
@@ -83,17 +84,18 @@ class WebCoverageTool {
     );
     final testHitMaps = await testHitMapsFuture;
 
-    // Merge sequentially since `HitMap.merge` mutates the accumulator.
-    final parsed = testHitMaps
-        .whereType<Map<String, coverage.HitMap>>()
-        .toList();
-    final hitMap = <String, coverage.HitMap>{};
-    for (final testHitMap in parsed) {
-      hitMap.merge(_scopedTo(testHitMap, packages));
-    }
+    final parsed = testHitMaps.nonNulls.toList();
     _logger.info('Converted ${parsed.length} / ${files.length} web coverages');
 
-    if (hitMap.isEmpty) {
+    final report = await LcovReport.create(
+      packagePath: _rootDirectory.path,
+      ignoreGlobs: ignoreGlobs,
+      perTest: perTest,
+    );
+    for (final test in parsed) {
+      report.add((name: test.name, hitMap: _scopedTo(test.hitMap, packages)));
+    }
+    if (report.isEmpty) {
       _logger.warn(
         'Web coverage data did not map back to any Dart sources, '
         'skipping coverage report.',
@@ -101,23 +103,18 @@ class WebCoverageTool {
       return;
     }
 
-    await formatAndSaveLcovReport(
-      fs: _fs,
-      hitMap: hitMap,
-      packagePath: _rootDirectory.path,
-      ignoreGlobs: ignoreGlobs,
-      logger: _logger,
-    );
+    await report.save(fs: _fs, logger: _logger);
   }
 
-  Future<Map<String, coverage.HitMap>?> _parseTestCoverage(
+  Future<TestCoverage?> _parseTestCoverage(
     File file,
     String flutterPackageName,
   ) async {
-    final entries = await _readCoverageEntries(file);
-    if (entries == null) {
+    final coverageFile = await _readCoverageFile(file);
+    if (coverageFile == null) {
       return null;
     }
+    final (:testName, :entries) = coverageFile;
     final byId = {for (final e in entries) e['scriptId'] as String: e};
 
     final parsed = await coverage.parseChromeCoverage(
@@ -131,14 +128,18 @@ class WebCoverageTool {
       ),
     );
 
-    return coverage.HitMap.parseJson(
-      (parsed['coverage'] as List).cast<Map<String, dynamic>>(),
+    return (
+      name: testName,
+      hitMap: await coverage.HitMap.parseJson(
+        (parsed['coverage'] as List).cast<Map<String, dynamic>>(),
+      ),
     );
   }
 
   /// The files come from a separate process, so a malformed one is skipped
   /// rather than fatal.
-  Future<List<Map<String, dynamic>>?> _readCoverageEntries(File file) async {
+  Future<({String? testName, List<Map<String, dynamic>> entries})?>
+  _readCoverageFile(File file) async {
     final Object? json;
     try {
       json = jsonDecode(await file.readAsString());
@@ -150,10 +151,13 @@ class WebCoverageTool {
       _logger.warn('Skipping malformed coverage file ${file.path}');
       return null;
     }
-    return (json['entries'] as List)
-        .whereType<Map<String, dynamic>>()
-        .where((e) => e['scriptId'] is String)
-        .toList();
+    return (
+      testName: json['testName'] as String?,
+      entries: (json['entries'] as List)
+          .whereType<Map<String, dynamic>>()
+          .where((e) => e['scriptId'] is String)
+          .toList(),
+    );
   }
 
   /// Mirrors the VM collector: an empty [packages] set means no filtering.

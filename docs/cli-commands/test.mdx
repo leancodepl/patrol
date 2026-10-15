@@ -136,6 +136,15 @@ patrol test --coverage --coverage-ignore="**/*.g.dart"
 
 excludes all files ending with `.g.dart`.
 
+To also see which test covered which lines, add `--coverage-per-test`.
+
+```
+patrol test --coverage --coverage-per-test
+```
+
+Each test's coverage is then saved as its own `TN:` section of `/coverage/patrol_per_test_lcov.info`, named after
+the test's full name with every character other than an ASCII letter, digit or `_` replaced by `_`.
+
 #### Coverage on the web
 
 Web coverage is collected differently from other platforms, so a couple of things differ:
