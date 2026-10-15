@@ -336,7 +336,7 @@ class PatrolFinder implements MatchFinder {
   /// Example:
   /// ```dart
   /// // enters text into the first widget having Key('email')
-  /// await $(#email).enterText(user@example.com);
+  /// await $(#email).enterText('user@example.com');
   /// ```
   ///
   /// If the finder finds more than 1 widget, you can choose which one to enter
@@ -384,7 +384,7 @@ class PatrolFinder implements MatchFinder {
 
   /// Shorthand for [PatrolTester.scrollUntilVisible].
   ///
-  /// Scrolls [view] in [scrollDirection] until this finders finds
+  /// Scrolls [view] in [scrollDirection] until this finder finds
   /// at least one visible widget.
   ///
   /// It also ensures that [view] is visible, by calling
@@ -429,9 +429,9 @@ class PatrolFinder implements MatchFinder {
 
   /// Waits until this finder finds at least one widget.
   ///
-  /// Throws a [WaitUntilVisibleTimeoutException] if no widgets found.
+  /// Throws a [WaitUntilExistsTimeoutException] if no widgets found.
   ///
-  /// Timeout is globally set by [PatrolTesterConfig.visibleTimeout] inside
+  /// Timeout is globally set by [PatrolTesterConfig.existsTimeout] inside
   /// [PatrolTester.config]. If you want to override this global setting, set
   /// [timeout].
   /// If [description] is provided, it replaces the auto-generated step text in
@@ -509,7 +509,7 @@ class PatrolFinder implements MatchFinder {
   /// [waitUntilVisible] method:
   ///
   /// ```dart
-  /// expect(await $(Key('Sign in Button')).waitUntilVisible().text, 'Sign in');
+  /// expect((await $(Key('Sign in Button')).waitUntilVisible()).text, 'Sign in');
   /// ```
   ///
   /// Otherwise it throws a [PatrolFinderException].

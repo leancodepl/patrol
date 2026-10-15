@@ -45,8 +45,8 @@ class WaitUntilExistsTimeoutException extends PatrolTimeoutException {
   }) : super(message: 'Finder "$finder" did not find any widgets');
 }
 
-/// Indicates that [PatrolFinder] did not find anything in the allowed time and
-/// timed out.
+/// Indicates that [PatrolFinder] did not find any visible widget in the allowed
+/// time and timed out.
 class WaitUntilVisibleTimeoutException extends PatrolTimeoutException {
   /// Creates a new [WaitUntilVisibleTimeoutException] with [finder] which did
   /// not find any visible widget and timed out.
