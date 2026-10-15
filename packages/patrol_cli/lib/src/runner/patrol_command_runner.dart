@@ -17,6 +17,7 @@ import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/commands/build.dart';
+import 'package:patrol_cli/src/commands/coverage.dart';
 import 'package:patrol_cli/src/commands/develop.dart';
 import 'package:patrol_cli/src/commands/devices.dart';
 import 'package:patrol_cli/src/commands/doctor.dart';
@@ -273,6 +274,8 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
     );
 
     addCommand(DevicesCommand(deviceFinder: deviceFinder, logger: _logger));
+
+    addCommand(CoverageCommand(logger: _logger, fs: _fs));
 
     addCommand(DoctorCommand(logger: _logger, platform: _platform));
 
