@@ -247,6 +247,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     }
 
     final coverageWorkspace = boolArg('coverage-workspace');
+    final coveragePerTest = boolArg('coverage-per-test');
     final ignoreGlobs = stringsArg('coverage-ignore').map(Glob.new).toSet();
     final coveragePackagesRegExps = stringsArg('coverage-package');
     final coveragePackages = switch ((
@@ -420,6 +421,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
           flutterCommand: flutterCommand,
           includeWorkspacePackages: coverageWorkspace,
           packagesRegExps: coveragePackages,
+          perTest: coveragePerTest,
         ),
       );
     }
@@ -449,6 +451,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
         packagesRegExps: coveragePackages,
         includeWorkspacePackages: coverageWorkspace,
         ignoreGlobs: ignoreGlobs,
+        perTest: coveragePerTest,
       );
     }
 
@@ -628,6 +631,13 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
             'key of the resolved pubspec.yaml in the coverage report. '
             'Has no effect outside a Pub workspace. Can be combined with '
             '--coverage-package.',
+      )
+      ..addFlag(
+        'coverage-per-test',
+        help:
+            "Additionally write each test's coverage as its own LCOV `TN:` "
+            'section of coverage/patrol_per_test_lcov.info (if coverage is '
+            'enabled).',
       )
       ..addMultiOption(
         'coverage-ignore',

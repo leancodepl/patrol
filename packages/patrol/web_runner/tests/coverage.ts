@@ -22,7 +22,8 @@ export async function startCoverage(page: Page): Promise<void> {
 }
 
 export async function stopAndSaveCoverage(page: Page, testInfo: TestInfo): Promise<void> {
-  if (!coverageDir) {
+  // A skipped test only loaded the app; on mobile it reports no coverage.
+  if (!coverageDir || testInfo.status === "skipped") {
     return
   }
 
@@ -51,7 +52,10 @@ export async function stopAndSaveCoverage(page: Page, testInfo: TestInfo): Promi
     await fs.mkdir(coverageDir, { recursive: true })
     // testId is stable across retries, so a retry overwrites the failed
     // attempt instead of double-counting.
-    await fs.writeFile(path.join(coverageDir, `${testInfo.testId}.json`), JSON.stringify({ entries: scripts }))
+    await fs.writeFile(
+      path.join(coverageDir, `${testInfo.testId}.json`),
+      JSON.stringify({ testName: testInfo.title, entries: scripts }),
+    )
   } catch (error) {
     logger.error(`Failed to collect JS coverage: ${error}`)
   }

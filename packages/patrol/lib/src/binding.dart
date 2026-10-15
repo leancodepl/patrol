@@ -93,6 +93,7 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
           if (const bool.fromEnvironment('COVERAGE_ENABLED')) {
             postEvent('waitForCoverageCollection', {
               'mainIsolateId': Service.getIsolateId(Isolate.current),
+              'testName': _currentDartTest,
             });
 
             final testCompleter = Completer<void>();

@@ -177,6 +177,32 @@ void main() {
       expect(reportFs.file('coverage/patrol_lcov.info').existsSync(), isFalse);
     });
 
+    // Three 4-char JS lines; the source map ("AAAA;AACA;AACA") maps JS line
+    // N col 0 to line N of lib/main.dart.
+    Map<String, Object?> mainCoverage(
+      List<Map<String, int>> ranges, {
+      String? testName,
+    }) => {
+      'testName': ?testName,
+      'entries': [
+        {
+          'url': 'http://localhost:8080/main.dart.js',
+          'scriptId': '42',
+          'source': 'aaaa\nbbbb\ncccc\n',
+          'sourceMap': jsonEncode({
+            'version': 3,
+            'file': 'main.dart.js',
+            'sources': ['org-dartlang-app:///lib/main.dart'],
+            'names': <String>[],
+            'mappings': 'AAAA;AACA;AACA',
+          }),
+          'functions': [
+            {'functionName': 'main', 'isBlockCoverage': true, 'ranges': ranges},
+          ],
+        },
+      ],
+    };
+
     test('converts V8 coverage into an LCOV report', () async {
       writePackageConfig();
       // The Resolver only reports files that exist on disk.
@@ -184,35 +210,12 @@ void main() {
         ..createSync(recursive: true)
         ..writeAsStringSync('void main() {}\n');
 
-      // Three 4-char JS lines; the source map ("AAAA;AACA;AACA") maps JS line
-      // N col 0 to line N of lib/main.dart. First range covers lines 1-2, the
-      // second marks line 3 as not executed.
-      final coverageData = {
-        'entries': [
-          {
-            'url': 'http://localhost:8080/main.dart.js',
-            'scriptId': '42',
-            'source': 'aaaa\nbbbb\ncccc\n',
-            'sourceMap': jsonEncode({
-              'version': 3,
-              'file': 'main.dart.js',
-              'sources': ['org-dartlang-app:///lib/main.dart'],
-              'names': <String>[],
-              'mappings': 'AAAA;AACA;AACA',
-            }),
-            'functions': [
-              {
-                'functionName': 'main',
-                'isBlockCoverage': true,
-                'ranges': [
-                  {'startOffset': 0, 'endOffset': 10, 'count': 1},
-                  {'startOffset': 10, 'endOffset': 15, 'count': 0},
-                ],
-              },
-            ],
-          },
-        ],
-      };
+      // The first range covers lines 1-2, the second marks line 3 as not
+      // executed.
+      final coverageData = mainCoverage([
+        {'startOffset': 0, 'endOffset': 10, 'count': 1},
+        {'startOffset': 10, 'endOffset': 15, 'count': 0},
+      ]);
       io.File('${tempDir.path}/.dart_tool/patrol/web_coverage/test-1.json')
         ..createSync(recursive: true)
         ..writeAsStringSync(jsonEncode(coverageData));
@@ -230,6 +233,62 @@ void main() {
       expect(report, contains('DA:1,1'));
       expect(report, contains('DA:2,1'));
       expect(report, contains('DA:3,0'));
+    });
+
+    test('writes each named test as its own section', () async {
+      writePackageConfig();
+      io.File('${tempDir.path}/lib/main.dart')
+        ..createSync(recursive: true)
+        ..writeAsStringSync('void main() {}\n');
+
+      for (final (file, name, counts) in [
+        ('a.json', 'auth.login_test signs in', [1, 1, 0]),
+        ('b.json', 'auth.logout_test signs out', [0, 0, 1]),
+      ]) {
+        io.File('${tempDir.path}/.dart_tool/patrol/web_coverage/$file')
+          ..createSync(recursive: true)
+          ..writeAsStringSync(
+            jsonEncode(
+              mainCoverage(testName: name, [
+                for (final (line, count) in counts.indexed)
+                  {
+                    'startOffset': line * 5,
+                    'endOffset': line * 5 + 5,
+                    'count': count,
+                  },
+              ]),
+            ),
+          );
+      }
+
+      await tool.run(
+        flutterPackageName: 'example_app',
+        packagesRegExps: {RegExp('example_app')},
+        ignoreGlobs: {},
+        perTest: true,
+      );
+
+      final sections = {
+        for (final section
+            in reportFs
+                .file('coverage/patrol_per_test_lcov.info')
+                .readAsStringSync()
+                .split('TN:')
+                .skip(1))
+          section.substring(0, section.indexOf('\n')): section,
+      };
+      expect(sections.keys, {
+        'auth_login_test_signs_in',
+        'auth_logout_test_signs_out',
+      });
+      expect(sections['auth_login_test_signs_in'], contains('DA:3,0'));
+      expect(sections['auth_logout_test_signs_out'], contains('DA:1,0'));
+      expect(sections['auth_logout_test_signs_out'], contains('DA:3,1'));
+      final merged = reportFs
+          .file('coverage/patrol_lcov.info')
+          .readAsStringSync();
+      expect(merged, contains('DA:1,1'));
+      expect(merged, contains('DA:3,1'));
     });
 
     test('excludes packages not selected for the report', () async {

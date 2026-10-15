@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Send each test's name with its coverage, which `patrol test --coverage-per-test` needs.
 - Add macOS platform automation via `$.platform.macos`:
     - `tap` / `waitUntilVisible` for native views
     - `isAlertVisible` / `tapAlertButton` for `NSAlert`

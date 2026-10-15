@@ -53,10 +53,10 @@ class CoverageTool {
     required Set<Glob> ignoreGlobs,
     required FlutterCommand flutterCommand,
     bool includeWorkspacePackages = false,
+    bool perTest = false,
   }) async {
     final homeDirectory =
         _platform.environment['HOME'] ?? _platform.environment['USERPROFILE'];
-    final hitMap = <String, coverage.HitMap>{};
 
     // Resolved once per run; the package_config.json contents do not change
     // mid-run and we'd otherwise re-walk + re-parse for every test isolate.
@@ -81,6 +81,14 @@ class CoverageTool {
               runInShell: true,
             )
             ..disposedBy(scope);
+
+      // Created once `flutter logs` is already listening, so that it doesn't
+      // miss the first test's VM service URI.
+      final report = await LcovReport.create(
+        packagePath: _rootDirectory.path,
+        ignoreGlobs: ignoreGlobs,
+        perTest: perTest,
+      );
 
       final vmConnectionDetailsStream = logsProcess.stdout
           .transform(utf8.decoder)
@@ -113,20 +121,14 @@ class CoverageTool {
                 _collectFromVM(packages: packages, connectionDetails: details),
           )
           .listen((coverage) {
-            hitMap.merge(coverage);
+            report.add(coverage);
             logger.info('Collected ${++count} / $totalTestCount coverages');
           })
         ..onDone(coverageCollectionCompleter.complete)
         ..disposedBy(scope);
       await coverageCollectionCompleter.future;
 
-      await formatAndSaveLcovReport(
-        fs: _fs,
-        hitMap: hitMap,
-        packagePath: _rootDirectory.path,
-        ignoreGlobs: ignoreGlobs,
-        logger: logger,
-      );
+      await report.save(fs: _fs, logger: logger);
     });
   }
 
@@ -154,11 +156,10 @@ class CoverageTool {
     return testCount;
   }
 
-  Future<Map<String, coverage.HitMap>> _collectFromVM({
+  Future<TestCoverage> _collectFromVM({
     required Set<String> packages,
     required VMConnectionDetails connectionDetails,
   }) async {
-    final result = <String, coverage.HitMap>{};
     final coverageReadyForCollection = Completer<Event?>();
     final serviceClient = await vmServiceConnectUri(
       connectionDetails.webSocketUri.toString(),
@@ -184,19 +185,18 @@ class CoverageTool {
       // If the event is null, then the VM service terminated without sending
       // the waitForCoverageCollection event. This means that the test was
       // skipped, so we don't need to collect coverage.
-      return {};
+      return (name: null, hitMap: <String, coverage.HitMap>{});
     }
 
-    result.merge(
-      await _collectAndMarkTestCompleted(
-        connectionDetails: connectionDetails,
-        packages: packages,
-        mainIsolateId: event.extensionData!.data['mainIsolateId'] as String,
-      ),
+    final data = event.extensionData!.data;
+    final hitMap = await _collectAndMarkTestCompleted(
+      connectionDetails: connectionDetails,
+      packages: packages,
+      mainIsolateId: data['mainIsolateId'] as String,
     );
     await serviceClient.dispose();
 
-    return result;
+    return (name: data['testName'] as String?, hitMap: hitMap);
   }
 
   Future<Map<String, coverage.HitMap>> _collectAndMarkTestCompleted({

@@ -7,24 +7,87 @@ import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:yaml/yaml.dart';
 
-/// Writes [hitMap] as LCOV to `coverage/patrol_lcov.info`, resolving sources
-/// under [packagePath]. Shared by the VM and web coverage tools.
-Future<void> formatAndSaveLcovReport({
-  required FileSystem fs,
-  required Map<String, coverage.HitMap> hitMap,
-  required String packagePath,
-  required Set<Glob> ignoreGlobs,
-  required Logger logger,
-}) async {
-  logger.info('All coverage gathered, saving');
-  final report = hitMap.formatLcov(
+/// The coverage one test collected, with the test's full name. The name is
+/// null when the app's patrol package is too old to report it.
+typedef TestCoverage = ({String? name, Map<String, coverage.HitMap> hitMap});
+
+/// A run's LCOV report, built one test at a time so that a test's coverage is
+/// merged as it arrives rather than held until the run ends. Shared by the VM
+/// and web coverage tools.
+class LcovReport {
+  LcovReport._(this._resolver, this._ignoreGlobs, {required bool perTest})
+    : _perTestReport = perTest ? StringBuffer() : null;
+
+  /// Resolves sources under [packagePath]. With [perTest], also keeps each
+  /// named test as its own `TN:` section of `coverage/patrol_per_test_lcov.info`.
+  static Future<LcovReport> create({
+    required String packagePath,
+    required Set<Glob> ignoreGlobs,
+    required bool perTest,
+  }) async => LcovReport._(
     await coverage.Resolver.create(packagePath: packagePath),
-    ignoreGlobs: ignoreGlobs,
+    ignoreGlobs,
+    perTest: perTest,
   );
 
-  final coverageDirectory = fs.directory('coverage');
-  await coverageDirectory.create(recursive: true);
-  await coverageDirectory.childFile('patrol_lcov.info').writeAsString(report);
+  final coverage.Resolver _resolver;
+  final Set<Glob> _ignoreGlobs;
+  final StringBuffer? _perTestReport;
+  final _hitMap = <String, coverage.HitMap>{};
+  var _unnamedTestCount = 0;
+
+  bool get isEmpty => _hitMap.isEmpty;
+
+  void add(TestCoverage test) {
+    final perTestReport = _perTestReport;
+    if (perTestReport != null && test.hitMap.isNotEmpty) {
+      final name = test.name;
+      if (name == null) {
+        _unnamedTestCount++;
+      } else {
+        final lcov = test.hitMap.formatLcov(
+          _resolver,
+          ignoreGlobs: _ignoreGlobs,
+        );
+        if (lcov.isNotEmpty) {
+          // LCOV tools replace every non-word character of a test name with
+          // `_` (and warn), so the name is written already replaced.
+          perTestReport
+            ..writeln('TN:${name.replaceAll(RegExp(r'\W'), '_')}')
+            ..write(lcov);
+        }
+      }
+    }
+    // Only after formatting: `HitMap.merge` adopts the first map it sees for a
+    // file as the accumulator and mutates it with every later test.
+    _hitMap.merge(test.hitMap);
+  }
+
+  Future<void> save({required FileSystem fs, required Logger logger}) async {
+    logger.info('All coverage gathered, saving');
+    final coverageDirectory = fs.directory('coverage');
+    await coverageDirectory.create(recursive: true);
+    await coverageDirectory
+        .childFile('patrol_lcov.info')
+        .writeAsString(
+          _hitMap.formatLcov(_resolver, ignoreGlobs: _ignoreGlobs),
+        );
+
+    final perTestReport = _perTestReport;
+    if (perTestReport == null) {
+      return;
+    }
+    if (_unnamedTestCount > 0) {
+      logger.warn(
+        '$_unnamedTestCount test(s) reported coverage without a name and are '
+        'left out of the per-test report. Update the patrol package to '
+        'match patrol_cli.',
+      );
+    }
+    await coverageDirectory
+        .childFile('patrol_per_test_lcov.info')
+        .writeAsString(perTestReport.toString());
+  }
 }
 
 /// Returns package names matching [packagesRegExps] in `package_config.json`,
