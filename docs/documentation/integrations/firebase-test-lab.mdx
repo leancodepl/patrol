@@ -134,6 +134,67 @@ Farm][aws_device_farm].
   </Tab>
 </Tabs>
 
+## Dart code coverage (Android)
+
+Patrol can collect Dart line coverage on Firebase Test Lab the same way it does
+on [BrowserStack][bs coverage]: the app embeds it into the JaCoCo `.ec` files the
+test run writes, and `patrol coverage pull` turns them into a `patrol_lcov.info`.
+
+<Steps>
+  <Step>
+    Instrument the app under test. In **android/app/build.gradle.kts** set
+    `enableAndroidTestCoverage = true` (AGP 8+; `testCoverageEnabled = true` on
+    AGP 7) on the debug build type. For API levels below 29, also declare
+    `WRITE_EXTERNAL_STORAGE` in a debug-only manifest, as in the
+    [emulator.wtf guide][ew coverage].
+  </Step>
+  <Step>
+    Build with the coverage dart-defines:
+
+    ```bash
+    patrol build android --dart-define=PATROL_BS_COVERAGE=true --dart-define='PATROL_BS_COVERAGE_PACKAGES=^package:my_app/'
+    ```
+
+    `PATROL_BS_COVERAGE_PACKAGES` and `PATROL_BS_COVERAGE_FORCE_COMPILE` work
+    as described in the [BrowserStack guide][bs coverage].
+  </Step>
+  <Step>
+    Run with coverage, keep package data between tests, and pull the coverage
+    directory into the results bucket:
+
+    ```bash
+    gcloud firebase test android run \
+      --type instrumentation \
+      --app build/app/outputs/apk/debug/app-debug.apk \
+      --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+      --device model=MediumPhone.arm,version=34,locale=en,orientation=portrait \
+      --use-orchestrator \
+      --environment-variables clearPackageData=false,coverage=true,coverageFilePath=/sdcard/Download/ \
+      --directories-to-pull=/sdcard/Download \
+      --results-bucket=<bucket> \
+      --results-dir=<results-dir>
+    ```
+
+    With the orchestrator, `coverageFilePath` (ending with `/`) gives one `.ec`
+    file per test. Without it, pass `coverageFile=/sdcard/Download/coverage.ec`
+    instead.
+  </Step>
+  <Step>
+    Download the coverage files and merge them:
+
+    ```bash
+    gcloud storage cp -r "gs://<bucket>/<results-dir>/<device>/artifacts" .
+    ```
+
+    ```bash
+    patrol coverage pull --input artifacts --output coverage
+    ```
+
+    This writes `coverage/jacoco.exec` (Java/Kotlin) and
+    `coverage/patrol_lcov.info` (Dart, merged across all tests).
+  </Step>
+</Steps>
+
 [native setup]: /documentation
 [gcloud]: https://cloud.google.com/sdk/gcloud
 [example_android_script]: https://github.com/leancodepl/patrol/blob/master/dev/e2e_app/run_android_testlab
@@ -144,3 +205,5 @@ Farm][aws_device_farm].
 [gcloud_android]: https://cloud.google.com/sdk/gcloud/reference/firebase/test/android/run
 [gcloud_ios]: https://cloud.google.com/sdk/gcloud/reference/firebase/test/ios/run
 [alpha version of the gcloud tool]: https://cloud.google.com/sdk/gcloud/reference/alpha/firebase/test/android/run#--grant-permissions
+[bs coverage]: /documentation/integrations/browserstack#dart-code-coverage-android
+[ew coverage]: /documentation/integrations/emulator-wtf#dart-code-coverage
