@@ -18,19 +18,20 @@ project root:
 
 ```bash
 # Claude Code (.claude/skills/)
-dart run skills@ get --agent claude -p patrol --all
+dart run skills@ get --agent claude -p patrol -s patrol-setup -s patrol-write-test
 
 # Cursor (.cursor/skills/)
-dart run skills@ get --agent cursor -p patrol --all
+dart run skills@ get --agent cursor -p patrol -s patrol-setup -s patrol-write-test
 
 # Antigravity, Gemini CLI and others (.agents/skills/)
-dart run skills@ get --agent generic -p patrol --all
+dart run skills@ get --agent generic -p patrol -s patrol-setup -s patrol-write-test
 ```
 
-`--all` installs every skill without prompting. To pick only some, replace it with one `-s` per
-skill (`-s patrol-setup -s patrol-write-test`), or drop it to choose in an interactive picker — in
-a terminal only; without one, the CLI just lists the available skills. Drop `-p patrol` to also
-pick up skills from your other dependencies.
+If your Patrol tests follow LeanCode's modular architecture (Modules, System, ApiClients), or you
+want to introduce it, add `-s patrol-test-architecture` — it builds on `patrol-write-test`. To
+install every skill, pass `--all` instead of the `-s` options. With neither, the CLI opens an
+interactive picker — in a terminal only; without one, it just lists the available skills. Without
+`-p patrol`, `--all` and the picker also cover skills from your other dependencies.
 
 The installed skills match the `patrol` version you depend on — rerun the same command after
 upgrading `patrol` to update them, and `dart run skills@ prune` removes them once `patrol` is gone.
@@ -40,7 +41,7 @@ supports Dart 3.10 and 3.11 too — activate it globally there:
 
 ```bash
 dart pub global activate skills
-dart pub global run skills get --agent claude -p patrol --all
+dart pub global run skills get --agent claude -p patrol -s patrol-setup -s patrol-write-test
 ```
 
 On older SDKs, install the skills [from GitHub](#from-github) instead.
@@ -80,5 +81,5 @@ npx skills update
 | Skill | Description | Example prompt |
 |---|---|---|
 | [patrol-setup](patrol-setup/SKILL.md) | Set up Patrol E2E testing in a Flutter project for the first time (Android only) — pubspec `patrol` block, native Android wiring, and a first passing test on an Android emulator. | Set up Patrol in this project and get a first test passing |
-| [patrol-write-test](patrol-write-test/SKILL.md) | Write Patrol E2E tests — order of actions, Patrol API and assertion rules, native dialog handling, and test-key conventions. For projects without the modular architecture below. | Write a Patrol test that logs in and verifies the home screen |
-| [patrol-test-architecture](patrol-test-architecture/SKILL.md) | Write Patrol E2E tests using LeanCode's recommended architecture (Modules, System, ApiClients) with shared test keys. Only for projects that follow it, or to introduce it. | Add a checkout test following our modular Patrol architecture |
+| [patrol-write-test](patrol-write-test/SKILL.md) | Write Patrol E2E tests — order of actions, Patrol API and assertion rules, native dialog handling, and test-key conventions. | Write a Patrol test that logs in and verifies the home screen |
+| [patrol-test-architecture](patrol-test-architecture/SKILL.md) | Add-on to patrol-write-test: LeanCode's recommended test architecture (Modules, System, ApiClients) with per-feature keys.dart files. Install it together with patrol-write-test. | Add a checkout test following our modular Patrol architecture |
