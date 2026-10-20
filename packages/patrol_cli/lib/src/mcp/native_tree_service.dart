@@ -1,9 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:adb/adb.dart';
 import 'package:mcp_dart/mcp_dart.dart';
-import 'package:patrol_cli/patrol_cli.dart' show Device, TargetPlatform;
+import 'package:patrol_cli/src/devices.dart';
 
 abstract final class NativeTreeService {
   static const _host = 'localhost';
@@ -26,10 +25,7 @@ abstract final class NativeTreeService {
         );
       }
 
-      final port = testServerPort ?? 8081;
-      await _setupConnection(device, port);
-
-      final tree = await _fetchNativeTree(port);
+      final tree = await _fetchNativeTree(testServerPort ?? 8081);
 
       if (_isTreeEmpty(tree)) {
         return const CallToolResult(
@@ -227,14 +223,5 @@ abstract final class NativeTreeService {
     } finally {
       client.close();
     }
-  }
-
-  static Future<void> _setupConnection(Device device, int port) async {
-    if (device.targetPlatform != TargetPlatform.android) {
-      // iOS simulator traffic goes directly to localhost.
-      return;
-    }
-
-    await Adb().forwardPorts(fromHost: port, toDevice: port, device: device.id);
   }
 }

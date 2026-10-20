@@ -9,12 +9,13 @@ final class LogStreaming {
   File? _logFile;
   IOSink? _logSink;
 
-  /// Start logging to a file in the project root
-  Future<String> startLogging(String projectRoot) async {
+  /// Start logging to [logFile], or to `patrol.log` in the project root.
+  Future<String> startLogging(String projectRoot, {String? logFile}) async {
     // Clean up any existing logging session
     await stopLogging();
 
-    _logFile = File('$projectRoot/patrol.log');
+    _logFile = File(logFile ?? '$projectRoot/patrol.log');
+    await _logFile!.parent.create(recursive: true);
 
     _logSink = _logFile!.openWrite();
 

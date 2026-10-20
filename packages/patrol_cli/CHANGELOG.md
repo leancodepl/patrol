@@ -38,6 +38,13 @@
   with the MIME types and cross-origin headers `flutter run` sends, and accepts the `--web-*` options
   that shape a run, so the same artifact can be sharded across machines.
 - Fix `patrol develop` leaving Gradle and logcat processes behind after quitting with `q`. (#3249)
+- Add `patrol mcp` (experimental), an MCP server shipped with the CLI that lets AI agents run tests
+  in `patrol develop` sessions and read their results. It runs a test on Android or iOS, hot
+  restarts it on the next `run`, and takes screenshots and native trees. Its results report a
+  `patrol` version this CLI cannot drive. It replaces the `patrol_mcp` package, so its dependencies
+  no longer land in the app's pubspec (#3166). Run it as `patrol mcp` from a globally activated CLI
+  or as `dart run patrol_cli:main mcp` from a dev dependency, with develop flags after `--`;
+  `PATROL_FLAGS` is split as a shell would (#3026). (#3368)
 
 ## 4.9.0
 

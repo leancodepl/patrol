@@ -894,13 +894,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.10.1"
-  patrol_mcp:
-    dependency: "direct dev"
-    description:
-      path: "../../packages/patrol_mcp"
-      relative: true
-    source: path
-    version: "0.2.1"
   permission_handler:
     dependency: "direct main"
     description:

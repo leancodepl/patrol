@@ -282,6 +282,54 @@ void main() {
         expect(args, isNot(contains('logs')));
       },
     );
+
+    test(
+      'hotRestartReady completes once attach announces its key commands',
+      () async {
+        _stubAttach(processManager, stdoutLines: ['Flutter run key commands.']);
+
+        await flutterTool.attach(
+          flutterCommand: flutterCommand,
+          deviceId: 'testDeviceId',
+          target: 'target',
+          appId: 'appId',
+          dartDefines: {},
+          openBrowser: false,
+        );
+
+        await expectLater(flutterTool.hotRestartReady, completes);
+      },
+    );
+
+    test(
+      'hotRestartReady stays pending while attach is still starting up',
+      () async {
+        _stubAttach(
+          processManager,
+          stdoutLines: ['Syncing files to device...'],
+        );
+
+        unawaited(
+          flutterTool.attach(
+            flutterCommand: flutterCommand,
+            deviceId: 'testDeviceId',
+            target: 'target',
+            appId: 'appId',
+            dartDefines: {},
+            openBrowser: false,
+          ),
+        );
+
+        // A hot restart requested in this window is only queued, so callers
+        // must not read a pending future as readiness.
+        await expectLater(
+          flutterTool.hotRestartReady.timeout(
+            const Duration(milliseconds: 200),
+          ),
+          throwsA(isA<TimeoutException>()),
+        );
+      },
+    );
   });
 
   group('getObservationUrl', () {
@@ -354,4 +402,20 @@ void main() {
       expect(pathPart, isNot(contains('//')));
     });
   });
+}
+
+/// Stubs a spawned process whose stdout replays [stdoutLines].
+void _stubAttach(
+  MockProcessManager processManager, {
+  required List<String> stdoutLines,
+}) {
+  final process = MockProcess();
+  when(() => process.stdout).thenAnswer(
+    (_) => Stream<List<int>>.fromIterable([
+      for (final line in stdoutLines) utf8.encode('$line\n'),
+    ]),
+  );
+  when(() => process.exitCode).thenAnswer((_) => Completer<int>().future);
+  when(() => process.stderr).thenAnswer((_) => const Stream<List<int>>.empty());
+  when(() => processManager.start(any())).thenAnswer((_) async => process);
 }

@@ -2,10 +2,21 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io' as io;
 
+import 'package:adb/adb.dart';
+import 'package:args/args.dart';
 import 'package:dispose_scope/dispose_scope.dart';
-import 'package:logging/logging.dart';
+import 'package:file/local.dart';
 import 'package:path/path.dart' as p;
-import 'package:patrol_cli/patrol_cli.dart';
+import 'package:patrol_cli/src/base/exceptions.dart';
+import 'package:patrol_cli/src/base/logger.dart';
+import 'package:patrol_cli/src/commands/develop_options.dart';
+import 'package:patrol_cli/src/commands/develop_service.dart';
+import 'package:patrol_cli/src/commands/develop_session_factory.dart';
+import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
+import 'package:patrol_cli/src/devices.dart';
+import 'package:patrol_cli/src/pubspec_reader.dart';
+import 'package:patrol_cli/src/runner/flutter_command.dart';
+import 'package:patrol_log/patrol_log.dart';
 
 import 'device_lister.dart';
 import 'device_selection.dart';
@@ -138,11 +149,11 @@ enum TestState {
   };
 }
 
-enum PatrolCommand {
+enum SessionCommand {
   hotRestart('R'),
   quit('Q');
 
-  const PatrolCommand(this.value);
+  const SessionCommand(this.value);
 
   final String value;
 }
@@ -150,24 +161,32 @@ enum PatrolCommand {
 class PatrolStatus {
   const PatrolStatus({
     required this.isDevelopRunning,
+    required this.projectRoot,
     required this.testState,
+    this.versionWarning,
     required this.output,
     this.currentTestFile,
     this.warning,
     this.deviceSelectionNote,
-    this.error,
     this.deviceName,
     this.deviceId,
     this.devicePlatform,
   });
 
   final bool isDevelopRunning;
+
+  /// The project this server is anchored to. Fixed when the server starts, so a
+  /// caller working across checkouts can tell which one a result came from.
+  final String projectRoot;
+
+  /// Set when the project's `patrol` is not one this CLI can drive.
+  final String? versionWarning;
+
   final TestState testState;
   final String output;
   final String? currentTestFile;
   final String? warning;
   final String? deviceSelectionNote;
-  final String? error;
   final String? deviceName;
   final String? deviceId;
   final String? devicePlatform;
@@ -176,11 +195,12 @@ class PatrolStatus {
 
   Map<String, Object> toMap() => {
     'isDevelopRunning': isDevelopRunning,
+    'projectRoot': projectRoot,
+    'versionWarning': ?versionWarning,
     'testState': testState.name,
     'currentTestFile': ?currentTestFile,
     'warning': ?warning,
     'deviceSelectionNote': ?deviceSelectionNote,
-    'error': ?error,
     'deviceName': ?deviceName,
     'deviceId': ?deviceId,
     'devicePlatform': ?devicePlatform,
@@ -189,23 +209,73 @@ class PatrolStatus {
   };
 }
 
+/// Creates the [DevelopService] a session drives. Injectable so the session can
+/// be tested without building an app.
+typedef DevelopServiceFactory =
+    DevelopService Function({
+      required String projectRoot,
+      required DisposeScope disposeScope,
+      required Stream<List<int>> stdin,
+      Future<void> Function()? onExit,
+      void Function(TestCompletionResult result)? onTestsCompleted,
+      void Function(Entry entry)? onLogEntry,
+      bool verbose,
+    });
+
 final class PatrolSession {
   PatrolSession({
     required this.flutterProjectPath,
-    this.additionalFlags = '',
+    required Logger logger,
+    io.Stdout? diagnosticSink,
+    this.developArgs = const [],
+    this.logFile,
     this.showTerminal = false,
-  });
+    DevelopServiceFactory? developServiceFactory,
+    Duration hotRestartReadyTimeout = const Duration(seconds: 90),
+  }) : _hotRestartReadyTimeout = hotRestartReadyTimeout,
+       _logger = logger,
+       _diagnosticSink = diagnosticSink ?? io.stderr,
+       _createDevelopService =
+           developServiceFactory ?? DevelopSessionFactory.create;
 
   final String flutterProjectPath;
-  final String additionalFlags;
+
+  /// Extra arguments for `patrol develop`, already split into an argument list.
+  final List<String> developArgs;
+
+  /// Where session logs go, or null for `patrol.log` in the project root.
+  final String? logFile;
+
   final bool showTerminal;
 
+  final Logger _logger;
+  final DevelopServiceFactory _createDevelopService;
+
+  /// Where diagnostics go while the real stdout carries JSON-RPC. Captured at
+  /// construction, before any [io.IOOverrides] zone is installed.
+  final io.Stdout _diagnosticSink;
+
+  /// Install as `stdout` for the whole MCP command: forwards every write to
+  /// [_diagnosticSink] and captures the lines for `status` and `patrol.log`.
+  late final io.Stdout capturingStdout = _CapturingStdout(
+    _diagnosticSink,
+    _pushOutput,
+  );
+
   static const _maxOutputLines = 200;
+
+  /// Matches patrol_cli's own default; only used when a session has not
+  /// reported its port yet.
+  static const _defaultTestServerPort = 8081;
+
+  /// How long a hot restart waits for `flutter attach` to become ready. Long
+  /// enough for a slow iOS attach, short enough to report back instead of
+  /// hanging for the caller's whole run timeout.
+  final Duration _hotRestartReadyTimeout;
 
   var _isRunning = false;
   String? _currentTestFile;
   final _outputs = <String>[];
-  final _errorDetails = <String>[];
   TestState _testState = TestState.idle;
 
   /// Set while quitting so a backend exit we caused isn't reported as a crash.
@@ -215,11 +285,6 @@ final class PatrolSession {
   String? _finishWarning;
 
   Completer<void>? _finishCompleter;
-
-  /// The previous session's `DevelopService.run()`; it keeps running past
-  /// quit (finalizer uninstall, entrypoint proxy cleanup) and must finish
-  /// before a new session generates its own entrypoint.
-  Future<void>? _runFuture;
   DisposeScope? _disposeScope;
   StreamController<List<int>>? _stdinController;
   DevelopService? _developService;
@@ -235,13 +300,52 @@ final class PatrolSession {
   Device? get device => _developService?.device;
   int? get testServerPort => _testServerPort;
 
-  /// The underlying develop service, exposed so that callers (e.g. MCP tool
-  /// registrations) can read platform-specific properties like the web
-  /// debugger port without routing every accessor through [PatrolSession].
-  DevelopService? get developService => _developService;
+  var _portForwarded = false;
+
+  /// Read once per server: the answer cannot change while it runs.
+  late final String? _versionWarning = patrolIncompatibility(
+    PubspecReader(
+      projectRoot: const LocalFileSystem().directory(flutterProjectPath),
+    ).getPatrolVersion(),
+  );
+
+  /// Makes the native automator reachable on `localhost:[testServerPort]`.
+  ///
+  /// Android needs an `adb forward`; iOS simulator traffic is already local. The
+  /// forward is torn down with the session, because a leftover one keeps the
+  /// host port pointing at the Android device — a later iOS session then reads
+  /// that device's tree instead of the simulator's, with no error to show for it.
+  Future<void> ensureNativeAutomatorReachable() async {
+    final device = this.device;
+    final scope = _disposeScope;
+    if (_portForwarded ||
+        device == null ||
+        scope == null ||
+        device.targetPlatform != TargetPlatform.android) {
+      return;
+    }
+
+    final port = _testServerPort ?? _defaultTestServerPort;
+    scope.addDispose(
+      await Adb().forwardPorts(
+        fromHost: port,
+        toDevice: port,
+        device: device.id,
+      ),
+    );
+    _portForwarded = true;
+  }
 
   /// Returns null if started successfully, or a warning message if blocked
   Future<String?> _start(String testFile, {String? device}) async {
+    // A `patrol` this CLI cannot drive stops the run, as it does under `patrol
+    // develop`. `--no-check-compatibility` in the develop args opts out, the
+    // same flag the CLI takes.
+    if (_versionWarning case final incompatible?
+        when !developArgs.contains('--no-check-compatibility')) {
+      return incompatible;
+    }
+
     _deviceSelectionNote = null;
     if (_isRunning) {
       if (_currentTestFile != testFile) {
@@ -256,27 +360,11 @@ final class PatrolSession {
             '${this.device?.name ?? 'the current device'}. Use quit '
             'first to switch devices.';
       }
-      await sendCommand(PatrolCommand.hotRestart);
-      return null;
-    }
-
-    final logger = Logger('PatrolSession');
-
-    final previousRun = _runFuture;
-    if (previousRun != null) {
-      logger.fine('Waiting for the previous develop session to finish');
-      try {
-        await previousRun.timeout(const Duration(seconds: 30));
-      } on TimeoutException {
-        // Starting anyway would reintroduce the race this wait exists to
-        // prevent: the old DevelopService could still dispose shared session
-        // state and delete the entrypoint the new session is about to
-        // generate.
-        return 'The previous develop session is still shutting down (waited '
-            '30 s). Wait a moment and call run again; restart the MCP server '
-            'if this persists.';
+      if (await _waitForHotRestartReady() case final blocked?) {
+        return blocked;
       }
-      _runFuture = null;
+      sendCommand(SessionCommand.hotRestart);
+      return null;
     }
 
     await _startLogStreamingAndTerminal();
@@ -287,32 +375,44 @@ final class PatrolSession {
     // This supports both develop-specific flags and global flags (e.g.
     // --verbose, --flutter-command) so that PATROL_FLAGS works with everything
     // that `patrol develop` accepts.
-    final flagParts =
-        (additionalFlags.isNotEmpty
-              ? additionalFlags.split(RegExp(r'\s+'))
-              : <String>[])
-          // Skip compatibility checking in MCP context for speed.
-          ..add('--no-check-compatibility');
+    final flagParts = [
+      ...developArgs,
+      // With the check on, every Android run measured here ended with no
+      // PATROL_LOG entries at all and a failure the test never had. It spawns
+      // `flutter doctor --verbose` before the build, which is the suspected
+      // cause, but only the effect is established. Opt back in by passing
+      // `--check-compatibility` to the command.
+      '--no-check-compatibility',
+    ];
 
     final flutterResolution = FlutterCommandResolver().resolve(
       projectRoot: resolvedCwd,
     );
     final flutterCommand = flutterResolution.command;
 
-    // First parse: see what PATROL_FLAGS already specifies.
-    final (flagOptions, globalResults) = DevelopOptions.parseArgs(
-      flagParts,
-      target: testFile,
-      flutterCommand: flutterCommand,
-    );
+    // First parse: see what the develop args already specify.
+    final DevelopOptions flagOptions;
+    final ArgResults globalResults;
+    try {
+      (flagOptions, globalResults) = DevelopOptions.parseArgs(
+        flagParts,
+        target: testFile,
+        flutterCommand: flutterCommand,
+      );
+    } on FormatException catch (err) {
+      // Reaches the caller as a refusal; otherwise it escapes the tool callback
+      // and the client is told only "Tool execution failed".
+      return 'Cannot start: ${err.message} Check the develop flags this server '
+          'was started with.';
+    }
     final verbose = globalResults['verbose'] as bool? ?? false;
 
-    // Resolve the device. Precedence: PATROL_FLAGS `--device` > `device`
-    // argument > auto-selection.
+    // Resolve the device. Precedence: a `--device` in the develop args >
+    // `device` argument > auto-selection.
     if (flagOptions.devices.isNotEmpty) {
       if (device != null) {
         _deviceSelectionNote =
-            'Ignored device "$device": PATROL_FLAGS already pins '
+            'Ignored device "$device": the develop args already pin '
             '--device ${flagOptions.devices.join(', ')}.';
       }
     } else if (device != null) {
@@ -323,14 +423,13 @@ final class PatrolSession {
         attached = await listAttachedDevices(
           flutterCommand: flutterCommand ?? const FlutterCommand('flutter'),
         );
-      } catch (e) {
-        return 'Failed to detect attached devices: $e';
+      } catch (err) {
+        return 'Failed to detect attached devices: $err';
       }
       final selected = autoSelectDevice(attached);
       if (selected == null) {
         return 'No Android or iOS device detected. Start an emulator or '
-            'simulator (or connect a device) and try again, or pass '
-            'device: "chrome" to run in a browser.';
+            'simulator (or connect a device) and try again.';
       }
       flagParts.addAll(['--device', selected.id]);
       if (supportedDevices(attached).length > 1) {
@@ -355,15 +454,15 @@ final class PatrolSession {
       ...effective.arguments,
     ].join(' ');
     if (flagCmd != null && flagCmd.isNotEmpty) {
-      logger.info(
+      _logger.info(
         'Flutter command: $effectiveStr (from --flutter-command in PATROL_FLAGS)',
       );
     } else if (flutterResolution.isWarning) {
-      logger.warning(
+      _logger.warn(
         'Flutter command: $effectiveStr -- ${flutterResolution.reason}',
       );
     } else {
-      logger.info(
+      _logger.info(
         'Flutter command: $effectiveStr (${flutterResolution.reason})',
       );
     }
@@ -380,7 +479,7 @@ final class PatrolSession {
     // Use DevelopSessionFactory to wire up all CLI components in one call,
     // with a custom onExit that signals a completer instead of exit(0).
     final exitCompleter = Completer<void>();
-    final developService = DevelopSessionFactory.create(
+    final developService = _createDevelopService(
       projectRoot: resolvedCwd,
       disposeScope: disposeScope,
       stdin: stdinController.stream,
@@ -402,7 +501,6 @@ final class PatrolSession {
     _quitRequested = false;
     _finishWarning = null;
     _outputs.clear();
-    _errorDetails.clear();
     // Create the completer eagerly so callbacks can signal it even if
     // test completion happens before _waitForFinish is called.
     _finishCompleter = Completer<void>();
@@ -411,7 +509,7 @@ final class PatrolSession {
     // Test completion is detected by structured callbacks,
     // NOT by developService.run() returning (the process stays alive for
     // hot restart in develop mode).
-    _runDevelopSession(developService, options, exitCompleter, logger);
+    _runDevelopSession(developService, options, exitCompleter);
 
     return null;
   }
@@ -420,51 +518,40 @@ final class PatrolSession {
     DevelopService developService,
     DevelopOptions options,
     Completer<void> exitCompleter,
-    Logger logger,
   ) {
-    // Use a _CapturingStdout so that:
-    //  1) mason_logger output goes to stderr (not stdout / the JSON protocol)
-    //  2) every line is captured for the patrol.log file and output buffer
-    final capturingStdout = _CapturingStdout(io.stderr, _pushOutput);
-
-    // Redirect stdout inside this zone to our capturing wrapper.
-    // mason_logger resolves its stdout handle via IOOverrides.
-    io.IOOverrides.runZoned(stdout: () => capturingStdout, () {
-      // Fire-and-forget: developService.run() blocks for the entire develop
-      // session (gradle/xcodebuild + flutter attach stay alive for hot
-      // restart). Test completion is detected by callbacks, not by run()
-      // returning.
-      final runFuture = developService.run(options);
-      // The chain below is this session's full teardown: _cleanup() plus
-      // run()'s own finally block (finalizer uninstall, entrypoint proxy
-      // cleanup). _start awaits it (via _runFuture) before a new session may
-      // start, so the old session can't dispose shared state or delete the
-      // new session's freshly generated entrypoint from under it.
-      final sessionDone = Future.any([runFuture, exitCompleter.future])
-          .then((_) async {
+    // Fire-and-forget: developService.run() blocks for the entire develop
+    // session (gradle/xcodebuild + flutter attach stay alive for hot restart).
+    // Test completion is detected by callbacks, not by run() returning.
+    unawaited(
+      Future.any([developService.run(options), exitCompleter.future])
+          .then((_) {
             // Session ended (e.g. user sent quit). If tests haven't already
             // been marked as done by callbacks, mark idle.
             if (_testState == TestState.running) {
               _testState = TestState.idle;
             }
             _completeFinish();
-            await _cleanup();
-            // On quit, exitCompleter settles this chain while run() is still
-            // in its finally block - wait for that too.
-            await runFuture;
+            unawaited(_cleanup());
           })
-          .catchError((Object err, StackTrace st) async {
-            logger.warning('Develop session error: $err\n$st');
-            _pushOutput('ERROR: $err');
+          .catchError((Object err, StackTrace st) {
+            // patrol_cli throws ToolExit for expected, actionable failures such
+            // as a `patrol` version the CLI can't drive. Those carry a message
+            // written for the user, so surface it as the status warning rather
+            // than a stack trace the agent has to interpret.
+            if (err is ToolExit) {
+              _finishWarning = err.message;
+              _pushOutput(err.message);
+            } else {
+              _logger.warn('Develop session error: $err\n$st');
+              _pushOutput('ERROR: $err');
+            }
             if (_testState == TestState.running) {
               _testState = TestState.finishedFailed;
             }
             _completeFinish();
-            await _cleanup();
-          });
-      _runFuture = sessionDone;
-      unawaited(sessionDone);
-    });
+            unawaited(_cleanup());
+          }),
+    );
   }
 
   Future<void>? _cleanupFuture;
@@ -473,7 +560,7 @@ final class PatrolSession {
   /// torn down. Safe to call when idle or repeatedly.
   Future<void> dispose() async {
     if (_isRunning) {
-      unawaited(sendCommand(PatrolCommand.quit));
+      sendCommand(SessionCommand.quit);
     }
     // Await any in-flight teardown -- the quit above, or one the session
     // already started on its own -- so children are reaped before we exit.
@@ -487,15 +574,16 @@ final class PatrolSession {
   Future<void> _cleanup() => _cleanupFuture ??= _doCleanup();
 
   Future<void> _doCleanup() async {
-    final logger = Logger('PatrolSession');
     // Capture this session's resources before the first await -- a new session
     // could reassign these fields while we're awaiting below.
     final scope = _disposeScope;
     final stdinController = _stdinController;
+    final service = _developService;
     _isRunning = false;
     _currentTestFile = null;
     _testServerPort = null;
     _deviceSelectionNote = null;
+    _portForwarded = false;
 
     await _logStreaming.stopLogging();
 
@@ -503,11 +591,18 @@ final class PatrolSession {
       if (scope != null && !scope.disposed) {
         await scope.dispose();
       }
-    } catch (e) {
-      logger.fine('Error disposing scope: $e');
+    } catch (err) {
+      _logger.detail('Error disposing scope: $err');
     }
     await stdinController?.close();
-    logger.fine('Develop session ended');
+    // Drop the service, or `device` would keep naming the dead session's device
+    // and screenshot/native-tree would act on it instead of reporting that there
+    // is no session. Guarded: a session started while we were awaiting owns the
+    // field now.
+    if (_developService == service) {
+      _developService = null;
+    }
+    _logger.detail('Develop session ended');
   }
 
   void _pushOutput(String line) {
@@ -525,18 +620,9 @@ final class PatrolSession {
   /// Structured signal from patrol framework (via PATROL_LOG ConfigEntry) that
   /// all tests were executed in develop mode.
   void _handleEntry(Entry entry) {
-    // Collect error details from ErrorEntry messages.
-    if (entry is ErrorEntry) {
-      _errorDetails.add(entry.message);
-      return;
-    }
-
     if (entry is TestEntry &&
         entry.status == TestEntryStatus.failure &&
         _testState == TestState.running) {
-      if (entry.error != null) {
-        _errorDetails.add(entry.error!);
-      }
       _testState = TestState.finishedFailed;
       _completeFinish();
       return;
@@ -552,10 +638,9 @@ final class PatrolSession {
 
   /// Backend exit signal from [DevelopService].
   ///
-  /// Develop sessions stay alive across hot restarts on every platform, so a
-  /// backend exit while running means the app shut down early -- report it as a
-  /// failure. Our own quit also exits it but flips to idle first;
-  /// [_quitRequested] covers the race.
+  /// In develop mode runs stay alive for hot restart, so a backend exit while
+  /// running means the app shut down early -- report it as a failure. Our own
+  /// quit also exits it but flips to idle first; [_quitRequested] covers the race.
   void _handleTestsCompleted(TestCompletionResult result) {
     if (_quitRequested || _testState != TestState.running) {
       return;
@@ -567,12 +652,13 @@ final class PatrolSession {
     final error = result.error;
     if (error != null) {
       _pushOutput('ERROR: $error');
-      Logger('PatrolSession').severe('Backend exit error: $error');
+      _logger.err('Backend exit error: $error');
     }
     _finishWarning =
-        'The app shut down before the test reported completion. This usually '
-        'means the app crashed or exited early rather than a test assertion '
-        'failing. Check the output/logs above for the underlying error.';
+        'The app stopped without the test reporting completion, so there is no '
+        'test result. A failing assertion is reported as a failed test, so look '
+        'in the output below for something else: a crash, a build that did not '
+        'finish, or a toolchain that never connected.';
     _completeFinish();
   }
 
@@ -580,10 +666,34 @@ final class PatrolSession {
     return line.replaceAll(RegExp(r'\x1B\[[0-9;?]*[ -/]*[@-~]'), '').trim();
   }
 
-  Future<String> sendCommand(PatrolCommand command) async {
-    final logger = Logger('PatrolSession');
+  /// Returns null once a hot restart will be acted on, or a message explaining
+  /// why it will not be sent.
+  ///
+  /// `flutter attach` becomes ready only after it prints its key-commands
+  /// banner, which races the test completion signal — that one travels on the
+  /// separate `flutter logs` stream and wins on iOS. A restart sent in that
+  /// window is discarded, so without this wait the tool would report a restart
+  /// it never performed and the run would then time out or be blamed on the app
+  /// exiting.
+  Future<String?> _waitForHotRestartReady() async {
+    final service = _developService;
+    if (service == null) {
+      return null;
+    }
 
-    if (command == PatrolCommand.quit) {
+    try {
+      await service.hotRestartReady.timeout(_hotRestartReadyTimeout);
+      return null;
+    } on TimeoutException {
+      return 'The session is running "$_currentTestFile" but it did not become '
+          'ready for hot restart within '
+          '${_hotRestartReadyTimeout.inSeconds}s, so no restart was sent. '
+          'Quit and run again.';
+    }
+  }
+
+  String sendCommand(SessionCommand command) {
+    if (command == SessionCommand.quit) {
       final controller = _stdinController;
       if (!_isRunning || controller == null) {
         throw StateError('No active patrol session');
@@ -598,7 +708,7 @@ final class PatrolSession {
       return 'Quit command sent to patrol session';
     }
 
-    if (command == PatrolCommand.hotRestart) {
+    if (command == SessionCommand.hotRestart) {
       final controller = _stdinController;
       if (!_isRunning || controller == null) {
         throw StateError('No active patrol session');
@@ -606,13 +716,12 @@ final class PatrolSession {
 
       try {
         controller.add('R'.codeUnits);
-      } catch (e) {
-        logger.warning('Failed to send hot restart: $e');
-        throw StateError('Failed to send hot restart to patrol session: $e');
+      } catch (err) {
+        _logger.warn('Failed to send hot restart: $err');
+        throw StateError('Failed to send hot restart to patrol session: $err');
       }
 
       _outputs.clear();
-      _errorDetails.clear();
       _testState = TestState.running;
       _finishWarning = null;
       // Complete the old completer so any previous waiters are unblocked, then
@@ -621,7 +730,7 @@ final class PatrolSession {
       _completeFinish();
       _finishCompleter = Completer<void>();
 
-      return 'Restart sent to patrol session';
+      return 'Hot restart sent to patrol session';
     }
 
     throw StateError('Unknown command: ${command.value}');
@@ -631,12 +740,13 @@ final class PatrolSession {
     final dev = _developService?.device;
     return PatrolStatus(
       isDevelopRunning: _isRunning,
+      projectRoot: flutterProjectPath,
+      versionWarning: _versionWarning,
       testState: _testState,
       output: _formatLogs(_outputs),
       currentTestFile: _currentTestFile,
       warning: overrideWarning ?? _finishWarning,
       deviceSelectionNote: _deviceSelectionNote,
-      error: _errorDetails.isNotEmpty ? _errorDetails.join('\n') : null,
       deviceName: dev?.name,
       deviceId: dev?.id,
       devicePlatform: dev?.targetPlatform.name,
@@ -687,37 +797,32 @@ final class PatrolSession {
     }
   }
 
-  // Start and wait for completion
-  Future<PatrolStatus> startAndWait(
+  /// Runs [testFile] and waits for it to finish.
+  ///
+  /// `started` is false when the run was refused (another test is loaded, or the
+  /// session never became ready for a hot restart). The status then describes
+  /// the session as it already was — in particular `testState` still refers to
+  /// the previous run — so callers must report a refusal as an error rather than
+  /// pass that state on as this run's outcome.
+  Future<({PatrolStatus status, bool started})> startAndWait(
     String testFile, {
     Duration? timeout,
     String? device,
   }) async {
-    final warning = await _start(testFile, device: device);
-    if (warning != null) {
-      // Return current status with warning (blocked by different test)
-      final status = getStatus();
-      return PatrolStatus(
-        isDevelopRunning: status.isDevelopRunning,
-        testState: status.testState,
-        output: status.output,
-        currentTestFile: status.currentTestFile,
-        warning: warning,
-        deviceSelectionNote: status.deviceSelectionNote,
-        deviceName: status.deviceName,
-        deviceId: status.deviceId,
-        devicePlatform: status.devicePlatform,
-      );
+    final refusal = await _start(testFile, device: device);
+    if (refusal != null) {
+      return (status: getStatus(overrideWarning: refusal), started: false);
     }
-    return _waitForFinish(timeout: timeout);
+    return (status: await _waitForFinish(timeout: timeout), started: true);
   }
 
   /// Automatically start log streaming and optionally launch terminal
   Future<void> _startLogStreamingAndTerminal() async {
-    final logger = Logger('PatrolSession');
-
     try {
-      final logPath = await _logStreaming.startLogging(flutterProjectPath);
+      final logPath = await _logStreaming.startLogging(
+        flutterProjectPath,
+        logFile: logFile,
+      );
 
       if (showTerminal && io.Platform.isMacOS) {
         await io.Process.run('osascript', [
@@ -729,16 +834,16 @@ final class PatrolSession {
           'end tell',
         ]);
       } else if (!showTerminal) {
-        logger.info('Log file created at: $logPath');
+        _logger.info('Log file created at: $logPath');
       } else {
-        logger.info(
+        _logger.info(
           'Log file created at: $logPath '
           '(automatic terminal launch is only available on macOS)',
         );
       }
-    } catch (e) {
+    } catch (err) {
       // Don't fail the entire operation if log streaming fails
-      logger.warning('Failed to start log streaming or terminal: $e');
+      _logger.warn('Failed to start log streaming or terminal: $err');
     }
   }
 }

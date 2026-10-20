@@ -28,32 +28,6 @@ class CompatibilityChecker {
   final DisposeScope _disposeScope;
   final Logger _logger;
 
-  /// Generates incompatibility error message with appropriate resolution steps
-  String _incompatibilityMessage({
-    required Version packageVersion,
-    required Version cliVersion,
-    required String additionalInfo,
-    Version? maxCliVersion,
-  }) {
-    final resolveSteps = maxCliVersion != null
-        ? '''
-1. Downgrade patrol_cli to a compatible version by running: 
-   dart pub global activate patrol_cli $maxCliVersion
-   
-2. Or upgrade both "patrol_cli" and "patrol" dependencies to the latest versions.'''
-        : 'Please upgrade both "patrol_cli" and "patrol" dependencies to the latest versions.';
-
-    return '''
-Patrol version $packageVersion defined in your project is not compatible with patrol_cli version $cliVersion.
-$additionalInfo
-
-To resolve this issue:
-$resolveSteps
-
-Check the compatibility table at: https://patrol.leancode.co/documentation/compatibility-table
-''';
-  }
-
   /// Checks if the version compatibility and throws an error if incompatible
   Future<void> checkVersionsCompatibility({
     required FlutterCommand flutterCommand,
@@ -110,24 +84,8 @@ Check the compatibility table at: https://patrol.leancode.co/documentation/compa
 
     packageVersion = await packageCompleter.future;
 
-    final cliVersion = Version.parse(constants.version);
-    final patrolVersion = Version.parse(packageVersion!);
-
-    final isCompatible = areVersionsCompatible(cliVersion, patrolVersion);
-
-    if (!isCompatible) {
-      // Find the maximum compatible CLI version for this patrol version
-      final maxCliVersion = getMaxCompatibleCliVersion(patrolVersion);
-
-      throwToolExit(
-        _incompatibilityMessage(
-          packageVersion: patrolVersion,
-          cliVersion: cliVersion,
-          additionalInfo:
-              'This will prevent your tests from running correctly.',
-          maxCliVersion: maxCliVersion,
-        ),
-      );
+    if (patrolIncompatibility(packageVersion) case final message?) {
+      throwToolExit(message);
     }
   }
 
@@ -135,27 +93,8 @@ Check the compatibility table at: https://patrol.leancode.co/documentation/compa
   Future<void> checkVersionsCompatibilityForBuild({
     required String? patrolVersion,
   }) async {
-    if (patrolVersion == null) {
-      return;
-    }
-
-    final cliVersion = Version.parse(constants.version);
-    final packageVersion = Version.parse(patrolVersion);
-
-    final isCompatible = areVersionsCompatible(cliVersion, packageVersion);
-    if (!isCompatible) {
-      // Find the maximum compatible CLI version for this patrol version
-      final maxCliVersion = getMaxCompatibleCliVersion(packageVersion);
-
-      throwToolExit(
-        _incompatibilityMessage(
-          packageVersion: packageVersion,
-          cliVersion: cliVersion,
-          additionalInfo:
-              'This will prevent your tests from running correctly.',
-          maxCliVersion: maxCliVersion,
-        ),
-      );
+    if (patrolIncompatibility(patrolVersion) case final message?) {
+      throwToolExit(message);
     }
   }
 }
@@ -235,4 +174,61 @@ Future<void> _checkJavaVersion(
       'If you encounter any issues, try changing your Java version to 17 or 21.',
     );
   }
+}
+
+/// The message explaining why [patrolVersion] cannot be driven by this CLI, or
+/// null when they are compatible or the version is unknown.
+///
+/// Spawns nothing: the caller supplies the version, so a path that must not run
+/// subprocesses (the MCP server) can use the same table and wording as
+/// [CompatibilityChecker.checkVersionsCompatibility].
+String? patrolIncompatibility(String? patrolVersion) {
+  if (patrolVersion == null) {
+    return null;
+  }
+
+  final Version parsed;
+  try {
+    parsed = Version.parse(patrolVersion);
+  } on FormatException {
+    return null;
+  }
+
+  final cliVersion = Version.parse(constants.version);
+  if (areVersionsCompatible(cliVersion, parsed)) {
+    return null;
+  }
+
+  return _incompatibilityMessage(
+    packageVersion: parsed,
+    cliVersion: cliVersion,
+    additionalInfo: 'This will prevent your tests from running correctly.',
+    maxCliVersion: getMaxCompatibleCliVersion(parsed),
+  );
+}
+
+/// Generates incompatibility error message with appropriate resolution steps
+String _incompatibilityMessage({
+  required Version packageVersion,
+  required Version cliVersion,
+  required String additionalInfo,
+  Version? maxCliVersion,
+}) {
+  final resolveSteps = maxCliVersion != null
+      ? '''
+1. Downgrade patrol_cli to a compatible version by running: 
+ dart pub global activate patrol_cli $maxCliVersion
+ 
+2. Or upgrade both "patrol_cli" and "patrol" dependencies to the latest versions.'''
+      : 'Please upgrade both "patrol_cli" and "patrol" dependencies to the latest versions.';
+
+  return '''
+Patrol version $packageVersion defined in your project is not compatible with patrol_cli version $cliVersion.
+$additionalInfo
+
+To resolve this issue:
+$resolveSteps
+
+Check the compatibility table at: https://patrol.leancode.co/documentation/compatibility-table
+''';
 }

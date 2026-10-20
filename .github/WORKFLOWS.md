@@ -37,17 +37,15 @@ This document describes all GitHub Actions workflows used in the Patrol project.
 | Workflow name | Triggered | Dart/Flutter version | Description |
 |--------------|---------|---------------------|-------------|
 | [patrol prepare][patrol-prepare] | PR (on patrol package changes), manual | Flutter 3.38.x (stable) | Runs CI checks for the `patrol` package: Android builds (Windows/Linux), Darwin code formatting (swift-format, clang-format), Flutter tests, analyzer, formatter, schema regeneration, and a [pana][pana-score-action] pub.dev score check (non-blocking). |
-| [patrol_cli prepare][patrol_cli-prepare] | PR (on patrol_cli changes), manual | Flutter 3.38.x (stable) | Runs CI checks for `patrol_cli` package on Ubuntu and Windows: builds executable, runs tests, analyzer, formatter, pub publish dry-run, and a [pana][pana-score-action] pub.dev score check (non-blocking). |
+| [patrol_cli prepare][patrol_cli-prepare] | PR (on patrol_cli changes), manual | Flutter 3.38.x (stable) | Runs CI checks for `patrol_cli` package on Ubuntu and Windows: builds executable, runs tests, analyzer, formatter, pub publish dry-run, and a [pana][pana-score-action] pub.dev score check (non-blocking). Also smoke-tests `patrol mcp` twice — normally and with a forced first run — asserting it handshakes, shuts down on stdin EOF, and writes nothing but JSON-RPC to stdout. |
 | [patrol_finders prepare][patrol_finders-prepare] | PR (on patrol_finders changes), manual | Flutter 3.38.x (stable) | Runs CI checks for `patrol_finders` package: tests, analyzer, formatter, pub publish dry-run, and a [pana][pana-score-action] pub.dev score check (non-blocking). |
 | [patrol_log prepare][patrol_log-prepare] | PR (on patrol_log changes), manual | Flutter 3.38.x (stable) | Runs CI checks for `patrol_log` package: analyzer, formatter, pub publish dry-run, and a [pana][pana-score-action] pub.dev score check (non-blocking). |
 | [patrol_devtools_extension prepare][patrol_devtools_extension-prepare] | PR (on devtools extension changes), manual | Flutter 3.38.x (stable) | Runs CI checks for DevTools extension: tests, analyzer, formatter, and builds extension. |
 | [adb prepare][adb-prepare] | PR (on adb package changes), manual | Dart 3.8 | Runs CI checks for `adb` package: tests, analyzer, formatter, pub publish dry-run, and a [pana][pana-score-action] pub.dev score check (non-blocking). |
 | [prepare e2e_app][prepare-e2e_app] | PR (on all changes except docs), manual | Flutter 3.38.x (stable) | Runs CI checks for E2E test app: Android builds (Windows/Linux) with ktlint, iOS builds with swift-format/clang-format and unit tests, Flutter tests, analyzer, and formatter. |
 | [patrol_gen prepare][patrol_gen-prepare] | PR (on patrol_gen changes), manual | Dart 3.8 | Runs CI checks for patrol contracts generator: analyzer and formatter. |
-| [patrol_mcp prepare][patrol_mcp-prepare] | PR (on patrol_mcp changes), manual | Dart (stable) | Runs the MCP server checks on Ubuntu and Windows against the newest and floor `patrol_cli` (from pub.dev): a smoke test (starts, handshakes, shuts down on stdin EOF), unit tests (`dart test`), and a [pana][pana-score-action] pub.dev score check (non-blocking). The floor run guards against a stale `patrol_cli` constraint. |
-| [patrol_mcp cli-compat][patrol_mcp-cli-compat] | PR (on patrol_cli `lib/` or pubspec changes), manual | Flutter 3.38.x (stable) | Non-blocking: builds `patrol_mcp` against the PR's local `patrol_cli` and warns (annotation + job summary, never fails CI) if the barrel API it consumes broke. |
 
-Package-level `pana` scoring only runs for packages published to pub.dev (`patrol`, `patrol_cli`, `patrol_finders`, `patrol_log`, `adb`, `patrol_mcp`) — `patrol_devtools_extension` and `patrol_gen` set `publish_to: none` and are skipped. Each of those prepare workflows has a dedicated `pana-score` job that runs the [pana-score][pana-score-action] composite action from `leancodepl/mobile-tools`, which scores the package the same way pub.dev would, publishes a `pana (<package>)` commit status, and writes a Markdown breakdown to the job summary. The step uses `continue-on-error: true` so a low score is informational and never blocks the PR.
+Package-level `pana` scoring only runs for packages published to pub.dev (`patrol`, `patrol_cli`, `patrol_finders`, `patrol_log`, `adb`) — `patrol_devtools_extension` and `patrol_gen` set `publish_to: none` and are skipped. Each of those prepare workflows has a dedicated `pana-score` job that runs the [pana-score][pana-score-action] composite action from `leancodepl/mobile-tools`, which scores the package the same way pub.dev would, publishes a `pana (<package>)` commit status, and writes a Markdown breakdown to the job summary. The step uses `continue-on-error: true` so a low score is informational and never blocks the PR.
 
 ## Publishing Workflows
 
@@ -172,8 +170,6 @@ A test is selected if it matches ALL conditions in the boolean expression (AND o
 [adb-prepare]: workflows/adb-prepare.yaml
 [prepare-e2e_app]: workflows/prepare-e2e_app.yaml
 [patrol_gen-prepare]: workflows/patrol_gen-prepare.yaml
-[patrol_mcp-prepare]: workflows/patrol_mcp-prepare.yaml
-[patrol_mcp-cli-compat]: workflows/patrol_mcp-cli-compat.yaml
 [patrol-publish]: workflows/patrol-publish.yaml
 [patrol_cli-publish]: workflows/patrol_cli-publish.yaml
 [patrol_finders-publish]: workflows/patrol_finders-publish.yaml

@@ -1,5 +1,5 @@
 import 'dart:io' as p show Platform;
-import 'dart:io' show ProcessSignal, exit, stdin;
+import 'dart:io' show IOOverrides, ProcessSignal, exit, stderr, stdin;
 
 import 'package:adb/adb.dart';
 import 'package:args/args.dart';
@@ -21,6 +21,7 @@ import 'package:patrol_cli/src/commands/coverage.dart';
 import 'package:patrol_cli/src/commands/develop.dart';
 import 'package:patrol_cli/src/commands/devices.dart';
 import 'package:patrol_cli/src/commands/doctor.dart';
+import 'package:patrol_cli/src/commands/mcp.dart';
 import 'package:patrol_cli/src/commands/test.dart';
 import 'package:patrol_cli/src/commands/test_without_building.dart';
 import 'package:patrol_cli/src/commands/update.dart';
@@ -288,6 +289,8 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
 
     addCommand(DoctorCommand(logger: _logger, platform: _platform));
 
+    addCommand(McpCommand(logger: _logger));
+
     addCommand(
       UpdateCommand(
         pubUpdater: _pubUpdater,
@@ -350,13 +353,43 @@ To install a specific version of Patrol CLI, run:
   dart pub global activate patrol_cli <version>
   Example: dart pub global activate patrol_cli 3.5.0''';
 
+  /// Whether this invocation is `patrol mcp`.
+  ///
+  /// Has to be decided before [parse], because [_handleFirstRun] runs first and
+  /// its greeting plus doctor report would land in the JSON-RPC channel. A plain
+  /// `contains` rather than "first non-flag argument": an option value can look
+  /// like a command name (`--flutter-command 'fvm flutter' mcp`), and
+  /// guessing wrong towards "not the server" corrupts the channel, while
+  /// guessing wrong the other way only sends this run's logs to stderr.
+  static bool _isMcpServer(Iterable<String> args) =>
+      args.contains(McpCommand.commandName);
+
   @override
   Future<int?> run(Iterable<String> args) async {
+    if (!_isMcpServer(args)) {
+      return _run(args);
+    }
+    // stdout belongs to JSON-RPC for the whole command, so every diagnostic
+    // this runner writes — including the ToolExit handlers below — goes to
+    // stderr instead. McpCommand captured the real stdout beforehand.
+    final diagnostics = stderr;
+    return IOOverrides.runZoned(
+      stdout: () => diagnostics,
+      () => _run(args, greetOnFirstRun: false),
+    );
+  }
+
+  Future<int?> _run(
+    Iterable<String> args, {
+    bool greetOnFirstRun = true,
+  }) async {
     var verbose = false;
 
     var exitCode = 1;
     try {
-      _handleFirstRun();
+      if (greetOnFirstRun) {
+        _handleFirstRun();
+      }
 
       final topLevelResults = parse(_normalizeArgs(args));
       verbose = topLevelResults['verbose'] == true;
@@ -533,6 +566,7 @@ To install a specific version of Patrol CLI, run:
 
     if (commandName == 'update' ||
         commandName == 'doctor' ||
+        commandName == McpCommand.commandName ||
         commandName == HandleCompletionRequestCommand.commandName) {
       return false;
     }

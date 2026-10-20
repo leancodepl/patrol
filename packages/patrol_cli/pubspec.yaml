@@ -31,7 +31,9 @@ dependencies:
   file: ^7.0.0
   glob: ^2.1.2
   http: ^1.1.0
+  image: ^4.5.4
   mason_logger: ^0.3.5
+  mcp_dart: ^2.1.0
   meta: ^1.10.0
   # 3.x needs Dart 3.11.
   package_config: '>=2.1.1 <4.0.0'

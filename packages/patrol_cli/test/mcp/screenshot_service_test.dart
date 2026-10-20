@@ -1,5 +1,5 @@
-import 'package:patrol_cli/patrol_cli.dart' show Device, TargetPlatform;
-import 'package:patrol_mcp/src/screenshot_service.dart';
+import 'package:patrol_cli/src/devices.dart';
+import 'package:patrol_cli/src/mcp/screenshot_service.dart';
 import 'package:test/test.dart';
 
 Device _device(TargetPlatform platform) =>

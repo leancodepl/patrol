@@ -1,10 +1,8 @@
-// Smoke test: spawn the MCP server, complete the `initialize` handshake over
-// stdio, then close stdin and assert it exits cleanly. Guards startup (#3035)
-// and shutdown-on-EOF (#3122). Dart, not shell, so it runs identically on every
-// OS. Run from the package root: dart run tool/smoke_test.dart
-//
-// Resolution is the caller's choice (pub.dev in prepare, melos in cli-compat);
-// this script only drives the server.
+// Smoke test: spawn `patrol mcp`, complete the `initialize` handshake
+// over stdio, then close stdin and assert it exits cleanly. Guards startup
+// (#3035), shutdown-on-EOF (#3122), and that nothing but JSON-RPC reaches
+// stdout. Dart, not shell, so it runs identically on every OS. Run from the
+// package root: dart run tool/smoke_test.dart [--force-first-run]
 
 import 'dart:async';
 import 'dart:convert';
@@ -13,13 +11,28 @@ import 'dart:io';
 const _handshakeTimeout = Duration(seconds: 60);
 const _shutdownTimeout = Duration(seconds: 15);
 
-Future<void> main() async {
-  stdout.writeln('[smoke] starting patrol_mcp server...');
+Future<void> main(List<String> args) async {
+  // The greeting and doctor report only run when no analytics config exists and
+  // no CI vendor is detected, so the run that can pollute stdout is invisible
+  // under a normal CI environment. --force-first-run recreates it.
+  final forceFirstRun = args.contains('--force-first-run');
+  final fakeHome = forceFirstRun
+      ? Directory.systemTemp.createTempSync('patrol_smoke_home')
+      : null;
+
+  stdout.writeln(
+    '[smoke] starting patrol mcp'
+    '${forceFirstRun ? " (forced first run, HOME=${fakeHome!.path})" : ""}...',
+  );
 
   final process = await Process.start(
     Platform.resolvedExecutable, // the `dart` running this script
-    ['run', 'bin/patrol_mcp.dart'],
+    ['run', 'bin/main.dart', 'mcp'],
     workingDirectory: Directory.current.path,
+    environment: fakeHome == null ? null : _pristineEnvironment(fakeHome.path),
+    // `CI` and the vendor variables cannot be unset from a workflow's `env:`,
+    // so the child gets a built-from-scratch environment instead.
+    includeParentEnvironment: fakeHome == null,
   );
 
   // If the server exits early, writes to its stdin break; swallow that so the
@@ -39,13 +52,21 @@ Future<void> main() async {
   // MCP stdio transport is newline-delimited JSON-RPC. Complete on the first
   // line that is a JSON-RPC response to our initialize request (id == 1).
   final handshake = Completer<String>();
+  // Anything non-JSON on stdout is a protocol violation: the CLI's own output
+  // (first-run greeting, doctor report, update banner) must go to stderr.
+  final pollution = <String>[];
   final stdoutSub = process.stdout
       .transform(const Utf8Decoder(allowMalformed: true))
       .transform(const LineSplitter())
       .listen((line) {
         final message = _tryDecode(line);
+        if (message == null) {
+          if (line.trim().isNotEmpty) {
+            pollution.add(line);
+          }
+          return;
+        }
         if (!handshake.isCompleted &&
-            message != null &&
             message['id'] == 1 &&
             message['result'] != null) {
           handshake.complete(line);
@@ -111,6 +132,15 @@ Future<void> main() async {
     );
   }
 
+  if (pollution.isNotEmpty) {
+    _fail(
+      process,
+      'stdout carried ${pollution.length} non-JSON line(s), which corrupts the '
+      'JSON-RPC channel: ${pollution.take(5).join(" | ")}',
+      stderrBuffer,
+    );
+  }
+
   stdout.writeln(
     '[smoke] handshake OK — server "$serverName" '
     'v${serverInfo?['version']} responded to initialize',
@@ -144,9 +174,39 @@ Future<void> main() async {
     );
   }
 
+  fakeHome?.deleteSync(recursive: true);
+
   stdout
     ..writeln('[smoke] shutdown OK — server exited 0 on stdin EOF')
     ..writeln('[smoke] PASS');
+}
+
+/// A from-scratch environment with no CI markers, pointing the CLI's analytics
+/// config at [home] so it reports a first run. `PlatformX.home` force-unwraps
+/// `HOME` (`UserProfile` on Windows) and `dart run` needs the real pub cache, so
+/// both have to be supplied explicitly.
+Map<String, String> _pristineEnvironment(String home) {
+  final parent = Platform.environment;
+  return {
+    'PATH': ?parent['PATH'],
+    'PUB_CACHE': parent['PUB_CACHE'] ?? _defaultPubCache(parent),
+    if (Platform.isWindows) ...{
+      'UserProfile': home,
+      // Dart on Windows cannot start without these.
+      'SystemRoot': ?parent['SystemRoot'],
+      'TEMP': ?parent['TEMP'],
+      'ComSpec': ?parent['ComSpec'],
+    } else
+      'HOME': home,
+  };
+}
+
+String _defaultPubCache(Map<String, String> parent) {
+  if (Platform.isWindows) {
+    final appData = parent['LOCALAPPDATA'] ?? parent['APPDATA'] ?? '';
+    return '$appData\\Pub\\Cache';
+  }
+  return '${parent['HOME'] ?? ''}/.pub-cache';
 }
 
 Map<String, dynamic>? _tryDecode(String line) {
@@ -157,7 +217,7 @@ Map<String, dynamic>? _tryDecode(String line) {
     final decoded = jsonDecode(line);
     return decoded is Map<String, dynamic> ? decoded : null;
   } on FormatException {
-    return null; // non-JSON log line on stdout — ignore
+    return null; // caller records it as stdout pollution
   }
 }
 
