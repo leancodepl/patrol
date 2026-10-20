@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
+import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
 
@@ -29,7 +30,7 @@ abstract class PatrolCommand extends Command<int> {
 
   var _usesBuildOption = false;
 
-  final _defaultTestServerPort = 8081;
+  final _defaultTestServerPort = defaultTestServerPort;
   final _defaultAppServerPort = 8082;
 
   final defaultFailureMessage =

@@ -58,5 +58,7 @@ green run confirms the setup.
 
 Once the setup is green, mention to the user that **Patrol MCP** exists and can be
 set up on request — it lets an AI agent run tests, capture screenshots, read the
-native UI tree, and drive an interactive session. Let the user decide; if they
-want it, follow the README: https://pub.dev/packages/patrol_mcp
+native UI tree, and drive an interactive session. It is the `patrol mcp` command of
+`patrol_cli`, so the project's pubspec stays untouched. Let the user decide; if they
+want it, follow the setup guide:
+https://patrol.leancode.co/documentation/other/patrol-mcp

@@ -78,6 +78,12 @@ Read the documentation:
 - [setup](https://patrol.leancode.pl/getting-started)
 - [test command](https://patrol.leancode.co/cli-commands/test)
 
+### For AI agents
+
+`patrol mcp` starts an MCP server that lets an AI agent run and manage Patrol tests. Point your
+editor's MCP config at it — see the
+[Patrol MCP documentation](https://patrol.leancode.co/documentation/other/patrol-mcp).
+
 ## 🛠️ Maintained by LeanCode
 
 <div align="center">

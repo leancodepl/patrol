@@ -23,16 +23,33 @@ class _FakeDevelop {
     when(
       () => service.hotRestartReady,
     ).thenAnswer((_) => hotRestartReady ?? Completer<void>().future);
-    // A develop session outlives a test run, so run() stays pending.
-    when(() => service.run(any())).thenAnswer((_) => Completer<void>().future);
+    // A develop session outlives a test run: run() returns when the session is
+    // quit, as the real one does when `flutter attach` exits.
+    when(() => service.run(any())).thenAnswer((invocation) {
+      options.add(invocation.positionalArguments.first as DevelopOptions);
+      final finished = Completer<void>();
+      _runs.add(finished);
+      return finished.future;
+    });
   }
 
   final service = _MockDevelopService();
 
+  final _runs = <Completer<void>>[];
+
+  /// What each started session was asked to run.
+  final options = <DevelopOptions>[];
+
+  /// `create` and the disposal of each session's scope, in the order they
+  /// happened.
+  final events = <String>[];
+
+  /// The completion callback each session was created with.
+  final completions = <void Function(TestCompletionResult result)?>[];
+
   final stdinChars = <String>[];
   void Function(Entry entry)? onLogEntry;
   void Function(TestCompletionResult result)? onTestsCompleted;
-  int createdCount = 0;
 
   DevelopService create({
     required String projectRoot,
@@ -43,10 +60,25 @@ class _FakeDevelop {
     void Function(Entry entry)? onLogEntry,
     bool verbose = false,
   }) {
-    createdCount++;
+    events.add('create');
     this.onLogEntry = onLogEntry;
     this.onTestsCompleted = onTestsCompleted;
-    stdin.listen((bytes) => stdinChars.add(String.fromCharCodes(bytes)));
+    completions.add(onTestsCompleted);
+    // Teardown takes a moment, as it does in a real session where processes
+    // have to be reaped, so an overlapping start is visible in the order.
+    disposeScope.addDispose(
+      () => Future<void>.delayed(
+        const Duration(milliseconds: 30),
+        () => events.add('dispose'),
+      ),
+    );
+    stdin.listen((bytes) {
+      final chars = String.fromCharCodes(bytes);
+      stdinChars.add(chars);
+      if (chars.contains(SessionCommand.quit.value)) {
+        _runs.lastOrNull?.complete();
+      }
+    });
     return service;
   }
 
@@ -73,12 +105,27 @@ void main() {
     _FakeDevelop fake, {
     List<String> developArgs = const [],
     Duration readyTimeout = const Duration(milliseconds: 50),
+    ProjectRootResolver? resolveProjectRoot,
   }) => PatrolSession(
-    flutterProjectPath: projectRoot.path,
+    listAttachedDevices: ({required flutterCommand}) async => const [
+      Device(
+        name: 'test device',
+        id: 'test-device',
+        targetPlatform: TargetPlatform.android,
+        real: false,
+      ),
+    ],
+    resolveProjectRoot:
+        resolveProjectRoot ??
+        ({testFile, requestedRoot, remember = true}) async =>
+            (root: requestedRoot ?? projectRoot.path, testFile: testFile),
     logger: MockLogger(),
     developArgs: developArgs,
     logFile: '${projectRoot.path}/patrol.log',
     developServiceFactory: fake.create,
+    // The temp project is deleted in tearDown, and every later test in this
+    // isolate would then fail reading a working directory that is gone.
+    enterProjectDirectory: (_) {},
     hotRestartReadyTimeout: readyTimeout,
   );
 
@@ -94,22 +141,26 @@ void main() {
     expect(result.status.isDevelopRunning, isTrue);
   }
 
-  /// A resolved project whose `patrol` this CLI cannot drive.
-  void writeIncompatibleLock() {
+  /// A lockfile pinning a `patrol` this CLI cannot drive.
+  String incompatibleLock() {
     final patrol = const ['4.6.1', '4.6.0', '4.5.0', '4.4.0', '4.2.0']
         .firstWhere(
           (v) => patrolIncompatibility(v) != null,
           orElse: () =>
               throw StateError('No sample patrol version is incompatible'),
         );
-    File('${projectRoot.path}/pubspec.lock').writeAsStringSync('''
+    return '''
 packages:
   patrol:
     dependency: "direct dev"
     source: hosted
     version: "$patrol"
-''');
+''';
   }
+
+  void writeIncompatibleLock() => File(
+    '${projectRoot.path}/pubspec.lock',
+  ).writeAsStringSync(incompatibleLock());
 
   test('refuses to run against a patrol this CLI cannot drive', () async {
     writeIncompatibleLock();
@@ -122,7 +173,7 @@ packages:
     expect(result.started, isFalse);
     expect(result.status.warning, contains('compatibility-table'));
     expect(result.status.versionWarning, isNotNull);
-    expect(fake.createdCount, 0, reason: 'nothing should have been built');
+    expect(fake.events, isEmpty, reason: 'nothing should have been built');
   });
 
   test('runs anyway when the develop args opt out of the check', () async {
@@ -143,8 +194,191 @@ packages:
     expect(result.status.versionWarning, isNotNull);
   });
 
-  test('status names the project the server is anchored to', () {
-    final status = sessionWith(_FakeDevelop()).getStatus();
+  test('runs in the project the request names', () async {
+    final other = Directory.systemTemp.createTempSync('patrol_other_project');
+    addTearDown(() => other.deleteSync(recursive: true));
+    final fake = _FakeDevelop();
+    final session = sessionWith(fake);
+
+    final result = await session.startAndWait(
+      'app_test.dart',
+      device: 'test-device',
+      projectRoot: other.path,
+      timeout: const Duration(milliseconds: 50),
+    );
+
+    expect(result.started, isTrue);
+    expect(result.status.projectRoot, other.path);
+  });
+
+  test('refuses another project while a session is running', () async {
+    final other = Directory.systemTemp.createTempSync('patrol_other_project');
+    addTearDown(() => other.deleteSync(recursive: true));
+    final fake = _FakeDevelop();
+    final session = sessionWith(fake);
+    await startSession(session, 'app_test.dart');
+
+    final result = await session.startAndWait(
+      'app_test.dart',
+      projectRoot: other.path,
+    );
+
+    expect(result.started, isFalse);
+    expect(result.status.warning, contains('Quit that session'));
+    expect(result.status.projectRoot, projectRoot.path);
+    expect(fake.events, ['create']);
+  });
+
+  test('runs the test file as the project sees it', () async {
+    final fake = _FakeDevelop();
+    final session = sessionWith(
+      fake,
+      // What the resolver answers for a file named against a workspace root
+      // above the project.
+      resolveProjectRoot: ({testFile, requestedRoot, remember = true}) async =>
+          (root: projectRoot.path, testFile: 'patrol_test/login_test.dart'),
+    );
+
+    await startSession(session, 'app/patrol_test/login_test.dart');
+
+    expect(fake.options.single.target, 'patrol_test/login_test.dart');
+  });
+
+  test('the compatibility answer follows the project', () async {
+    final other = Directory.systemTemp.createTempSync('patrol_other_project');
+    addTearDown(() => other.deleteSync(recursive: true));
+    File('${other.path}/pubspec.yaml').writeAsStringSync('name: other\n');
+    File('${other.path}/pubspec.lock').writeAsStringSync(incompatibleLock());
+    final fake = _FakeDevelop();
+    final session = sessionWith(fake);
+
+    // The project resolved first is one this CLI can drive.
+    await session.ensureProjectResolved();
+    expect(session.getStatus().versionWarning, isNull);
+
+    final result = await session.startAndWait(
+      'app_test.dart',
+      projectRoot: other.path,
+    );
+
+    expect(result.started, isFalse);
+    expect(result.status.versionWarning, isNotNull);
+    expect(fake.events, isEmpty, reason: 'nothing should have been built');
+  });
+
+  test('a run after a quit reports its own session, not the old one', () async {
+    final other = Directory.systemTemp.createTempSync('patrol_other_project');
+    addTearDown(() => other.deleteSync(recursive: true));
+    File('${other.path}/pubspec.yaml').writeAsStringSync('name: other\n');
+    final fake = _FakeDevelop();
+    final session = sessionWith(fake);
+    await startSession(session, 'app_test.dart');
+    await session.quit();
+
+    final second = session.startAndWait(
+      'app_test.dart',
+      device: 'test-device',
+      projectRoot: other.path,
+      timeout: const Duration(seconds: 5),
+    );
+    // The second session reports completion the way the first one did.
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+    fake.reportTestsPassed();
+
+    final result = await second;
+    expect(result.started, isTrue);
+    expect(result.status.projectRoot, other.path);
+    expect(result.status.testState, TestState.finishedPassed);
+    expect(result.status.warning, isNull);
+  });
+
+  test('the previous session cannot report on the current one', () async {
+    final other = Directory.systemTemp.createTempSync('patrol_other_project');
+    addTearDown(() => other.deleteSync(recursive: true));
+    File('${other.path}/pubspec.yaml').writeAsStringSync('name: other\n');
+    final fake = _FakeDevelop();
+    final session = sessionWith(fake);
+    await startSession(session, 'app_test.dart');
+    await session.quit();
+
+    final second = session.startAndWait(
+      'app_test.dart',
+      device: 'test-device',
+      projectRoot: other.path,
+      timeout: const Duration(seconds: 5),
+    );
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+    // The first session's backend reports its exit late, while the second is
+    // building.
+    fake.completions.first?.call(
+      const TestCompletionResult(success: false, error: 'backend exited'),
+    );
+    fake.reportTestsPassed();
+
+    final result = await second;
+    expect(result.status.testState, TestState.finishedPassed);
+    expect(result.status.warning, isNull);
+    expect(result.status.output, isNot(contains('backend exited')));
+  });
+
+  test('the previous session cannot report on the current one', () async {
+    final other = Directory.systemTemp.createTempSync('patrol_other_project');
+    addTearDown(() => other.deleteSync(recursive: true));
+    File('${other.path}/pubspec.yaml').writeAsStringSync('name: other\n');
+    final fake = _FakeDevelop();
+    final session = sessionWith(fake);
+    await startSession(session, 'app_test.dart');
+    await session.quit();
+
+    final second = session.startAndWait(
+      'app_test.dart',
+      device: 'test-device',
+      projectRoot: other.path,
+      timeout: const Duration(seconds: 5),
+    );
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+    // The first session's backend reports its exit late, while the second one
+    // is building.
+    fake.completions.first?.call(
+      const TestCompletionResult(success: false, error: 'backend exited'),
+    );
+    fake.reportTestsPassed();
+
+    final result = await second;
+    expect(result.status.testState, TestState.finishedPassed);
+    expect(result.status.warning, isNull);
+    expect(result.status.output, isNot(contains('backend exited')));
+  });
+
+  test('quit answers once the session has released its resources', () async {
+    final fake = _FakeDevelop();
+    final session = sessionWith(fake);
+    await startSession(session, 'app_test.dart');
+
+    await session.quit();
+
+    expect(fake.events, ['create', 'dispose']);
+    expect(session.getStatus().isDevelopRunning, isFalse);
+  });
+
+  test('a new session waits for the previous one to let go', () async {
+    // The old session removes the `adb forward` the new one needs, so starting
+    // before it is gone leaves the automator unreachable.
+    final fake = _FakeDevelop();
+    final session = sessionWith(fake);
+    await startSession(session, 'app_test.dart');
+    session.sendCommand(SessionCommand.quit);
+
+    await startSession(session, 'app_test.dart');
+
+    expect(fake.events, ['create', 'dispose', 'create']);
+  });
+
+  test('status names the project the server is anchored to', () async {
+    final session = sessionWith(_FakeDevelop());
+    await session.ensureProjectResolved();
+
+    final status = session.getStatus();
 
     expect(status.projectRoot, projectRoot.path);
     expect(status.toMap()['projectRoot'], projectRoot.path);
@@ -166,7 +400,7 @@ packages:
         allOf(contains('first_test.dart'), contains('second_test.dart')),
       );
       // The session is untouched: no second develop service, no restart sent.
-      expect(fake.createdCount, 1);
+      expect(fake.events, ['create']);
       expect(fake.stdinChars, isNot(contains('R')));
     },
   );
@@ -204,7 +438,7 @@ packages:
 
     expect(result.started, isTrue);
     expect(fake.stdinChars, contains('R'));
-    expect(fake.createdCount, 1, reason: 'a restart must reuse the session');
+    expect(fake.events, ['create'], reason: 'a restart must reuse the session');
   });
 
   test(

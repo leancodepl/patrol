@@ -217,8 +217,8 @@ String _incompatibilityMessage({
   final resolveSteps = maxCliVersion != null
       ? '''
 1. Downgrade patrol_cli to a compatible version by running: 
- dart pub global activate patrol_cli $maxCliVersion
- 
+   dart pub global activate patrol_cli $maxCliVersion
+   
 2. Or upgrade both "patrol_cli" and "patrol" dependencies to the latest versions.'''
       : 'Please upgrade both "patrol_cli" and "patrol" dependencies to the latest versions.';
 

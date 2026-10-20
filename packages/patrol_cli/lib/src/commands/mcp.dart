@@ -6,8 +6,10 @@ import 'package:mcp_dart/mcp_dart.dart' hide Logger;
 import 'package:meta/meta.dart';
 import 'package:patrol_cli/src/base/command_line.dart';
 import 'package:patrol_cli/src/base/constants.dart' as constants;
+import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
-import 'package:patrol_cli/src/mcp/device_lister.dart';
+import 'package:patrol_cli/src/base/process.dart';
+import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/mcp/device_selection.dart';
 import 'package:patrol_cli/src/mcp/flutter_command_resolver.dart';
 import 'package:patrol_cli/src/mcp/native_tree_service.dart';
@@ -16,8 +18,12 @@ import 'package:patrol_cli/src/mcp/project_resolver.dart';
 import 'package:patrol_cli/src/mcp/screenshot_service.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
+import 'package:process/process.dart';
 
 const _defaultTimeoutMinutes = 5.0;
+
+/// How long the client has to answer `roots/list`.
+const _rootsTimeout = Duration(seconds: 5);
 
 /// Output schema for `run` and `status` -- a serialized [PatrolStatus].
 /// Keys mirror `PatrolStatus.toMap`.
@@ -26,9 +32,8 @@ const _sessionStatusSchema = JsonObject(
     'isDevelopRunning': JsonBoolean(),
     'projectRoot': JsonString(
       description:
-          'Absolute path of the project this server is anchored to. It is fixed '
-          'when the server starts; check it before trusting a result if you '
-          'work across checkouts.',
+          'Absolute path of the project this result came from. Check it before '
+          'trusting a result if you work across checkouts.',
     ),
     'versionWarning': JsonString(
       description:
@@ -73,28 +78,26 @@ const _instructions =
     '- run auto-selects a device; to target a specific one, call devices and pass its id as run\'s "device".\n'
     '- status is optional and mainly useful for debugging session state and recent output.\n'
     '- native-tree is intended for native interactions and cross-app/native context inspection.\n'
-    '- this server is anchored to one project, fixed when it started, and testFile is '
-    'relative to it. Every result carries projectRoot: if it is not the project you mean, '
-    'stop — nothing here can retarget it, so the run needs a server started against that project.';
+    '- every result carries projectRoot, the project the run happened in. testFile is '
+    'relative to it or to the workspace the client opened. To work in another checkout, '
+    'quit the session and pass projectRoot to run.';
 
 class _RunArgs {
   _RunArgs.fromJson(Map<String, dynamic> json)
     : testFile = json['testFile'] as String,
       timeout = _parseTimeout(json['timeoutMinutes'] as num?),
-      device = (json['device'] as String?)?.trim().nullIfEmpty;
+      device = (json['device'] as String?)?.trim().nullIfEmpty,
+      projectRoot = (json['projectRoot'] as String?)?.trim().nullIfEmpty;
 
   final String testFile;
   final Duration timeout;
   final String? device;
+  final String? projectRoot;
 
   static Duration _parseTimeout(num? timeoutMinutes) {
     final minutes = timeoutMinutes?.toDouble() ?? _defaultTimeoutMinutes;
     return Duration(milliseconds: (minutes * 60 * 1000).round());
   }
-}
-
-extension on String {
-  String? get nullIfEmpty => isEmpty ? null : this;
 }
 
 /// Runs the MCP server that lets AI agents drive `patrol develop` sessions.
@@ -103,9 +106,14 @@ extension on String {
 /// transport directly while every other write is redirected — see
 /// [PatrolSession.capturingStdout] and the guard in `patrolCommandRunner`.
 class McpCommand extends PatrolCommand {
-  McpCommand({required Logger logger})
-    : _logger = logger,
-      _protocolStdout = io.stdout {
+  McpCommand({
+    required DeviceFinder deviceFinder,
+    required ProcessManager processManager,
+    required Logger logger,
+  }) : _deviceFinder = deviceFinder,
+       _processManager = processManager,
+       _logger = logger,
+       _protocolStdout = io.stdout {
     argParser
       ..addOption(
         'project-root',
@@ -130,6 +138,8 @@ class McpCommand extends PatrolCommand {
 
   static const commandName = 'mcp';
 
+  final DeviceFinder _deviceFinder;
+  final ProcessManager _processManager;
   final Logger _logger;
 
   /// The real stdout, captured at construction — that is, before [run] installs
@@ -150,24 +160,23 @@ class McpCommand extends PatrolCommand {
   String? get usageFooter =>
       'Read detailed docs at https://patrol.leancode.co/documentation/other/patrol-mcp';
 
+  /// Set once the server exists, so the resolver can ask the client for its
+  /// roots. They are only answerable after the initialize handshake.
+  McpServer? _server;
+
+  late final ProjectResolver _projectResolver = ProjectResolver(
+    readRoots: _clientRoots,
+    projectRootOverride: stringArg('project-root'),
+  );
+
   @override
   Future<int> run() async {
     final env = io.Platform.environment;
 
-    // Resolved before the redirect below, so a resolution failure is reported on
-    // the real stderr rather than swallowed.
-    final projectRoot = await ProjectResolver(
-      // TODO(mcp-roots): read the client's advertised workspace roots.
-      readRoots: () async => const [],
-      projectRootOverride: stringArg('project-root'),
-    ).resolve();
-
-    // Run from the project root so patrol_cli resolves the pubspec, test target
-    // and build outputs there even when the client launched us elsewhere.
-    io.Directory.current = projectRoot;
-
     final session = PatrolSession(
-      flutterProjectPath: projectRoot,
+      resolveProjectRoot: _projectResolver.resolve,
+      listAttachedDevices: _deviceFinder.getAttachedDevices,
+      processManager: _processManager,
       logger: _logger,
       developArgs: _developArgs(env),
       logFile: stringArg('log-file'),
@@ -176,12 +185,42 @@ class McpCommand extends PatrolCommand {
           env['SHOW_TERMINAL']?.toLowerCase() == 'true',
     );
 
+    final server = _server = _buildServer(session);
     final transport = StdioServerTransport(stdout: _protocolStdout);
 
     return io.IOOverrides.runZoned(
       stdout: () => session.capturingStdout,
-      () => _serve(_buildServer(session), session, transport),
+      () => _serve(server, session, transport),
     );
+  }
+
+  /// The workspace directories the client advertises, or none when it does not
+  /// support `roots/list`.
+  ///
+  /// A client that never answers is treated as one with no roots: the request
+  /// otherwise blocks the tool call that is waiting for a project.
+  Future<List<String>> _clientRoots() async {
+    final server = _server;
+    if (server == null) {
+      return const [];
+    }
+    try {
+      final result = await server.server.listRoots().timeout(_rootsTimeout);
+      return [for (final root in result.roots) ?_rootPath(root.uri)];
+    } on Object {
+      return const [];
+    }
+  }
+
+  /// The local path a root points at, or null for one that names no local
+  /// directory: an editor working over a remote or virtual filesystem
+  /// advertises roots this server cannot open, alongside ones it can.
+  static String? _rootPath(String uri) {
+    try {
+      return Uri.parse(uri).toFilePath();
+    } on Object {
+      return null;
+    }
   }
 
   List<String> _developArgs(Map<String, String> env) =>
@@ -218,13 +257,21 @@ class McpCommand extends PatrolCommand {
           properties: {
             'testFile': JsonString(
               description:
-                  'Path to the test file, relative to the project root '
-                  "(e.g., 'integration_test/example_test.dart' or "
-                  "'patrol_test/scenarios/login_test.dart'). "
-                  'Do NOT include the project root prefix in the path.',
+                  'Path to the test file, relative to the project root or to '
+                  'the workspace the client opened, which is how a project in a '
+                  "subdirectory is reached: 'patrol_test/login_test.dart' or "
+                  "'app/patrol_test/login_test.dart'. The project it belongs to "
+                  'is reported back as projectRoot.',
             ),
             'timeoutMinutes': JsonNumber(
               description: 'Optional timeout in minutes (default: 5)',
+            ),
+            'projectRoot': JsonString(
+              description:
+                  'Optional project to run in, for work spanning more than one '
+                  'checkout. Accepted while no session is running; a running '
+                  'session must be quit first. Omit to use the project the '
+                  'server resolved.',
             ),
             'device': JsonString(
               description:
@@ -238,7 +285,12 @@ class McpCommand extends PatrolCommand {
         ),
         outputSchema: _sessionStatusSchema,
         annotations: const ToolAnnotations(title: 'Run Patrol Tests'),
-        callback: (args, extra) => _run(session, args, extra),
+        callback: (args, extra) => _withProject(
+          session,
+          () => _run(session, args, extra),
+          testFile: (args['testFile'] as String?)?.trim().nullIfEmpty,
+          requestedRoot: (args['projectRoot'] as String?)?.trim().nullIfEmpty,
+        ),
       )
       ..registerTool(
         'devices',
@@ -246,31 +298,34 @@ class McpCommand extends PatrolCommand {
             'List attached devices patrol can run on (Android, iOS). Use '
             'to resolve a device name/id to pass as `device` to run.',
         annotations: const ToolAnnotations(title: 'List Devices'),
-        callback: (args, extra) => _devices(session),
+        callback: (args, extra) => _withProject(
+          session,
+          () => _devices(session),
+          projectRequired: false,
+        ),
       )
       ..registerTool(
         'quit',
         description: 'Quit the active patrol session gracefully',
         annotations: const ToolAnnotations(title: 'Quit Patrol'),
-        callback: (args, extra) {
-          if (!session.getStatus().isDevelopRunning) {
-            return const CallToolResult(
-              content: [
-                TextContent(
-                  text:
-                      'No active patrol session to quit. '
-                      'Start one with the run tool first.',
-                ),
-              ],
-              isError: true,
-            );
-          }
-          return CallToolResult(
-            content: [
-              TextContent(text: session.sendCommand(SessionCommand.quit)),
-            ],
-          );
-        },
+        callback: (args, extra) =>
+            _withProject(session, projectRequired: false, () async {
+              if (!session.isRunning) {
+                return const CallToolResult(
+                  content: [
+                    TextContent(
+                      text:
+                          'No active patrol session to quit. '
+                          'Start one with the run tool first.',
+                    ),
+                  ],
+                  isError: true,
+                );
+              }
+              return CallToolResult(
+                content: [TextContent(text: await session.quit())],
+              );
+            }),
       )
       ..registerTool(
         'status',
@@ -282,7 +337,11 @@ class McpCommand extends PatrolCommand {
           readOnlyHint: true,
           idempotentHint: true,
         ),
-        callback: (args, extra) => _statusResult(session.getStatus()),
+        callback: (args, extra) => _withProject(
+          session,
+          () async => _statusResult(session.getStatus()),
+          projectRequired: false,
+        ),
       )
       ..registerTool(
         'screenshot',
@@ -293,8 +352,14 @@ class McpCommand extends PatrolCommand {
           title: 'Capture Screenshot',
           readOnlyHint: true,
         ),
-        callback: (args, extra) =>
-            ScreenshotService.handleScreenshotRequest(session.device),
+        callback: (args, extra) => _withProject(
+          session,
+          () => ScreenshotService.handleScreenshotRequest(
+            session.device,
+            processManager: _processManager,
+          ),
+          projectRequired: false,
+        ),
       )
       ..registerTool(
         'native-tree',
@@ -305,14 +370,50 @@ class McpCommand extends PatrolCommand {
           title: 'Get Native UI Tree',
           readOnlyHint: true,
         ),
-        callback: (args, extra) async {
-          await session.ensureNativeAutomatorReachable();
-          return NativeTreeService.handleGetNativeTreeRequest(
-            session.device,
-            session.testServerPort,
-          );
-        },
+        callback: (args, extra) =>
+            _withProject(session, projectRequired: false, () async {
+              await session.ensureNativeAutomatorReachable();
+              return NativeTreeService.handleGetNativeTreeRequest(
+                session.device,
+                session.testServerPort,
+                processManager: _processManager,
+              );
+            }),
       );
+  }
+
+  /// Resolves the project before a tool touches the session, and reports a
+  /// resolution failure as the tool's error with the signals that were tried.
+  ///
+  /// [testFile] and [requestedRoot] are what the call itself said about the
+  /// project. A server started outside any Dart package has nothing else to go
+  /// on, so resolving without them would fail here before the call's own signals
+  /// were ever read.
+  Future<CallToolResult> _withProject(
+    PatrolSession session,
+    Future<CallToolResult> Function() body, {
+    String? testFile,
+    String? requestedRoot,
+    bool projectRequired = true,
+  }) async {
+    try {
+      await session.ensureProjectResolved(
+        testFile: testFile,
+        requestedRoot: requestedRoot,
+      );
+    } on ProjectResolutionException catch (err) {
+      if (projectRequired) {
+        return CallToolResult(
+          content: [TextContent(text: '$err')],
+          isError: true,
+        );
+      }
+      // Only a run needs a project. A tool that reports on the session, or lists
+      // what is attached, still has an answer — and refusing it would leave an
+      // agent nothing to call on a server that has not been told where to work.
+      session.noteProjectUnresolved('$err');
+    }
+    return body();
   }
 
   Future<CallToolResult> _run(
@@ -346,6 +447,7 @@ class McpCommand extends PatrolCommand {
         runArgs.testFile,
         timeout: runArgs.timeout,
         device: runArgs.device,
+        projectRoot: runArgs.projectRoot,
       );
       return _statusResult(result.status, isError: !result.started);
     } finally {
@@ -361,7 +463,7 @@ class McpCommand extends PatrolCommand {
         .resolve(projectRoot: session.flutterProjectPath)
         .command;
     try {
-      final attached = await listAttachedDevices(
+      final attached = await _deviceFinder.getAttachedDevices(
         flutterCommand: flutterCommand ?? const FlutterCommand('flutter'),
       );
       final payload = {
@@ -412,7 +514,7 @@ class McpCommand extends PatrolCommand {
 
     try {
       await server.connect(transport);
-      _logger.detail('MCP server started on stdio');
+      _logger.info('MCP server started on stdio');
     } catch (err, st) {
       _logger
         ..err('Failed to start the MCP stdio transport: $err')
@@ -425,7 +527,7 @@ class McpCommand extends PatrolCommand {
     // ProcessSignal.watch() keeps the VM alive; the EOF path skips
     // _handleSignal, so cancel here.
     exitSignal.cancel();
-    _logger.detail('Shutting down (signal or client disconnect)');
+    _logger.info('Shutting down (signal or client disconnect)');
 
     // Tear down the active session and close the transport, but never block
     // forever: a stalled teardown (e.g. a run cancelled mid-build) would orphan
@@ -445,33 +547,23 @@ class McpCommand extends PatrolCommand {
 
 class _ExitSignal {
   _ExitSignal() {
-    // ProcessSignal.sigterm cannot be listened to on Windows — it throws
-    // SignalException. On that platform, graceful shutdown comes from stdin EOF
-    // (MCP stdio transport) and Ctrl-C (SIGINT), both of which keep working.
-    _sigtermSubscription = !io.Platform.isWindows
-        ? io.ProcessSignal.sigterm.watch().listen(_handleSignal)
-        : null;
-    _sigintSubscription = io.ProcessSignal.sigint.watch().listen(_handleSignal);
+    _subscriptions = watchStopSignals((_) {
+      if (!_completer.isCompleted) {
+        _completer.complete();
+        cancel();
+      }
+    });
   }
 
-  final _completer = Completer<io.ProcessSignal>();
-  late final StreamSubscription<io.ProcessSignal>? _sigtermSubscription;
-  late final StreamSubscription<io.ProcessSignal> _sigintSubscription;
+  final _completer = Completer<void>();
+  late final List<StreamSubscription<io.ProcessSignal>> _subscriptions;
 
-  Future<io.ProcessSignal> get wait => _completer.future;
+  Future<void> get wait => _completer.future;
 
   /// Cancels the signal subscriptions. Idempotent.
-  void cancel() => _cleanup();
-
-  void _handleSignal(io.ProcessSignal signal) {
-    if (!_completer.isCompleted) {
-      _completer.complete(signal);
-      _cleanup();
+  void cancel() {
+    for (final subscription in _subscriptions) {
+      subscription.cancel();
     }
-  }
-
-  void _cleanup() {
-    _sigtermSubscription?.cancel();
-    _sigintSubscription.cancel();
   }
 }

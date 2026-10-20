@@ -259,6 +259,23 @@ void _test(Platform platform) {
       expect(found, equals([fs.path.join(fs.currentDirectory.path, target)]));
     });
 
+    test('finds a target that only the project directory names', () {
+      // A server started outside the project has a working directory the target
+      // does not belong to.
+      final root = fs.directory(fs.path.join('projects', 'awesome_app'));
+      final target = fs.path.join('patrol_test', 'app_test.dart');
+      fs.file(fs.path.join(root.path, target)).createSync(recursive: true);
+      final finder = TestFinderFactory(
+        rootDirectory: root,
+      ).create('patrol_test');
+
+      final found = finder.findTests([target]);
+
+      expect(found, [
+        fs.path.join(fs.currentDirectory.path, root.path, target),
+      ]);
+    });
+
     test('finds tests when custom test directory is nested', () {
       // given
       final target = fs.path.join('tests', 'e2e', 'test_patrol.dart');
