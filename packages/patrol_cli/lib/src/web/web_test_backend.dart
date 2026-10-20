@@ -63,6 +63,12 @@ class WebTestBackend {
   /// kills the session (flutter/flutter#182377).
   bool _hotRestartActive = false;
 
+  final _hotRestartReady = Completer<void>();
+
+  /// Completes once the session first accepts a hot restart: the app is
+  /// served, its debug service is live and the Playwright driver is up.
+  Future<void> get hotRestartReady => _hotRestartReady.future;
+
   /// An "r" pressed before the session was attached, replayed once it is.
   String? _pendingHotRestartTarget;
 
@@ -328,6 +334,9 @@ class WebTestBackend {
       return;
     }
     _hotRestartActive = true;
+    if (!_hotRestartReady.isCompleted) {
+      _hotRestartReady.complete();
+    }
     _logger.success('Hot Restart: attached to the app\n$_developKeyCommands');
 
     final pending = _pendingHotRestartTarget;

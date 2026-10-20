@@ -86,6 +86,49 @@ void main() {
   String text(CallToolResult result) =>
       (result.content.single as TextContent).text;
 
+  group('a web session', () {
+    const chrome = Device(
+      name: 'Chrome',
+      id: 'chrome',
+      targetPlatform: TargetPlatform.web,
+      real: false,
+    );
+
+    Future<McpTools> webTools() async {
+      final tools = toolsWith(
+        FakeDevelop(device: chrome, webDebuggerPort: '9222'),
+        listAttachedDevices: ({required flutterCommand}) async => const [
+          chrome,
+        ],
+      );
+      await tools.run({
+        'testFile': 'app_test.dart',
+        'device': 'chrome',
+        'timeoutMinutes': 0.001,
+      }, extra());
+      return tools;
+    }
+
+    test('native-tree refuses and points at screenshot', () async {
+      final result = await (await webTools()).nativeTree();
+
+      expect(result.isError, isTrue);
+      expect(text(result), contains('Use screenshot'));
+    });
+
+    test('devices lists the browser', () async {
+      when(
+        () => deviceFinder.getAttachedDevices(
+          flutterCommand: any(named: 'flutterCommand'),
+        ),
+      ).thenAnswer((_) async => const [device, chrome]);
+
+      final result = await toolsWith(FakeDevelop()).devices();
+
+      expect(text(result), allOf(contains('test-device'), contains('chrome')));
+    });
+  });
+
   test('devices answers on a server that has no project', () async {
     final result = await toolsWith(
       FakeDevelop(),
