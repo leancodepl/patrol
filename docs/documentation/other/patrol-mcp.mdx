@@ -15,10 +15,10 @@ install, and the agent's tools always match the CLI that runs the tests.
 An agent gets:
 
 - `run` — runs a test file and waits for it to finish, hot-restarting an already loaded one.
-- `devices` — lists attached Android and iOS devices to pass as `run`'s `device`.
+- `devices` — lists attached Android and iOS devices and browsers to pass as `run`'s `device`.
 - `status` — the session's state and its recent output.
 - `screenshot` — a screenshot from the session's device.
-- `native-tree` — the native UI tree from the session's device.
+- `native-tree` — the native UI tree from the session's Android or iOS device.
 - `quit` — stops the session.
 
 ## Setup
@@ -122,6 +122,13 @@ variables apply — `PATROL_FLUTTER_COMMAND` overrides which Flutter the develop
 
 Under FVM, the develop session uses the pinned Flutter automatically. The globally activated CLI runs
 under the Dart that activated it, which is independent of the project's pin.
+
+## Running in a browser
+
+`run` with `device: "chrome"` drives a web develop session, which needs Flutter 3.47 or newer. A
+browser is never picked automatically: with no `device`, `run` chooses an Android device, then an
+Android emulator, an iOS device and an iOS simulator. `screenshot` captures the page through Chrome's
+debugging port. `native-tree` is not available for a web session.
 
 ## Version compatibility
 

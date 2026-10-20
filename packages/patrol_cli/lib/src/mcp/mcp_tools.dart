@@ -140,6 +140,7 @@ class McpTools {
   Future<CallToolResult> screenshot() => withProject(
     () => ScreenshotService.handleScreenshotRequest(
       _session.device,
+      webDebuggerPort: _session.webDebuggerPort,
       processManager: _processManager,
     ),
     projectRequired: false,
@@ -147,6 +148,19 @@ class McpTools {
 
   Future<CallToolResult> nativeTree() =>
       withProject(projectRequired: false, () async {
+        if (_session.device?.targetPlatform == TargetPlatform.web) {
+          return const CallToolResult(
+            content: [
+              TextContent(
+                text:
+                    'native-tree is not available for a web session: the '
+                    "page's DOM is its view tree and nothing serves it here "
+                    'yet. Use screenshot to see the page.',
+              ),
+            ],
+            isError: true,
+          );
+        }
         try {
           await _session.ensureNativeAutomatorReachable();
         } catch (err) {
