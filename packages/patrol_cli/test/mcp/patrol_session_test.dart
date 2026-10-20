@@ -8,6 +8,7 @@ import 'package:patrol_cli/src/commands/develop_options.dart';
 import 'package:patrol_cli/src/commands/develop_service.dart';
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
 import 'package:patrol_cli/src/devices.dart';
+import 'package:patrol_cli/src/mcp/cli_origin.dart';
 import 'package:patrol_cli/src/mcp/patrol_session.dart';
 import 'package:patrol_log/patrol_log.dart';
 import 'package:platform/platform.dart';
@@ -43,7 +44,14 @@ void main() {
     ProcessManager? processManager,
     Platform? platform,
     Logger? logger,
+    Duration errorSettle = const Duration(milliseconds: 50),
+    CliOrigin cliOrigin = const CliOrigin(
+      version: '4.9.0',
+      source: CliSource.global,
+    ),
   }) => PatrolSession(
+    errorSettle: errorSettle,
+    cliOrigin: cliOrigin,
     now: now,
     showTerminal: showTerminal,
     processManager: processManager ?? const LocalProcessManager(),
@@ -557,6 +565,193 @@ packages:
         }
       },
     );
+  });
+
+  group('error', () {
+    Future<({PatrolStatus status, bool started})> runOnce(
+      PatrolSession session,
+    ) => session.startAndWait(
+      'app_test.dart',
+      device: 'test-device',
+      timeout: const Duration(seconds: 5),
+    );
+
+    test('carries the failing test and the lines that follow it', () async {
+      final fake = FakeDevelop();
+      final session = sessionWith(fake);
+      final run = runOnce(session);
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+
+      fake.reportTestFailed('logs in', error: 'Expected: true');
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+      fake
+        ..reportError('  Actual: <false>')
+        ..reportError('#0 main (login_test.dart:12)');
+
+      final result = await run;
+      expect(result.status.testState, TestState.finishedFailed);
+      expect(
+        result.status.error,
+        'Test "logs in" failed.\n'
+        'Expected: true\n'
+        '  Actual: <false>\n'
+        '#0 main (login_test.dart:12)',
+      );
+      expect(result.status.toMap()['error'], result.status.error);
+      await session.dispose();
+    });
+
+    test('is absent when the run passes', () async {
+      final fake = FakeDevelop();
+      final session = sessionWith(fake);
+      final run = runOnce(session);
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+
+      fake.reportTestsPassed();
+
+      final result = await run;
+      expect(result.status.error, isNull);
+      expect(result.status.toMap(), isNot(contains('error')));
+      await session.dispose();
+    });
+
+    test(
+      'a hot restart clears it, and its wait does not end the new run',
+      () async {
+        final fake = FakeDevelop(hotRestartReady: Future<void>.value());
+        final session = sessionWith(
+          fake,
+          errorSettle: const Duration(milliseconds: 100),
+        );
+        await startSession(session, 'app_test.dart');
+        fake.reportTestFailed('logs in', error: 'Expected: true');
+
+        final restarted = session.startAndWait(
+          'app_test.dart',
+          timeout: const Duration(seconds: 5),
+        );
+        var answered = false;
+        unawaited(restarted.then((_) => answered = true));
+        await Future<void>.delayed(const Duration(milliseconds: 250));
+        expect(
+          answered,
+          isFalse,
+          reason: 'the old failure answered the restart',
+        );
+        expect(session.getStatus().error, isNull);
+
+        fake.reportTestsPassed();
+        final result = await restarted;
+        expect(result.status.testState, TestState.finishedPassed);
+        expect(result.status.error, isNull);
+        await session.dispose();
+      },
+    );
+  });
+
+  group('the serving patrol_cli', () {
+    void pinCli(String version) =>
+        File('${projectRoot.path}/pubspec.lock').writeAsStringSync('''
+packages:
+  patrol_cli:
+    dependency: "direct dev"
+    source: hosted
+    version: "$version"
+''');
+
+    test('every status names it', () async {
+      final session = sessionWith(FakeDevelop());
+      await session.ensureProjectResolved();
+
+      expect(session.getStatus().toMap()['cli'], {
+        'version': '4.9.0',
+        'source': 'global',
+      });
+    });
+
+    test(
+      'a project pinning another version gets a warning with the fix',
+      () async {
+        pinCli('4.8.0');
+        final session = sessionWith(FakeDevelop());
+        await session.ensureProjectResolved();
+
+        final warning = session.getStatus().cliPinWarning;
+        expect(
+          warning,
+          allOf(
+            contains('pins patrol_cli 4.8.0'),
+            contains('global patrol_cli 4.9.0'),
+            contains('"args": ["run", "patrol_cli:main", "mcp"]'),
+          ),
+        );
+      },
+    );
+
+    test('a project pinning the same version gets none', () async {
+      pinCli('4.9.0');
+      final session = sessionWith(FakeDevelop());
+      await session.ensureProjectResolved();
+
+      expect(session.getStatus().cliPinWarning, isNull);
+    });
+
+    test('its own project gets none', () async {
+      pinCli('4.8.0');
+      final session = sessionWith(
+        FakeDevelop(),
+        cliOrigin: CliOrigin(
+          version: '4.9.0',
+          source: CliSource.project,
+          projectRoot: projectRoot.path,
+        ),
+      );
+      await session.ensureProjectResolved();
+
+      expect(session.getStatus().cliPinWarning, isNull);
+    });
+
+    test("a dev dependency refuses another project's run", () async {
+      final fake = FakeDevelop();
+      final session = sessionWith(
+        fake,
+        cliOrigin: const CliOrigin(
+          version: '4.9.0',
+          source: CliSource.project,
+          projectRoot: '/elsewhere/app',
+        ),
+      );
+
+      final result = await session.startAndWait(
+        'app_test.dart',
+        device: 'test-device',
+        projectRoot: projectRoot.path,
+      );
+
+      expect(result.started, isFalse);
+      expect(
+        result.status.warning,
+        allOf(
+          contains('dev dependencies of /elsewhere/app'),
+          contains(projectRoot.path),
+        ),
+      );
+      expect(fake.events, isEmpty);
+    });
+
+    test('a dev dependency runs a project below its own root', () async {
+      final session = sessionWith(
+        FakeDevelop(),
+        cliOrigin: CliOrigin(
+          version: '4.9.0',
+          source: CliSource.project,
+          projectRoot: projectRoot.parent.path,
+        ),
+      );
+
+      await startSession(session, 'app_test.dart');
+      await session.dispose();
+    });
   });
 
   test('quit with nothing running answers instead of throwing', () async {

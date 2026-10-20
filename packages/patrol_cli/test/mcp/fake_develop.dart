@@ -111,6 +111,15 @@ class FakeDevelop {
     return service;
   }
 
+  /// What `patrol` reports when a test fails: the failure, then one error
+  /// entry per line of its details.
+  void reportTestFailed(String name, {String? error}) => onLogEntry?.call(
+    TestEntry(name: name, status: TestEntryStatus.failure, error: error),
+  );
+
+  void reportError(String message) =>
+      onLogEntry?.call(ErrorEntry(message: message));
+
   /// What `patrol` reports when every test in develop mode has run.
   void reportTestsPassed() => onLogEntry?.call(
     ConfigEntry(config: {ConfigEntry.developCompletedKey: true}),

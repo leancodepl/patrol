@@ -57,6 +57,11 @@ One server serves every project you open, and no repository needs a change.
 }
 ```
 
+A server launched this way runs the project's pinned CLI, so it runs tests only in that project and
+the projects below it. Every `run` and `status` result names the CLI serving it in `cli`. A
+globally activated server serving a project that pins another `patrol_cli` adds `cliPinWarning`,
+which carries this block for the project's own config.
+
 Editors differ only in where that block goes:
 
 | Editor | Config file | Notes |
@@ -144,6 +149,11 @@ To migrate, drop `patrol_mcp` from your `pubspec.yaml` and point your editor's M
 Patrol also ships [agent skills](/documentation/other/agent-skills) that complement this server: the
 MCP gives the agent the tools, while a skill teaches it how to use them to write tests well.
 
+## When a test fails
+
+A failed `run` carries `error`: the failing test's name, its error and the error lines patrol
+reported after the failure. `output` holds the session's recent log for everything else.
+
 ## A run that goes quiet
 
 Every `run` and `status` result carries `quietForSeconds` -- how long the session has heard nothing
@@ -159,3 +169,6 @@ quiet lasted. `quit` stops such a run; the next `run` starts a fresh session.
 - Confirm the MCP server is enabled in your editor's settings.
 - The chosen Flutter command, and everything else the session logs, goes to the server's stderr —
   your editor's MCP log.
+- After a Dart or Flutter upgrade, run `patrol --version` once. The first start of a globally
+  activated CLI on a new SDK prints pub's resolution output to stdout, which some editors refuse in
+  place of the server's first message.

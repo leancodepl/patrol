@@ -59,6 +59,26 @@ const sessionStatusSchema = JsonObject(
           'Present when --show-terminal could not open a Terminal window for '
           'the session log, with the reason.',
     ),
+    'error': JsonString(
+      description:
+          'Why the failing test failed: its name, its error and the error '
+          'lines patrol reported after it. Absent unless a test failed.',
+    ),
+    'cli': JsonObject(
+      description:
+          'The patrol_cli serving this server, and where it comes from.',
+      properties: {
+        'version': JsonString(),
+        'source': JsonString(enumValues: ['global', 'project', 'path']),
+        'projectRoot': JsonString(),
+      },
+    ),
+    'cliPinWarning': JsonString(
+      description:
+          'Present when the project pins a patrol_cli other than the one '
+          'serving it; runs use the serving one. Report it when results '
+          'differ from what the project sees elsewhere.',
+    ),
     'output': JsonString(),
     'summary': JsonString(),
   },
