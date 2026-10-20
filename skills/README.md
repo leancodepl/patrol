@@ -30,8 +30,9 @@ dart run skills@ get --agent generic -p patrol -s patrol-setup -s patrol-write-t
 If your Patrol tests follow LeanCode's modular architecture (Modules, System, ApiClients), or you
 want to introduce it, add `-s patrol-test-architecture` — it builds on `patrol-write-test`. To
 migrate a Maestro suite, add `-s patrol-migrate-from-maestro`. To install every skill, pass
-`--all` instead of the `-s` options. With neither, the CLI opens an interactive picker — in a terminal only; without one, it just lists the available skills. Without
-`-p patrol`, `--all` and the picker also cover skills from your other dependencies.
+`--all` instead of the `-s` options. With neither, the CLI opens an interactive picker — in a
+terminal only; without one, it just lists the available skills. Without `-p patrol`, `--all` and
+the picker also cover skills from your other dependencies.
 
 The installed skills match the `patrol` version you depend on — rerun the same command after
 upgrading `patrol` to update them, and `dart run skills@ prune` removes them once `patrol` is gone.

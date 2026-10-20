@@ -11,7 +11,7 @@ in the project before using it — the API changes between major versions.
 |---|---|
 | `appId:` | `patrol:` block in `pubspec.yaml` (`android.package_name`, `ios.bundle_id`) |
 | `name:` | the `patrolTest` description |
-| `tags:` | the platforms the test runs on — register the test only for them with `if (patrolTargetPlatform == PatrolTargetPlatform.android)` in `main()` (not `Platform`, which describes the host during build-time test discovery), or `patrolTest(tags: [...])` with `patrol test --tags` when CI selects flows by tag for other reasons |
+| `tags:` | the platforms the test runs on — register the test only for them with `if (patrolTargetPlatform == PatrolTargetPlatform.android)` in `main()`, or `patrolTest(tags: [...])` with `patrol test --tags` when CI selects flows by tag for other reasons |
 | `env:` / `-e KEY=value` / `${KEY}` | a line in `.patrol.env`, read with `const String.fromEnvironment('KEY')` |
 | `onFlowStart:` | setup at the start of the test body, before the app starts |
 | `onFlowComplete:` | `patrolTearDown(() async { ... })` registered in `main()` — under `patrol test` it runs even when the test fails |
@@ -41,10 +41,10 @@ Every in-app selector becomes a widget key.
 | `tapOn: { id: "x" }` | the widget that has `x` as `Semantics(identifier:)` or key — key it and use `$(keys.feature.widget)` |
 | `tapOn: { text: "x", index: n }` | key the n-th widget, or use a parameterized key when it comes from a list |
 | `tapOn: { rightOf / leftOf / above / below: ... }` | key the target widget |
-| `tapOn: { childOf: ... }` / list item containing text | `$(ListTile).containing('item').$(keys.feature.menuButton).tap()`, or a parameterized key built from the item's model |
+| `tapOn: { childOf: ... }` / list item containing text | a parameterized key built from the item's model: `$(keys.feature.menuButton(item.id)).tap()` |
 | `tapOn: { point: "x%, y%" }` on in-app UI | key the widget at that point |
 | `tapOn: { point: "x%, y%" }` on native UI | the matching native call (notification, dialog); last resort `$.platform.mobile.tapAt(Offset(x, y))` with 0–1 coordinates |
-| `tapOn` + `optional: true` | on a permission dialog: `if (await $.platform.mobile.isPermissionDialogVisible()) { ... }`; otherwise decide whether the element appears in the test environment — mandatory if it does |
+| `tapOn` + `optional: true` | on a permission dialog: `if (await $.platform.mobile.isPermissionDialogVisible(timeout: ...)) { ... }` (default timeout one second); otherwise mandatory if the element appears in the test environment, dropped and reported if it never does |
 | `longPressOn:` | `$(key).longPress()` |
 | `doubleTapOn:` | `$.tester.tap(...)` twice, or `$.platform.mobile.doubleTap(selector)` for native UI |
 | `tapOn:` with `repeat:` | a Dart `for` loop |
@@ -53,11 +53,11 @@ Every in-app selector becomes a widget key.
 
 | Maestro | Patrol |
 |---|---|
-| `tapOn: <field>` then `inputText: "x"` | on an empty field: `$(keys.feature.field).enterText('x')` — one call. `enterText` replaces the whole value, while `inputText` types into the existing one; on a prefilled field enter the combined value: `enterText('${$(key).text ?? ''}x')` |
+| `tapOn: <field>` then `inputText: "x"` | on an empty field: `$(keys.feature.field).enterText('x')` — one call. `enterText` replaces the whole value, while `inputText` types into the existing one; on a prefilled field enter the whole resulting value (the prefilled text plus `x`). `$(key).text` reads only `Text` and `RichText`, so it cannot read a field's value |
 | `eraseText` | followed by `inputText` into the same field: nothing — `enterText` replaces the value. Clearing a field and leaving it empty: `enterText('')`. `eraseText: n` that keeps the rest: enter the shortened value |
 | `inputRandomText` / `inputRandomEmail` / `inputRandomNumber` | generate the value in Dart |
 | `copyTextFrom:` + `pasteText` | `final value = $(key).text;` then `enterText(value!)` |
-| `hideKeyboard` | nothing after `enterText`. When the keyboard covers the next widget, tap a non-interactive area. Not `sendKeyboardEnter()`: it sends the field's Enter action, which can submit a form |
+| `hideKeyboard` | nothing after `enterText`. When the keyboard covers the next widget, tap a non-interactive area. `sendKeyboardEnter()` runs the field's Enter action and can submit a form — use it only for `pressKey: Enter` |
 | `pressKey: Enter` | `$.platform.mobile.sendKeyboardEnter()` |
 
 ## Scrolling and gestures
@@ -66,22 +66,22 @@ Every in-app selector becomes a widget key.
 |---|---|
 | `scrollUntilVisible: { element: ... }` | `$(key).scrollTo()` (chains: `$(key).scrollTo().tap()`) |
 | `scroll` | `$(key).scrollTo()` on the element the flow wanted to reach |
-| `swipe:` on in-app UI | `$.tester.drag($(key), const Offset(dx, dy))` and `await $.pumpAndSettle()` |
-| `swipe:` on native UI | `$.platform.mobile.swipe(from: Offset(...), to: Offset(...))` |
+| `swipe:` on in-app UI | `$.tester.drag($(key), Offset(dx, dy))` (pixels) and `await $.pumpAndSettle()` |
+| `swipe:` on native UI | `$.platform.mobile.swipe(from: Offset(x, y), to: Offset(x, y))` with 0–1 fractions of the screen |
 | pull to refresh | `$.platform.mobile.pullToRefresh()` |
 
 ## Assertions and waits
 
 | Maestro | Patrol |
 |---|---|
-| `assertVisible: "Text"` | `await $('Text').waitUntilVisible()` for content the test checks; `$(keys.x.y).waitUntilVisible()` for UI elements |
+| `assertVisible: "Text"` | keep the text check: `await $(keys.x.y).$('Text').waitUntilVisible()` scoped to the keyed widget, or `await $('Text').waitUntilVisible()` for content anywhere on screen |
 | `assertVisible: ".*part.*"` (regex) | `$(RegExp('part')).waitUntilVisible()`, or scope it: `$(ListTile).$(RegExp('part'))` |
-| `assertNotVisible:` | `await $.pumpAndSettle();` then `expect($(key), findsNothing);` — import `expect` and `findsNothing` from `package:flutter_test/flutter_test.dart` |
+| `assertNotVisible:` | wait for what replaces the element (`waitUntilVisible` on it), then `expect($(key).visible, isFalse);` — the check runs once, it does not retry. Import `expect` and `isFalse` from `package:flutter_test` |
 | `assertTrue:` | `expect(...)` on the value |
 | `extendedWaitUntil: { visible: ..., timeout: n }` | `$(key).waitUntilVisible(timeout: Duration(milliseconds: n))`; when the next step taps that element, `$(key).tap(visibleTimeout: Duration(milliseconds: n))` |
 | `waitForAnimationToEnd` | nothing — Patrol settles after every action |
 | `assertWithAI` / `assertNoDefectsWithAI` | a concrete assertion on the widget the prompt describes; ask the user what it should check |
-| `takeScreenshot: name` | `await $.takeNativeScreenshot('name')` on Android; no iOS equivalent — report it. Screenshots on failure are opt-in: `screenshot_on_failure: true` in the pubspec `patrol:` block |
+| `takeScreenshot: name` | `await $.takeNativeScreenshot('name')` on Android (patrol 4.10 with patrol_cli 4.8 or newer); no iOS equivalent — report it. Screenshots on failure are opt-in: `screenshot_on_failure: true` in the pubspec `patrol:` block |
 
 ## Device and native UI
 
@@ -97,13 +97,14 @@ Every in-app selector becomes a widget key.
 | `setAirplaneMode: enabled / disabled` | `$.platform.mobile.enableAirplaneMode()` / `disableAirplaneMode()`, or `disableWifi()` + `disableCellular()`; restore in `patrolTearDown` |
 | `toggleAirplaneMode` | the explicit enable / disable call |
 | `setLocation: { latitude, longitude }` | `$.platform.mobile.setMockLocation(lat, lon)` |
-| `travel: { points: [...], speed: }` | `setMockLocation` for each point, with a `Future.delayed` between them long enough for the app to react (seconds, not milliseconds); `$.platform.mobile.stopMockLocation()` in `patrolTearDown` |
+| `travel: { points: [...], speed: }` | `setMockLocation` for each point, with a `Future.delayed` between them of several seconds, so the app can react; `$.platform.mobile.stopMockLocation()` in `patrolTearDown` |
 | `setOrientation` | no `$.platform` call — check the Patrol docs for the current version |
-| `addMedia` + picking from gallery | `$.platform.mobile.pickImageFromGallery(...)` |
+| `addMedia` | no equivalent: the gallery has to be seeded outside the test. `TODO(maestro: addMedia)` and report it |
+| picking from the gallery | `$.platform.mobile.pickImageFromGallery(...)` |
 | taking a photo | `$.platform.mobile.takeCameraPhoto(...)` |
 | WebView content (`tapOn: "Text"` inside a WebView) | `$.platform.mobile.tap(MobileSelector(android: AndroidSelector(text: 'Text'), ios: IOSSelector(label: 'Text')))` |
 | `assertVisible` inside a WebView or another app | `$.platform.mobile.waitUntilVisible(MobileSelector(...))`; for another app on iOS add `appId: '<its bundle id>'` |
-| other apps (Google sign-in, browser, share sheet) | `$.platform.android.tap(AndroidSelector(...))` / `$.platform.ios.tap(IOSSelector(...), appId: '<its bundle id>')`, selectors from the Patrol MCP `native-tree` tool. On iOS, queries without `appId` search the app under test |
+| other apps | `$.platform.android.tap(AndroidSelector(...))` / `$.platform.ios.tap(IOSSelector(...), appId: '<its bundle id>')`, selectors from the Patrol MCP `native-tree` tool. On iOS, queries without `appId` search the app under test |
 
 ## Control flow and scripts
 
