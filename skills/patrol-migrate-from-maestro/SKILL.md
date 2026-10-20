@@ -8,8 +8,8 @@ description: Migrate a Flutter app's Maestro UI flows (`.yaml`) to Patrol end-to
 A migration is done when every Maestro flow has a Patrol test that **proves the same
 behavior** and **passes on a device**. A line-by-line translation of the YAML is not
 the goal: Maestro drives an installed app from outside, through the accessibility
-tree; Patrol runs inside the app and finds Flutter widgets. Selectors, waits and
-platform workarounds written for Maestro mostly disappear.
+tree; Patrol runs inside the app and finds Flutter widgets. Selectors, animation waits
+and platform workarounds written for Maestro mostly disappear.
 
 Companion skills — load them if installed, they own their topics:
 
@@ -139,9 +139,13 @@ void testApp(
 }
 ```
 
-State does not carry over between tests: on Android, `clearPackageData` wipes app data
-before every test. Each test sets up its own state, so a flow that relied on state
-left by an earlier flow needs that state created in its own setup.
+Each test sets up its own state, so a flow that relied on state left by an earlier
+flow needs that state created in its own setup. Clean state between tests differs by
+platform: on Android, `clearPackageData` wipes app data before every test; on iOS a
+plain `patrol test` keeps app data, and only `--full-isolation` (Simulator,
+experimental) reinstalls the app between tests. For each flow that needs a clean start
+on iOS, pick a reset — `--full-isolation`, or resetting the state in setup — and name
+it in the report.
 
 ## 4. Migrate one flow
 
@@ -152,16 +156,21 @@ left by an earlier flow needs that state created in its own setup.
    with state ("Login" / "Logout") gets one key per state, chosen by the same
    condition.
 2. Translate the commands with [references/command-mapping.md](references/command-mapping.md).
-   `tapOn` a field followed by `inputText` is one `enterText`.
-3. A flow that runs on one platform only gets a guard in `main()`:
-   `if (Platform.isAndroid) { testApp(...); }`.
-4. Move `onFlowStart` / `runScript` setup into the test body, before the app starts,
-   and `onFlowComplete` into a `patrolTearDown` registered in `main()`. Write the
-   JS HTTP calls in Dart, reusing the app's own repositories or API clients when
-   they already do the call. Cleanup must succeed when there is nothing to delete,
-   and must wait for data the app wrote through its own SDK: the test can see it in
-   the app before the backend has it. `patrolTearDown` has no `$`: for native calls
-   there, use `PlatformAutomator(config: PlatformAutomatorConfig.defaultConfig())` —
+   `tapOn` an empty field followed by `inputText` is one `enterText`.
+3. A flow that runs on one platform only is registered for that platform only:
+   `if (patrolTargetPlatform == PatrolTargetPlatform.android) { testApp(...); }`.
+   With build-time test discovery `main()` also runs on the host, where `Platform`
+   describes the computer and would drop the test from the manifest. Inside a test
+   body `Platform` is fine.
+4. Move `onFlowStart` setup into the test body, before the app starts, and
+   `onFlowComplete` into a `patrolTearDown` registered in `main()`. A `runScript` in
+   the middle of a flow stays at its position, as a Dart call; values it passes on
+   (`output.x`) become local variables. Write the JS HTTP calls in Dart, reusing the
+   app's own repositories or API clients when they already do the call. Cleanup must
+   succeed when there is nothing to delete, and must wait for data the app wrote
+   through its own SDK: the test can see it in the app before the backend has it.
+   `patrolTearDown` has no `$`: for native calls there, use
+   `PlatformAutomator(config: PlatformAutomatorConfig.defaultConfig())` —
    `PlatformAutomator()` without a config throws `UnimplementedError` on every call.
 5. Put assertions where the flow has them; the final `assertVisible` becomes a
    `waitUntilVisible()` at the end.
@@ -174,9 +183,11 @@ left by an earlier flow needs that state created in its own setup.
   blocks with different selectors for Android and iOS (an `index:` on one platform,
   `rightOf:` on the other) collapse into one key. Keep a `Platform.isIOS` branch only
   for behavior that really differs.
-- **Waits.** `waitForAnimationToEnd`, `extendedWaitUntil` before a tap, and
-  `hideKeyboard` before a tap are not needed: Patrol waits for the widget before
-  acting.
+- **Waits.** `waitForAnimationToEnd` and `hideKeyboard` before a tap are not needed:
+  Patrol waits for the widget before acting. An `extendedWaitUntil` keeps its
+  condition and timeout: when the next step taps the element it waits for, pass the
+  timeout as `tap(visibleTimeout: ...)`; otherwise it becomes
+  `waitUntilVisible(timeout: ...)`. Patrol's default wait is 10 seconds.
 - **`optional: true`.** Decide whether the element appears in the test environment.
   An optional permission dialog becomes
   `if (await $.platform.mobile.isPermissionDialogVisible()) { ... }`. Any other
@@ -195,6 +206,8 @@ Patrol MCP `native-tree` tool to read the native UI and pick selectors:
 - Notifications, quick settings, Wi-Fi / cellular / airplane mode, mock location.
 - WebView content and other apps (Google sign-in, browser, share sheet) —
   `$.platform.mobile.tap(MobileSelector(...))`, `$.platform.mobile.waitUntilVisible(...)`.
+  On iOS, native queries search the app under test unless given another app's bundle
+  id: `$.platform.tap(selector, appId: 'com.apple.mobilesafari')`.
 
 A tap that opens a native dialog, a WebView, a map, a camera preview or anything that
 keeps animating needs `tap(settlePolicy: SettlePolicy.noSettle)`, otherwise the tap
@@ -209,10 +222,10 @@ waits for a frame that never settles.
   granted permissions stay from the previous run, and `patrolTearDown` may not run.
   `quit` before running a different file — `run` with a new file can rerun the old
   one and report success. Before rerunning a test that needs a fresh install state
-  (a permission dialog, a first-launch screen), `quit` and
+  (a permission dialog, a first-launch screen), `quit` and, on Android,
   `adb shell pm clear <package>`.
-- **Proof of a green test is a `patrol test` run**, which installs fresh and clears
-  data before every test. Finish with the full suite, twice.
+- **Proof of a green test is a `patrol test` run**, which installs the app fresh (and
+  on Android clears data before every test). Finish with the full suite, twice.
 - **On a shared machine**, check that no other test run is using the device before a
   suite run. Another app's instrumentation on the same device kills yours midway and
   the summary silently lists fewer tests.
