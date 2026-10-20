@@ -4,6 +4,7 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
+      - '.github/workflows/test-web.yaml'
       - 'packages/patrol/**'
       - 'packages/patrol_finders/**'
       - 'packages/patrol_log/**'
@@ -21,6 +22,35 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  web_runner:
+    name: Web runner on Node ${{ matrix.node-version }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ['20', '22', '24', '26']
+    defaults:
+      run:
+        working-directory: packages/patrol/web_runner
+    env:
+      PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/.patrol-browsers
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+          cache-dependency-path: packages/patrol/web_runner/package-lock.json
+      - run: npm ci
+      - name: Install Chromium into a fresh browser cache
+        timeout-minutes: 5
+        run: npx playwright install --with-deps chromium
+      - name: Run web runner unit tests
+        run: npx playwright test --config=playwright.unit.config.ts
+      - name: Run web runner browser integration tests
+        run: npx playwright test --config=playwright.integration.config.ts
+
   run_tests:
     name: Flutter ${{ matrix.flutter-version }} on Web
     runs-on: ubuntu-latest
@@ -39,6 +69,11 @@ jobs:
     steps:
       - name: Clone repository
         uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '26'
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
