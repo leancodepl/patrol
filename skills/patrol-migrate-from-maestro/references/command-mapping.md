@@ -26,7 +26,7 @@ in the project before using it — the API changes between major versions.
 | `launchApp: permissions: { all: allow }` (the Maestro default) | grant each dialog when it appears: `$.platform.mobile.grantPermissionWhenInUse()` |
 | `launchApp: permissions: { all: deny / unset }` | default — dialogs appear on first request |
 | `launchApp: arguments:` | dart-defines in `.patrol.env`, or the value passed to the app widget in the start helper |
-| `stopApp` / `killApp` / relaunch mid-flow | no equivalent inside one test — split the flow into two tests, or set the state through the backend |
+| `stopApp` / `killApp` / relaunch mid-flow | Patrol cannot restart the app inside a test. When the relaunch only resets state, set that state up in the test. When the flow checks what survives a restart, it cannot be migrated: `TODO(maestro: restart)` and report it |
 | `clearKeychain` | no `$.platform` call — ask the user how the iOS keychain state should be reset |
 | `openLink: <url>` | `$.platform.mobile.openUrl('<url>')` |
 
