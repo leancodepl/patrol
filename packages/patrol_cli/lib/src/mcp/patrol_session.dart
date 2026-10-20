@@ -7,6 +7,7 @@ import 'package:args/args.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/local.dart';
 import 'package:path/path.dart' as p;
+import 'package:patrol_cli/src/base/constants.dart' as constants;
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/commands/develop_options.dart';
@@ -14,6 +15,7 @@ import 'package:patrol_cli/src/commands/develop_service.dart';
 import 'package:patrol_cli/src/commands/develop_session_factory.dart';
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
 import 'package:patrol_cli/src/devices.dart';
+import 'package:patrol_cli/src/mcp/cli_origin.dart';
 import 'package:patrol_cli/src/mcp/project_resolver.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
@@ -172,13 +174,15 @@ class PatrolStatus {
     this.currentTestFile,
     this.warning,
     this.deviceSelectionNote,
-    this.error,
     this.deviceName,
     this.deviceId,
     this.devicePlatform,
     this.quietFor,
     this.lastTestEntry,
     this.stallNote,
+    this.error,
+    this.cli,
+    this.cliPinWarning,
     this.terminalWarning,
   });
 
@@ -197,8 +201,6 @@ class PatrolStatus {
   final String? warning;
   final String? deviceSelectionNote;
 
-  /// The failure details the test reported, when it failed.
-  final String? error;
   final String? deviceName;
   final String? deviceId;
   final String? devicePlatform;
@@ -211,6 +213,16 @@ class PatrolStatus {
 
   /// Set when the quiet has lasted long enough to be worth reporting.
   final String? stallNote;
+
+  /// Why the failing test failed: its name, its error and the error lines
+  /// patrol reported after it.
+  final String? error;
+
+  /// The `patrol_cli` serving this server.
+  final CliOrigin? cli;
+
+  /// Set when the project pins a `patrol_cli` other than the one serving it.
+  final String? cliPinWarning;
 
   /// Why the Terminal window following the session log did not open.
   final String? terminalWarning;
@@ -225,13 +237,15 @@ class PatrolStatus {
     'currentTestFile': ?currentTestFile,
     'warning': ?warning,
     'deviceSelectionNote': ?deviceSelectionNote,
-    'error': ?error,
     'deviceName': ?deviceName,
     'deviceId': ?deviceId,
     'devicePlatform': ?devicePlatform,
     'quietForSeconds': ?quietFor?.inSeconds,
     'lastTestEntry': ?lastTestEntry,
     'stallNote': ?stallNote,
+    'error': ?error,
+    'cli': ?cli?.toMap(),
+    'cliPinWarning': ?cliPinWarning,
     'terminalWarning': ?terminalWarning,
     'output': output,
     'summary': summary,
@@ -282,9 +296,14 @@ final class PatrolSession {
     // Above the develop service's 30 s bound on the uninstall, so a slow but
     // healthy uninstall finishes inside it.
     this._teardownTimeout = const Duration(seconds: 45),
+    this._errorSettle = const Duration(milliseconds: 1500),
+    CliOrigin? cliOrigin,
     DateTime Function()? now,
   }) : _platform = platform ?? NativePlatform.current!,
        _now = now ?? DateTime.now,
+       cliOrigin =
+           cliOrigin ??
+           CliOrigin.fromScript(io.Platform.script, version: constants.version),
        _enterProjectDirectory =
            enterProjectDirectory ?? ((root) => io.Directory.current = root),
        _diagnosticSink = diagnosticSink ?? io.stderr,
@@ -371,6 +390,16 @@ final class PatrolSession {
     required String? requestedRoot,
   }) async {
     if (!_isRunning) {
+      if (cliOrigin.source == CliSource.project) {
+        final requested = await _resolveProjectRoot(
+          testFile: testFile,
+          requestedRoot: requestedRoot,
+          remember: false,
+        );
+        if (!_servesFromProject(requested.root)) {
+          return _foreignProjectRefusal(requested.root);
+        }
+      }
       await _resolveAndEnter(testFile: testFile, requestedRoot: requestedRoot);
       return null;
     }
@@ -461,7 +490,6 @@ final class PatrolSession {
   static const _cancelled = 'The run was cancelled before it started.';
   String? _currentTestFile;
   final _outputs = <String>[];
-  final _errorDetails = <String>[];
 
   static const _notUpYet =
       'The app has not come up yet (it may still be building, installing or '
@@ -544,6 +572,63 @@ final class PatrolSession {
       ).getPatrolVersion(),
     );
   }
+
+  /// The `patrol_cli` serving this server.
+  final CliOrigin cliOrigin;
+
+  /// Set when the resolved project's lockfile pins a `patrol_cli` other than
+  /// the one serving it. Runs use the serving one.
+  String? get _cliPinWarning {
+    final root = _projectRoot;
+    if (root == null || _servesFromProject(root)) {
+      return null;
+    }
+    if (_cliPinWarningFor?.$1 == root) {
+      return _cliPinWarningFor!.$2;
+    }
+    final pinned = PubspecReader(
+      projectRoot: const LocalFileSystem().directory(root),
+    ).getLockedVersion('patrol_cli');
+    final warning = pinned == null || pinned == cliOrigin.version
+        ? null
+        : 'This project pins patrol_cli $pinned, but this server is '
+              '${cliOrigin.source.name} patrol_cli ${cliOrigin.version}, so '
+              'runs use ${cliOrigin.version}. To run the pinned one, give the '
+              "project's .mcp.json "
+              '{"mcpServers": {"patrol": {"command": "dart", '
+              '"args": ["run", "patrol_cli:main", "mcp"]}}}.';
+    _cliPinWarningFor = (root, warning);
+    return warning;
+  }
+
+  (String, String?)? _cliPinWarningFor;
+
+  /// Whether [root] is the project whose dev dependency serves this server, or
+  /// lies below it in the same workspace.
+  bool _servesFromProject(String root) {
+    final own = cliOrigin.projectRoot;
+    if (cliOrigin.source != CliSource.project || own == null) {
+      return false;
+    }
+    return _sameDirectory(root, own) ||
+        p.isWithin(_canonical(own), _canonical(root));
+  }
+
+  String _canonical(String path) {
+    try {
+      return io.Directory(path).resolveSymbolicLinksSync();
+    } on io.FileSystemException {
+      return p.canonicalize(path);
+    }
+  }
+
+  /// A server launched from one project's dev dependency runs that project's
+  /// pinned CLI, so it refuses another project.
+  String _foreignProjectRefusal(String root) =>
+      'This server is patrol_cli ${cliOrigin.version} from the dev '
+      'dependencies of ${cliOrigin.projectRoot}, so it runs tests only there. '
+      'For $root, use a globally activated server (`patrol mcp`), or give that '
+      "project's .mcp.json its own `dart run patrol_cli:main mcp`.";
 
   /// Makes the native automator reachable on `localhost:[testServerPort]`.
   ///
@@ -841,7 +926,7 @@ final class PatrolSession {
     _quitRequested = false;
     _finishWarning = null;
     _outputs.clear();
-    _errorDetails.clear();
+    _clearFailure();
     _lastHeardAt = _now();
     _appUp = false;
     _lastTestEntryAt = null;
@@ -924,6 +1009,59 @@ final class PatrolSession {
 
   /// How long a caller waits for a session to finish tearing down.
   final Duration _teardownTimeout;
+
+  /// How long a failed run waits for the error lines patrol reports after the
+  /// failure, counted from the last one. They arrive after the failing test's
+  /// entry.
+  final Duration _errorSettle;
+
+  static const _errorSettleCap = Duration(seconds: 5);
+  static const _maxErrorLines = 60;
+
+  final _errorLines = <String>[];
+  String? _failedTest;
+  Timer? _failureSettle;
+  DateTime? _failedAt;
+
+  void _clearFailure() {
+    _failureSettle?.cancel();
+    _failureSettle = null;
+    _failedAt = null;
+    _failedTest = null;
+    _errorLines.clear();
+  }
+
+  void _addErrorLine(String line) {
+    if (_errorLines.length < _maxErrorLines) {
+      _errorLines.add(line);
+    }
+  }
+
+  /// Answers the failed run once its error lines have stopped arriving.
+  void _settleFailure() {
+    _failureSettle?.cancel();
+    final failedAt = _failedAt ??= _now();
+    final left = _errorSettleCap - _now().difference(failedAt);
+    if (left <= Duration.zero) {
+      _failureSettle = null;
+      _completeFinish();
+      return;
+    }
+    _failureSettle = Timer(
+      left < _errorSettle ? left : _errorSettle,
+      _completeFinish,
+    );
+  }
+
+  String? get _error {
+    if (_failedTest == null && _errorLines.isEmpty) {
+      return null;
+    }
+    return [
+      if (_failedTest case final test?) 'Test "$test" failed.',
+      ..._errorLines,
+    ].join('\n');
+  }
 
   /// Stops an active develop session and waits for its child processes to be
   /// torn down. Safe to call when idle or repeatedly.
@@ -1042,20 +1180,22 @@ final class PatrolSession {
       _lastTestEntry = entry.name;
       _lastTestEntryAt = _lastHeardAt;
     }
-
     if (entry is ErrorEntry) {
-      _errorDetails.add(entry.message);
+      _addErrorLine(entry.message);
+      if (_failureSettle?.isActive ?? false) {
+        _settleFailure();
+      }
       return;
     }
-
     if (entry is TestEntry &&
         entry.status == TestEntryStatus.failure &&
         _testState == TestState.running) {
+      _failedTest = entry.name;
       if (entry.error case final error?) {
-        _errorDetails.add(error);
+        _addErrorLine(error);
       }
       _testState = TestState.finishedFailed;
-      _completeFinish();
+      _settleFailure();
       return;
     }
 
@@ -1145,6 +1285,7 @@ final class PatrolSession {
     switch (command) {
       case SessionCommand.quit:
         _quitRequested = true;
+        _failureSettle?.cancel();
         _testState = TestState.idle;
         _completeFinish();
         if (_liveSession case final live?) {
@@ -1153,7 +1294,7 @@ final class PatrolSession {
         return 'Quit command sent to patrol session';
       case SessionCommand.hotRestart:
         _outputs.clear();
-        _errorDetails.clear();
+        _clearFailure();
         _lastHeardAt = _now();
         _lastTestEntry = null;
         _lastTestEntryAt = null;
@@ -1218,21 +1359,24 @@ final class PatrolSession {
       currentTestFile: _currentTestFile,
       warning: overrideWarning ?? _finishWarning ?? _projectProblem,
       deviceSelectionNote: _deviceSelectionNote,
-      error: _errorDetails.isNotEmpty ? _errorDetails.join('\n') : null,
       deviceName: dev?.name,
       deviceId: dev?.id,
       devicePlatform: dev?.targetPlatform.name,
       quietFor: quiet,
       lastTestEntry: _lastTestEntry,
       stallNote: _stallNote(quiet),
+      error: _error,
+      cli: cliOrigin,
+      cliPinWarning: _cliPinWarning,
       terminalWarning: _terminalWarning,
     );
   }
 
   Future<PatrolStatus> _waitForFinish({Duration? timeout}) async {
+    final settlingFailure = _failureSettle?.isActive ?? false;
     if (!_isRunning ||
         _testState == TestState.finishedPassed ||
-        _testState == TestState.finishedFailed) {
+        (_testState == TestState.finishedFailed && !settlingFailure)) {
       return getStatus();
     }
 
