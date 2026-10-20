@@ -1,8 +1,8 @@
 /// Public API for driving a patrol develop session programmatically.
 ///
-/// This barrel file re-exports the types needed by consumers such as the
-/// patrol_mcp server, so they don't have to import implementation files
-/// from `lib/src/`.
+/// The published `patrol_mcp` 0.2.x allows any `patrol_cli ^4.3.0`, so it
+/// resolves against new releases and imports this barrel whole. Symbols may be
+/// added here, never removed or moved, until that package is retired.
 library;
 
 export 'package:patrol_log/patrol_log.dart'

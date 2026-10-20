@@ -1,7 +1,7 @@
 import 'dart:io' as io;
 
 import 'package:path/path.dart' as p;
-import 'package:patrol_mcp/src/flutter_command_resolver.dart';
+import 'package:patrol_cli/src/mcp/flutter_command_resolver.dart';
 import 'package:test/test.dart';
 
 void main() {

@@ -150,6 +150,9 @@ class DevelopService {
     }
   }
 
+  /// Completes once the session will act on a hot restart.
+  Future<void> get hotRestartReady => _flutterTool.hotRestartReady;
+
   /// Runs the full develop flow: discover device, read config, bundle test,
   /// build, execute, and attach for hot restart.
   Future<void> run(DevelopOptions options) async {
@@ -802,7 +805,7 @@ class DevelopService {
     // ProcessSignal.sigterm is not listenable on Windows and the failure
     // surfaces as an unhandled async SignalException (not caught by a
     // surrounding try/catch). Guard with Platform.isWindows to match the
-    // fix in patrol_mcp/_ExitSignal. Graceful cleanup on Windows still
+    // fix in mcp_server.dart's _ExitSignal. Graceful cleanup on Windows still
     // runs via the SIGINT path above and via stdio close.
     if (!Platform.isWindows) {
       subscriptions.add(ProcessSignal.sigterm.watch().listen(cleanup));
