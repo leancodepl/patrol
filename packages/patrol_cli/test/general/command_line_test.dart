@@ -51,10 +51,28 @@ void main() {
       ]);
     });
 
-    test('throws on an unclosed quote', () {
+    test('keeps a quote without a closing pair as a normal character', () {
+      expect(splitCommandLine("/Users/o'brien/flutter/bin/flutter --verbose"), [
+        "/Users/o'brien/flutter/bin/flutter",
+        '--verbose',
+      ]);
+      expect(splitCommandLine('--dart-define "MY_VAR=some value'), [
+        '--dart-define',
+        '"MY_VAR=some',
+        'value',
+      ]);
+    });
+
+    test('pairs two apostrophes unless they are in double quotes', () {
       expect(
-        () => splitCommandLine('--dart-define "MY_VAR=some value'),
-        throwsFormatException,
+        splitCommandLine("/Users/o'brien/flutter --dart-define=NAME=it's"),
+        ['/Users/obrien/flutter --dart-define=NAME=its'],
+      );
+      expect(
+        splitCommandLine(
+          '''"/Users/o'brien/flutter" --dart-define=NAME=it's''',
+        ),
+        ["/Users/o'brien/flutter", "--dart-define=NAME=it's"],
       );
     });
   });
