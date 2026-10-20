@@ -1,7 +1,9 @@
 // Smoke test: spawn `patrol mcp`, complete the `initialize` handshake
 // over stdio, then close stdin and assert it exits cleanly. Guards startup
 // (#3035), shutdown-on-EOF (#3122), and that nothing but JSON-RPC reaches
-// stdout. Dart, not shell, so it runs identically on every OS. Run from the
+// stdout, that the advertised tool surface is intact, and that a call naming its
+// own project is served by a server started outside any Dart package. Dart, not
+// shell, so it runs identically on every OS. Run from the
 // package root: dart run tool/smoke_test.dart [--force-first-run]
 
 import 'dart:async';
@@ -52,6 +54,7 @@ Future<void> main(List<String> args) async {
   // MCP stdio transport is newline-delimited JSON-RPC. Complete on the first
   // line that is a JSON-RPC response to our initialize request (id == 1).
   final handshake = Completer<String>();
+  final toolsList = Completer<String>();
   // Anything non-JSON on stdout is a protocol violation: the CLI's own output
   // (first-run greeting, doctor report, update banner) must go to stderr.
   final pollution = <String>[];
@@ -66,10 +69,13 @@ Future<void> main(List<String> args) async {
           }
           return;
         }
-        if (!handshake.isCompleted &&
-            message['id'] == 1 &&
-            message['result'] != null) {
+        if (message['result'] == null) {
+          return;
+        }
+        if (message['id'] == 1 && !handshake.isCompleted) {
           handshake.complete(line);
+        } else if (message['id'] == 2 && !toolsList.isCompleted) {
+          toolsList.complete(line);
         }
       });
 
@@ -107,7 +113,6 @@ Future<void> main(List<String> args) async {
           stderrBuffer,
         ),
       );
-  await stdoutSub.cancel();
 
   if (identical(line, exitedSentinel)) {
     _fail(
@@ -132,6 +137,15 @@ Future<void> main(List<String> args) async {
     );
   }
 
+  stdout.writeln(
+    '[smoke] handshake OK — server "$serverName" '
+    'v${serverInfo?['version']} responded to initialize',
+  );
+
+  await _checkTools(process, toolsList, stderrBuffer);
+  await stdoutSub.cancel();
+  await _checkProjectFromCall(serverDart: Platform.resolvedExecutable);
+
   if (pollution.isNotEmpty) {
     _fail(
       process,
@@ -140,11 +154,6 @@ Future<void> main(List<String> args) async {
       stderrBuffer,
     );
   }
-
-  stdout.writeln(
-    '[smoke] handshake OK — server "$serverName" '
-    'v${serverInfo?['version']} responded to initialize',
-  );
 
   // Closing stdin sends EOF — how MCP clients disconnect. Server must exit
   // cleanly, not hang and orphan its process subtree (#3122). A throw here means
@@ -179,6 +188,202 @@ Future<void> main(List<String> args) async {
   stdout
     ..writeln('[smoke] shutdown OK — server exited 0 on stdin EOF')
     ..writeln('[smoke] PASS');
+}
+
+/// Starts a second server outside any Dart package and asks it to run a test in
+/// a project named on the call.
+///
+/// The run is refused for its device — the point is which refusal: a server that
+/// resolves the project before reading the call has nothing but its working
+/// directory to go on, and answers that it cannot find a project at all.
+Future<void> _checkProjectFromCall({required String serverDart}) async {
+  final outside = Directory.systemTemp.createTempSync('patrol_smoke_outside');
+  final project = Directory.systemTemp.createTempSync('patrol_smoke_project');
+  File('${project.path}/pubspec.yaml').writeAsStringSync('name: app\n');
+
+  final process = await Process.start(serverDart, [
+    'run',
+    '${Directory.current.path}/bin/main.dart',
+    'mcp',
+  ], workingDirectory: outside.path);
+  unawaited(process.stdin.done.catchError((Object _) {}));
+  final stderrBuffer = StringBuffer();
+  process.stderr
+      .transform(const Utf8Decoder(allowMalformed: true))
+      .listen(stderrBuffer.write);
+
+  final answers = <int, Completer<Map<String, dynamic>>>{};
+  final sub = process.stdout
+      .transform(const Utf8Decoder(allowMalformed: true))
+      .transform(const LineSplitter())
+      .listen((line) {
+        final message = _tryDecode(line);
+        if (message?['id'] case final int id) {
+          answers.remove(id)?.complete(message!);
+        }
+      });
+
+  Future<Map<String, dynamic>> call(String method, [Object? params]) {
+    final id = answers.length + 1;
+    final answer = Completer<Map<String, dynamic>>();
+    answers[id] = answer;
+    process.stdin.writeln(
+      jsonEncode({
+        'jsonrpc': '2.0',
+        'id': id,
+        'method': method,
+        'params': ?params,
+      }),
+    );
+    return answer.future.timeout(
+      _handshakeTimeout,
+      onTimeout: () => _fail(
+        process,
+        'timed out waiting for $method from a server started outside a package',
+        stderrBuffer,
+      ),
+    );
+  }
+
+  await call('initialize', {
+    'protocolVersion': '2024-11-05',
+    'capabilities': <String, dynamic>{},
+    'clientInfo': {'name': 'patrol_mcp_smoke', 'version': '1.0.0'},
+  });
+  process.stdin.writeln(
+    jsonEncode({'jsonrpc': '2.0', 'method': 'notifications/initialized'}),
+  );
+  final response = await call('tools/call', {
+    'name': 'run',
+    'arguments': {
+      'testFile': 'patrol_test/app_test.dart',
+      'projectRoot': project.path,
+      'device': 'no-such-device',
+      'timeoutMinutes': 1,
+    },
+  });
+
+  final result = response['result'] as Map<String, dynamic>?;
+  final text =
+      ((result?['content'] as List?)?.first as Map?)?['text'] as String?;
+  if (text == null || text.contains('Could not locate a Flutter project')) {
+    _fail(
+      process,
+      'the run never reached the project it named: $text',
+      stderrBuffer,
+    );
+  }
+
+  await sub.cancel();
+  try {
+    await process.stdin.close();
+  } on Object {
+    /* already gone */
+  }
+  await process.exitCode.timeout(
+    _shutdownTimeout,
+    onTimeout: () => _fail(
+      process,
+      'the second server did not exit on stdin EOF',
+      stderrBuffer,
+    ),
+  );
+  outside.deleteSync(recursive: true);
+  project.deleteSync(recursive: true);
+  stdout.writeln('[smoke] project OK — a run reaches the project it names');
+}
+
+/// Asks the server for its tools and asserts the surface agents rely on: every
+/// tool is present, and `run` still takes the arguments that steer a session.
+Future<void> _checkTools(
+  Process process,
+  Completer<String> toolsList,
+  StringBuffer stderrBuffer,
+) async {
+  const expectedTools = {
+    'run',
+    'quit',
+    'status',
+    'devices',
+    'screenshot',
+    'native-tree',
+  };
+  const expectedRunArgs = {
+    'testFile',
+    'device',
+    'projectRoot',
+    'timeoutMinutes',
+  };
+
+  try {
+    process.stdin
+      ..writeln(
+        jsonEncode({'jsonrpc': '2.0', 'method': 'notifications/initialized'}),
+      )
+      ..writeln(
+        jsonEncode({'jsonrpc': '2.0', 'id': 2, 'method': 'tools/list'}),
+      );
+    await process.stdin.flush();
+  } on Object {
+    /* ignored — the race below reports the exit */
+  }
+
+  const exitedSentinel = ' process-exited';
+  final line =
+      await Future.any([
+        toolsList.future,
+        process.exitCode.then((_) => exitedSentinel),
+      ]).timeout(
+        _handshakeTimeout,
+        onTimeout: () => _fail(
+          process,
+          'timed out after ${_handshakeTimeout.inSeconds}s waiting for '
+          'tools/list',
+          stderrBuffer,
+        ),
+      );
+  if (identical(line, exitedSentinel)) {
+    _fail(
+      process,
+      'server exited early (code ${await process.exitCode}) before answering '
+      'tools/list',
+      stderrBuffer,
+    );
+  }
+
+  final result =
+      (jsonDecode(line) as Map<String, dynamic>)['result']
+          as Map<String, dynamic>;
+  final tools = (result['tools']! as List).cast<Map<String, dynamic>>();
+  final names = {for (final tool in tools) tool['name'] as String};
+  final missing = expectedTools.difference(names);
+  if (missing.isNotEmpty) {
+    _fail(
+      process,
+      'tools/list is missing ${missing.join(", ")} (advertised: '
+      '${names.join(", ")})',
+      stderrBuffer,
+    );
+  }
+
+  final run = tools.firstWhere((tool) => tool['name'] == 'run');
+  final schema = run['inputSchema']! as Map<String, dynamic>;
+  final properties = (schema['properties']! as Map<String, dynamic>).keys
+      .toSet();
+  final missingArgs = expectedRunArgs.difference(properties);
+  if (missingArgs.isNotEmpty) {
+    _fail(
+      process,
+      'run no longer takes ${missingArgs.join(", ")} (takes: '
+      '${properties.join(", ")})',
+      stderrBuffer,
+    );
+  }
+
+  stdout.writeln(
+    '[smoke] tools OK — ${names.length} tools, run takes '
+    '${properties.length} arguments',
+  );
 }
 
 /// A from-scratch environment with no CI markers, pointing the CLI's analytics

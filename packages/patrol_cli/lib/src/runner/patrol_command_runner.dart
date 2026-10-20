@@ -283,7 +283,13 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
 
     addCommand(DoctorCommand(logger: _logger, platform: _platform));
 
-    addCommand(McpCommand(logger: _logger));
+    addCommand(
+      McpCommand(
+        deviceFinder: deviceFinder,
+        processManager: _processManager,
+        logger: _logger,
+      ),
+    );
 
     addCommand(
       UpdateCommand(
@@ -702,9 +708,11 @@ To install a specific version of Patrol CLI, run:
 }
 
 // from: https://github.com/flutter/flutter/blob/285b9b11ec0d888078317445e56d6c1da397f5cd/packages/flutter_tools/lib/src/base/os.dart#L613
-Directory? findRootDirectory(FileSystem fileSystem) {
+///
+/// Walks up from [start], or from the working directory when it is not given.
+Directory? findRootDirectory(FileSystem fileSystem, {Directory? start}) {
   const kProjectRootSentinel = 'pubspec.yaml';
-  final directory = fileSystem.currentDirectory.path;
+  final directory = (start ?? fileSystem.currentDirectory).path;
   var currentDirectory = fileSystem.directory(directory).absolute;
   while (true) {
     if (currentDirectory.childFile(kProjectRootSentinel).existsSync()) {

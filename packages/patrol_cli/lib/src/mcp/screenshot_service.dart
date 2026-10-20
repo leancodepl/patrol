@@ -1,10 +1,12 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:file/file.dart';
+import 'package:file/local.dart';
 import 'package:image/image.dart' as img;
 import 'package:mcp_dart/mcp_dart.dart';
 import 'package:patrol_cli/src/devices.dart';
+import 'package:process/process.dart';
 
 enum ScreenshotPlatform {
   android('adb'),
@@ -13,6 +15,31 @@ enum ScreenshotPlatform {
   const ScreenshotPlatform(this.command);
 
   final String command;
+
+  /// Builds the command arguments that target [device] specifically, so
+  /// the capture doesn't fail (or silently hit the wrong device) when
+  /// multiple devices/simulators are attached.
+  ///
+  /// `screencap` writes the PNG to stdout. `simctl io screenshot` writes
+  /// atomically -- a temp file in the destination directory, then a rename --
+  /// so [outputPath] must be a real, writable path there.
+  List<String> argsFor(Device device, {String? outputPath}) => switch (this) {
+    ScreenshotPlatform.android => [
+      '-s',
+      device.id,
+      'exec-out',
+      'screencap',
+      '-p',
+    ],
+    ScreenshotPlatform.ios => [
+      'simctl',
+      'io',
+      device.id,
+      'screenshot',
+      '--type=png',
+      outputPath ?? (throw ArgumentError('iOS capture needs an output path')),
+    ],
+  };
 
   static ScreenshotPlatform fromDevice(Device device) =>
       switch (device.targetPlatform) {
@@ -25,35 +52,14 @@ enum ScreenshotPlatform {
       };
 }
 
-/// Builds the `adb` args that target [device] specifically, so the capture
-/// doesn't fail (or silently hit the wrong device) when multiple
-/// devices/emulators are attached.
-List<String> androidScreenshotArgs(Device device) => [
-  '-s',
-  device.id,
-  'exec-out',
-  'screencap',
-  '-p',
-];
-
-/// Builds the `simctl` args that target [device] and write to [outputPath].
-///
-/// `simctl io screenshot` writes atomically (temp file + rename) in the
-/// destination directory, so `outputPath` must be a real, writable path —
-/// not `/dev/stdout`, which fails there with a permission error.
-List<String> iosScreenshotArgs(Device device, String outputPath) => [
-  'simctl',
-  'io',
-  device.id,
-  'screenshot',
-  '--type=png',
-  outputPath,
-];
-
 abstract final class ScreenshotService {
   static const _maxHeight = 800;
 
-  static Future<CallToolResult> handleScreenshotRequest(Device? device) async {
+  static Future<CallToolResult> handleScreenshotRequest(
+    Device? device, {
+    ProcessManager processManager = const LocalProcessManager(),
+    FileSystem fileSystem = const LocalFileSystem(),
+  }) async {
     try {
       if (device == null) {
         return const CallToolResult(
@@ -69,7 +75,12 @@ abstract final class ScreenshotService {
       }
 
       final platform = ScreenshotPlatform.fromDevice(device);
-      final bytes = await _captureScreenshot(platform, device);
+      final bytes = await _captureScreenshot(
+        platform,
+        device,
+        processManager,
+        fileSystem,
+      );
       final base64Data = base64Encode(bytes);
 
       return CallToolResult(
@@ -88,21 +99,33 @@ abstract final class ScreenshotService {
   static Future<Uint8List> _captureScreenshot(
     ScreenshotPlatform platform,
     Device device,
+    ProcessManager processManager,
+    FileSystem fileSystem,
   ) async {
     final rawBytes = switch (platform) {
-      ScreenshotPlatform.android => await _captureFromStdout(device),
-      ScreenshotPlatform.ios => await _captureViaTempFile(device),
+      ScreenshotPlatform.android => await _captureFromStdout(
+        device,
+        processManager,
+      ),
+      ScreenshotPlatform.ios => await _captureViaTempFile(
+        device,
+        processManager,
+        fileSystem,
+      ),
     };
 
     _validatePng(rawBytes);
     return _resizeImage(rawBytes);
   }
 
-  static Future<Uint8List> _captureFromStdout(Device device) async {
-    final process = await Process.start(
+  static Future<Uint8List> _captureFromStdout(
+    Device device,
+    ProcessManager processManager,
+  ) async {
+    final process = await processManager.start([
       ScreenshotPlatform.android.command,
-      androidScreenshotArgs(device),
-    );
+      ...ScreenshotPlatform.android.argsFor(device),
+    ]);
 
     final bytes = await process.stdout.expand((chunk) => chunk).toList();
 
@@ -115,22 +138,28 @@ abstract final class ScreenshotService {
     return Uint8List.fromList(bytes);
   }
 
-  static Future<Uint8List> _captureViaTempFile(Device device) async {
-    final tempFile = File(
-      '${Directory.systemTemp.path}/patrol_mcp_screenshot_'
-      '${DateTime.now().microsecondsSinceEpoch}.png',
+  static Future<Uint8List> _captureViaTempFile(
+    Device device,
+    ProcessManager processManager,
+    FileSystem fileSystem,
+  ) async {
+    final tempFile = fileSystem.file(
+      fileSystem.path.join(
+        fileSystem.systemTempDirectory.path,
+        'patrol_mcp_screenshot_${DateTime.now().microsecondsSinceEpoch}.png',
+      ),
     );
 
     try {
-      final process = await Process.start(
+      final process = await processManager.start([
         ScreenshotPlatform.ios.command,
-        iosScreenshotArgs(device, tempFile.path),
-      );
+        ...ScreenshotPlatform.ios.argsFor(device, outputPath: tempFile.path),
+      ]);
 
-      final stderrFuture = process.stderr.transform(utf8.decoder).join();
+      final stderr = process.stderr.transform(utf8.decoder).join();
       final exitCode = await process.exitCode;
       if (exitCode != 0) {
-        throw Exception('Failed to capture screenshot: ${await stderrFuture}');
+        throw Exception('Failed to capture screenshot: ${await stderr}');
       }
 
       return await tempFile.readAsBytes();
@@ -142,8 +171,8 @@ abstract final class ScreenshotService {
   }
 
   /// Throws if the captured bytes don't start with a valid PNG header.
-  /// Any text the capture command printed in place of image data is
-  /// included in the exception message so users can diagnose the issue.
+  /// Any text the capture command printed in place of image data is included
+  /// in the exception message so users can diagnose the issue.
   static void _validatePng(Uint8List bytes) {
     const pngSignature = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
 
