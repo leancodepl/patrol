@@ -61,6 +61,10 @@ import Foundation
     #if PATROL_ENABLED
       Logger.shared.i("Starting server...")
 
+      #if os(macOS)
+        SystemDialogMonitor.register()
+      #endif
+
       let provider = AutomatorServer(automator: automator) { appReady in
         Logger.shared.i("App reported that it is ready")
         self.appReady = appReady

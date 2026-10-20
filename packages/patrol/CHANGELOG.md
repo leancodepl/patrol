@@ -1,8 +1,15 @@
 ## Unreleased
 
+- BrowserStack Dart coverage now counts never-executed lines by default, the same way `flutter test --coverage` does, when `PATROL_BS_COVERAGE_PACKAGES` is a list of plain anchored prefixes (`^package:my_app/`). The prefixes are passed to the VM as `libraryFilters`, so only the app's own libraries are force-compiled, and only once per app process (`librariesAlreadyCompiled`). Without such prefixes it falls back to executed-code-only coverage and logs why. `PATROL_BS_COVERAGE_FORCE_COMPILE=true`/`false` overrides the default. (#3066)
+- Fix BrowserStack Dart coverage being lost when a session is killed mid-dump. The runner assembled the `.ec` in place - truncating it, writing the JaCoCo dump, then appending the Dart blocks - so a process killed in that window (e.g. the BrowserStack session timeout) left a Dart-less file. It now stages the whole file and swaps it in with a single rename. Per-process Dart LCOVs are also merged on device instead of concatenated, so the embedded payload stays the size of one cumulative snapshot instead of growing with the test count. (#3066)
+- Add BrowserStack-friendly Dart coverage collection. With `--dart-define=PATROL_BS_COVERAGE=true` (plus `PATROL_BS_COVERAGE_PACKAGES=^package:my_app/` to scope it, `PATROL_BS_COVERAGE_FORCE_COMPILE=false` for executed-code-only), patrol gathers Dart line coverage from the running VM service and the Android test runner merges it into the JaCoCo `.exec` that BrowserStack collects. Requires `enableAndroidTestCoverage true` on the app's debug build type and `clearPackageData:false` in the BrowserStack build. Works with the Android test orchestrator on or off; when off, the app service now serves every test from one process. Nothing on the device side is BrowserStack-specific, so it also works on other Android device farms such as emulator.wtf and Firebase Test Lab. (#3066)
+- Add macOS platform automation via `$.platform.macos`:
+    - `tap` / `waitUntilVisible` for native views
+    - `isAlertVisible` / `tapAlertButton` for `NSAlert`
+    - `tapMenu` for the application menu bar
 - Bundle the Patrol [agent skills](https://github.com/leancodepl/patrol/tree/master/skills) with
   the package. Install them with `dart run skills@ get --agent claude -p patrol --all` (or
-  `--agent cursor`, …).
+  `--agent cursor`, …) on Dart 3.12+; see the catalog for older SDKs. (#3299)
 
 ## 4.10.0
 

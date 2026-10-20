@@ -4,12 +4,41 @@ import { fileURLToPath } from "node:url"
 const withMDX = createMDX()
 const repoRoot = fileURLToPath(new URL("..", import.meta.url))
 
+function getUrlFromEnv(name) {
+  const url = process.env[name]
+  if (!url) return
+
+  if (!URL.canParse(url)) {
+    console.warn(`${name} is not a valid URL ("${url}")`)
+    return
+  }
+
+  return url
+}
+
 /** @type {import('next').NextConfig} */
 const config = {
   outputFileTracingRoot: repoRoot,
   reactStrictMode: true,
   turbopack: {
     root: repoRoot,
+  },
+  rewrites: async () => {
+    const dispatchUrl = getUrlFromEnv("PATROL_DISPATCH_URL")
+    if (!dispatchUrl) return []
+
+    return [
+      // Separate rule, because on Vercel `/dispatch/:path*` with an empty path
+      // rewrites to `/dispatch/`, which the target redirects back to `/dispatch`.
+      {
+        source: "/dispatch",
+        destination: new URL("/dispatch", dispatchUrl).href,
+      },
+      {
+        source: "/dispatch/:path*",
+        destination: new URL("/dispatch/:path*", dispatchUrl).href,
+      },
+    ]
   },
   redirects: async () => [
     {
