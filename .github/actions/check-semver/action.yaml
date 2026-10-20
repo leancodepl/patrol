@@ -1,0 +1,161 @@
+name: Check semver
+description: >
+  Diff a package's public API against its last stable release with
+  dart-apitool, report the recommended version as a `semver (<package>)`
+  commit status, and fail only on `release/*` branches when the pubspec
+  version is too low.
+
+inputs:
+  package:
+    description: Package name, as published on pub.dev and used in `<package>-v<version>` tags.
+    required: true
+  path:
+    description: Root directory of the package.
+    required: true
+
+runs:
+  using: composite
+
+  steps:
+    - name: Get last released version
+      id: last-release
+      shell: bash
+      env:
+        PACKAGE: ${{ inputs.package }}
+      run: |
+        last_tag="$(git tag --list "$PACKAGE-v*" | { grep -v -e '-dev\.[0-9]\+$' || true; } | sort -V | tail -n 1)"
+        if [ -z "$last_tag" ]; then
+          echo "::error title=semver ($PACKAGE)::no stable $PACKAGE-v* tag found"
+          exit 1
+        fi
+        echo "version=${last_tag#"$PACKAGE-v"}" >> "$GITHUB_OUTPUT"
+
+    - name: Install dart-apitool
+      shell: bash
+      run: dart pub global activate dart_apitool 0.23.0
+
+    - name: Check API changes
+      id: check
+      shell: bash
+      env:
+        PACKAGE: ${{ inputs.package }}
+        PACKAGE_PATH: ${{ inputs.path }}
+        LAST_VERSION: ${{ steps.last-release.outputs.version }}
+        BRANCH: ${{ github.head_ref || github.ref_name }}
+      run: |
+        report="$RUNNER_TEMP/semver-$PACKAGE.json"
+        rm -f "$report"
+
+        # exits non-zero when the pubspec version is too low; whether that
+        # fails the check depends on the branch, so it's decided below
+        dart-apitool diff \
+          --old "pub://$PACKAGE/$LAST_VERSION" \
+          --new "$PACKAGE_PATH" \
+          --report-format json \
+          --report-file-path "$report" || true
+
+        needed="$(jq -r '.version.needed // empty' "$report" 2>/dev/null || true)"
+        if [ -z "$needed" ]; then
+          description="dart-apitool produced no version check"
+          echo "state=error" >> "$GITHUB_OUTPUT"
+          echo "description=$description" >> "$GITHUB_OUTPUT"
+          echo "::error title=semver ($PACKAGE)::$description"
+          exit 0
+        fi
+
+        version_ok="$(jq -r '.version.success' "$report")"
+        pubspec_version="$(jq -r '.version.new' "$report")"
+        explanation="$(jq -r '.version.explanation' "$report")"
+
+        if jq -e '.report.breakingChanges' "$report" >/dev/null; then
+          reason="breaking changes"
+        elif jq -e '.report.nonBreakingChanges' "$report" >/dev/null; then
+          reason="non-breaking changes"
+        else
+          reason="no API changes"
+        fi
+
+        # with no API changes dart-apitool accepts the released version
+        # itself, but a new release still needs at least a patch bump
+        recommended="$needed"
+        if [ "$needed" = "$LAST_VERSION" ]; then
+          IFS=. read -r major minor patch <<< "${LAST_VERSION%%[-+]*}"
+          recommended="$major.$minor.$((patch + 1))"
+        fi
+
+        is_release_branch=false
+        case "$BRANCH" in
+          release/*) is_release_branch=true ;;
+        esac
+
+        if [ "$is_release_branch" = true ] && [ "$version_ok" != true ]; then
+          state=failure
+          description="pubspec has $pubspec_version, $recommended required ($reason)"
+          echo "::error title=semver ($PACKAGE)::$description"
+        else
+          state=success
+          description="$recommended recommended ($reason)"
+          echo "::notice title=semver ($PACKAGE)::$description"
+        fi
+
+        echo "state=$state" >> "$GITHUB_OUTPUT"
+        echo "description=$description" >> "$GITHUB_OUTPUT"
+
+        {
+          echo "## semver for $PACKAGE: $recommended recommended"
+          echo
+          echo "- Last release: \`$LAST_VERSION\`"
+          echo "- pubspec version: \`$pubspec_version\`"
+          if [ "$is_release_branch" = true ]; then
+            echo "- Branch \`$BRANCH\` is a release branch, so a too-low pubspec version fails this check"
+          else
+            echo "- Branch \`$BRANCH\` is not a release branch, so the pubspec version isn't enforced"
+          fi
+          echo "- dart-apitool: $explanation"
+          if [ "$reason" != "no API changes" ]; then
+            echo
+            echo '<details><summary>API changes</summary>'
+            echo
+            jq -r '
+              def tree($indent):
+                if has("label") then
+                  "\($indent)- \(.label)", (.children[]? | tree($indent + "  "))
+                else
+                  "\($indent)- \(.changeDescription) (`\(.changeCode)`)"
+                end;
+              (.report.breakingChanges, .report.nonBreakingChanges) | select(. != null) | tree("")
+            ' "$report"
+            echo
+            echo '</details>'
+          fi
+        } >> "$GITHUB_STEP_SUMMARY"
+
+    - name: Report recommended version as commit status
+      if: |
+        always() &&
+        (github.event_name != 'pull_request' ||
+          github.event.pull_request.head.repo.full_name == github.repository)
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        STATE: ${{ steps.check.outputs.state || 'error' }}
+        DESCRIPTION: ${{ steps.check.outputs.description || 'semver check did not run' }}
+        PACKAGE: ${{ inputs.package }}
+        TARGET_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      run: |
+        gh api "repos/$GITHUB_REPOSITORY/statuses/$SHA" \
+          --silent \
+          -f state="$STATE" \
+          -f context="semver ($PACKAGE)" \
+          -f description="$DESCRIPTION" \
+          -f target_url="$TARGET_URL"
+
+    - name: Require a passing semver check
+      if: steps.check.outputs.state != 'success'
+      shell: bash
+      env:
+        DESCRIPTION: ${{ steps.check.outputs.description }}
+      run: |
+        echo "$DESCRIPTION"
+        exit 1
