@@ -63,7 +63,6 @@ runs:
           exit 0
         fi
 
-        version_ok="$(jq -r '.version.success' "$report")"
         pubspec_version="$(jq -r '.version.new' "$report")"
         explanation="$(jq -r '.version.explanation' "$report")"
 
@@ -81,6 +80,15 @@ runs:
         if [ "$needed" = "$LAST_VERSION" ]; then
           IFS=. read -r major minor patch <<< "${LAST_VERSION%%[-+]*}"
           recommended="$major.$minor.$((patch + 1))"
+        fi
+
+        # checked against the adjusted recommendation rather than
+        # dart-apitool's own result; the pre-release part is ignored, as
+        # dart-apitool does
+        lowest="$(printf '%s\n' "$recommended" "${pubspec_version%%[-+]*}" | sort -V | head -n 1)"
+        version_ok=false
+        if [ "$lowest" = "$recommended" ]; then
+          version_ok=true
         fi
 
         is_release_branch=false
