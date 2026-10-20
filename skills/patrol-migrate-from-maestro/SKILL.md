@@ -16,7 +16,8 @@ Companion skills — load them if installed, they own their topics:
 - `patrol-setup` — first-time Patrol setup, when the project has none.
 - `patrol-write-test` — Patrol API, assertion, native-dialog and test-key rules. They
   apply here, except for the points listed in *Rules that change for a migration*.
-- `patrol-test-architecture` — the modular layout (`Modules`, `System`, `ApiClients`).
+- `patrol-test-architecture` — add-on to `patrol-write-test` for the modular layout
+  (`Modules`, `System`, `ApiClients`).
 
 The command-by-command mapping is in [references/command-mapping.md](references/command-mapping.md).
 Read it before translating the first flow.
