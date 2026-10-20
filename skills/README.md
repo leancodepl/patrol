@@ -27,17 +27,23 @@ dart run skills@ get --agent cursor -p patrol --all
 dart run skills@ get --agent generic -p patrol --all
 ```
 
-Drop `-p patrol` to also pick up skills from your other dependencies, and `--all` to pick skills
-interactively. The installed skills match the `patrol` version you depend on — rerun the same
-command after upgrading `patrol` to update them, and `dart run skills@ prune` removes them once
-`patrol` is gone.
+`--all` installs every skill without prompting. To pick only some, replace it with one `-s` per
+skill (`-s patrol-setup -s patrol-write-test`), or drop it to choose in an interactive picker — in
+a terminal only; without one, the CLI just lists the available skills. Drop `-p patrol` to also
+pick up skills from your other dependencies.
 
-On a Dart SDK without the `dart run <package>@` syntax, activate the CLI globally instead:
+The installed skills match the `patrol` version you depend on — rerun the same command after
+upgrading `patrol` to update them, and `dart run skills@ prune` removes them once `patrol` is gone.
+
+**Dart SDK requirements.** `dart run skills@` needs Dart 3.12 or newer. The `skills` CLI itself
+supports Dart 3.10 and 3.11 too — activate it globally there:
 
 ```bash
 dart pub global activate skills
 dart pub global run skills get --agent claude -p patrol --all
 ```
+
+On older SDKs, install the skills [from GitHub](#from-github) instead.
 
 ### From GitHub
 
@@ -74,5 +80,5 @@ npx skills update
 | Skill | Description | Example prompt |
 |---|---|---|
 | [patrol-setup](patrol-setup/SKILL.md) | Set up Patrol E2E testing in a Flutter project for the first time (Android only) — pubspec `patrol` block, native Android wiring, and a first passing test on an Android emulator. | Set up Patrol in this project and get a first test passing |
-| [patrol-write-test](patrol-write-test/SKILL.md) | Write Patrol E2E tests — order of actions, Patrol API and assertion rules, native dialog handling, and test-key conventions. | Write a Patrol test that logs in and verifies the home screen |
-| [patrol-test-architecture](patrol-test-architecture/SKILL.md) | Write Patrol E2E tests using LeanCode's recommended architecture (Modules, System, ApiClients) with shared test keys. | Add a checkout test following our modular Patrol architecture |
+| [patrol-write-test](patrol-write-test/SKILL.md) | Write Patrol E2E tests — order of actions, Patrol API and assertion rules, native dialog handling, and test-key conventions. For projects without the modular architecture below. | Write a Patrol test that logs in and verifies the home screen |
+| [patrol-test-architecture](patrol-test-architecture/SKILL.md) | Write Patrol E2E tests using LeanCode's recommended architecture (Modules, System, ApiClients) with shared test keys. Only for projects that follow it, or to introduce it. | Add a checkout test following our modular Patrol architecture |

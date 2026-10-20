@@ -136,7 +136,8 @@ best practices. They're bundled with this package — install them into your age
 dart run skills@ get --agent claude -p patrol --all  # or --agent cursor, …
 ```
 
-See the catalog for what's available and other install options.
+This needs Dart 3.12 or newer. See the catalog for what's available and for install options on
+older SDKs.
 
 ## 🛠️ Maintained by LeanCode
 
