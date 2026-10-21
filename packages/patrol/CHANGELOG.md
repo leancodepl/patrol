@@ -8,6 +8,9 @@
 - Add native screenshots on iOS: `screenshot_on_failure: true` and `$.takeNativeScreenshot('tag')`
   now work on simulators and physical devices. See the
   [docs](https://patrol.leancode.co/cli-commands/test#on-ios). (#3271)
+- Speed up `getNativeViews` with a selector on iOS: each matched element is read with one
+  `XCUIElement.snapshot()` instead of one accessibility request per property and child, and
+  elements that no longer match are skipped instead of failing the test. (#3320)
 
 ## 4.12.0
 
