@@ -549,8 +549,22 @@
         let query = app.descendants(matching: .any).matching(selector.toNSPredicate())
         let elements = query.allElementsBoundByIndex
 
-        let views = elements.map { xcuielement in
-          return IOSNativeView.fromXCUIElement(xcuielement, bundleId)
+        // A snapshot reads an element and its subtree in one request, while
+        // the element itself reads each property of each node separately.
+        // An element that no longer matches has nothing to read, and reading
+        // it per element records an XCTest failure for every property.
+        let views = elements.enumerated().compactMap { index, xcuielement -> IOSNativeView? in
+          do {
+            return IOSNativeView.fromXCUIElementSnapshot(try xcuielement.snapshot(), bundleId)
+          } catch let error as NSError
+            where error.domain == "com.apple.dt.xctest.ui-testing.error" && error.code == 10008
+          {
+            Logger.shared.i("skipping \(view) at index \(index), it no longer matches: \(error)")
+            return nil
+          } catch {
+            Logger.shared.i("snapshot of \(view) at index \(index) failed, reading it per element: \(error)")
+            return IOSNativeView.fromXCUIElement(xcuielement, bundleId)
+          }
         }
 
         return views
