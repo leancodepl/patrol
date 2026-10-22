@@ -1,3 +1,7 @@
+## Unreleased
+
+- Allow `equatable` 3.x by widening the constraint to `>=2.1.0 <4.0.0`. Apps still on `equatable` 2.x keep resolving.
+
 ## 0.10.1
 
 - Fix first word of a test description being displayed as the test file name when the finished test entry name has no file prefix. (#3167)
