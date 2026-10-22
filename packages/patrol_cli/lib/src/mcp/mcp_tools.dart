@@ -6,6 +6,7 @@ import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/mcp/device_selection.dart';
 import 'package:patrol_cli/src/mcp/flutter_command_resolver.dart';
+import 'package:patrol_cli/src/mcp/mcp_analytics.dart';
 import 'package:patrol_cli/src/mcp/native_tree_service.dart';
 import 'package:patrol_cli/src/mcp/patrol_session.dart';
 import 'package:patrol_cli/src/mcp/project_resolver.dart';
@@ -122,15 +123,65 @@ class McpTools {
     required PatrolSession session,
     required DeviceFinder deviceFinder,
     required ProcessManager processManager,
+    McpAnalytics? analytics,
   }) : _session = session,
        _deviceFinder = deviceFinder,
-       _processManager = processManager;
+       _processManager = processManager,
+       _analytics = analytics;
 
   final PatrolSession _session;
   final DeviceFinder _deviceFinder;
   final ProcessManager _processManager;
+  final McpAnalytics? _analytics;
 
   Future<CallToolResult> run(
+    Map<String, dynamic> args,
+    RequestHandlerExtra extra,
+  ) => _tracked('run', () => _runTool(args, extra));
+
+  Future<CallToolResult> devices() => _tracked('devices', _devicesTool);
+
+  Future<CallToolResult> quit() => _tracked('quit', _quitTool);
+
+  Future<CallToolResult> status() => _tracked('status', _statusTool);
+
+  Future<CallToolResult> screenshot() =>
+      _tracked('screenshot', _screenshotTool);
+
+  Future<CallToolResult> nativeTree() =>
+      _tracked('native-tree', _nativeTreeTool);
+
+  /// Runs a tool and reports how it ended, without waiting for the report.
+  Future<CallToolResult> _tracked(
+    String tool,
+    Future<CallToolResult> Function() body,
+  ) async {
+    final analytics = _analytics;
+    if (analytics == null) {
+      return body();
+    }
+    final watch = Stopwatch()..start();
+    final result = await body();
+    final projectRoot = _session.projectRoot;
+    unawaited(
+      analytics.toolCalled(
+        tool: tool,
+        result: result,
+        duration: watch.elapsed,
+        platform: _session.device?.targetPlatform,
+        flutterCommand:
+            (projectRoot == null
+                ? null
+                : FlutterCommandResolver()
+                      .resolve(projectRoot: projectRoot)
+                      .command) ??
+            const FlutterCommand('flutter'),
+      ),
+    );
+    return result;
+  }
+
+  Future<CallToolResult> _runTool(
     Map<String, dynamic> args,
     RequestHandlerExtra extra,
   ) => withProject(
@@ -139,10 +190,10 @@ class McpTools {
     requestedRoot: (args['projectRoot'] as String?)?.trim().nullIfEmpty,
   );
 
-  Future<CallToolResult> devices() =>
+  Future<CallToolResult> _devicesTool() =>
       withProject(_devices, projectRequired: false);
 
-  Future<CallToolResult> quit() =>
+  Future<CallToolResult> _quitTool() =>
       withProject(projectRequired: false, () async {
         if (!_session.isRunning) {
           return const CallToolResult(
@@ -161,12 +212,12 @@ class McpTools {
         );
       });
 
-  Future<CallToolResult> status() => withProject(
+  Future<CallToolResult> _statusTool() => withProject(
     () async => statusResult(_session.getStatus()),
     projectRequired: false,
   );
 
-  Future<CallToolResult> screenshot() => withProject(
+  Future<CallToolResult> _screenshotTool() => withProject(
     () => ScreenshotService.handleScreenshotRequest(
       _session.device,
       processManager: _processManager,
@@ -174,7 +225,7 @@ class McpTools {
     projectRequired: false,
   );
 
-  Future<CallToolResult> nativeTree() =>
+  Future<CallToolResult> _nativeTreeTool() =>
       withProject(projectRequired: false, () async {
         await _session.ensureNativeAutomatorReachable();
         return NativeTreeService.handleGetNativeTreeRequest(
