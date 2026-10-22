@@ -23,7 +23,7 @@ class CoverageTool {
     required FileSystem fs,
     required Directory rootDirectory,
     required ProcessManager processManager,
-    required Platform platform,
+    required NativePlatform platform,
     required Adb adb,
     required DisposeScope parentDisposeScope,
     required Logger logger,
@@ -40,7 +40,7 @@ class CoverageTool {
   final FileSystem _fs;
   final Directory _rootDirectory;
   final ProcessManager _processManager;
-  final Platform _platform;
+  final NativePlatform _platform;
   final Adb _adb;
   final Logger _logger;
   final DisposeScope _disposeScope;

@@ -47,7 +47,7 @@ Future<int> patrolCommandRunner(List<String> args) async {
   final pubUpdater = PubUpdater();
   final logger = Logger();
   const fs = LocalFileSystem();
-  const platform = LocalPlatform();
+  final platform = NativePlatform.current!;
   final processManager = LoggingLocalProcessManager(logger: logger);
   final isCI = ci.isCI;
   final analyticsEnv = p.Platform.environment[_patrolAnalyticsEnvName];
@@ -110,7 +110,7 @@ const _helloPatrol = '''
 class PatrolCommandRunner extends CompletionCommandRunner<int> {
   PatrolCommandRunner({
     required PubUpdater pubUpdater,
-    required Platform platform,
+    required NativePlatform platform,
     required FileSystem fs,
     required ProcessManager processManager,
     required Analytics analytics,
@@ -297,7 +297,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
   }
 
   final PubUpdater _pubUpdater;
-  final Platform _platform;
+  final NativePlatform _platform;
   final FileSystem _fs;
   final ProcessManager _processManager;
   final Analytics _analytics;

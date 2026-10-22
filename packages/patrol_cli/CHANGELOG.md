@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Migrate to the `NativePlatform` API of `platform` 3.2.0 and drop the `<3.2.0` pin. **patrol_cli now requires Dart 3.10 (Flutter 3.38) or newer**; older Flutter versions keep resolving 4.8.x.
 - Add `patrol coverage pull`, which splits the JaCoCo `.ec` coverage of a patrol Android run into a standard `jacoco.exec` and a Dart `patrol_lcov.info`, merging duplicate `SF:` records across tests and shards. `--input <file or directory>` reads local `.ec` files (e.g. emulator.wtf or Firebase Test Lab outputs); `--browserstack-build-id` downloads them from BrowserStack, merging every session (shard) unless `--browserstack-session-id` is given, and fails fast on builds that ran with `clearPackageData:true`, which is incompatible with coverage there. (#3066)
 - Fix `idevicesyslog` not being scoped to the device under test, so concurrent runs on a host with
   several real iOS devices attached all streamed the same device's log, corrupting the step

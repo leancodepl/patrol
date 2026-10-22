@@ -32,7 +32,7 @@ class AndroidTestBackend {
   AndroidTestBackend({
     required Adb adb,
     required ProcessManager processManager,
-    required Platform platform,
+    required NativePlatform platform,
     required Directory rootDirectory,
     required DisposeScope parentDisposeScope,
     required Logger logger,
@@ -47,7 +47,7 @@ class AndroidTestBackend {
 
   final Adb _adb;
   final ProcessManager _processManager;
-  final Platform _platform;
+  final NativePlatform _platform;
   final Directory _rootDirectory;
   final DisposeScope _disposeScope;
   final Logger _logger;

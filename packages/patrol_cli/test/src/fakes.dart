@@ -1,12 +1,12 @@
 import 'package:mocktail/mocktail.dart';
-import 'package:platform/platform.dart';
+import 'package:platform/testing.dart';
 
 void setUpFakes() {
   registerFallbackValue(Uri());
 }
 
-FakePlatform fakePlatform(String home) {
-  return FakePlatform(
+TestNativePlatform fakePlatform(String home) {
+  return TestNativePlatform(
     environment: {'HOME': home},
     operatingSystem: 'macos',
     operatingSystemVersion: 'Version 13.3.1 (a) (Build 22E772610a)',

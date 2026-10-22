@@ -32,7 +32,7 @@ class Analytics {
     required String measurementId,
     required String apiSecret,
     required FileSystem fs,
-    required Platform platform,
+    required NativePlatform platform,
     http.Client? httpClient,
     required bool isCI,
     required bool? envAnalyticsEnabled,
@@ -46,7 +46,7 @@ class Analytics {
        _logger = logger;
 
   final FileSystem _fs;
-  final Platform _platform;
+  final NativePlatform _platform;
 
   final http.Client _httpClient;
   final String _postUrl;

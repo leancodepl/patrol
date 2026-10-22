@@ -63,7 +63,7 @@ enum BuildMode {
 class IOSTestBackend {
   IOSTestBackend({
     required ProcessManager processManager,
-    required Platform platform,
+    required NativePlatform platform,
     required FileSystem fs,
     required Directory rootDirectory,
     required DisposeScope parentDisposeScope,
@@ -80,7 +80,7 @@ class IOSTestBackend {
   static const _xcodebuildInterrupted = -15;
 
   final ProcessManager _processManager;
-  final Platform _platform;
+  final NativePlatform _platform;
   final FileSystem _fs;
   final Directory _rootDirectory;
   final DisposeScope _disposeScope;
