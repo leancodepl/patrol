@@ -9,14 +9,11 @@ import 'package:patrol_cli/src/devices.dart';
 class DeviceToHostPortTransformer
     implements StreamTransformer<VMConnectionDetails, VMConnectionDetails> {
   DeviceToHostPortTransformer({
-    required Device device,
-    required TargetPlatform devicePlatform,
-    required Adb adb,
-    required Logger logger,
-  }) : _device = device,
-       _devicePlatform = devicePlatform,
-       _adb = adb,
-       _logger = logger;
+    required this._device,
+    required this._devicePlatform,
+    required this._adb,
+    required this._logger,
+  });
 
   final Device _device;
   final TargetPlatform _devicePlatform;

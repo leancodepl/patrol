@@ -24,20 +24,14 @@ import 'package:patrol_cli/src/test_bundler.dart';
 /// native test per Dart test.
 class TestWithoutBuildingCommand extends PatrolCommand {
   TestWithoutBuildingCommand({
-    required DeviceFinder deviceFinder,
-    required TestBundler testBundler,
-    required PubspecReader pubspecReader,
-    required AndroidTestBackend androidTestBackend,
-    required IOSTestBackend iosTestBackend,
-    required Analytics analytics,
-    required Logger logger,
-  }) : _deviceFinder = deviceFinder,
-       _testBundler = testBundler,
-       _pubspecReader = pubspecReader,
-       _androidTestBackend = androidTestBackend,
-       _iosTestBackend = iosTestBackend,
-       _analytics = analytics,
-       _logger = logger {
+    required this._deviceFinder,
+    required this._testBundler,
+    required this._pubspecReader,
+    required this._androidTestBackend,
+    required this._iosTestBackend,
+    required this._analytics,
+    required this._logger,
+  }) {
     // Only options that affect *running* prebuilt artifacts: which device, which
     // artifacts (build mode + flavor), which tests, and how results are shown.
     usesDeviceOption();

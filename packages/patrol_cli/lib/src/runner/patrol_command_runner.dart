@@ -47,7 +47,7 @@ Future<int> patrolCommandRunner(List<String> args) async {
   final pubUpdater = PubUpdater();
   final logger = Logger();
   const fs = LocalFileSystem();
-  const platform = LocalPlatform();
+  final platform = NativePlatform.current!;
   final processManager = LoggingLocalProcessManager(logger: logger);
   final isCI = ci.isCI;
   final analyticsEnv = p.Platform.environment[_patrolAnalyticsEnvName];
@@ -109,21 +109,15 @@ const _helloPatrol = '''
 
 class PatrolCommandRunner extends CompletionCommandRunner<int> {
   PatrolCommandRunner({
-    required PubUpdater pubUpdater,
-    required Platform platform,
-    required FileSystem fs,
-    required ProcessManager processManager,
-    required Analytics analytics,
-    required Logger logger,
-    required bool isCI,
+    required this._pubUpdater,
+    required NativePlatform platform,
+    required this._fs,
+    required this._processManager,
+    required this._analytics,
+    required this._logger,
+    required this._isCI,
   }) : _platform = platform,
-       _pubUpdater = pubUpdater,
-       _fs = fs,
-       _analytics = analytics,
-       _processManager = processManager,
        _disposeScope = DisposeScope(),
-       _logger = logger,
-       _isCI = isCI,
        super(
          'patrol',
          'Tool for running Flutter-native UI tests with superpowers',
@@ -297,7 +291,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
   }
 
   final PubUpdater _pubUpdater;
-  final Platform _platform;
+  final NativePlatform _platform;
   final FileSystem _fs;
   final ProcessManager _processManager;
   final Analytics _analytics;

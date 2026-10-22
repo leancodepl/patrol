@@ -3,9 +3,7 @@ import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 
 class DevicesCommand extends PatrolCommand {
-  DevicesCommand({required DeviceFinder deviceFinder, required Logger logger})
-    : _deviceFinder = deviceFinder,
-      _logger = logger;
+  DevicesCommand({required this._deviceFinder, required this._logger});
 
   final DeviceFinder _deviceFinder;
   final Logger _logger;
