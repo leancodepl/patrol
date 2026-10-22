@@ -4,6 +4,8 @@
 - Fix `idevicesyslog` not being scoped to the device under test, so concurrent runs on a host with
   several real iOS devices attached all streamed the same device's log, corrupting the step
   display, `--show-flutter-logs` output and the test summary. (#3245)
+- Fix `--flutter-command` and `PATROL_FLUTTER_COMMAND` splitting quoted text on spaces, so a quoted
+  Flutter path with spaces works. Add `splitCommandLine` to the public API. (#3026)
 
 ## 4.8.0
 

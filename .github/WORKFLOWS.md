@@ -71,9 +71,11 @@ These workflows verify the user has write access before running. If you don't ha
 
 | Workflow name | Runs on | Description |
 |--------------|---------|-------------|
-| [patrol check semver][patrol-check-semver] | PR (on patrol package changes) | Verifies semantic versioning compliance for `patrol` package changes. |
-| [patrol_finders check semver][patrol_finders-check-semver] | PR (on patrol_finders changes) | Verifies semantic versioning compliance for `patrol_finders` package changes. |
-| [patrol_log check semver][patrol_log-check-semver] | PR (on patrol_log changes) | Verifies semantic versioning compliance for `patrol_log` package changes. |
+| [patrol check semver][patrol-check-semver] | PR (on patrol package changes) | Runs `dart-apitool` against the last stable `patrol` release and reports the recommended version in a `semver (patrol)` commit status. Fails only on `release/*` branches. |
+| [patrol_finders check semver][patrol_finders-check-semver] | PR (on patrol_finders changes) | Runs `dart-apitool` against the last stable `patrol_finders` release and reports the recommended version in a `semver (patrol_finders)` commit status. Fails only on `release/*` branches. |
+| [patrol_log check semver][patrol_log-check-semver] | PR (on patrol_log changes) | Runs `dart-apitool` against the last stable `patrol_log` release and reports the recommended version in a `semver (patrol_log)` commit status. Fails only on `release/*` branches. |
+
+All three use the local [check-semver][check-semver-action] composite action. It diffs the package's public API against its newest non-dev `<package>-v*` tag on pub.dev, posts the version it would release as next (e.g. `4.11.0 recommended (non-breaking changes)`) as a `semver (<package>)` commit status, and writes the full list of API changes to the job summary. Feature PRs don't bump `pubspec.yaml`, so on any branch other than `release/*` the check always succeeds and is only informational; on a `release/*` branch a pubspec version lower than the recommended one fails the check.
 
 ## Documentation Workflows
 
@@ -180,6 +182,7 @@ A test is selected if it matches ALL conditions in the boolean expression (AND o
 [patrol-check-semver]: workflows/patrol-check-semver.yaml
 [patrol_finders-check-semver]: workflows/patrol_finders-check-semver.yaml
 [patrol_log-check-semver]: workflows/patrol_log-check-semver.yaml
+[check-semver-action]: actions/check-semver/action.yaml
 [docs-production]: workflows/docs-production.yaml
 [docs-preview]: workflows/docs-preview.yaml
 [verify_compatibility]: workflows/verify_compatibility.yml
