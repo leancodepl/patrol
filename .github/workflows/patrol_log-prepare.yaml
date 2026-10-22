@@ -48,9 +48,9 @@ jobs:
         if: success() || failure()
         run: dart format --set-exit-if-changed .
 
-      - name: flutter pub publish --dry-run
+      - name: dart pub publish --dry-run
         if: success() || failure()
-        run: flutter pub publish --dry-run
+        run: dart pub publish --dry-run
 
   pana-score:
     name: pana score
