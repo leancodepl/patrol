@@ -8,9 +8,7 @@ import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:platform/platform.dart';
 
 class DoctorCommand extends PatrolCommand {
-  DoctorCommand({required Logger logger, required NativePlatform platform})
-    : _logger = logger,
-      _platform = platform;
+  DoctorCommand({required this._logger, required this._platform});
 
   final Logger _logger;
   final NativePlatform _platform;

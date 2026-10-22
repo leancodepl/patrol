@@ -7,7 +7,7 @@ import 'package:patrol_cli/src/base/logger.dart';
 import 'package:process/process.dart';
 
 class LoggingLocalProcessManager extends LocalProcessManager {
-  const LoggingLocalProcessManager({required Logger logger}) : _logger = logger;
+  const LoggingLocalProcessManager({required this._logger});
 
   final Logger _logger;
 

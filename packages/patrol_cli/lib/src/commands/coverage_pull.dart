@@ -31,9 +31,7 @@ import 'package:patrol_cli/src/runner/patrol_command.dart';
 /// [buildUsedClearPackageData]), and a first-test-only result is worse than an
 /// error.
 class CoveragePullCommand extends PatrolCommand {
-  CoveragePullCommand({required Logger logger, required FileSystem fs})
-    : _logger = logger,
-      _fs = fs {
+  CoveragePullCommand({required this._logger, required this._fs}) {
     argParser
       ..addOption(
         'input',

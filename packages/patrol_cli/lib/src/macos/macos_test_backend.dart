@@ -52,18 +52,13 @@ enum BuildMode {
 
 class MacOSTestBackend {
   MacOSTestBackend({
-    required ProcessManager processManager,
-    required NativePlatform platform,
-    required FileSystem fs,
-    required Directory rootDirectory,
+    required this._processManager,
+    required this._platform,
+    required this._fs,
+    required this._rootDirectory,
     required DisposeScope parentDisposeScope,
-    required Logger logger,
-  }) : _processManager = processManager,
-       _platform = platform,
-       _fs = fs,
-       _rootDirectory = rootDirectory,
-       _disposeScope = DisposeScope(),
-       _logger = logger {
+    required this._logger,
+  }) : _disposeScope = DisposeScope() {
     _disposeScope.disposedBy(parentDisposeScope);
   }
 

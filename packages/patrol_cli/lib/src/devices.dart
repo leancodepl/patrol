@@ -13,12 +13,10 @@ import 'package:process/process.dart';
 
 class DeviceFinder {
   DeviceFinder({
-    required ProcessManager processManager,
+    required this._processManager,
     required DisposeScope parentDisposeScope,
-    required Logger logger,
-  }) : _processManager = processManager,
-       _disposeScope = DisposeScope(),
-       _logger = logger {
+    required this._logger,
+  }) : _disposeScope = DisposeScope() {
     _disposeScope.disposedBy(parentDisposeScope);
   }
 

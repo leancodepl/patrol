@@ -20,20 +20,14 @@ import 'package:vm_service/vm_service_io.dart';
 
 class CoverageTool {
   CoverageTool({
-    required FileSystem fs,
-    required Directory rootDirectory,
-    required ProcessManager processManager,
-    required NativePlatform platform,
-    required Adb adb,
+    required this._fs,
+    required this._rootDirectory,
+    required this._processManager,
+    required this._platform,
+    required this._adb,
     required DisposeScope parentDisposeScope,
-    required Logger logger,
-  }) : _fs = fs,
-       _rootDirectory = rootDirectory,
-       _processManager = processManager,
-       _platform = platform,
-       _adb = adb,
-       _logger = logger,
-       _disposeScope = DisposeScope() {
+    required this._logger,
+  }) : _disposeScope = DisposeScope() {
     _disposeScope.disposedBy(parentDisposeScope);
   }
 

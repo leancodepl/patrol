@@ -13,18 +13,14 @@ import 'package:process/process.dart';
 
 class FlutterTool {
   FlutterTool({
-    required Stream<List<int>> stdin,
-    required ProcessManager processManager,
-    required NativePlatform platform,
+    required this._stdin,
+    required this._processManager,
+    required this._platform,
     required DisposeScope parentDisposeScope,
-    required Logger logger,
+    required this._logger,
     this.onQuit,
     Future<void> Function()? onExit,
-  }) : _stdin = stdin,
-       _processManager = processManager,
-       _platform = platform,
-       _disposeScope = DisposeScope(),
-       _logger = logger,
+  }) : _disposeScope = DisposeScope(),
        _onExit = onExit ?? (() async => exit(0)) {
     _disposeScope.disposedBy(parentDisposeScope);
   }

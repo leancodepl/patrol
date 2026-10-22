@@ -109,21 +109,15 @@ const _helloPatrol = '''
 
 class PatrolCommandRunner extends CompletionCommandRunner<int> {
   PatrolCommandRunner({
-    required PubUpdater pubUpdater,
+    required this._pubUpdater,
     required NativePlatform platform,
-    required FileSystem fs,
-    required ProcessManager processManager,
-    required Analytics analytics,
-    required Logger logger,
-    required bool isCI,
+    required this._fs,
+    required this._processManager,
+    required this._analytics,
+    required this._logger,
+    required this._isCI,
   }) : _platform = platform,
-       _pubUpdater = pubUpdater,
-       _fs = fs,
-       _analytics = analytics,
-       _processManager = processManager,
        _disposeScope = DisposeScope(),
-       _logger = logger,
-       _isCI = isCI,
        super(
          'patrol',
          'Tool for running Flutter-native UI tests with superpowers',

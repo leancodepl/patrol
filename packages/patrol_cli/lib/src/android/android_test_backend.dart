@@ -30,18 +30,13 @@ import 'package:process/process.dart';
 /// This class must be stateless.
 class AndroidTestBackend {
   AndroidTestBackend({
-    required Adb adb,
-    required ProcessManager processManager,
-    required NativePlatform platform,
-    required Directory rootDirectory,
+    required this._adb,
+    required this._processManager,
+    required this._platform,
+    required this._rootDirectory,
     required DisposeScope parentDisposeScope,
-    required Logger logger,
-  }) : _adb = adb,
-       _processManager = processManager,
-       _rootDirectory = rootDirectory,
-       _platform = platform,
-       _disposeScope = DisposeScope(),
-       _logger = logger {
+    required this._logger,
+  }) : _disposeScope = DisposeScope() {
     _disposeScope.disposedBy(parentDisposeScope);
   }
 
