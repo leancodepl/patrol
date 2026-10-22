@@ -68,6 +68,9 @@
   dependency, with develop flags after `--`; `PATROL_FLAGS` is split as a shell would (#3026). See
   the [docs](https://patrol.leancode.co/documentation/other/patrol-mcp), migrating off
   `patrol_mcp` included. (#3368, #3371, #3372)
+- Report `patrol mcp` tool calls to the CLI's anonymous analytics, under the same consent and
+  `PATROL_ANALYTICS_ENABLED` switch: the tool, how it ended, how long it took, the device platform
+  and how the CLI is installed. No paths, test names, errors or output are sent. (#3373)
 - Look for a `patrol test`/`patrol develop` target in the project when the path names nothing from
   the directory the command was run in. A relative target still belongs to that directory first,
   which is how `-t ../patrol_test/app_test.dart` works from a subdirectory. (#3369)

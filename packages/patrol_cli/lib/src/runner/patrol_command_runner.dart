@@ -287,6 +287,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       McpCommand(
         deviceFinder: deviceFinder,
         processManager: _processManager,
+        analytics: _analytics,
         logger: _logger,
       ),
     );
