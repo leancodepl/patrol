@@ -48,6 +48,18 @@ jobs:
         if: success() || failure()
         run: dart format --set-exit-if-changed .
 
+      # TEMPORARY: debug why pub's analyze validator fails on 3.44.x.
+      - name: Debug dart analyze (temporary)
+        if: success() || failure()
+        continue-on-error: true
+        run: |
+          dart --version
+          set +e
+          dart analyze lib pubspec.yaml
+          echo "exit=$?"
+          dart analyze --verbose lib pubspec.yaml 2>&1 | tail -n 80
+          echo "verbose exit=${PIPESTATUS[0]}"
+
       - name: flutter pub publish --dry-run
         if: success() || failure()
         run: flutter pub publish --dry-run
