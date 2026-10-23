@@ -406,13 +406,10 @@ class Contracts {
 
   data class AndroidGetNativeViewsRequest (
     val selector: AndroidSelector? = null,
-    val includeInvisibleNodes: Boolean? = null
+    val includeInvisibleNodes: Boolean
   ){
     fun hasSelector(): Boolean {
       return selector != null
-    }
-    fun hasIncludeInvisibleNodes(): Boolean {
-      return includeInvisibleNodes != null
     }
   }
 

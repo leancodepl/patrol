@@ -532,14 +532,14 @@ class IOSSelector with Equatable {
 class AndroidGetNativeViewsRequest with Equatable {
   const AndroidGetNativeViewsRequest({
     this.selector,
-    this.includeInvisibleNodes,
+    required this.includeInvisibleNodes,
   });
 
   factory AndroidGetNativeViewsRequest.fromJson(Map<String, dynamic> json) =>
       _$AndroidGetNativeViewsRequestFromJson(json);
 
   final AndroidSelector? selector;
-  final bool? includeInvisibleNodes;
+  final bool includeInvisibleNodes;
 
   Map<String, dynamic> toJson() => _$AndroidGetNativeViewsRequestToJson(this);
 

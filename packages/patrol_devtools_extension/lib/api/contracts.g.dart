@@ -304,7 +304,7 @@ AndroidGetNativeViewsRequest _$AndroidGetNativeViewsRequestFromJson(
   selector: json['selector'] == null
       ? null
       : AndroidSelector.fromJson(json['selector'] as Map<String, dynamic>),
-  includeInvisibleNodes: json['includeInvisibleNodes'] as bool?,
+  includeInvisibleNodes: json['includeInvisibleNodes'] as bool,
 );
 
 Map<String, dynamic> _$AndroidGetNativeViewsRequestToJson(
