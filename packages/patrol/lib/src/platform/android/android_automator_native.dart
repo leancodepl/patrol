@@ -505,15 +505,22 @@ class AndroidAutomator extends NativeMobileAutomator
   /// Returns a list of currently visible native UI controls, specified by
   /// [selector], which are currently visible on screen.
   ///
-  /// If [selector] is null, returns the whole native UI tree.
+  /// If [selector] is null, returns the whole native UI tree. By default the
+  /// tree skips nodes whose `isVisibleToUser` is false (and their subtrees).
+  /// Pass [includeInvisibleNodes] to keep them, e.g. for WebViews that report
+  /// an on-screen container as invisible. Only applies when [selector] is null.
   @override
   Future<AndroidGetNativeViewsResponse> getNativeViews(
-    AndroidSelector? selector,
-  ) {
+    AndroidSelector? selector, {
+    bool includeInvisibleNodes = false,
+  }) {
     return wrapRequest(
       'getNativeViews',
       () => _client.getNativeViews(
-        AndroidGetNativeViewsRequest(selector: selector),
+        AndroidGetNativeViewsRequest(
+          selector: selector,
+          includeInvisibleNodes: includeInvisibleNodes,
+        ),
       ),
       enablePatrolLog: false,
     );
