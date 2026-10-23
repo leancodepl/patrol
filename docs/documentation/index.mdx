@@ -244,20 +244,23 @@ Check out our video version of this tutorial on YouTube!
   </Steps>
 
 <Warning>
-  Bear in mind that ProGuard can lead to some problems if not well configured, potentially causing issues such as `ClassNotFoundException`s.
-  Keep all the Patrol packages or disable ProGuard in `android/app/build.gradle.kts`:
+  To run tests in release mode (`patrol test --release`), set `testBuildType` and add Patrol to
+  the release build. Flutter leaves `dev_dependencies` plugins out of release builds, so without
+  `releaseImplementation` the test sources do not compile.
   ```kotlin title="android/app/build.gradle.kts"
-    ...
-    buildTypes {
-      getByName("release") {
-          ...
-      }
-      getByName("debug") {
-          isMinifyEnabled = false
-          isShrinkResources = false
-      }
+    android {
+      ...
+      testBuildType = "release"
+    }
+
+    dependencies {
+      ...
+      releaseImplementation(project(":patrol"))
     }
   ```
+  These lines also put Patrol into your release build, so remove them, or put them behind a
+  Gradle property, before you build the app you publish. Patrol ships its own R8 keep rules, so
+  you don't need to add any for Patrol when minification is enabled.
 </Warning>
 
 </Accordion>
@@ -345,20 +348,23 @@ Check out our video version of this tutorial on YouTube!
   </Steps>
 
 <Warning>
-  Bear in mind that ProGuard can lead to some problems if not well configured, potentially causing issues such as `ClassNotFoundException`s.
-  Keep all the Patrol packages or disable ProGuard in `android/app/build.gradle`:
+  To run tests in release mode (`patrol test --release`), set `testBuildType` and add Patrol to
+  the release build. Flutter leaves `dev_dependencies` plugins out of release builds, so without
+  `releaseImplementation` the test sources do not compile.
   ```groovy title="android/app/build.gradle"
-    ...
-    buildTypes {
-      release {
-          ...
-      }
-      debug {
-          minifyEnabled false
-          shrinkResources false
-      }
+    android {
+      ...
+      testBuildType "release"
+    }
+
+    dependencies {
+      ...
+      releaseImplementation project(":patrol")
     }
   ```
+  These lines also put Patrol into your release build, so remove them, or put them behind a
+  Gradle property, before you build the app you publish. Patrol ships its own R8 keep rules, so
+  you don't need to add any for Patrol when minification is enabled.
 </Warning>
 
 </Accordion>
