@@ -323,6 +323,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       buildName: buildName,
       buildNumber: buildNumber,
       noTreeShakeIcons: noTreeShakeIcons,
+      testFileSuffix: testFileSuffix,
     );
 
     final androidOpts = AndroidAppOptions(
