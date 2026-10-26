@@ -7,6 +7,7 @@ on:
       - 'skills/**'
       - '.agents/skills/**'
       - '.claude/skills'
+      - 'packages/patrol/skills'
       - 'tool/check_skills.sh'
       - '.github/workflows/check-skills.yaml'
 

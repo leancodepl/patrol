@@ -222,6 +222,48 @@ Then pass it in the `xctestrun-build` request next to the app and test suite:
   device for an empty shard. A single test needs no sharding at all.
 </Info>
 
+## Dart code coverage (Android)
+
+Patrol can collect Dart line coverage on BrowserStack and hand it back through BrowserStack's Espresso coverage API.
+
+Nothing on the device side is BrowserStack-specific: the same setup works on other Android device farms, see [emulator.wtf](/documentation/integrations/emulator-wtf#dart-code-coverage) and [Firebase Test Lab](/documentation/integrations/firebase-test-lab#dart-code-coverage-android).
+
+<Steps>
+  <Step>
+    Instrument the app under test: in **android/app/build.gradle.kts** set `enableAndroidTestCoverage = true` (AGP 8+; `testCoverageEnabled = true` on AGP 7) on the debug build type.
+  </Step>
+  <Step>
+    Build with `--dart-define=PATROL_BS_COVERAGE=true` and `--dart-define=PATROL_BS_COVERAGE_PACKAGES=^package:my_app/` (comma-separate several prefixes).
+
+    With `PATROL_BS_COVERAGE_PACKAGES` set to plain anchored prefixes, Patrol force-compiles your own libraries before collecting, so never-executed lines count towards the total, the same way `flutter test --coverage` counts them. The prefixes are handed to the VM as library filters, so only your code is compiled, and only once per app process.
+
+    Override the default with `--dart-define=PATROL_BS_COVERAGE_FORCE_COMPILE=false` to report only the code the suite executed. It is the cheapest mode, and the percentage is relative to loaded code, not the whole app.
+
+    <Warning>
+      Leave `PATROL_BS_COVERAGE_PACKAGES` unset, or use regexp syntax such as `^package:(a|b)/`, and the filter cannot be passed to the VM. Patrol then falls back to executed-code-only coverage, because force-compiling without a filter walks the whole program, Flutter framework and SDK included, on every collection — minutes per test instead of seconds. Forcing it anyway with `PATROL_BS_COVERAGE_FORCE_COMPILE=true` logs a warning.
+
+      With `useOrchestrator:true` every test runs in a fresh process, so the compile is paid per test rather than once per shard. For large suites, prefer `useOrchestrator:false` or add shards.
+    </Warning>
+  </Step>
+  <Step>
+    Start the build with `"coverage": "true"` and **`"clearPackageData": "false"`** (see the warning below). `useOrchestrator` can be either value, and sharding works.
+  </Step>
+  <Step>
+    Pull and merge the result once the build finishes:
+
+    ```bash
+    patrol coverage pull --browserstack-build-id <build_id> --output coverage
+    ```
+
+    Credentials come from `--browserstack-creds USERNAME:ACCESS_KEY` or the `BROWSERSTACK_CREDS` env var. This writes `coverage/jacoco.exec` (Java) and `coverage/patrol_lcov.info` (Dart, merged across all shards).
+  </Step>
+</Steps>
+
+<Warning>
+  Coverage and `clearPackageData:true` are mutually exclusive on BrowserStack. `pm clear` between tests revokes the app's permission to write the shared coverage file, so only the first test's coverage survives — and the one remaining workaround (letting the orchestrator collect per-test coverage) is blocked by a long-standing Android bug ([android-test#829]). This is a platform limitation, not a Patrol one.
+
+  Keep `clearPackageData:true` for your regular and nightly runs. Run coverage as a separate, periodic build with `clearPackageData:false`, accepting that a few tests which rely on a clean app/permission state may fail there. `patrol coverage pull` refuses builds that ran with `clearPackageData:true` instead of handing back a misleading first-test-only result.
+</Warning>
 [BrowserStack App Automate]: https://www.browserstack.com/app-automate
 [mobile-tools]: https://github.com/leancodepl/mobile-tools
 [bs_account]: https://www.browserstack.com/accounts/profile
@@ -241,3 +283,5 @@ Then pass it in the `xctestrun-build` request next to the app and test suite:
 [bs_ios_app_docs]: https://www.browserstack.com/docs/app-automate/api-reference/xcuitest/apps#upload-an-app
 [bs_ios_test_docs]: https://www.browserstack.com/docs/app-automate/api-reference/xcuitest/tests#upload-a-test-suite
 [bs_execute_ios_docs]: https://www.browserstack.com/docs/app-automate/api-reference/xcuitest/builds#execute-a-build
+
+[android-test#829]: https://github.com/android/android-test/issues/829

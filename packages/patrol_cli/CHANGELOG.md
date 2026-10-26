@@ -2,9 +2,13 @@
 
 - Add `--web-browser` to run web tests in Firefox or WebKit (the engine of Safari and every iOS
   browser) instead of Chromium. Requires `patrol` with the matching `web_runner` change.
+- Allow `equatable` 3.x by widening the constraint to `>=2.1.0 <4.0.0`. Resolution stays on 2.x until `cli_completion` supports 3.x.
+- Add `patrol coverage pull`, which splits the JaCoCo `.ec` coverage of a patrol Android run into a standard `jacoco.exec` and a Dart `patrol_lcov.info`, merging duplicate `SF:` records across tests and shards. `--input <file or directory>` reads local `.ec` files (e.g. emulator.wtf or Firebase Test Lab outputs); `--browserstack-build-id` downloads them from BrowserStack, merging every session (shard) unless `--browserstack-session-id` is given, and fails fast on builds that ran with `clearPackageData:true`, which is incompatible with coverage there. (#3066)
 - Fix `idevicesyslog` not being scoped to the device under test, so concurrent runs on a host with
   several real iOS devices attached all streamed the same device's log, corrupting the step
   display, `--show-flutter-logs` output and the test summary. (#3245)
+- Fix `--flutter-command` and `PATROL_FLUTTER_COMMAND` splitting quoted text on spaces, so a quoted
+  Flutter path with spaces works. Add `splitCommandLine` to the public API. (#3026)
 
 ## 4.8.0
 
