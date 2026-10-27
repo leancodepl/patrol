@@ -7,6 +7,8 @@
   display, `--show-flutter-logs` output and the test summary. (#3245)
 - Fix `--flutter-command` and `PATROL_FLUTTER_COMMAND` splitting quoted text on spaces, so a quoted
   Flutter path with spaces works. Add `splitCommandLine` to the public API. (#3026)
+- Log the outcome of a hot restart (`Restarted application ...` or Flutter's compile error notice)
+  at info level instead of only with `--verbose`, so a restart that never completes is visible.
 
 ## 4.8.0
 
