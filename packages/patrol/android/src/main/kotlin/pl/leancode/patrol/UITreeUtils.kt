@@ -51,7 +51,7 @@ private fun getWindowRoots(uiDevice: UiDevice, uiAutomation: UiAutomation): Arra
 
 // Skipping a node whose isVisibleToUser is false drops its whole subtree. WebViews sometimes
 // report an on-screen container as invisible, so includeInvisibleNodes lets callers keep them.
-internal fun fromUiAccessibilityNodeInfo(
+private fun fromUiAccessibilityNodeInfo(
     obj: AccessibilityNodeInfo,
     includeInvisibleNodes: Boolean
 ): AndroidNativeView {
