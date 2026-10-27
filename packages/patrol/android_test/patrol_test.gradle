@@ -1,0 +1,54 @@
+// Configures :patrolTest package IDs and manifest metadata.
+def testAndroid = project.extensions.getByName("android")
+
+def remapClearPackageData = { args ->
+    if (args == null) {
+        return
+    }
+    def raw = args.get("clearPackageData")
+    if (raw == null) {
+        return
+    }
+    args.remove("clearPackageData")
+    args.put(
+            "patrolClearAppData",
+            raw.toString().equalsIgnoreCase("true") ? "true" : "false"
+    )
+}
+
+def bakedClear = { args ->
+    if (args == null || !args.containsKey("patrolClearAppData")) {
+        return null
+    }
+    return args.get("patrolClearAppData").toString().equalsIgnoreCase("true") ? "true" : "false"
+}
+
+remapClearPackageData(testAndroid.defaultConfig.testInstrumentationRunnerArguments)
+testAndroid.defaultConfig.manifestPlaceholders.put(
+        "patrolClearAppData",
+        bakedClear(testAndroid.defaultConfig.testInstrumentationRunnerArguments) ?: "false"
+)
+
+testAndroid.productFlavors.all { flavor ->
+    remapClearPackageData(flavor.testInstrumentationRunnerArguments)
+    def flavorClear = bakedClear(flavor.testInstrumentationRunnerArguments)
+    if (flavorClear == null) {
+        flavorClear = bakedClear(testAndroid.defaultConfig.testInstrumentationRunnerArguments)
+    }
+    flavor.manifestPlaceholders.put("patrolClearAppData", flavorClear ?: "false")
+}
+
+// Use the matching :app variant's final application ID.
+def appAndroid = project(":app").extensions.getByName("android")
+def androidComponents = project.extensions.getByName("androidComponents")
+androidComponents.onVariants(androidComponents.selector().all()) { variant ->
+    def appVariant = appAndroid.applicationVariants.find {
+        it.name.equalsIgnoreCase(variant.name)
+    }
+    if (appVariant == null) {
+        throw new GradleException("No matching :app variant found for ${variant.name}")
+    }
+    def appId = appVariant.applicationId
+    variant.applicationId.set("${appId}.patrol_test")
+    variant.manifestPlaceholders.put("patrolAppId", appId)
+}

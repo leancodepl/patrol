@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:glob/glob.dart';
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
+import 'package:patrol_cli/src/android/android_test_layout.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/commands/dart_define_utils.dart';
@@ -331,6 +332,9 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       uninstall: uninstall,
+      testLayout: device.targetPlatform == TargetPlatform.android
+          ? _androidTestBackend.detectTestLayout()
+          : AndroidTestLayout.inApp,
       emitTestManifest: emitTestManifest,
     );
 
@@ -471,10 +475,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     late Future<void> Function()? action;
     switch (device.targetPlatform) {
       case TargetPlatform.android:
-        final packageName = androidOpts.packageName;
-        if (packageName != null) {
-          action = () => _androidTestBackend.uninstall(packageName, device);
-        }
+        action = () => _androidTestBackend.uninstall(androidOpts, device);
       case TargetPlatform.iOS:
         final bundleId = iosOpts.bundleId;
         if (bundleId != null) {
@@ -558,9 +559,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
           pullScreenshots: true,
           screenshotsOutputDir: screenshotsOutputDir,
         );
-        final package = android.packageName;
-        if (package != null && uninstall) {
-          finalizer = () => _androidTestBackend.uninstall(package, device);
+        if (uninstall) {
+          finalizer = () => _androidTestBackend.uninstall(android, device);
         }
       case TargetPlatform.macOS:
         action = () => _macosTestBackend.execute(macos, device);

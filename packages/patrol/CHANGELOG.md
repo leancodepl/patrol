@@ -1,5 +1,8 @@
 ## Unreleased
 
+- Add the optional self-instrumenting Android `:patrolTest` layout, which runs
+  JUnit outside the app process. The in-app `androidTest` layout remains
+  supported.
 - Allow `equatable` 3.x by widening the constraint to `>=2.1.0 <4.0.0`. Apps still on `equatable` 2.x keep resolving.
 - BrowserStack Dart coverage now counts never-executed lines by default, the same way `flutter test --coverage` does, when `PATROL_BS_COVERAGE_PACKAGES` is a list of plain anchored prefixes (`^package:my_app/`). The prefixes are passed to the VM as `libraryFilters`, so only the app's own libraries are force-compiled, and only once per app process (`librariesAlreadyCompiled`). Without such prefixes it falls back to executed-code-only coverage and logs why. `PATROL_BS_COVERAGE_FORCE_COMPILE=true`/`false` overrides the default. (#3066)
 - Fix BrowserStack Dart coverage being lost when a session is killed mid-dump. The runner assembled the `.ec` in place - truncating it, writing the JaCoCo dump, then appending the Dart blocks - so a process killed in that window (e.g. the BrowserStack session timeout) left a Dart-less file. It now stages the whole file and swaps it in with a single rename. Per-process Dart LCOVs are also merged on device instead of concatenated, so the embedded payload stays the size of one cumulative snapshot instead of growing with the test count. (#3066)

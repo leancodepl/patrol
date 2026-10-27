@@ -3,6 +3,8 @@
 - Allow `equatable` 3.x by widening the constraint to `>=2.1.0 <4.0.0`. Apps still on `equatable` 2.x keep resolving.
 - Remove `@override` from `Entry` subclasses' `fromJson` factories, which Dart 3.13 reports as `invalid_annotation_target`.
 - Add an example that pipes `PatrolLogWriter` output into `PatrolLogReader`.
+- Omit the report line from the test summary when `PatrolLogReader.reportPath` is empty
+  (used when Android tests run without Gradle, e.g. `patrol test-without-building`).
 
 ## 0.10.1
 
