@@ -17,6 +17,7 @@ class PatrolLogReader {
     required this.hideTestSteps,
     required this.clearTestSteps,
     this.hideTestLifecycle = false,
+    this.testFileSuffix = TestEntry.defaultTestFileSuffix,
     this.onLogEntry,
   }) : _scope = scope;
 
@@ -26,6 +27,10 @@ class PatrolLogReader {
   final bool hideTestSteps;
   final bool clearTestSteps;
   final bool hideTestLifecycle;
+
+  /// The project's `patrol.test_file_suffix`, used to recognize the test file
+  /// prefix in test names.
+  final String testFileSuffix;
   final void Function(Entry entry)? onLogEntry;
   final StreamSubscription<void> Function(
     void Function(String) onData, {
@@ -85,8 +90,9 @@ class PatrolLogReader {
 
   /// Returns `String` that have printed in bullet points name of failed tests
   /// with relative path to file that contains the test.
-  String get failedTestsList =>
-      failedTests.map((e) => '  - ${e.nameWithPath}').join('\n');
+  String get failedTestsList => failedTests
+      .map((e) => '  - ${e.nameWithPathFor(testFileSuffix: testFileSuffix)}')
+      .join('\n');
 
   /// Parse the line from the process output.
   void parse(String line) {
@@ -215,7 +221,7 @@ class PatrolLogReader {
 
           // Print the test entry to the console.
           if (!hideTestLifecycle) {
-            log(entry.pretty());
+            log(entry.pretty(testFileSuffix: testFileSuffix));
           }
 
           // Reset the counters needed for clearing the lines.
@@ -239,7 +245,7 @@ class PatrolLogReader {
           // Print test entry summary to console.
           if (!hideTestLifecycle) {
             log(
-              '${entry.pretty()} '
+              '${entry.pretty(testFileSuffix: testFileSuffix)} '
               '${executionTime != null ? '${AnsiCodes.gray}(${executionTime}s)${AnsiCodes.reset}' : ''}',
             );
           }
@@ -305,9 +311,10 @@ class PatrolLogReader {
     return singleEntry;
   }
 
-  /// Finish entries on web/mobile may contain a prefix, e.g. `web.some_test`
-  /// or `patrol_test.app_test`. This normalizes test names from start
-  /// and finish entries so they can be matched reliably by stripping the prefix.
+  /// Finish entries on web/mobile may contain a prefix, e.g. `web.some_test`,
+  /// `patrol_test.app_test` or, for a top-level test file, `app_test`. This
+  /// normalizes test names from start and finish entries so they can be
+  /// matched reliably by stripping the prefix.
   String _normalizeTestName(String testName) {
     final firstSpace = testName.indexOf(' ');
     if (firstSpace == -1) {
@@ -315,7 +322,10 @@ class PatrolLogReader {
     }
 
     final firstToken = testName.substring(0, firstSpace);
-    if (!firstToken.contains('.')) {
+    final fileNameSuffix = TestEntry.fileNameSuffix(testFileSuffix);
+    final hasFileNameSuffix =
+        fileNameSuffix.isNotEmpty && firstToken.endsWith(fileNameSuffix);
+    if (!firstToken.contains('.') && !hasFileNameSuffix) {
       return testName;
     }
 

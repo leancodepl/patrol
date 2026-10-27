@@ -478,6 +478,7 @@ class WebTestBackend {
               showFlutterLogs: showFlutterLogs,
               hideTestSteps: hideTestSteps || isShardedRun,
               clearTestSteps: clearTestSteps,
+              testFileSuffix: options.flutter.testFileSuffix,
               hideTestLifecycle: isShardedRun,
             )
             ..listen()

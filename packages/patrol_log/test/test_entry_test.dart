@@ -131,4 +131,75 @@ void main() {
       expect(entry.nameWithPath, contains('/example_test.dart'));
     });
   });
+
+  group('custom test file suffix', () {
+    test('strips a top-level file prefix ending with the suffix', () {
+      final entry = TestEntry(
+        name: 'example_spec grants permission',
+        status: TestEntryStatus.success,
+      );
+
+      final pretty = entry.pretty(testFileSuffix: '_spec.dart');
+      expect(pretty, startsWith('${Emojis.success} grants permission'));
+      expect(pretty, contains('/example_spec.dart'));
+    });
+
+    test('strips a nested file prefix ending with the suffix', () {
+      final entry = TestEntry(
+        name: 'flows.example_spec grants permission',
+        status: TestEntryStatus.failure,
+      );
+
+      final nameWithPath = entry.nameWithPathFor(testFileSuffix: '_spec.dart');
+      expect(nameWithPath, startsWith('grants permission'));
+      expect(nameWithPath, contains('/flows/example_spec.dart'));
+    });
+
+    test('sanitizes non-identifier characters in the suffix', () {
+      final entry = TestEntry(
+        name: 'example_spec grants permission',
+        status: TestEntryStatus.success,
+      );
+
+      final nameWithPath = entry.nameWithPathFor(testFileSuffix: '.spec.dart');
+      expect(nameWithPath, startsWith('grants permission'));
+      expect(nameWithPath, contains('/example.spec.dart'));
+    });
+
+    test('keeps the name intact when the suffix is only .dart', () {
+      final entry = TestEntry(
+        name: 'Sign up full onboarding flow',
+        status: TestEntryStatus.success,
+      );
+
+      expect(
+        entry.nameWithPathFor(testFileSuffix: '.dart'),
+        'Sign up full onboarding flow',
+      );
+    });
+
+    test('keeps a default-suffix-like first word intact', () {
+      final entry = TestEntry(
+        name: 'unit_test grants permission',
+        status: TestEntryStatus.success,
+      );
+
+      expect(
+        entry.nameWithPathFor(testFileSuffix: '_spec.dart'),
+        'unit_test grants permission',
+      );
+    });
+  });
+
+  group('TestEntry.fileNameSuffix', () {
+    test('drops the .dart extension', () {
+      expect(TestEntry.fileNameSuffix('_test.dart'), '_test');
+      expect(TestEntry.fileNameSuffix('_spec.dart'), '_spec');
+    });
+
+    test('replaces non-identifier characters with underscores', () {
+      expect(TestEntry.fileNameSuffix('.spec.dart'), '_spec');
+      expect(TestEntry.fileNameSuffix('-e2e.dart'), '_e2e');
+    });
+  });
 }

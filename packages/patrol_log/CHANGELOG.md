@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Recognize test file prefixes for projects that override `patrol.test_file_suffix`. `PatrolLogReader` takes the suffix as `testFileSuffix` and uses it both to print a finished test with its file path and to match a finish entry to its start entry. `TestEntry.pretty` takes an optional `testFileSuffix`, and `TestEntry.nameWithPathFor` and `PatrolSingleTestEntry.nameWithPathFor` are added. (#3171)
 - Allow `equatable` 3.x by widening the constraint to `>=2.1.0 <4.0.0`. Apps still on `equatable` 2.x keep resolving.
 - Remove `@override` from `Entry` subclasses' `fromJson` factories, which Dart 3.13 reports as `invalid_annotation_target`.
 - Add an example that pipes `PatrolLogWriter` output into `PatrolLogReader`.

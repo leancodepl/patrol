@@ -17,6 +17,7 @@ class FlutterAppOptions {
     required this.buildName,
     required this.buildNumber,
     this.noTreeShakeIcons = false,
+    this.testFileSuffix = '_test.dart',
   });
 
   final FlutterCommand command;
@@ -28,6 +29,10 @@ class FlutterAppOptions {
   final String? buildName;
   final String? buildNumber;
   final bool noTreeShakeIcons;
+
+  /// The `patrol.test_file_suffix` from `pubspec.yaml`, used to recognize test
+  /// file prefixes in test names reported by the app.
+  final String testFileSuffix;
 
   /// Translates these options into a proper `flutter attach`.
   @nonVirtual

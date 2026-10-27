@@ -38,6 +38,10 @@ class PatrolSingleTestEntry {
   /// If test is not closed yet, the path is unknown, so return only test name.
   String get nameWithPath => closingTestEntry?.nameWithPath ?? name;
 
+  /// Like [nameWithPath], for test files ending with [testFileSuffix].
+  String nameWithPathFor({required String testFileSuffix}) =>
+      closingTestEntry?.nameWithPathFor(testFileSuffix: testFileSuffix) ?? name;
+
   /// The execution time of the test.
   Duration get executionTime {
     final testEntry = closingTestEntry;
