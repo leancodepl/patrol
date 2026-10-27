@@ -291,10 +291,14 @@ class FlutterTool {
 
             if (line.startsWith('Restarted application')) {
               _settleRestart(_onRestartCompleted);
+              _logger.info('Hot Restart: $line');
+              return;
             }
 
             if (line.startsWith('Try again after fixing the above error')) {
               _settleRestart(_onRestartFailed);
+              _logger.info('Hot Restart: $line');
+              return;
             }
 
             if (line.startsWith('The Flutter DevTools debugger and profiler')) {

@@ -19,17 +19,19 @@ void main() {
   setUpAll(() => registerFallbackValue(<int>[]));
 
   late FlutterTool flutterTool;
+  late MockLogger logger;
   late MockProcessManager processManager;
   late Platform platform;
 
   setUp(() {
     final disposeScope = DisposeScope();
     final stdin = StreamController<List<int>>();
+    logger = MockLogger();
     processManager = MockProcessManager();
     platform = FakePlatform();
 
     flutterTool = FlutterTool(
-      logger: MockLogger(),
+      logger: logger,
       parentDisposeScope: disposeScope,
       processManager: processManager,
       platform: platform,
@@ -111,6 +113,12 @@ void main() {
         processStdout.add(utf8.encode('Restarted application in 1,234ms.\n'));
         await Future<void>.delayed(const Duration(milliseconds: 10));
         expect(completed, isTrue);
+        verify(
+          () => logger.info('Hot Restart: Restarted application in 1,234ms.'),
+        ).called(1);
+        verifyNever(
+          () => logger.detail(any(that: contains('Restarted application'))),
+        );
         await processStdout.close();
       },
     );
@@ -154,6 +162,11 @@ void main() {
         await Future<void>.delayed(const Duration(milliseconds: 10));
         expect(failed, isTrue);
         expect(completed, isFalse);
+        verify(
+          () => logger.info(
+            'Hot Restart: Try again after fixing the above error(s).',
+          ),
+        ).called(1);
 
         // A later successful restart must not fire the stale callback again.
         processStdout.add(utf8.encode('Restarted application in 1,234ms.\n'));

@@ -1,3 +1,9 @@
+## Unreleased
+
+- `run` on the file that is still running now returns a warning instead of
+  hot-restarting it. A restart sent while the previous run was still attaching
+  could leave the session hanging until the timeout (#3333).
+
 ## 0.2.1
 
 - Wait for the previous develop session to finish before starting a new one.

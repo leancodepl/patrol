@@ -240,6 +240,10 @@ final class PatrolSession {
             'Cannot start different test "$testFile". '
             'Use quit first or run the same test file.';
       }
+      if (_testState == TestState.running) {
+        return 'A run of this file is still in progress. Call status to '
+            'follow it, or quit to stop it.';
+      }
       // Same test file - hot restart. The device can't change on hot restart.
       if (device != null) {
         _deviceSelectionNote =
