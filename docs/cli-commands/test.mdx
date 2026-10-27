@@ -172,6 +172,26 @@ To achieve full isolation between test runs:
 patrol test --full-isolation
 ```
 
+### iOS Simulator version
+
+On iOS Simulator, Patrol asks `xcodebuild` for the `latest` iOS version, which
+is the newest one supported by your Xcode. If the simulator you want to use runs
+an older iOS version, `xcodebuild` fails with an error like:
+
+```
+xcodebuild: error: Unable to find a device matching the provided destination specifier:
+		{ platform:iOS Simulator, id:<simulator id>, OS:latest }
+```
+
+Use `--ios` to pass the iOS version of the simulator:
+
+```bash
+patrol test --device "iPhone 16" --ios 18.3
+```
+
+`--ios` is also accepted by `patrol build ios`, `patrol develop` and
+`patrol test-without-building`. It has no effect on physical iOS devices.
+
 ### Video recording
 
 Record a video of each test case using `--record-video`:
