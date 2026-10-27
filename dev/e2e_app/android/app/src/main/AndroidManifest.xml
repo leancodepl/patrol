@@ -49,6 +49,17 @@
                 <data android:scheme="patrol" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".SkipInvisibleActivity"
+            android:exported="true"
+            android:theme="@android:style/Theme.NoDisplay">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="patrolflag" />
+            </intent-filter>
+        </activity>
         <receiver android:exported="false"
         android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" />
         <receiver android:exported="false"

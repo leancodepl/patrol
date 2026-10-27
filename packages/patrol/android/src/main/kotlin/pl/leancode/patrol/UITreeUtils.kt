@@ -9,6 +9,8 @@ import pl.leancode.patrol.contracts.Contracts.AndroidNativeView
 import pl.leancode.patrol.contracts.Contracts.Point2D
 import pl.leancode.patrol.contracts.Contracts.Rectangle
 
+var skipNodesNotVisibleToUser = true
+
 // This function is similar to AccessibilityNodeInfoDumper.dumpWindowHierarchy()
 fun getWindowTrees(uiDevice: UiDevice, uiAutomation: UiAutomation): List<AndroidNativeView> {
     val windowRoots = getWindowRoots(uiDevice, uiAutomation)
@@ -50,7 +52,7 @@ private fun fromUiAccessibilityNodeInfo(obj: AccessibilityNodeInfo): AndroidNati
 
     for (i in 0 until obj.childCount) {
         val child = obj.getChild(i)
-        if (child != null && child.isVisibleToUser) {
+        if (child != null && (!skipNodesNotVisibleToUser || child.isVisibleToUser)) {
             children.add(fromUiAccessibilityNodeInfo(child))
         }
     }
