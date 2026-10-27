@@ -8,15 +8,30 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
+import 'package:patrol/src/bs_coverage.dart';
 import 'package:patrol/src/devtools_service_extensions/devtools_service_extensions.dart';
 import 'package:patrol/src/global_state.dart' as global_state;
-import 'package:patrol/src/platform/current.dart' as current_platform;
 
 import 'constants.dart' as constants;
 
 const _success = 'success';
 
 bool get _isDevelopMode => constants.hotRestartEnabled;
+
+/// Profile and release builds drop `toString()` from Flutter's own classes, so
+/// there [FlutterErrorDetails.toString] returns
+/// "Instance of 'FlutterErrorDetails'". Build the message from the exception
+/// and the stack trace instead.
+String _describeError(FlutterErrorDetails details) {
+  if (kDebugMode) {
+    return details.toString();
+  }
+
+  final stack = details.stack;
+  return stack == null
+      ? details.exceptionAsString()
+      : '${details.exceptionAsString()}\n$stack';
+}
 
 void _defaultPrintLogger(String message) {
   // TODO: Use a logger instead of print
@@ -115,6 +130,12 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
           final passed = global_state.isCurrentTestPassing;
           logger(
             'tearDown(): test "$testName" in group "$_currentDartTest", passed: $passed',
+          );
+
+          await BrowserStackCoverage.recordTestCompleted(
+            testName: testName,
+            testFilePath: _currentDartTest!,
+            passed: passed,
           );
 
           await patrolAppService.markDartTestAsCompleted(
@@ -257,12 +278,12 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
     FlutterError.onError = (details) {
       if (_currentDartTest case final testName?) {
         final previousDetails = switch (_testResults[testName]) {
-          Failure(:final details?) => FlutterErrorDetails(exception: details),
+          Failure(:final details?) => _describeError(
+            FlutterErrorDetails(exception: details),
+          ),
           _ => null,
         };
-        final detailsAsString = (kReleaseMode && current_platform.isIOS)
-            ? '${details.exceptionAsString()}\n${details.stack}'
-            : details.toString();
+        final detailsAsString = _describeError(details);
 
         _testResults[testName] = Failure(
           testName,
