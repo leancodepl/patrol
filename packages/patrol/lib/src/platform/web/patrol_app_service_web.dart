@@ -11,14 +11,20 @@ library;
 import 'dart:async';
 import 'dart:js_interop';
 
+import 'package:patrol/src/phases.dart';
 import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:patrol_log/patrol_log.dart';
 
 class _TestExecutionResult {
-  const _TestExecutionResult({required this.passed, required this.details});
+  const _TestExecutionResult({
+    required this.passed,
+    required this.details,
+    required this.continuation,
+  });
 
   final bool passed;
   final String? details;
+  final PatrolPhaseContinuation? continuation;
 }
 
 @JS()
@@ -142,13 +148,14 @@ class PatrolAppService {
   /// bundled Dart test file.
   final DartGroupEntry topLevelDartTestGroup;
 
-  final _testExecutionRequested = Completer<String>();
+  final _testExecutionRequested = Completer<RunDartTestRequest>();
 
-  /// A future that completes with the name of the Dart test file that was
-  /// requested to execute.
-  Future<String> get testExecutionRequested => _testExecutionRequested.future;
+  /// A future that completes with the Dart test request.
+  Future<RunDartTestRequest> get testExecutionRequested =>
+      _testExecutionRequested.future;
 
   final _testExecutionCompleted = Completer<_TestExecutionResult>();
+  PatrolPhaseContinuation? _continuation;
 
   /// A future that completes when the Dart test file (whose execution was
   /// requested) completes.
@@ -159,6 +166,11 @@ class PatrolAppService {
 
   final _patrolLog = PatrolLogWriter();
 
+  /// Sets the native work that should follow the currently running Dart phase.
+  void setContinuation(PatrolPhaseContinuation continuation) {
+    _continuation = continuation;
+  }
+
   /// Marks [dartFileName] as completed with the given [passed] status.
   ///
   /// If an exception was thrown during the test, [details] should contain the
@@ -168,10 +180,14 @@ class PatrolAppService {
     required bool passed,
     required String? details,
   }) async {
-    final requestedDartTestName = await testExecutionRequested;
-    assert(requestedDartTestName == dartFileName);
+    final request = await testExecutionRequested;
+    assert(request.name == dartFileName);
     _testExecutionCompleted.complete(
-      _TestExecutionResult(passed: passed, details: details),
+      _TestExecutionResult(
+        passed: passed,
+        details: details,
+        continuation: passed ? _continuation : null,
+      ),
     );
   }
 
@@ -182,8 +198,8 @@ class PatrolAppService {
   /// It's used inside of `patrolTest` to halt execution of test body until
   /// [runDartTest] is called.
   Future<bool> waitForExecutionRequest(String dartTest) async {
-    final requestedDartTest = await testExecutionRequested;
-    return requestedDartTest == dartTest;
+    final request = await testExecutionRequested;
+    return request.name == dartTest;
   }
 
   /// Returns the list of Dart tests.
@@ -193,7 +209,7 @@ class PatrolAppService {
 
   /// Runs a Dart test with the given [request].
   Future<RunDartTestResponse> runDartTest(RunDartTestRequest request) async {
-    _testExecutionRequested.complete(request.name);
+    _testExecutionRequested.complete(request);
     final result = await testExecutionCompleted;
     if (!result.passed) {
       _patrolLog.log(
@@ -202,16 +218,29 @@ class PatrolAppService {
       result.details
           ?.split('\n')
           .forEach((e) => _patrolLog.log(ErrorEntry(message: e)));
-    } else {
-      _patrolLog.log(
-        TestEntry(name: request.name, status: TestEntryStatus.success),
+      return RunDartTestResponse(
+        result: RunDartTestResponseResult.failure,
+        details: result.details,
       );
     }
-    return RunDartTestResponse(
-      result: result.passed
-          ? RunDartTestResponseResult.success
-          : RunDartTestResponseResult.failure,
-      details: result.details,
+
+    // Playwright only fails on `failure`, and web has no process-kill loop.
+    if (result.continuation != null) {
+      const details = 'Phased Patrol tests are not supported on web';
+      _patrolLog
+        ..log(TestEntry(name: request.name, status: TestEntryStatus.failure))
+        ..log(ErrorEntry(message: details));
+      return const RunDartTestResponse(
+        result: RunDartTestResponseResult.failure,
+        details: details,
+      );
+    }
+
+    _patrolLog.log(
+      TestEntry(name: request.name, status: TestEntryStatus.success),
+    );
+    return const RunDartTestResponse(
+      result: RunDartTestResponseResult.success,
     );
   }
 }
