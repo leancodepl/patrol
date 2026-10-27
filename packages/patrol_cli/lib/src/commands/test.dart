@@ -381,6 +381,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       headless: optionalBoolArg('web-headless'),
       webPort: intArg('web-port'),
       serverTimeout: intArg('web-server-timeout'),
+      browser: stringArg('web-browser'),
       browserArgs: stringArg('web-browser-args'),
       channel: stringArg('web-channel'),
       executablePath: stringArg('web-executable-path'),

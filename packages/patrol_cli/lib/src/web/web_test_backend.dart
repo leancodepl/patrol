@@ -434,7 +434,10 @@ class WebTestBackend {
       final webRunnerPath = await _getWebRunnerPath();
 
       // Install Node.js dependencies if needed
-      await _ensureNodeDependencies(webRunnerPath);
+      await _ensureNodeDependencies(
+        webRunnerPath,
+        browser: options.browser ?? 'chromium',
+      );
 
       final testResultsDir =
           options.resultsDir ?? '${Directory.current.path}/test-results';
@@ -525,7 +528,7 @@ class WebTestBackend {
 
     final webRunnerPath = await _getWebRunnerPath();
 
-    await _ensureNodeDependencies(webRunnerPath);
+    await _ensureNodeDependencies(webRunnerPath, browser: 'chromium');
 
     final testResultsDir =
         options.resultsDir ?? '${Directory.current.path}/test-results';
@@ -672,7 +675,10 @@ class WebTestBackend {
     }
   }
 
-  Future<void> _ensureNodeDependencies(String webRunnerPath) async {
+  Future<void> _ensureNodeDependencies(
+    String webRunnerPath, {
+    required String browser,
+  }) async {
     _logger.info('Installing Node.js dependencies...');
 
     final nodeResult = await _processManager.run(
@@ -696,7 +702,7 @@ class WebTestBackend {
       ..info('Node.js dependencies installed successfully.')
       ..info('Installing Playwright dependencies...');
     final result = await _processManager.run(
-      ['npx', 'playwright', 'install', 'chromium'],
+      ['npx', 'playwright', 'install', browser],
       workingDirectory: webRunnerPath,
       runInShell: true,
     );
@@ -704,7 +710,7 @@ class WebTestBackend {
     if (result.exitCode != 0) {
       throw ProcessException(
         'npx',
-        ['playwright', 'install', 'chromium'],
+        ['playwright', 'install', browser],
         'Failed to install Playwright dependencies:\n'
             'STDOUT: ${result.stdout}\n'
             'STDERR: ${result.stderr}',

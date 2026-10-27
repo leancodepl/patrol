@@ -29,6 +29,7 @@ const userAgent = envString("PATROL_WEB_USER_AGENT")
 const viewport = envJson<PlaywrightTestOptions["viewport"]>("PATROL_WEB_VIEWPORT")
 const shard = envParsed("PATROL_WEB_SHARD", parseShard)
 const headless = envBool("PATROL_WEB_HEADLESS") ?? false
+const browserName = envString("PATROL_WEB_BROWSER") as PlaywrightWorkerOptions["browserName"] | undefined
 const channel = envString("PATROL_WEB_CHANNEL")
 const bypassCSP = envBool("PATROL_WEB_BYPASS_CSP")
 const ignoreHTTPSErrors = envBool("PATROL_WEB_IGNORE_HTTPS_ERRORS")
@@ -56,6 +57,7 @@ export default defineConfig({
   use: {
     baseURL,
     headless,
+    browserName,
     video,
     locale,
     timezoneId,
