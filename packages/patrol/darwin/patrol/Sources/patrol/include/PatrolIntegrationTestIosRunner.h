@@ -382,8 +382,9 @@
   @end
 
 // Static-codegen variant: build-time `patrol build ios` generates real XCTest
-// methods (a #included .inc) that call patrolExecuteDartTest:. BEGIN opens the
-// class and shared infra; END closes it. No +testInvocations - XCTest discovers
+// methods (a #included .inc) that call patrolExecuteDartTest:. BEGIN declares the
+// class holding the shared infra and opens an XCTestCase category providing
+// patrolExecuteDartTest:; END closes it. No +testInvocations - XCTest discovers
 // the generated `test_` methods natively (Xcode navigator, -only-testing).
 #define PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN(__test_class)                                                  \
   @interface __test_class : XCTestCase                                                                                 \
@@ -395,10 +396,9 @@
   static ObjCPatrolAppServiceClient *_patrolStaticClient = nil;                                                        \
   static int _patrolStaticTestIndex = 0;                                                                               \
                                                                                                                        \
-  /* XCTest calls +setUp once per class, and the generated per-file classes all                                        \
-   * share one server and one port. */                                                                                 \
-  +(void)setUp {                                                                                                       \
-    [super setUp];                                                                                                     \
+  /* Called before every test; the generated per-file classes all share one                                            \
+   * server and one port, so it is started only once. */                                                               \
+  +(void)patrolStaticSetUp {                                                                                           \
     static dispatch_once_t patrolServerOnce;                                                                           \
     dispatch_once(&patrolServerOnce, ^{                                                                                \
       _patrolStaticServer = [[PatrolServer alloc] init];                                                               \
@@ -542,20 +542,33 @@
     }                                                                                                                  \
   }                                                                                                                    \
                                                                                                                        \
+  @end                                                                                                                 \
+                                                                                                                       \
+  /* The generated test classes inherit from XCTestCase directly rather than from                                      \
+   * __test_class, so test-distribution tools that look for the XCTestCase                                             \
+   * subclasses in the test binary find them. They get patrolExecuteDartTest:                                          \
+   * from this category instead. */                                                                                    \
+  @interface XCTestCase (PatrolStaticRunner)                                                                           \
+  -(void)patrolExecuteDartTest : (NSString *)dartTestName skip : (BOOL)skip;                                           \
+  @end                                                                                                                 \
+                                                                                                                       \
+  @implementation XCTestCase (PatrolStaticRunner)                                                                      \
+                                                                                                                       \
   -(void)patrolExecuteDartTest : (NSString *)dartTestName skip : (BOOL)skip {                                          \
     NSLog(@"RunnerUITests running Dart test: %@", dartTestName);                                                       \
+    [__test_class patrolStaticSetUp];                                                                                  \
     if (CLEAR_PERMISSIONS && _patrolStaticTestIndex > 0) {                                                             \
-      [[self class] resetPermissions];                                                                                 \
+      [__test_class resetPermissions];                                                                                 \
       NSLog(@"App permissions cleared");                                                                               \
     }                                                                                                                  \
     if (FULL_ISOLATION && _patrolStaticTestIndex > 0) {                                                                \
       NSLog(@"Uninstalling app");                                                                                      \
-      [[self class] uninstallApp];                                                                                     \
+      [__test_class uninstallApp];                                                                                     \
       NSLog(@"App uninstallation completed, launching fresh app instance");                                            \
     }                                                                                                                  \
     _patrolStaticTestIndex++;                                                                                          \
                                                                                                                        \
-    [[self class] launchPatrolApp];                                                                                    \
+    [__test_class launchPatrolApp];                                                                                    \
     if (skip) {                                                                                                        \
       XCTSkip(@"Skip that test \"%@\"", dartTestName);                                                                 \
     }                                                                                                                  \
@@ -593,9 +606,9 @@
 
 #define PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_END @end
 
-// Base class for the generated per-file test classes: shared infrastructure, no
-// tests of its own. The generated `.inc` is included AFTER it and declares one
-// XCTestCase subclass per Dart test file, so reports group by file.
+// Shared infrastructure for the generated per-file test classes, no tests of its
+// own. The generated `.inc` is included AFTER it and declares one XCTestCase
+// subclass per Dart test file, so reports group by file.
 #define PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE(__test_class) \
   PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN(__test_class)      \
   PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_END

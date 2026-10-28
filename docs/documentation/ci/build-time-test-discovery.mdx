@@ -41,7 +41,7 @@ With build-time discovery, `patrol build` / `patrol test`:
 2. Generates static native test classes from that manifest, **one class per Dart
    test file**:
    - **iOS**: `ios/RunnerUITests/PatrolGeneratedTests.inc` - one
-     `PatrolGeneratedTests_<file> : RunnerUITests` subclass per test file, each
+     `PatrolGeneratedTests_<file> : XCTestCase` subclass per test file, each
      with one `- (void)test_<name>` method per Dart test.
    - **Android**: one `PatrolGeneratedTests_<file>.java` per test file in your
      `androidTest` source set, each with one `@Test public void test_<name>()` per
@@ -106,9 +106,12 @@ PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE(RunnerUITests)
 #include "PatrolGeneratedTests.inc"
 ```
 
-`RunnerUITests` is now a base class carrying the shared infrastructure (server,
-app launching, permissions) and holding no tests of its own; the generated
-`.inc`, included after it, declares one subclass per test file.
+`RunnerUITests` now only carries the shared infrastructure (server, app
+launching, permissions) and holds no tests of its own; the generated `.inc`,
+included after it, declares one `XCTestCase` subclass per test file. The
+generated classes inherit from `XCTestCase` directly rather than from
+`RunnerUITests`, so tools that find tests by scanning the test binary for
+`XCTestCase` subclasses see every test.
 
 <Warning>
   **Upgrading from the first release of this feature** (`patrol_cli` 4.7.0 /

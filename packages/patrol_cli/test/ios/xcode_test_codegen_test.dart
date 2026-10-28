@@ -40,10 +40,10 @@ void main() {
     final source = fs.file('/o.inc').readAsStringSync();
 
     expect(count, 2);
-    // The class is derived from the test file and inherits the shared base.
+    // The class is derived from the test file and inherits XCTestCase directly.
     expect(
       source,
-      contains('@interface PatrolGeneratedTests_example_test : RunnerUITests'),
+      contains('@interface PatrolGeneratedTests_example_test : XCTestCase'),
     );
     expect(
       source,
@@ -95,13 +95,13 @@ void main() {
 
     expect(
       source,
-      contains('@interface PatrolGeneratedTests_example_test : RunnerUITests'),
+      contains('@interface PatrolGeneratedTests_example_test : XCTestCase'),
     );
     expect(
       source,
       contains(
         '@interface PatrolGeneratedTests_permissions_location_test : '
-        'RunnerUITests',
+        'XCTestCase',
       ),
     );
     expect(source, contains('- (void)test_tap_once {'));
