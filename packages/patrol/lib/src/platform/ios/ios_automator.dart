@@ -263,4 +263,39 @@ abstract interface class IOSAutomator implements MobileAutomator {
     IOSSelector? imageSelector,
     Duration? timeout,
   });
+
+  /// Moves the hinge of a foldable iOS simulator, such as the iPhone Duo, to
+  /// [posture].
+  ///
+  /// See [setHingeAngle] for how it works and when it's available.
+  Future<void> setFoldPosture(FoldPosture posture);
+
+  /// Moves the hinge of a foldable iOS simulator, such as the iPhone Duo, to
+  /// [degrees], from 0 (closed) to 180 (fully open).
+  ///
+  /// When closed, the app shows on the cover display; when open, on the inner
+  /// one. If the app moves to the other display, this method waits until it
+  /// has resized.
+  ///
+  /// Only the host can fold a simulator, so this works only on iOS simulators
+  /// run by `patrol test` or `patrol develop`. It relies on private simulator
+  /// APIs, which a new Xcode can break.
+  Future<void> setHingeAngle(double degrees);
+}
+
+/// Posture of the hinge of a foldable iOS simulator, such as the iPhone Duo.
+enum FoldPosture {
+  /// Folded shut (0°). The app shows on the cover display.
+  closed(0),
+
+  /// Half open (130°). The app shows on the inner display.
+  halfOpen(130),
+
+  /// Fully open (180°). The app shows on the inner display.
+  open(180);
+
+  const FoldPosture(this.hingeAngle);
+
+  /// Hinge angle of this posture, in degrees.
+  final double hingeAngle;
 }

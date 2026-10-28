@@ -47,6 +47,7 @@
         [app.launchEnvironment mutableCopy] ?: [NSMutableDictionary dictionary];                                    \
     environment[@"PATROL_TEST_SERVER_PORT"] = [NSString stringWithFormat:@"%ld", (long)server.boundTestPort];       \
     environment[@"PATROL_APP_SERVER_PORT"] = [NSString stringWithFormat:@"%ld", (long)server.boundAppPort];         \
+    environment[@"PATROL_HOST_SERVER_PORT"] = NSProcessInfo.processInfo.environment[@"PATROL_HOST_PORT"];           \
     app.launchEnvironment = environment;                                                                            \
     [app launch];                                                                                                   \
   }                                                                                                                 \
@@ -425,6 +426,7 @@
         [NSString stringWithFormat:@"%ld", (long)_patrolStaticServer.boundTestPort];                                   \
     environment[@"PATROL_APP_SERVER_PORT"] =                                                                           \
         [NSString stringWithFormat:@"%ld", (long)_patrolStaticServer.boundAppPort];                                    \
+    environment[@"PATROL_HOST_SERVER_PORT"] = NSProcessInfo.processInfo.environment[@"PATROL_HOST_PORT"];              \
     app.launchEnvironment = environment;                                                                               \
     [app launch];                                                                                                      \
   }                                                                                                                    \
