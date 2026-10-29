@@ -199,13 +199,16 @@ Videos are saved as `.mp4` files in `<test-directory>/videos` (override with
 
 ### Screenshots
 
-Patrol can capture native screenshots on Android — automatically on test
-failure (opt-in) and on demand from a test. Requires `patrol_cli` 4.8.0 and
-`patrol` 4.10.0 or newer:
+Patrol can capture screenshots on Android and web — automatically on test
+failure (opt-in) and on demand from a test:
 
 - Enable failure screenshots by adding `screenshot_on_failure: true` to the
   `patrol` section of your `pubspec.yaml`.
 - Capture on demand with `await $.takeNativeScreenshot('tag')` inside a test.
+
+#### On Android
+
+Requires `patrol_cli` 4.8.0 and `patrol` 4.10.0 or newer.
 
 The capture happens natively (via `androidx.test`) at the moment of failure,
 before teardown, so it shows the actual failing screen. Patrol writes the PNG on
@@ -223,8 +226,8 @@ collects them:
 - **Firebase Test Lab**: pass `--directories-to-pull=/sdcard/Download/screenshots`.
 
 <Info>
-    Android only for now (a no-op on iOS). Works in the `patrol build android`
-    APK as well as `patrol test`.
+    Screenshot capture is a no-op on iOS. On Android, it works in the
+    `patrol build android` APK as well as `patrol test`.
 </Info>
 
 <Warning>
@@ -239,6 +242,19 @@ collects them:
     use `emit_test_manifest`: its generated per-test names are identifiers, so
     they are both filesystem- and URL-safe.
 </Warning>
+
+#### On web
+
+Web screenshot support is currently unreleased. Playwright captures the active
+page and saves PNGs to `test-results/<per-test-directory>/screenshots/` by default
+(override the results root with `--web-results-dir`; the runner receives it as
+`PATROL_TEST_RESULTS_DIR`). File names contain a timestamp and the sanitized tag,
+and the images are attached to the Playwright report.
+
+`screenshot_on_failure: true` now captures on web too, at the moment of failure
+before teardown; it was previously a no-op on web. On-demand captures use
+`await $.takeNativeScreenshot('tag')`. These captures are separate from
+Playwright's `--web-screenshot=only-on-failure` setting.
 
 ### Web Platform
 
