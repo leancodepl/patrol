@@ -1,7 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:meta/meta.dart';
 import 'package:patrol/src/platform/android/android_automator_config.dart';
 import 'package:patrol/src/platform/contracts/contracts.dart'
     show AndroidGetNativeViewsResponse, GoogleApp, KeyboardBehavior;
+import 'package:patrol/src/platform/mobile/fold_posture.dart';
 import 'package:patrol/src/platform/mobile/mobile_automator.dart';
 import 'package:patrol/src/platform/selector.dart'
     show AndroidSelector, IOSSelector;
@@ -299,4 +301,15 @@ abstract interface class AndroidAutomator implements MobileAutomator {
     AndroidSelector? imageSelector,
     Duration? timeout,
   });
+
+  /// Folds a foldable device, such as a Pixel Fold, to [posture].
+  ///
+  /// Needs Android 12+. The posture stays until [resetFoldPosture]. An
+  /// emulator's window doesn't resize, but the app does. **Experimental.**
+  @experimental
+  Future<void> setFoldPosture(FoldPosture posture);
+
+  /// Gives the posture back to the hinge. **Experimental.**
+  @experimental
+  Future<void> resetFoldPosture();
 }

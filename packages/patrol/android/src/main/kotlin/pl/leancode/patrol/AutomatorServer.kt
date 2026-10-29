@@ -269,6 +269,16 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
         automation.takeNativeScreenshot(request.tag)
     }
 
+    override fun setFoldPosture(request: Contracts.AndroidSetFoldPostureRequest): Contracts.AndroidSetFoldPostureResponse {
+        val previousPosture = automation.setFoldPosture(request.posture)
+
+        return Contracts.AndroidSetFoldPostureResponse(previousPosture)
+    }
+
+    override fun resetFoldPosture() {
+        automation.resetFoldPosture()
+    }
+
     override fun takeCameraPhoto(request: Contracts.AndroidTakeCameraPhotoRequest) {
         val isEmulator = isVirtualDevice().isVirtualDevice
 

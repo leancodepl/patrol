@@ -858,6 +858,39 @@ Map<String, dynamic> _$AndroidTakeNativeScreenshotRequestToJson(
   AndroidTakeNativeScreenshotRequest instance,
 ) => <String, dynamic>{'tag': instance.tag};
 
+AndroidSetFoldPostureRequest _$AndroidSetFoldPostureRequestFromJson(
+  Map<String, dynamic> json,
+) => AndroidSetFoldPostureRequest(
+  posture: $enumDecode(_$AndroidFoldPostureEnumMap, json['posture']),
+);
+
+Map<String, dynamic> _$AndroidSetFoldPostureRequestToJson(
+  AndroidSetFoldPostureRequest instance,
+) => <String, dynamic>{
+  'posture': _$AndroidFoldPostureEnumMap[instance.posture]!,
+};
+
+const _$AndroidFoldPostureEnumMap = {
+  AndroidFoldPosture.closed: 'closed',
+  AndroidFoldPosture.halfOpen: 'halfOpen',
+  AndroidFoldPosture.open: 'open',
+};
+
+AndroidSetFoldPostureResponse _$AndroidSetFoldPostureResponseFromJson(
+  Map<String, dynamic> json,
+) => AndroidSetFoldPostureResponse(
+  previousPosture: $enumDecodeNullable(
+    _$AndroidFoldPostureEnumMap,
+    json['previousPosture'],
+  ),
+);
+
+Map<String, dynamic> _$AndroidSetFoldPostureResponseToJson(
+  AndroidSetFoldPostureResponse instance,
+) => <String, dynamic>{
+  'previousPosture': _$AndroidFoldPostureEnumMap[instance.previousPosture],
+};
+
 IOSTakeCameraPhotoRequest _$IOSTakeCameraPhotoRequestFromJson(
   Map<String, dynamic> json,
 ) => IOSTakeCameraPhotoRequest(
