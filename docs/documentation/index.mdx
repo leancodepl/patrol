@@ -261,6 +261,11 @@ Check out our video version of this tutorial on YouTube!
   These lines also put Patrol into your release build, so remove them, or put them behind a
   Gradle property, before you build the app you publish. Patrol ships its own R8 keep rules, so
   you don't need to add any for Patrol when minification is enabled.
+
+  If `integration_test` is also in your `dev_dependencies` and the release build fails to compile
+  `GeneratedPluginRegistrant` with `package dev.flutter.plugins.integration_test does not exist`,
+  remove `integration_test` from `pubspec.yaml`, since Patrol doesn't need it. If your app does
+  need it, add `releaseImplementation(project(":integration_test"))` next to the Patrol line.
 </Warning>
 
 </Accordion>
@@ -365,6 +370,11 @@ Check out our video version of this tutorial on YouTube!
   These lines also put Patrol into your release build, so remove them, or put them behind a
   Gradle property, before you build the app you publish. Patrol ships its own R8 keep rules, so
   you don't need to add any for Patrol when minification is enabled.
+
+  If `integration_test` is also in your `dev_dependencies` and the release build fails to compile
+  `GeneratedPluginRegistrant` with `package dev.flutter.plugins.integration_test does not exist`,
+  remove `integration_test` from `pubspec.yaml`, since Patrol doesn't need it. If your app does
+  need it, add `releaseImplementation project(":integration_test")` next to the Patrol line.
 </Warning>
 
 </Accordion>
