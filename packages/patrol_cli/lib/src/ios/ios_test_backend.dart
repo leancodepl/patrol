@@ -552,8 +552,6 @@ class IOSTestBackend {
     });
   }
 
-  /// Starts the server a test calls to fold a foldable simulator, which only
-  /// the host can do.
   Future<IOSHostServer> _startHostServer(
     Device device,
     DisposeScope scope,

@@ -9,10 +9,7 @@ import 'package:process/process.dart';
 
 /// Moves the hinge of a booted foldable iOS simulator, such as the iPhone Duo.
 ///
-/// Neither `simctl` nor XCTest can fold a simulator. Device Hub does it from
-/// the host, by sending a HID event to the simulator over CoreSimulator's
-/// private XPC. [SimulatorHinge] compiles a small helper that sends the same
-/// event, starts it on the first [setAngle] and keeps it running until [close].
+/// Runs a helper that sends Device Hub's hinge event over private XPC.
 class SimulatorHinge {
   SimulatorHinge({
     required String deviceId,
@@ -31,15 +28,11 @@ class SimulatorHinge {
 
   Future<_Helper>? _helper;
 
-  /// The angle this hinge was last moved to, or null before the first
-  /// [setAngle]. The simulator can't report the angle it was left at.
+  /// The last angle set, or null before the first [setAngle].
   double? get angle => _angle;
   double? _angle;
 
   /// Moves the hinge to [degrees], from 0 (closed) to 180 (fully open).
-  ///
-  /// Completes once the simulator has received the event. The app moves to the
-  /// other display a moment later.
   Future<void> setAngle(double degrees) async {
     final helper = await (_helper ??= _startHelper());
 
@@ -122,15 +115,14 @@ class SimulatorHinge {
     return result.stdOut;
   }
 
-  /// Stops the helper. The hinge stays where it was moved.
+  /// Stops the helper. The hinge stays where it is.
   Future<void> close() async {
     final helper = _helper;
     _helper = null;
     try {
       if (await helper case final started?) {
         started.process.kill();
-        // macOS kills a running process whose binary is deleted, so the
-        // binary goes only after the helper.
+        // macOS kills a running process whose binary is deleted.
         started.directory.deleteSync(recursive: true);
       }
     } on Exception {
@@ -155,13 +147,10 @@ class SimulatorHingeException implements Exception {
   String toString() => 'SimulatorHingeException: $message';
 }
 
-// Reads one angle per stdin line and answers each with "ok" or "error <reason>".
-// dtuhidd tears down its HID services when the connection closes, so one
-// connection is kept for the whole run.
+// Reads one angle per stdin line and answers "ok" or "error <reason>".
+// Keeps one connection, because dtuhidd drops its HID services on close.
 const _helperSource = r'''
-// Sets the hinge angle of a booted foldable iOS simulator.
 // Usage: patrol_hinge <developer-dir> <udid>
-// Uses private SPI (CoreSimulator, libxpc *_4sim); simulators only.
 
 #import <Foundation/Foundation.h>
 #import <dlfcn.h>
@@ -188,7 +177,7 @@ static const uint32_t kSerializeDictionary = 0x01000000;
 static const uint32_t kSerializeNumber = 0x04000000;
 static const uint32_t kSerializeSymbol = 0x08000000;
 static const uint32_t kSerializeString = 0x09000000;
-// Size field Device Hub uses for a 64-bit float.
+// Device Hub's size field for a double.
 static const uint32_t kSerializeDoubleSize = 0x3f;
 
 static void appendWord(NSMutableData *data, uint32_t word) {
@@ -300,7 +289,7 @@ static NSString *setHingeAngle(xpc_connection_t connection, double degrees) {
   xpc_dictionary_set_value(message, "payload", payload);
   xpc_connection_send_message(connection, message);
 
-  // dtuhidd answers a barrier once it has dispatched everything sent before it.
+  // Waits until dtuhidd has dispatched the event.
   xpc_object_t barrier = xpc_dictionary_create(NULL, NULL, 0);
   xpc_dictionary_set_bool(barrier, "isBarrier", true);
   xpc_object_t reply = xpc_connection_send_message_with_reply_sync(connection, barrier);

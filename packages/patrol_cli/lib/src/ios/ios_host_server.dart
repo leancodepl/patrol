@@ -4,11 +4,7 @@ import 'dart:io';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/ios/simulator_hinge.dart';
 
-/// HTTP server on the host for the actions a test on an iOS simulator can't do
-/// from inside the simulator, such as folding it.
-///
-/// The simulator shares the host's network, so the test reaches the server on
-/// the loopback address. The port is passed to the app at runtime.
+/// Server on the host for actions a simulator can't do itself, such as folding.
 class IOSHostServer {
   IOSHostServer._(this._server, this._hinge, this._logger);
 
