@@ -3,6 +3,7 @@ import 'package:meta/meta.dart';
 import 'package:patrol/src/platform/contracts/contracts.dart'
     show AppleApp, IOSGetNativeViewsResponse, KeyboardBehavior;
 import 'package:patrol/src/platform/ios/ios_automator_config.dart';
+import 'package:patrol/src/platform/mobile/fold_posture.dart';
 import 'package:patrol/src/platform/mobile/mobile_automator.dart';
 import 'package:patrol/src/platform/selector.dart' show IOSSelector;
 
@@ -265,46 +266,15 @@ abstract interface class IOSAutomator implements MobileAutomator {
     Duration? timeout,
   });
 
-  /// Moves the hinge of a foldable iOS simulator, such as the iPhone Duo, to
-  /// [posture].
-  ///
-  /// **Experimental.** See [setHingeAngle] for how it works and when it's
-  /// available.
+  /// Folds a foldable simulator, such as the iPhone Duo, to [posture].
+  /// **Experimental.**
   @experimental
   Future<void> setFoldPosture(FoldPosture posture);
 
-  /// Moves the hinge of a foldable iOS simulator, such as the iPhone Duo, to
-  /// [degrees], from 0 (closed) to 180 (fully open).
+  /// Sets the hinge of a foldable simulator to [degrees], from 0 to 180.
   ///
-  /// When closed, the app shows on the cover display; when open, on the inner
-  /// one. If the app moves to the other display, this method waits until it
-  /// has resized.
-  ///
-  /// Only the host can fold a simulator, so this works only on iOS simulators
-  /// run by `patrol test` or `patrol develop`.
-  ///
-  /// **Experimental.** It relies on private simulator APIs, which a new Xcode
-  /// can break. It may change or be removed in a minor release.
+  /// Works only with `patrol test` or `patrol develop` and uses private
+  /// simulator APIs. **Experimental.**
   @experimental
   Future<void> setHingeAngle(double degrees);
-}
-
-/// Posture of the hinge of a foldable iOS simulator, such as the iPhone Duo.
-///
-/// **Experimental**, like [IOSAutomator.setFoldPosture].
-@experimental
-enum FoldPosture {
-  /// Folded shut (0°). The app shows on the cover display.
-  closed(0),
-
-  /// Half open (130°). The app shows on the inner display.
-  halfOpen(130),
-
-  /// Fully open (180°). The app shows on the inner display.
-  open(180);
-
-  const FoldPosture(this.hingeAngle);
-
-  /// Hinge angle of this posture, in degrees.
-  final double hingeAngle;
 }

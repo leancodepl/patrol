@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
@@ -21,6 +23,9 @@ abstract class NativeMobileAutomator implements MobileAutomator {
         'find timeout is longer than connection timeout',
       ),
       _config = config;
+
+  static const _displaySwitchTimeout = Duration(seconds: 10);
+  static const _displaySwitchPollInterval = Duration(milliseconds: 100);
 
   final _patrolLog = PatrolLogWriter();
   final MobileAutomatorConfig _config;
@@ -89,6 +94,24 @@ abstract class NativeMobileAutomator implements MobileAutomator {
         );
       }
       rethrow;
+    }
+  }
+
+  /// Waits until [view] resizes after a fold moves the app to the other
+  /// display.
+  @protected
+  Future<void> waitForDisplaySwitch(
+    ui.FlutterView? view,
+    ui.Size? sizeBefore,
+  ) async {
+    if (view == null) {
+      return;
+    }
+
+    final deadline = DateTime.now().add(_displaySwitchTimeout);
+    while (view.physicalSize == sizeBefore &&
+        DateTime.now().isBefore(deadline)) {
+      await Future<void>.delayed(_displaySwitchPollInterval);
     }
   }
 

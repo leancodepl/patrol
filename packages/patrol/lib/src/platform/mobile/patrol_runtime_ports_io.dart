@@ -56,9 +56,7 @@ class PatrolRuntimePorts {
   /// Port of `PatrolAppService` inside the app under test, or null if not injected.
   static int? appServerPort() => _appServerPort;
 
-  /// Port of the server `patrol_cli` runs on the host for actions only the host
-  /// can do, such as folding a simulator. Null when not run by `patrol_cli` or
-  /// not on an iOS simulator.
+  /// Port of the `patrol_cli` host server on iOS simulators, or null if not injected.
   static int? hostServerPort() => _hostServerPort;
 
   static int? _parsePort(Object? value) {

@@ -9,6 +9,7 @@ import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:patrol/src/platform/contracts/ios_automator_client.dart';
 import 'package:patrol/src/platform/ios/ios_automator.dart' as ios_automator;
 import 'package:patrol/src/platform/ios/ios_automator_config.dart';
+import 'package:patrol/src/platform/mobile/fold_posture.dart';
 import 'package:patrol/src/platform/mobile/mobile_automator_native.dart';
 import 'package:patrol/src/platform/mobile/patrol_runtime_ports.dart';
 import 'package:patrol_log/patrol_log.dart';
@@ -46,8 +47,6 @@ class IOSAutomator extends NativeMobileAutomator
 
   // The simulator shares the host's network.
   static const _hostServerAddress = '127.0.0.1';
-  static const _displaySwitchTimeout = Duration(seconds: 10);
-  static const _displaySwitchPollInterval = Duration(milliseconds: 100);
 
   final _patrolLog = PatrolLogWriter();
   final IOSAutomatorConfig _config;
@@ -595,7 +594,7 @@ class IOSAutomator extends NativeMobileAutomator
   }
 
   @override
-  Future<void> setFoldPosture(ios_automator.FoldPosture posture) =>
+  Future<void> setFoldPosture(FoldPosture posture) =>
       setHingeAngle(posture.hingeAngle);
 
   @override
@@ -622,8 +621,7 @@ class IOSAutomator extends NativeMobileAutomator
         throw PatrolActionException('setHingeAngle() failed: ${response.body}');
       }
 
-      // The app is on the cover display only when the hinge is closed. The
-      // previous angle is unknown before the first fold in a run.
+      // Only a closed hinge uses the cover display.
       final previousDegrees = switch (jsonDecode(response.body)) {
         {'previousDegrees': final num degrees} => degrees,
         _ => null,
@@ -631,25 +629,8 @@ class IOSAutomator extends NativeMobileAutomator
       final changesDisplay =
           previousDegrees == null || (previousDegrees == 0) != (degrees == 0);
       if (changesDisplay) {
-        await _waitForDisplaySwitch(view, sizeBefore);
+        await waitForDisplaySwitch(view, sizeBefore);
       }
     });
-  }
-
-  /// Waits until [view] resizes after moving to the other display, or until
-  /// [_displaySwitchTimeout] passes.
-  Future<void> _waitForDisplaySwitch(
-    ui.FlutterView? view,
-    ui.Size? sizeBefore,
-  ) async {
-    if (view == null) {
-      return;
-    }
-
-    final deadline = DateTime.now().add(_displaySwitchTimeout);
-    while (view.physicalSize == sizeBefore &&
-        DateTime.now().isBefore(deadline)) {
-      await Future<void>.delayed(_displaySwitchPollInterval);
-    }
   }
 }
