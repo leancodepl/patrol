@@ -13,6 +13,7 @@ buildscript {
         classpath "com.android.tools.build:gradle:8.2.2"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jlleitschuh.gradle:ktlint-gradle:11.5.0"
+        classpath 'com.deque.android:axe-devtools-android-plugin:1.3.1'
     }
 }
 
@@ -94,8 +95,8 @@ android {
 
         testImplementation "org.jetbrains.kotlin:kotlin-test"
 
-        api 'com.deque.android:axe-devtools-android:8.1.0'
-        debugImplementation 'com.google.mlkit:text-recognition:16.0.1'
+        api 'com.deque.android:axe-devtools-android:9.3.0'
+        //debugImplementation 'com.google.mlkit:text-recognition:16.0.1'
     }
 }
 
