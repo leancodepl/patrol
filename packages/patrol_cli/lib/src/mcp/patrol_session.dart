@@ -304,7 +304,7 @@ final class PatrolSession {
     this._teardownTimeout = const Duration(seconds: 45),
     CliOrigin? cliOrigin,
     List<String>? suiteCommand,
-    this._suiteStopGrace = const Duration(seconds: 30),
+    this._suiteStopGrace = const Duration(seconds: 15),
     DateTime Function()? now,
   }) : _platform = platform ?? NativePlatform.current!,
        _now = now ?? DateTime.now,
