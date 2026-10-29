@@ -80,16 +80,23 @@ final class McpAnalytics {
     }
   }
 
-  /// How a call that returned [result] ended: for `run`, the test's outcome or
-  /// why it did not run; for every other tool, whether it answered.
+  /// How a call that returned [result] ended: for `run` and `test`, the
+  /// outcome or why it did not run; for every other tool, whether it answered.
   static String outcomeOf(String tool, CallToolResult result) {
-    if (tool != 'run') {
+    if (tool != 'run' && tool != 'test') {
       return result.isError == true ? 'error' : 'ok';
     }
     if (result.isError == true) {
       return 'refused';
     }
     final status = result.structuredContent;
+    if (tool == 'test') {
+      return switch (status?['suiteState']) {
+        'running' => 'timed_out',
+        final String state => state,
+        _ => 'ended',
+      };
+    }
     return switch (status?['testState']) {
       'finishedPassed' => 'passed',
       // A failed test always carries `error`.

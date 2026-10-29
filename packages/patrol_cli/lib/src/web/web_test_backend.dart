@@ -148,6 +148,7 @@ class WebTestBackend {
     bool showFlutterLogs = false,
     bool hideTestSteps = false,
     bool clearTestSteps = false,
+    void Function(Entry entry)? onLogEntry,
   }) async {
     _logger
       ..detail('Starting web test execution...')
@@ -170,6 +171,7 @@ class WebTestBackend {
         showFlutterLogs: showFlutterLogs,
         hideTestSteps: hideTestSteps,
         clearTestSteps: clearTestSteps,
+        onLogEntry: onLogEntry,
       );
     } finally {
       _logger.detail('Stopping Flutter web server...');
@@ -770,6 +772,7 @@ class WebTestBackend {
     required bool hideTestSteps,
     required bool clearTestSteps,
     String? runnerPath,
+    void Function(Entry entry)? onLogEntry,
   }) async {
     _logger.info('Running Playwright tests against: $baseUrl');
     final completer = Completer<void>();
@@ -823,6 +826,7 @@ class WebTestBackend {
               hideTestSteps: hideTestSteps || isShardedRun,
               clearTestSteps: clearTestSteps,
               hideTestLifecycle: isShardedRun,
+              onLogEntry: onLogEntry,
             )
             ..listen()
             ..startTimer();
