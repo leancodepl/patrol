@@ -16,6 +16,8 @@
   the package. Install them with
   `dart run skills@ get --agent claude -p patrol -s patrol-setup -s patrol-write-test` (or
   `--agent cursor`, …) on Dart 3.12+; see the catalog for the other skills and older SDKs. (#3299)
+- Add the `patrol-migrate-from-maestro` agent skill: migrates Maestro UI flows to Patrol tests,
+  with a Maestro-to-Patrol command mapping. (#3317)
 - Fix the web runner ignoring `--web-ignore-https-errors` while it reads the list of tests, which
   ended a run against an https web server with `Total: 0`. (#3314)
 

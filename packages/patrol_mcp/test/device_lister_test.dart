@@ -1,4 +1,7 @@
-import 'package:patrol_cli/patrol_cli.dart' show TargetPlatform;
+import 'dart:io';
+
+import 'package:path/path.dart' as p;
+import 'package:patrol_cli/patrol_cli.dart' show FlutterCommand, TargetPlatform;
 import 'package:patrol_mcp/src/device_lister.dart';
 import 'package:test/test.dart';
 
@@ -52,5 +55,20 @@ void main() {
     test('empty list in, empty list out', () {
       expect(parseFlutterDevices('[]'), isEmpty);
     });
+  });
+
+  group('listAttachedDevices', () {
+    test('runs a batch-script flutter', () async {
+      final dir = Directory.systemTemp.createTempSync('patrol_mcp_flutter_');
+      addTearDown(() => dir.deleteSync(recursive: true));
+      File(p.join(dir.path, 'flutter.bat')).writeAsStringSync('@echo []\r\n');
+
+      // Without the extension: a full `.bat` path starts even without a shell.
+      final devices = await listAttachedDevices(
+        flutterCommand: FlutterCommand(p.join(dir.path, 'flutter')),
+      );
+
+      expect(devices, isEmpty);
+    }, testOn: 'windows');
   });
 }
