@@ -141,7 +141,7 @@ extension ProcessTreeDisposers on Process {
       if (!const LocalPlatform().isWindows) {
         // Collected before anything dies; once the parent is gone its children
         // are reparented and `pgrep -P` no longer reports them.
-        (await _descendants(pid)).forEach(Process.killPid);
+        (await descendantPids(pid)).forEach(Process.killPid);
         kill();
         return;
       }
@@ -166,8 +166,9 @@ extension ProcessTreeDisposers on Process {
   }
 }
 
-/// PIDs spawned below [pid], deepest first.
-Future<List<int>> _descendants(int pid) async {
+/// PIDs spawned below [pid], deepest first. Always empty on Windows, which
+/// has no `pgrep`.
+Future<List<int>> descendantPids(int pid) async {
   final found = <int>[];
   final pending = <int>[pid];
 

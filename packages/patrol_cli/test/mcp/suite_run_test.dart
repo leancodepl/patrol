@@ -294,24 +294,42 @@ void main() {
         },
       );
 
-      test('kills a run that ignores SIGINT once the grace is over', () async {
-        final run = await SuiteRun.start(
-          processManager: const LocalProcessManager(),
-          command: ['sh', '-c', 'trap "" INT; sleep 30'],
-          projectRoot: dir.path,
-          resultsFile: resultsFile,
-          targets: const [],
-          droppedFlags: const [],
-          stopGrace: const Duration(milliseconds: 300),
-          onOutput: (_) {},
-        );
-        await Future<void>.delayed(const Duration(milliseconds: 200));
+      test(
+        'kills a run that ignores SIGINT and SIGTERM, children included',
+        () async {
+          final childPid = File('${dir.path}/child.pid');
+          final run = await SuiteRun.start(
+            processManager: const LocalProcessManager(),
+            command: [
+              'sh',
+              '-c',
+              'trap "" INT TERM; sleep 30 & echo \$! > ${childPid.path}; wait',
+            ],
+            projectRoot: dir.path,
+            resultsFile: resultsFile,
+            targets: const [],
+            droppedFlags: const [],
+            stopGrace: const Duration(milliseconds: 300),
+            onOutput: (_) {},
+          );
+          while (!childPid.existsSync() ||
+              childPid.readAsStringSync().trim().isEmpty) {
+            await Future<void>.delayed(const Duration(milliseconds: 20));
+          }
+          final child = childPid.readAsStringSync().trim();
 
-        await run.stop();
+          await run.stop();
+          await Future<void>.delayed(const Duration(milliseconds: 200));
 
-        expect(run.isRunning, isFalse);
-        expect(run.toMap()['suiteState'], 'cancelled');
-      });
+          expect(run.isRunning, isFalse);
+          expect(run.toMap()['suiteState'], 'cancelled');
+          expect(
+            Process.runSync('kill', ['-0', child]).exitCode,
+            isNot(0),
+            reason: 'the child must not outlive the run',
+          );
+        },
+      );
     },
     skip: Platform.isWindows ? 'The runs are POSIX shell scripts.' : null,
   );

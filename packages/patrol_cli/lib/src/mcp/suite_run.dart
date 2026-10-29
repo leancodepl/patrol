@@ -175,7 +175,7 @@ final class SuiteRun {
     required void Function(String line) onOutput,
     String? deviceSelectionNote,
     Platform platform = const LocalPlatform(),
-    Duration stopGrace = const Duration(seconds: 30),
+    Duration stopGrace = const Duration(seconds: 15),
     DateTime Function()? now,
   }) async {
     final process = await processManager.start(
@@ -255,23 +255,33 @@ final class SuiteRun {
   /// Stops the run and waits for it to exit.
   ///
   /// SIGINT lets `patrol test` tear down what it started, as Ctrl+C does. A run
-  /// that is still alive after the grace period, or one on Windows, where no
-  /// signal reaches another process, is killed with everything it spawned.
+  /// that is still alive after the grace period is killed with everything it
+  /// spawned: SIGKILL, because a run that ignored SIGINT can ignore SIGTERM
+  /// too, and a child left alive is reparented and out of reach. Windows has
+  /// no signal for another process, so it goes straight to `taskkill /T /F`.
   Future<void> stop() async {
     if (!isRunning) {
       return;
     }
     _state = SuiteState.cancelled;
-    if (!_platform.isWindows) {
-      _process.kill(io.ProcessSignal.sigint);
-      await _finished.future.timeout(_stopGrace, onTimeout: () {});
-    }
-    if (!_finished.isCompleted) {
+    if (_platform.isWindows) {
       final scope = DisposeScope();
       _process.disposedByTree(scope);
       await scope.dispose();
+    } else {
+      _process.kill(io.ProcessSignal.sigint);
       await _finished.future.timeout(_stopGrace, onTimeout: () {});
+      if (!_finished.isCompleted) {
+        // Collected before anything dies, while the children still name
+        // their parent.
+        final tree = await descendantPids(_process.pid);
+        _process.kill(io.ProcessSignal.sigkill);
+        for (final pid in tree) {
+          io.Process.killPid(pid, io.ProcessSignal.sigkill);
+        }
+      }
     }
+    await _finished.future.timeout(_stopGrace, onTimeout: () {});
   }
 
   void _finish(int exitCode) {

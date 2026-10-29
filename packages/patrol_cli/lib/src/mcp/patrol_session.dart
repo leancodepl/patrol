@@ -302,7 +302,7 @@ final class PatrolSession {
     Duration errorSettle = const Duration(milliseconds: 1500),
     CliOrigin? cliOrigin,
     List<String>? suiteCommand,
-    Duration suiteStopGrace = const Duration(seconds: 30),
+    Duration suiteStopGrace = const Duration(seconds: 15),
     DateTime Function()? now,
   }) : _now = now ?? DateTime.now,
        _suiteCommand = suiteCommand ?? selfCommand(),
