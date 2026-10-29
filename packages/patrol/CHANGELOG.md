@@ -18,10 +18,9 @@
   `--agent cursor`, …) on Dart 3.12+; see the catalog for the other skills and older SDKs. (#3299)
 - Add the `patrol-migrate-from-maestro` agent skill: migrates Maestro UI flows to Patrol tests,
   with a Maestro-to-Patrol command mapping. (#3317)
-- Add `$.platform.ios.setFoldPosture` and `$.platform.ios.setHingeAngle`, which fold and unfold a
-  foldable iOS simulator such as the iPhone Duo (Xcode 27.1+). They work only on simulators run by
-  `patrol test` or `patrol develop` and rely on private simulator APIs. Requires `patrol_cli` 4.9.0
-  or newer.
+- Add experimental `$.platform.ios.setFoldPosture` and `$.platform.ios.setHingeAngle`, which fold
+  and unfold a foldable iOS simulator. They work only on simulators run by `patrol test` or `patrol develop`.
+  Requires `patrol_cli` 4.9.0 or newer.
 
 ## 4.10.0
 

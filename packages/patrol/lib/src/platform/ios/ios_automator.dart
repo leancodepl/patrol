@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:meta/meta.dart';
 import 'package:patrol/src/platform/contracts/contracts.dart'
     show AppleApp, IOSGetNativeViewsResponse, KeyboardBehavior;
 import 'package:patrol/src/platform/ios/ios_automator_config.dart';
@@ -267,7 +268,9 @@ abstract interface class IOSAutomator implements MobileAutomator {
   /// Moves the hinge of a foldable iOS simulator, such as the iPhone Duo, to
   /// [posture].
   ///
-  /// See [setHingeAngle] for how it works and when it's available.
+  /// **Experimental.** See [setHingeAngle] for how it works and when it's
+  /// available.
+  @experimental
   Future<void> setFoldPosture(FoldPosture posture);
 
   /// Moves the hinge of a foldable iOS simulator, such as the iPhone Duo, to
@@ -278,12 +281,18 @@ abstract interface class IOSAutomator implements MobileAutomator {
   /// has resized.
   ///
   /// Only the host can fold a simulator, so this works only on iOS simulators
-  /// run by `patrol test` or `patrol develop`. It relies on private simulator
-  /// APIs, which a new Xcode can break.
+  /// run by `patrol test` or `patrol develop`.
+  ///
+  /// **Experimental.** It relies on private simulator APIs, which a new Xcode
+  /// can break. It may change or be removed in a minor release.
+  @experimental
   Future<void> setHingeAngle(double degrees);
 }
 
 /// Posture of the hinge of a foldable iOS simulator, such as the iPhone Duo.
+///
+/// **Experimental**, like [IOSAutomator.setFoldPosture].
+@experimental
 enum FoldPosture {
   /// Folded shut (0°). The app shows on the cover display.
   closed(0),
