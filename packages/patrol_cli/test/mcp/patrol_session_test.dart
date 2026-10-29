@@ -49,7 +49,10 @@ void main() {
       version: '4.9.0',
       source: CliSource.global,
     ),
+    List<String> suiteCommand = const ['false'],
   }) => PatrolSession(
+    suiteCommand: suiteCommand,
+    suiteStopGrace: const Duration(seconds: 5),
     errorSettle: errorSettle,
     cliOrigin: cliOrigin,
     now: now,
@@ -1179,4 +1182,144 @@ packages:
       );
     });
   });
+
+  group(
+    'suite',
+    () {
+      /// A stand-in for `patrol test` that records its arguments and working
+      /// directory next to the project, then runs [then].
+      List<String> recordingSuite({String then = 'exit 0'}) => [
+        'sh',
+        '-c',
+        [
+          'printf "%s\\n" "\$@" > "${projectRoot.path}/suite_args"',
+          'pwd -P > "${projectRoot.path}/suite_cwd"',
+          then,
+        ].join('; '),
+        'patrol',
+      ];
+
+      List<String> recordedArgs() =>
+          File('${projectRoot.path}/suite_args').readAsLinesSync();
+
+      test('runs patrol test in the project with the server flags', () async {
+        final session = sessionWith(
+          FakeDevelop(),
+          developArgs: ['--flavor', 'dev', '--open-devtools'],
+          suiteCommand: recordingSuite(),
+        );
+
+        final started = await session.startSuite(
+          targets: ['patrol_test/a_test.dart'],
+          wait: const Duration(seconds: 10),
+        );
+
+        expect(started.refusal, isNull);
+        expect(started.status!['suiteState'], 'passed');
+        expect(started.status!['droppedFlags'], contains('--open-devtools'));
+        expect(recordedArgs(), containsAllInOrder(['test', '--flavor=dev']));
+        expect(
+          recordedArgs(),
+          containsAll([
+            '--target=patrol_test/a_test.dart',
+            '--device=test-device',
+          ]),
+        );
+        expect(
+          recordedArgs().where((a) => a.startsWith('--results-file=')),
+          hasLength(1),
+        );
+        expect(
+          File('${projectRoot.path}/suite_cwd').readAsStringSync().trim(),
+          projectRoot.resolveSymbolicLinksSync(),
+        );
+      });
+
+      test('is refused while a develop session runs', () async {
+        final session = sessionWith(
+          FakeDevelop(),
+          suiteCommand: recordingSuite(),
+        );
+        await startSession(session, 'a_test.dart');
+
+        final started = await session.startSuite(
+          targets: const [],
+          wait: const Duration(seconds: 10),
+        );
+
+        expect(started.refusal, contains('Quit it before running a suite'));
+        expect(File('${projectRoot.path}/suite_args').existsSync(), isFalse);
+        await session.quit();
+      });
+
+      test(
+        'keeps a single-test run and a second suite out while it runs',
+        () async {
+          final session = sessionWith(
+            FakeDevelop(),
+            suiteCommand: recordingSuite(
+              then: 'trap "exit 130" INT; sleep 30 & wait',
+            ),
+          );
+
+          final first = await session.startSuite(
+            targets: const [],
+            wait: const Duration(milliseconds: 50),
+          );
+          expect(first.status!['suiteState'], 'running');
+
+          final second = await session.startSuite(
+            targets: const [],
+            wait: const Duration(milliseconds: 50),
+          );
+          expect(second.refusal, contains('already running'));
+
+          final run = await session.startAndWait(
+            'a_test.dart',
+            timeout: const Duration(milliseconds: 50),
+          );
+          expect(run.started, isFalse);
+          expect(run.status.warning, contains('A suite is running'));
+
+          expect(await session.quit(), 'Stopped the suite.');
+          expect(session.isSuiteRunning, isFalse);
+          expect(session.suiteStatus!['suiteState'], 'cancelled');
+        },
+      );
+
+      test('waitForSuite returns once the suite ends', () async {
+        final session = sessionWith(
+          FakeDevelop(),
+          suiteCommand: recordingSuite(then: 'sleep 0.3'),
+        );
+        await session.startSuite(
+          targets: const [],
+          wait: const Duration(milliseconds: 10),
+        );
+
+        await session.waitForSuite(const Duration(seconds: 10));
+
+        expect(session.suiteStatus!['suiteState'], 'passed');
+      });
+
+      test('refuses flags develop does not take, without starting', () async {
+        final session = sessionWith(
+          FakeDevelop(),
+          developArgs: ['--no-such-flag'],
+          suiteCommand: recordingSuite(),
+        );
+
+        final started = await session.startSuite(
+          targets: const [],
+          wait: const Duration(seconds: 10),
+        );
+
+        expect(started.refusal, startsWith('Cannot start:'));
+        expect(session.isSuiteRunning, isFalse);
+      });
+    },
+    skip: const LocalPlatform().isWindows
+        ? 'The suites are POSIX shell scripts.'
+        : null,
+  );
 }

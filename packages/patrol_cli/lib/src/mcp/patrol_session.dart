@@ -26,6 +26,7 @@ import 'package:process/process.dart';
 import 'device_selection.dart';
 import 'flutter_command_resolver.dart';
 import 'log_streaming.dart';
+import 'suite_run.dart';
 
 /// An [io.Stdout] wrapper that forwards writes to [_inner] (e.g. stderr) and
 /// also captures complete lines, invoking [_onLine] for each one.
@@ -300,8 +301,12 @@ final class PatrolSession {
     Duration teardownTimeout = const Duration(seconds: 30),
     Duration errorSettle = const Duration(milliseconds: 1500),
     CliOrigin? cliOrigin,
+    List<String>? suiteCommand,
+    Duration suiteStopGrace = const Duration(seconds: 30),
     DateTime Function()? now,
   }) : _now = now ?? DateTime.now,
+       _suiteCommand = suiteCommand ?? selfCommand(),
+       _suiteStopGrace = suiteStopGrace,
        _teardownTimeout = teardownTimeout,
        _errorSettle = errorSettle,
        cliOrigin =
@@ -399,7 +404,7 @@ final class PatrolSession {
   /// the ports belong to it. Once it is gone, a request naming another project
   /// moves the server there.
   Future<String?> _anchor({
-    required String testFile,
+    required String? testFile,
     required String? requestedRoot,
   }) async {
     if (!_isRunning) {
@@ -580,6 +585,21 @@ final class PatrolSession {
 
   (String, String?)? _versionWarningFor;
 
+  /// Why a run refuses the resolved project's `patrol`, unless the develop args
+  /// ask to run anyway.
+  String? get _incompatibilityRefusal {
+    if (developArgs.contains('--no-check-compatibility')) {
+      return null;
+    }
+    return switch (_versionWarning) {
+      final incompatible? =>
+        '$incompatible\n'
+            'To run anyway, start the server with '
+            '`patrol mcp -- --no-check-compatibility`.',
+      null => null,
+    };
+  }
+
   /// The `patrol_cli` serving this server.
   final CliOrigin cliOrigin;
 
@@ -676,6 +696,10 @@ final class PatrolSession {
       return 'A run of "$_startingTestFile" is still starting. Wait for it, '
           'or quit first.';
     }
+    if (_suiteLive) {
+      return 'A suite is running and holds the device and its ports. Wait for '
+          'it with status, or quit to stop it, before running a single test.';
+    }
     if (_isRunning) {
       return _restart(
         testFile,
@@ -694,11 +718,8 @@ final class PatrolSession {
           case final blocked?) {
         return blocked;
       }
-      if (_versionWarning case final incompatible?
-          when !developArgs.contains('--no-check-compatibility')) {
-        return '$incompatible\n'
-            'To run anyway, start the server with '
-            '`patrol mcp -- --no-check-compatibility`.';
+      if (_incompatibilityRefusal case final refusal?) {
+        return refusal;
       }
       if (_cancelRequested) {
         return _cancelled;
@@ -801,39 +822,19 @@ final class PatrolSession {
     }
     final verbose = globalResults['verbose'] as bool? ?? false;
 
-    // Resolve the device. Precedence: a `--device` in the develop args >
-    // `device` argument > auto-selection.
-    if (flagOptions.devices.isNotEmpty) {
-      if (device != null) {
-        _deviceSelectionNote =
-            'Ignored device "$device": the develop args already pin '
-            '--device ${flagOptions.devices.join(', ')}.';
-      }
-    } else if (device != null) {
-      flagParts.addAll(['--device', device]);
-    } else {
-      final List<Device> attached;
-      try {
-        attached = await _listAttachedDevices(
-          flutterCommand: flutterCommand ?? const FlutterCommand('flutter'),
-        );
-      } catch (err) {
-        return 'Failed to detect attached devices: $err';
-      }
-      if (_cancelRequested) {
-        return _cancelled;
-      }
-      final selected = autoSelectDevice(attached);
-      if (selected == null) {
-        return 'No Android or iOS device detected. Start an emulator or '
-            'simulator (or connect a device) and try again.';
-      }
-      flagParts.addAll(['--device', selected.id]);
-      if (supportedDevices(attached).length > 1) {
-        _deviceSelectionNote =
-            'Auto-selected ${selected.name} (${selected.id}); '
-            'pass "device" to run on a different one.';
-      }
+    final picked = await _pickDevice(
+      device,
+      pinned: flagOptions.devices,
+      flutterCommand: flutterCommand,
+    );
+    if (_cancelRequested) {
+      return _cancelled;
+    }
+    if (picked.refusal case final refusal?) {
+      return refusal;
+    }
+    if (picked.device case final id?) {
+      flagParts.addAll(['--device', id]);
     }
 
     // Final parse, now including the resolved `--device` (if any).
@@ -929,6 +930,50 @@ final class PatrolSession {
     _sessionEnded = _runDevelopSession(live, options, exitCompleter);
 
     return null;
+  }
+
+  /// The device a run adds to its flags, or why there is none. Precedence: a
+  /// `--device` the develop args [pinned] > the call's [device] >
+  /// auto-selection.
+  Future<({String? device, String? refusal})> _pickDevice(
+    String? device, {
+    required List<String> pinned,
+    required FlutterCommand? flutterCommand,
+  }) async {
+    if (pinned.isNotEmpty) {
+      if (device != null) {
+        _deviceSelectionNote =
+            'Ignored device "$device": the develop args already pin '
+            '--device ${pinned.join(', ')}.';
+      }
+      return (device: null, refusal: null);
+    }
+    if (device != null) {
+      return (device: device, refusal: null);
+    }
+    final List<Device> attached;
+    try {
+      attached = await _listAttachedDevices(
+        flutterCommand: flutterCommand ?? const FlutterCommand('flutter'),
+      );
+    } catch (err) {
+      return (device: null, refusal: 'Failed to detect attached devices: $err');
+    }
+    final selected = autoSelectDevice(attached);
+    if (selected == null) {
+      return (
+        device: null,
+        refusal:
+            'No Android or iOS device detected. Start an emulator or '
+            'simulator (or connect a device) and try again.',
+      );
+    }
+    if (supportedDevices(attached).length > 1) {
+      _deviceSelectionNote =
+          'Auto-selected ${selected.name} (${selected.id}); '
+          'pass "device" to run on a different one.';
+    }
+    return (device: selected.id, refusal: null);
   }
 
   Future<void> _runDevelopSession(
@@ -1056,6 +1101,14 @@ final class PatrolSession {
   /// A run still starting is cancelled instead; the start is waited for so it
   /// cannot come up after this returns.
   Future<String> quit() async {
+    if (_suiteStart case final start? when !start.isCompleted) {
+      _suiteCancelRequested = true;
+      await start.future.timeout(_teardownTimeout, onTimeout: () {});
+    }
+    if (_suite case final suite? when suite.isRunning) {
+      await suite.stop();
+      return 'Stopped the suite.';
+    }
     if (_starting) {
       _cancelRequested = true;
       await _startDone?.future.timeout(_teardownTimeout, onTimeout: () {});
@@ -1421,6 +1474,206 @@ final class PatrolSession {
       return (status: getStatus(overrideWarning: refusal), started: false);
     }
     return (status: await _waitForFinish(timeout: timeout), started: true);
+  }
+
+  /// The command that starts this CLI, which a suite run runs `patrol test`
+  /// with.
+  final List<String> _suiteCommand;
+
+  final Duration _suiteStopGrace;
+
+  /// The last suite run, kept after it ends so its result can still be read.
+  SuiteRun? _suite;
+
+  Completer<void>? _suiteStart;
+  var _suiteCancelRequested = false;
+
+  bool get _suiteLive =>
+      (_suiteStart != null && !_suiteStart!.isCompleted) ||
+      (_suite?.isRunning ?? false);
+
+  /// Whether a suite run is starting or running.
+  bool get isSuiteRunning => _suiteLive;
+
+  /// The last suite run's state, or null when this server has run none.
+  Map<String, Object>? get suiteStatus => _suite?.toMap();
+
+  /// Runs `patrol test` on [targets], or on the whole suite when they are
+  /// empty, and waits up to [wait] for it to finish.
+  ///
+  /// Returns the suite's state, or why it did not start: a develop session or
+  /// another suite holds the device, or the project cannot be run here.
+  Future<({Map<String, Object>? status, String? refusal})> startSuite({
+    required List<String> targets,
+    String? tags,
+    String? excludeTags,
+    String? device,
+    String? projectRoot,
+    required Duration wait,
+  }) async {
+    if (_live) {
+      return (
+        status: null,
+        refusal:
+            'A develop session is ${_starting ? 'starting' : 'running'} '
+            '"${_currentTestFile ?? _startingTestFile}" and holds the device '
+            'and its ports. Quit it before running a suite.',
+      );
+    }
+    if (_suiteLive) {
+      return (
+        status: null,
+        refusal:
+            'A suite is already running. Call status with waitMinutes to wait '
+            'for it, or quit to stop it.',
+      );
+    }
+
+    final start = _suiteStart = Completer<void>();
+    _suiteCancelRequested = false;
+    final SuiteRun suite;
+    try {
+      final prepared = await _prepareSuite(
+        targets: targets,
+        tags: tags,
+        excludeTags: excludeTags,
+        device: device,
+        projectRoot: projectRoot,
+      );
+      if (prepared.refusal case final refusal?) {
+        return (status: null, refusal: refusal);
+      }
+      suite = prepared.suite!;
+    } finally {
+      start.complete();
+    }
+    await suite.waitFor(wait);
+    return (status: suite.toMap(), refusal: null);
+  }
+
+  /// Resolves the project, the device and the command line of a suite run and
+  /// starts it, or explains why it cannot.
+  Future<({SuiteRun? suite, String? refusal})> _prepareSuite({
+    required List<String> targets,
+    required String? tags,
+    required String? excludeTags,
+    required String? device,
+    required String? projectRoot,
+  }) async {
+    final first = targets.firstOrNull;
+    if (await _anchor(testFile: first, requestedRoot: projectRoot)
+        case final blocked?) {
+      return (suite: null, refusal: blocked);
+    }
+    if (_incompatibilityRefusal case final refusal?) {
+      return (suite: null, refusal: refusal);
+    }
+    final root = flutterProjectPath;
+    final projectTargets = [
+      for (final target in targets) _asProjectSees(target, first: first!),
+    ];
+    final flutterCommand = FlutterCommandResolver()
+        .resolve(projectRoot: root)
+        .command;
+    final List<String> pinned;
+    try {
+      pinned = SuiteCommandLine.pinnedDevices(developArgs);
+    } on FormatException catch (err) {
+      return (
+        suite: null,
+        refusal:
+            'Cannot start: ${err.message} Check the develop flags this server '
+            'was started with.',
+      );
+    }
+    _deviceSelectionNote = null;
+    final picked = await _pickDevice(
+      device,
+      pinned: pinned,
+      flutterCommand: flutterCommand,
+    );
+    if (_suiteCancelRequested) {
+      return (suite: null, refusal: 'Cancelled the suite that was starting.');
+    }
+    if (picked.refusal case final refusal?) {
+      return (suite: null, refusal: refusal);
+    }
+    final resultsDir = await io.Directory.systemTemp.createTemp(
+      'patrol_mcp_suite_',
+    );
+    final resultsFile = p.join(resultsDir.path, 'results.jsonl');
+    final commandLine = SuiteCommandLine.build(
+      serverArgs: developArgs,
+      targets: projectTargets,
+      tags: tags,
+      excludeTags: excludeTags,
+      device: picked.device,
+      flutterCommand: flutterCommand == null
+          ? null
+          : [flutterCommand.executable, ...flutterCommand.arguments].join(' '),
+      resultsFile: resultsFile,
+    );
+
+    await _startLogStreamingAndTerminal();
+    final suite = _suite = await SuiteRun.start(
+      processManager: _processManager,
+      command: [..._suiteCommand, ...commandLine.arguments],
+      projectRoot: root,
+      resultsFile: resultsFile,
+      targets: targets,
+      droppedFlags: commandLine.dropped,
+      deviceSelectionNote: _deviceSelectionNote,
+      platform: _platform,
+      stopGrace: _suiteStopGrace,
+      onOutput: (line) {
+        final clean = _normalizeLine(line);
+        if (clean.isNotEmpty) {
+          _logStreaming.writeLog(clean);
+        }
+      },
+    );
+    _deviceSelectionNote = null;
+    unawaited(
+      suite.done.then((_) async {
+        if (!_live) {
+          await _logStreaming.stopLogging();
+        }
+        try {
+          await resultsDir.delete(recursive: true);
+        } on io.FileSystemException {
+          // Left for the system to clear.
+        }
+      }),
+    );
+    return (suite: suite, refusal: null);
+  }
+
+  /// [target] as the resolved project sees it. The first target resolved the
+  /// project, and the others are named against the same directory it was.
+  String _asProjectSees(String target, {required String first}) {
+    if (p.isAbsolute(target)) {
+      return p.relative(target, from: flutterProjectPath);
+    }
+    final relativeFirst = _projectRelativeTestFile;
+    if (relativeFirst == null || relativeFirst == first) {
+      return target;
+    }
+    if (target == first) {
+      return relativeFirst;
+    }
+    final prefix = first.endsWith(relativeFirst)
+        ? first.substring(0, first.length - relativeFirst.length)
+        : '';
+    return prefix.isNotEmpty && target.startsWith(prefix)
+        ? target.substring(prefix.length)
+        : target;
+  }
+
+  /// Waits up to [wait] for a running suite. Returns at once when none runs.
+  Future<void> waitForSuite(Duration wait) async {
+    if (_suite case final suite? when suite.isRunning) {
+      await suite.waitFor(wait);
+    }
   }
 
   /// Automatically start log streaming and optionally launch terminal

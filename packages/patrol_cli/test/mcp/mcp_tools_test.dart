@@ -54,8 +54,11 @@ void main() {
     bool projectResolvable = true,
     AttachedDevicesReader? listAttachedDevices,
     McpAnalytics? analytics,
+    List<String> suiteCommand = const ['false'],
   }) {
     final session = PatrolSession(
+      suiteCommand: suiteCommand,
+      suiteStopGrace: const Duration(seconds: 5),
       listAttachedDevices:
           listAttachedDevices ??
           ({required flutterCommand}) async => const [device],
@@ -236,4 +239,77 @@ void main() {
     expect(text(result), contains('cancelled'));
     expect(fake.events, isEmpty, reason: 'nothing should have been built');
   });
+
+  group('test', () {
+    List<String> suite(String script) => ['sh', '-c', script, 'patrol'];
+
+    test('runs the suite and reports it with its project', () async {
+      final result = await toolsWith(
+        FakeDevelop(),
+        suiteCommand: suite('exit 0'),
+      ).test({'waitMinutes': 1}, extra());
+
+      expect(result.isError, isNot(true));
+      expect(result.structuredContent!['suiteState'], 'passed');
+      expect(result.structuredContent!['projectRoot'], projectRoot.path);
+    });
+
+    test('is an error while a develop session runs', () async {
+      final tools = toolsWith(FakeDevelop(), suiteCommand: suite('exit 0'));
+      await tools.run({
+        'testFile': 'app_test.dart',
+        'timeoutMinutes': 0.001,
+      }, extra());
+
+      final result = await tools.test(const {}, extra());
+
+      expect(result.isError, isTrue);
+      expect(text(result), contains('Quit it before running a suite'));
+      await tools.quit();
+    });
+
+    test('status waits for a running suite when asked', () async {
+      final tools = toolsWith(FakeDevelop(), suiteCommand: suite('sleep 0.3'));
+      final started = await tools.test({'waitMinutes': 0.0001}, extra());
+      expect(started.structuredContent!['suiteState'], 'running');
+
+      final status = await tools.status({'waitMinutes': 1});
+
+      final suiteStatus =
+          status.structuredContent!['suite']! as Map<String, Object?>;
+      expect(suiteStatus['suiteState'], 'passed');
+    });
+
+    test('quit stops a running suite', () async {
+      final tools = toolsWith(
+        FakeDevelop(),
+        suiteCommand: suite('trap "exit 130" INT; sleep 30 & wait'),
+      );
+      await tools.test({'waitMinutes': 0.0001}, extra());
+
+      final quit = await tools.quit();
+      final status = await tools.status();
+
+      expect(text(quit), 'Stopped the suite.');
+      expect(
+        (status.structuredContent!['suite']! as Map)['suiteState'],
+        'cancelled',
+      );
+    });
+
+    test('a suite the client cancels is stopped', () async {
+      final tools = toolsWith(
+        FakeDevelop(),
+        suiteCommand: suite('trap "exit 130" INT; sleep 30 & wait'),
+      );
+      final abort = BasicAbortController();
+
+      final call = tools.test({'waitMinutes': 1}, extra(abort));
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+      abort.abort();
+      final result = await call.timeout(const Duration(seconds: 10));
+
+      expect(result.structuredContent!['suiteState'], 'cancelled');
+    });
+  }, skip: Platform.isWindows ? 'The suites are POSIX shell scripts.' : null);
 }

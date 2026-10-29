@@ -15,11 +15,12 @@ install, and the agent's tools always match the CLI that runs the tests.
 An agent gets:
 
 - `run` — runs a test file and waits for it to finish, hot-restarting an already loaded one.
+- `test` — runs the whole suite, or chosen test files, with `patrol test`.
 - `devices` — lists attached Android and iOS devices to pass as `run`'s `device`.
-- `status` — the session's state and its recent output.
+- `status` — the session's state and its recent output, and the last suite's result.
 - `screenshot` — a screenshot from the session's device.
 - `native-tree` — the native UI tree from the session's device.
-- `quit` — stops the session.
+- `quit` — stops the session or the running suite.
 
 ## Setup
 
@@ -156,6 +157,26 @@ reported after the failure. `output` holds the session's recent log for everythi
 what the build writes to stderr. `logFile` names the file holding the whole log; follow it with
 `tail -F` to watch a run as it goes.
 
+## Running the suite
+
+`test` runs `patrol test` once, without hot restart: the test files are built into one app, run in
+order, and the app is uninstalled at the end. Pass `targets` (files or directories relative to the
+project root) to run some of them, or none to run every test; `tags` and `excludeTags` filter them
+as `patrol test --tags` does. The run takes the server's develop flags (`--flavor`,
+`--dart-define`…), leaving out the ones only `patrol develop` takes and naming them in
+`droppedFlags`.
+
+A suite outlasts most request timeouts, so `test` waits up to `waitMinutes` (5 by default) and then
+returns the progress so far with `suiteState: running`. `status` with `waitMinutes` waits again, and
+its `suite` field carries the last suite's result. The result counts `passed`, `failed` and
+`skipped` tests and lists the first ten `failures`, each with its error. A suite that fails before
+any test does — a build that breaks, an app that never installs — carries a `warning` and the last
+lines of its `output` instead.
+
+A suite and a develop session both hold the device, so `test` refuses while a session runs and
+`run` refuses while a suite runs. `quit` stops either. Once a suite ends its app is gone, so
+`screenshot` and `native-tree` have nothing to show.
+
 ## A run that goes quiet
 
 Every `run` and `status` result carries `quietForSeconds` -- how long the session has heard nothing
@@ -166,8 +187,8 @@ quiet lasted. `quit` stops such a run; the next `run` starts a fresh session.
 ## Analytics
 
 `patrol mcp` reports each tool call to the same anonymous usage analytics as the CLI: the tool, how
-the call ended (`passed`, `failed`, `refused`, `timed_out` for a run, `ok` or `error` for the
-others), how long it took, the device platform, and whether the CLI is a global install, a
+the call ended (`passed`, `failed`, `refused`, `timed_out` for a run, also `cancelled` for a
+suite, `ok` or `error` for the others), how long it took, the device platform, and whether the CLI is a global install, a
 project's dev dependency or a path. No paths, test names, errors or output are sent.
 
 It follows the CLI's consent. The server never asks itself: nothing is sent until the CLI has run
