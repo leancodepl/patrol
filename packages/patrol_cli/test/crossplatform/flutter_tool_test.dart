@@ -123,6 +123,7 @@ void main() {
       'hotRestart requested before attach completes is queued, then sent',
       () async {
         final process = MockProcess();
+        when(() => process.exitCode).thenAnswer((_) => Completer<int>().future);
         final processStdin = _MockIOSink();
         final processStdout = StreamController<List<int>>();
         when(() => process.stdout).thenAnswer((_) => processStdout.stream);
@@ -162,6 +163,7 @@ void main() {
       'hotRestart onCompleted fires when the restart completes, not sooner',
       () async {
         final process = MockProcess();
+        when(() => process.exitCode).thenAnswer((_) => Completer<int>().future);
         final processStdin = _MockIOSink();
         final processStdout = StreamController<List<int>>();
         when(() => process.stdout).thenAnswer((_) => processStdout.stream);
@@ -201,6 +203,7 @@ void main() {
       'hotRestart onFailed fires when Flutter rejects the restart',
       () async {
         final process = MockProcess();
+        when(() => process.exitCode).thenAnswer((_) => Completer<int>().future);
         final processStdin = _MockIOSink();
         final processStdout = StreamController<List<int>>();
         when(() => process.stdout).thenAnswer((_) => processStdout.stream);
@@ -300,6 +303,7 @@ void main() {
       () async {
         const url = 'http://127.0.0.1:54296/4crAtS2Ux7w=/';
         final process = MockProcess();
+        when(() => process.exitCode).thenAnswer((_) => Completer<int>().future);
         when(() => process.stdout).thenAnswer(
           (_) => Stream<List<int>>.fromIterable([
             utf8.encode('Flutter run key commands.\n'),
