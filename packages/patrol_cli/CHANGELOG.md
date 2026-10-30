@@ -11,7 +11,7 @@
   `web_dev_config.yaml`): the server URL is now detected, and the readiness check accepts a
   self-signed certificate from that server. (#3314)
 - Fix Ctrl+C during a web `patrol test` being ignored until the web app finished building, after
-  which the run hung. It now stops the Flutter web server and exits at any phase of the run.
+  which the run hung. It now stops the Flutter web server and exits at any phase of the run. (#3339)
 
 ## 4.8.0
 
