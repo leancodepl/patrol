@@ -502,8 +502,7 @@ class AndroidAutomator extends NativeMobileAutomator
     await wrapRequest('allowPermission', _client.allowPermission);
   }
 
-  /// Returns a list of currently visible native UI controls, specified by
-  /// [selector], which are currently visible on screen.
+  /// Returns a list of native UI controls specified by [selector].
   ///
   /// If [selector] is null, returns the whole native UI tree. By default the
   /// tree skips nodes whose `isVisibleToUser` is false (and their subtrees).
@@ -514,6 +513,10 @@ class AndroidAutomator extends NativeMobileAutomator
     AndroidSelector? selector, {
     bool includeInvisibleNodes = false,
   }) {
+    assert(
+      selector == null || !includeInvisibleNodes,
+      'includeInvisibleNodes only applies when selector is null',
+    );
     return wrapRequest(
       'getNativeViews',
       () => _client.getNativeViews(

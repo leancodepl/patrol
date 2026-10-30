@@ -13,7 +13,7 @@ import pl.leancode.patrol.contracts.Contracts.Rectangle
 fun getWindowTrees(
     uiDevice: UiDevice,
     uiAutomation: UiAutomation,
-    includeInvisibleNodes: Boolean = false
+    includeInvisibleNodes: Boolean
 ): List<AndroidNativeView> {
     val windowRoots = getWindowRoots(uiDevice, uiAutomation)
     Logger.i("Found ${windowRoots.size} windowRoots")

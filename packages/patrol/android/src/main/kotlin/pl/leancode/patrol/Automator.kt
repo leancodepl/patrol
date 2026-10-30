@@ -351,7 +351,7 @@ class Automator private constructor() {
         return uiObjects2.map { fromUiObject2(it) }
     }
 
-    fun getNativeUITrees(includeInvisibleNodes: Boolean = false): List<AndroidNativeView> {
+    fun getNativeUITrees(includeInvisibleNodes: Boolean): List<AndroidNativeView> {
         Logger.d("getNativeUITrees(includeInvisibleNodes=$includeInvisibleNodes)")
 
         return getWindowTrees(uiDevice, uiAutomation, includeInvisibleNodes)
