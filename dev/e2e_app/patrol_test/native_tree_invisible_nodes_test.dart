@@ -2,13 +2,14 @@ import 'common.dart';
 
 void main() {
   patrol(
-    'getNativeViews with includeInvisibleNodes returns more than the default tree',
+    'getNativeViews with includeInvisibleNodes returns off-screen WebView nodes',
     ($) async {
       await createApp($);
 
-      await $('Open webview (Patrol docs)').scrollTo().tap();
-      await $.pump(Duration(seconds: 8));
-      await $.pumpAndSettle();
+      await $('Open webview (offscreen content)').scrollTo().tap();
+      await $.platform.android.waitUntilVisible(
+        AndroidSelector(text: 'Top marker'),
+      );
 
       final defaultTree = await $.platform.android.getNativeViews(null);
       final fullTree = await $.platform.android.getNativeViews(
@@ -16,16 +17,17 @@ void main() {
         includeInvisibleNodes: true,
       );
 
-      int count(List<AndroidNativeView> nodes) =>
-          nodes.fold(0, (sum, node) => sum + 1 + count(node.children));
-      final defaultCount = count(defaultTree.roots);
-      final fullCount = count(fullTree.roots);
-      $.log('default: $defaultCount nodes, includeInvisibleNodes: $fullCount');
+      bool contains(List<AndroidNativeView> nodes, String text) => nodes.any(
+        (node) =>
+            node.text == text ||
+            node.contentDescription == text ||
+            contains(node.children, text),
+      );
 
-      // The docs page has content Chromium flags as not visible to the user
-      // (e.g. off-screen), so the unfiltered tree is strictly bigger.
-      expect(defaultCount, greaterThan(0));
-      expect(fullCount, greaterThan(defaultCount));
+      // Chromium flags the marker below the 5000px spacer as not visible.
+      expect(contains(defaultTree.roots, 'Top marker'), isTrue);
+      expect(contains(defaultTree.roots, 'Offscreen marker'), isFalse);
+      expect(contains(fullTree.roots, 'Offscreen marker'), isTrue);
     },
     tags: ['webview', 'android'],
   );
