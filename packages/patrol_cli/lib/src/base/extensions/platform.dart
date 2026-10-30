@@ -1,7 +1,7 @@
 import 'package:file/memory.dart' as memoryfs;
 import 'package:platform/platform.dart';
 
-extension PlatformX on Platform {
+extension PlatformX on NativePlatform {
   memoryfs.FileSystemStyle get fileSystemStyle {
     return isWindows
         ? memoryfs.FileSystemStyle.windows

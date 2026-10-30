@@ -32,11 +32,10 @@ class DevelopCommand extends PatrolCommand {
     required MacOSTestBackend macosTestBackend,
     required WebTestBackend webTestBackend,
     required FlutterTool flutterTool,
-    required Analytics analytics,
+    required this._analytics,
     required Logger logger,
     required Stream<List<int>> stdin,
-  }) : _analytics = analytics,
-       _developService = DevelopService(
+  }) : _developService = DevelopService(
          deviceFinder: deviceFinder,
          testFinderFactory: testFinderFactory,
          testBundler: testBundler,

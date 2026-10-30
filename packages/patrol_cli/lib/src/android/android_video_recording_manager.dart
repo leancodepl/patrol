@@ -14,20 +14,14 @@ import 'package:process/process.dart';
 /// emulators.
 class AndroidVideoRecordingManager extends VideoRecordingManager {
   AndroidVideoRecordingManager({
-    required ProcessManager processManager,
-    required Adb adb,
-    required Directory rootDirectory,
-    required Logger logger,
-    required VideoRecordingConfig config,
-    required Device device,
-    required DisposeScope scope,
-  }) : _processManager = processManager,
-       _adb = adb,
-       _rootDirectory = rootDirectory,
-       _logger = logger,
-       _config = config,
-       _device = device,
-       _scope = scope;
+    required this._processManager,
+    required this._adb,
+    required this._rootDirectory,
+    required this._logger,
+    required this._config,
+    required this._device,
+    required this._scope,
+  });
 
   final ProcessManager _processManager;
   final Adb _adb;

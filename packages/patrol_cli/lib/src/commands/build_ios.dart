@@ -17,22 +17,15 @@ import 'package:patrol_cli/src/test_finder.dart';
 
 class BuildIOSCommand extends PatrolCommand {
   BuildIOSCommand({
-    required TestFinderFactory testFinderFactory,
-    required TestBundler testBundler,
-    required DartDefinesReader dartDefinesReader,
-    required PubspecReader pubspecReader,
-    required IOSTestBackend iosTestBackend,
-    required Analytics analytics,
-    required Logger logger,
-    required CompatibilityChecker compatibilityChecker,
-  }) : _testFinderFactory = testFinderFactory,
-       _testBundler = testBundler,
-       _dartDefinesReader = dartDefinesReader,
-       _pubspecReader = pubspecReader,
-       _iosTestBackend = iosTestBackend,
-       _analytics = analytics,
-       _logger = logger,
-       _compatibilityChecker = compatibilityChecker {
+    required this._testFinderFactory,
+    required this._testBundler,
+    required this._dartDefinesReader,
+    required this._pubspecReader,
+    required this._iosTestBackend,
+    required this._analytics,
+    required this._logger,
+    required this._compatibilityChecker,
+  }) {
     usesTargetOption();
     usesBuildModeOption();
     usesFlavorOption();

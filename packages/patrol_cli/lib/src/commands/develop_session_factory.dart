@@ -49,7 +49,7 @@ class DevelopSessionFactory {
     bool verbose = false,
   }) {
     const fs = LocalFileSystem();
-    const platform = LocalPlatform();
+    final platform = NativePlatform.current!;
     const processManager = LocalProcessManager();
     final rootDirectory = fs.directory(projectRoot);
     final logger = Logger(level: verbose ? Level.verbose : Level.info);
