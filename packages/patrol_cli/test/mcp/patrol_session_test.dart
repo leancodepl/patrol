@@ -808,6 +808,8 @@ packages:
     expect(result.status.testState, TestState.finishedFailed);
     expect(result.status.warning, 'Cannot use release mode.');
     expect(result.status.output, contains('Cannot use release mode.'));
+    // The log is written into the project, which tearDown deletes.
+    await session.awaitTeardown();
   });
 
   test('any other develop failure lands in the output', () async {
@@ -822,6 +824,7 @@ packages:
 
     expect(result.status.testState, TestState.finishedFailed);
     expect(result.status.output, contains('ERROR: Exception: gradle exploded'));
+    await session.awaitTeardown();
   });
 
   test('a backend that exits mid-run is reported as a failure', () async {
