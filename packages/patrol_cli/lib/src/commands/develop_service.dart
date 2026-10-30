@@ -158,8 +158,18 @@ class DevelopService {
     }
   }
 
-  /// Completes once the session will act on a hot restart.
-  Future<void> get hotRestartReady => _flutterTool.hotRestartReady;
+  /// Completes once the session will act on a hot restart. A web session is
+  /// driven by its own `flutter run`, the others by `flutter attach`, which
+  /// fails this with a [ToolExit] naming why it exited without attaching.
+  Future<void> get hotRestartReady =>
+      _device?.targetPlatform == TargetPlatform.web
+      ? _webTestBackend.hotRestartReady
+      : Future.any([
+          _flutterTool.hotRestartReady,
+          _flutterTool.attachFailed.then<void>(
+            (reason) => throw ToolExit(reason),
+          ),
+        ]);
 
   /// Runs the full develop flow: discover device, read config, bundle test,
   /// build, execute, and attach for hot restart.
