@@ -403,6 +403,37 @@ void main() {
       expect((await built.future).emitTestManifest, isFalse);
     });
 
+    test('hotRestartReady fails with why flutter attach exited', () async {
+      when(
+        () => flutterTool.hotRestartReady,
+      ).thenAnswer((_) => Completer<void>().future);
+      when(() => flutterTool.attachFailed).thenAnswer(
+        (_) async =>
+            'Hot Restart is not available: `flutter attach` exited '
+            'with code 64',
+      );
+
+      await expectLater(
+        buildService().hotRestartReady,
+        throwsA(
+          isA<ToolExit>().having(
+            (e) => e.message,
+            'message',
+            contains('exited with code 64'),
+          ),
+        ),
+      );
+    });
+
+    test('hotRestartReady completes once flutter attach is ready', () async {
+      when(() => flutterTool.hotRestartReady).thenAnswer((_) async {});
+      when(
+        () => flutterTool.attachFailed,
+      ).thenAnswer((_) => Completer<String>().future);
+
+      await expectLater(buildService().hotRestartReady, completes);
+    });
+
     group('with prebuilt APKs', () {
       const prebuiltOptions = DevelopOptions(
         target: 'onboarding_test.dart',
