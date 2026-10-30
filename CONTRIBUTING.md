@@ -80,18 +80,37 @@ If you plan to use the local version of Patrol to test/modify the Patrol DevTool
 
 ## Adding a new language or new strings to existing language for native OS interactions
 
-### iOS
+Patrol finds some native UI elements by their label, so it ships the exact
+system strings for each locale. The resources are generated from data files in
+`packages/patrol/tool/native_localization/` – don't edit them by hand:
 
-1. Go to `packages/patrol/darwin/Resources/` folder.
-2. Add a new language folder with the name of the language or use existing one.
-3. Add a new `Localizable.strings` or add strings to the existing file.
-4. Add the new language to the `getLocalizedStrings` function in `IOSAutomator.swift` file.
-5. If you added new strings, you need to find all functions where these strings are used and add them to the function. For example "labels" in `allowPermissionOnce()` in IOSAutomator.swift file.
-6. Add the new language to the `supportedLanguages` array in `Localization.swift` file.
+- iOS: `ios-dialog-strings.json` →
+  `packages/patrol/darwin/patrol/Sources/PatrolImpl/Resources/<locale>.lproj/Localizable.strings`.
+  Keys are the ones in `en.lproj`. Folder names, skipped locales, known-bad
+  values and values that take precedence over the data are configured at the
+  top of `generate.py`.
+- Android: `android-dialog-strings.json` →
+  `packages/patrol/android/src/main/res/values[-<qualifier>]/strings.xml`. To
+  refresh it from AOSP (or add a locale to `QUALIFIERS`), run
+  `python3 packages/patrol/tool/native_localization/fetch_android_strings.py`.
+  AOSP `main` can be ahead of released Android versions; put values that a
+  released version shows differently in `ANDROID_RELEASE_OVERRIDES` in
+  `generate.py`. To compare with a device, pull the Settings / Photopicker APK
+  (`adb shell pm path com.android.settings`) and run
+  `aapt2 dump resources <apk>`.
 
-### Android
+After changing the data, regenerate the resources:
 
-1. Go to `packages/patrol/android/src/main/res/values-<language>/` folder.
-2. Add a new `strings.xml` with language folder name or add strings to the existing file.
-3. If you added a new string, you need to add it to proper function in Automator.kt, for example look at the `toggleAirplaneMode()` function.
-4. Add the new language to the `getLocalizedString` function in `Localization.kt` file. 
+```
+python3 packages/patrol/tool/native_localization/generate.py
+```
+
+No code changes are needed for a new locale: the device locale is matched
+against the generated resources (region-aware, e.g. `es-MX` uses `es-419` on
+iOS and `es-rUS` on Android). `packages/patrol/test/native_localization_test.dart`
+checks that every locale has all keys.
+
+If you add a new string, add its key to the data files and to `IOS_GROUPS` or
+`ANDROID_KEYS` in `generate.py`, then use it in `IOSAutomator.swift` (e.g.
+"labels" in `allowPermissionOnce()`) or `Automator.kt` (e.g.
+`toggleAirplaneMode()`).

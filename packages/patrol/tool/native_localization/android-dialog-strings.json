@@ -1,0 +1,277 @@
+{
+  "ar": {
+    "airplane_mode": "وضع الطيران",
+    "gallery_done_button": "تم",
+    "use_location": "استخدام الموقع الجغرافي"
+  },
+  "bg": {
+    "airplane_mode": "Самолетен режим",
+    "gallery_done_button": "Готово",
+    "use_location": "Използване на местоположението"
+  },
+  "bn": {
+    "airplane_mode": "বিমান মোড",
+    "gallery_done_button": "হয়ে গেছে",
+    "use_location": "লোকেশন ব্যবহার করুন"
+  },
+  "ca": {
+    "airplane_mode": "Mode d'avió",
+    "gallery_done_button": "Fet",
+    "use_location": "Utilitza la ubicació"
+  },
+  "cs": {
+    "airplane_mode": "Režim Letadlo",
+    "gallery_done_button": "Hotovo",
+    "use_location": "Používat polohu"
+  },
+  "da": {
+    "airplane_mode": "Flytilstand",
+    "gallery_done_button": "Udfør",
+    "use_location": "Brug lokation"
+  },
+  "de": {
+    "airplane_mode": "Flugmodus",
+    "gallery_done_button": "Fertig",
+    "use_location": "Standort verwenden"
+  },
+  "el": {
+    "airplane_mode": "Λειτουργία πτήσης",
+    "gallery_done_button": "Τέλος",
+    "use_location": "Χρήση τοποθεσίας"
+  },
+  "en": {
+    "airplane_mode": "Airplane mode",
+    "gallery_done_button": "Done",
+    "use_location": "Use location"
+  },
+  "en-rAU": {
+    "airplane_mode": "Aeroplane mode",
+    "gallery_done_button": "Done",
+    "use_location": "Use location"
+  },
+  "en-rGB": {
+    "airplane_mode": "Aeroplane mode",
+    "gallery_done_button": "Done",
+    "use_location": "Use location"
+  },
+  "en-rIN": {
+    "airplane_mode": "Aeroplane mode",
+    "gallery_done_button": "Done",
+    "use_location": "Use location"
+  },
+  "es": {
+    "airplane_mode": "Modo Avión",
+    "gallery_done_button": "Hecho",
+    "use_location": "Usar ubicación"
+  },
+  "es-rUS": {
+    "airplane_mode": "Modo de avión",
+    "gallery_done_button": "Listo",
+    "use_location": "Usar ubicación"
+  },
+  "fi": {
+    "airplane_mode": "Lentokonetila",
+    "gallery_done_button": "Valmis",
+    "use_location": "Käytä sijaintia"
+  },
+  "fr": {
+    "airplane_mode": "Mode Avion",
+    "gallery_done_button": "OK",
+    "use_location": "Utiliser la localisation"
+  },
+  "fr-rCA": {
+    "airplane_mode": "Mode Avion",
+    "gallery_done_button": "OK",
+    "use_location": "Utiliser ma position"
+  },
+  "gu": {
+    "airplane_mode": "એરપ્લેન મોડ",
+    "gallery_done_button": "થઈ ગયું",
+    "use_location": "લોકેશનનો ઉપયોગ કરો"
+  },
+  "hi": {
+    "airplane_mode": "फ़्लाइट मोड",
+    "gallery_done_button": "हो गया",
+    "use_location": "जगह की जानकारी का इस्तेमाल करें"
+  },
+  "hr": {
+    "airplane_mode": "Način rada u zrakoplovu",
+    "gallery_done_button": "Gotovo",
+    "use_location": "Koristi lokaciju"
+  },
+  "hu": {
+    "airplane_mode": "Repülős üzemmód",
+    "gallery_done_button": "Kész",
+    "use_location": "Helyadatok használata"
+  },
+  "in": {
+    "airplane_mode": "Mode pesawat",
+    "gallery_done_button": "Selesai",
+    "use_location": "Gunakan lokasi"
+  },
+  "it": {
+    "airplane_mode": "Modalità aereo",
+    "gallery_done_button": "Fine",
+    "use_location": "Usa posizione"
+  },
+  "iw": {
+    "airplane_mode": "מצב טיסה",
+    "gallery_done_button": "סיום",
+    "use_location": "שימוש במיקום"
+  },
+  "ja": {
+    "airplane_mode": "機内モード",
+    "gallery_done_button": "完了",
+    "use_location": "位置情報を使用"
+  },
+  "kk": {
+    "airplane_mode": "Ұшақ режимі",
+    "gallery_done_button": "Дайын",
+    "use_location": "Локацияны пайдалану"
+  },
+  "kn": {
+    "airplane_mode": "ಏರ್‌ಪ್ಲೇನ್ ಮೋಡ್",
+    "gallery_done_button": "ಮುಗಿದಿದೆ",
+    "use_location": "ಸ್ಥಳ ಬಳಸಿ"
+  },
+  "ko": {
+    "airplane_mode": "비행기 모드",
+    "gallery_done_button": "완료",
+    "use_location": "위치 정보 사용"
+  },
+  "lt": {
+    "airplane_mode": "Lėktuvo režimas",
+    "gallery_done_button": "Atlikta",
+    "use_location": "Naudoti vietovę"
+  },
+  "ml": {
+    "airplane_mode": "ഫ്ലൈറ്റ് മോഡ്",
+    "gallery_done_button": "പൂർത്തിയായി",
+    "use_location": "ലൊക്കേഷൻ ഉപയോഗിക്കുക"
+  },
+  "mr": {
+    "airplane_mode": "विमान मोड",
+    "gallery_done_button": "पूर्ण झाले",
+    "use_location": "स्थान वापरा"
+  },
+  "ms": {
+    "airplane_mode": "Mod pesawat",
+    "gallery_done_button": "Selesai",
+    "use_location": "Gunakan lokasi"
+  },
+  "nb": {
+    "airplane_mode": "Flymodus",
+    "gallery_done_button": "Ferdig",
+    "use_location": "Bruk posisjon"
+  },
+  "nl": {
+    "airplane_mode": "Vliegtuigmodus",
+    "gallery_done_button": "Klaar",
+    "use_location": "Locatie gebruiken"
+  },
+  "or": {
+    "airplane_mode": "ଏୟାରପ୍ଲେନ ମୋଡ",
+    "gallery_done_button": "ହୋଇଗଲା",
+    "use_location": "ଲୋକେସନ ବ୍ୟବହାର କରନ୍ତୁ"
+  },
+  "pa": {
+    "airplane_mode": "ਹਵਾਈ ਜਹਾਜ਼ ਮੋਡ",
+    "gallery_done_button": "ਹੋ ਗਿਆ",
+    "use_location": "ਟਿਕਾਣਾ ਵਰਤੋ"
+  },
+  "pl": {
+    "airplane_mode": "Tryb samolotowy",
+    "gallery_done_button": "Gotowe",
+    "use_location": "Włącz lokalizację"
+  },
+  "pt": {
+    "airplane_mode": "Modo avião",
+    "gallery_done_button": "Concluir",
+    "use_location": "Usar localização"
+  },
+  "pt-rBR": {
+    "airplane_mode": "Modo avião",
+    "gallery_done_button": "Concluir",
+    "use_location": "Usar localização"
+  },
+  "pt-rPT": {
+    "airplane_mode": "Modo de avião",
+    "gallery_done_button": "Concluir",
+    "use_location": "Usar localização"
+  },
+  "ro": {
+    "airplane_mode": "Mod Avion",
+    "gallery_done_button": "Gata",
+    "use_location": "Folosește locația"
+  },
+  "ru": {
+    "airplane_mode": "Режим полета",
+    "gallery_done_button": "Готово",
+    "use_location": "Включить геолокацию"
+  },
+  "sk": {
+    "airplane_mode": "Režim v lietadle",
+    "gallery_done_button": "Hotovo",
+    "use_location": "Používať polohu"
+  },
+  "sl": {
+    "airplane_mode": "Način za letalo",
+    "gallery_done_button": "Končano",
+    "use_location": "Uporabi lokacijo"
+  },
+  "sv": {
+    "airplane_mode": "Flygplansläge",
+    "gallery_done_button": "Klar",
+    "use_location": "Använd plats"
+  },
+  "ta": {
+    "airplane_mode": "விமானப் பயன்முறை",
+    "gallery_done_button": "முடிந்தது",
+    "use_location": "இருப்பிடத்தைப் பயன்படுத்து"
+  },
+  "te": {
+    "airplane_mode": "ఎయిర్‌ప్లేన్ మోడ్",
+    "gallery_done_button": "పూర్తయింది",
+    "use_location": "లొకేషన్‌ను ఉపయోగించండి"
+  },
+  "th": {
+    "airplane_mode": "โหมดบนเครื่องบิน",
+    "gallery_done_button": "เสร็จสิ้น",
+    "use_location": "ใช้ตำแหน่ง"
+  },
+  "tr": {
+    "airplane_mode": "Uçak modu",
+    "gallery_done_button": "Bitti",
+    "use_location": "Konumu kullan"
+  },
+  "uk": {
+    "airplane_mode": "Режим польоту",
+    "gallery_done_button": "Готово",
+    "use_location": "Використовувати геодані"
+  },
+  "ur": {
+    "airplane_mode": "ہوائی جہاز وضع",
+    "gallery_done_button": "ہو گیا",
+    "use_location": "مقام استعمال کریں"
+  },
+  "vi": {
+    "airplane_mode": "Chế độ trên máy bay",
+    "gallery_done_button": "Xong",
+    "use_location": "Sử dụng vị trí"
+  },
+  "zh-rCN": {
+    "airplane_mode": "飞行模式",
+    "gallery_done_button": "完成",
+    "use_location": "使用位置信息"
+  },
+  "zh-rHK": {
+    "airplane_mode": "飛行模式",
+    "gallery_done_button": "完成",
+    "use_location": "使用位置"
+  },
+  "zh-rTW": {
+    "airplane_mode": "飛航模式",
+    "gallery_done_button": "完成",
+    "use_location": "使用位置資訊"
+  }
+}

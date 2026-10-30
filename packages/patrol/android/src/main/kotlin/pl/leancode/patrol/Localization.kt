@@ -1,42 +1,56 @@
 package pl.leancode.patrol
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Build
-import android.os.LocaleList
+import java.util.Locale
 
 object Localization {
 
+    // Value of R.string.patrol_localization_locale in the default (English) `values/` folder.
+    private const val DEFAULT_LOCALE_MARKER = "en"
+
     /**
-     * Gets the current device language (system language, not app locale)
-     * This ensures we operate on the actual language used by the system UI
+     * Gets the primary system locale (not the app locale, which can differ with
+     * per-app language preferences). System UI is shown in this locale.
      */
-    private fun getDeviceLanguage(context: Context): String {
+    private fun getSystemLocale(): Locale {
+        val configuration = Resources.getSystem().configuration
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            // Use LocaleList to get the actual system default language
-            // This is more direct than using configuration.locales
-            LocaleList.getDefault().get(0).language
+            configuration.locales.get(0)
         } else {
             @Suppress("DEPRECATION")
-            Resources.getSystem().configuration.locale.language
+            configuration.locale
         }
     }
 
     /**
-     * Gets localized string based on device language
-     * Supports English (en), German (de), French (fr), Polish (pl), Japanese (ja) and Korean (ko) languages
+     * Gets localized string based on the system locale.
+     *
+     * Android resource resolution picks the best matching `values-*` folder, including
+     * region and parent locales (e.g. en-GB -> values-en-rGB, es-MX -> values-es-rUS).
+     * Supported locales are the folders generated from packages/patrol/tool/native_localization.
      */
+    // The locale is the system one, so its resources are always installed (no Play Core needed).
+    @SuppressLint("AppBundleLocaleChanges")
     fun getLocalizedString(context: Context, resourceId: Int): String {
-        val language = getDeviceLanguage(context)
-        Logger.d("Device language: $language")
+        val locale = getSystemLocale()
+        val configuration = Configuration(context.resources.configuration)
+        configuration.setLocale(locale)
+        val resources = context.createConfigurationContext(configuration).resources
 
-        // Check if the detected language is supported
-        val supportedLanguages = setOf("en", "de", "fr", "pl", "ja", "ko")
-        if (language !in supportedLanguages) {
+        // Detect a fallback to the default resources, which would silently return
+        // English labels on a non-English device.
+        val resolvedLocale = resources.getString(R.string.patrol_localization_locale)
+        Logger.d("System locale: ${locale.toLanguageTag()}, using strings for: $resolvedLocale")
+
+        if (resolvedLocale == DEFAULT_LOCALE_MARKER && locale.language != "en") {
             throw UnsupportedOperationException(
-                "Language '$language' is not supported. Supported languages: ${supportedLanguages.joinToString(", ")}"
+                "Locale '${locale.toLanguageTag()}' is not supported for native OS interactions."
             )
         }
-        return context.resources.getString(resourceId)
+        return resources.getString(resourceId)
     }
 }

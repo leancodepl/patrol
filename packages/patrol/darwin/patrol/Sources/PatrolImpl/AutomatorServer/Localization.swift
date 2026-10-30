@@ -4,42 +4,45 @@ import os
 class Localization {
 
   /**
-   * Gets the current device language
+   * Finds the bundled localization that matches the device language, region-aware
+   * (e.g. "es-MX" -> "es-419", "pt-BR" -> "pt-BR", "zh-Hant-TW" -> "zh-Hant", "en-GB" -> "en").
+   *
+   * Only the first preferred language is considered, because system UI is shown in it.
    */
-  private static func getDeviceLanguage() -> String? {
-    // Get the user's preferred language instead of system locale
-    if let preferredLanguage = Locale.preferredLanguages.first {
-      // Extract language code using proper locale parsing (e.g., "en-US" -> "en")
-      return Locale(identifier: preferredLanguage).languageCode
-    }
-    return nil
-  }
-
-  /**
-   * Gets localized string based on device language
-   * Supports English (en), German (de), French (fr), Polish (pl), Japanese (ja) and Korean (ko) languages
-   */
-  static func getLocalizedString(key: String) throws -> String {  // Mark as throws
-    let language = getDeviceLanguage()
-    let targetLanguage = language ?? "en"
-
-    // Define supported languages
-    let supportedLanguages = ["en", "de", "fr", "pl", "ja", "ko"]
-
-    if let unwrappedLanguage = language {
-      Logger.shared.i("Device language: \(unwrappedLanguage)")
-    } else {
+  private static func resolveLocalization(in bundle: Bundle) throws -> String {
+    guard let deviceLanguage = Locale.preferredLanguages.first else {
       Logger.shared.i("Device language not found, defaulting to English")
+      return "en"
     }
 
-    // Check if the target language is supported
-    guard supportedLanguages.contains(targetLanguage) else {
-      Logger.shared.e("Language '\(targetLanguage)' is not supported")
+    let available = bundle.localizations.filter {
+      bundle.path(forResource: "Localizable", ofType: "strings", inDirectory: "\($0).lproj") != nil
+    }
+
+    // When nothing matches, Foundation falls back to the development localization (en),
+    // which would silently return English labels on a non-English device.
+    guard
+      let localization = Bundle.preferredLocalizations(
+        from: available, forPreferences: [deviceLanguage]
+      ).first,
+      Locale(identifier: localization).languageCode == Locale(identifier: deviceLanguage).languageCode
+    else {
+      Logger.shared.e("Language '\(deviceLanguage)' is not supported")
       throw LocalizationError.languageNotSupported(
-        "Language '\(targetLanguage)' is not supported. Supported languages are: \(supportedLanguages.joined(separator: ", "))"
+        "Language '\(deviceLanguage)' is not supported. Supported languages are: \(available.sorted().joined(separator: ", "))"
       )
     }
 
+    Logger.shared.i("Device language: \(deviceLanguage), using localization: \(localization)")
+    return localization
+  }
+
+  /**
+   * Gets localized string based on device language.
+   * Supported languages are the .lproj folders in Resources, generated from
+   * packages/patrol/tool/native_localization.
+   */
+  static func getLocalizedString(key: String) throws -> String {
     // Get the bundle containing the Localizable.strings files
     #if SWIFT_PACKAGE
       let bundle = Bundle.module
@@ -47,18 +50,9 @@ class Localization {
       let bundle = Bundle(for: Localization.self)
     #endif
 
-    // Try to load the localized strings file for the target language
-    guard
-      let path = bundle.path(
-        forResource: "Localizable", ofType: "strings", inDirectory: "\(targetLanguage).lproj")
-    else {
-      Logger.shared.e("Localizable.strings file not found for language: \(targetLanguage)")
-      throw LocalizationError.resourceNotFound(
-        "Localizable.strings file not found for language: \(targetLanguage)")
-    }
+    let targetLanguage = try resolveLocalization(in: bundle)
 
-    return try getLocalizedStringForLanguage(
-      key: key, language: targetLanguage, bundle: bundle, path: path)
+    return try getLocalizedStringForLanguage(key: key, language: targetLanguage, bundle: bundle)
   }
 
   // This function remains 'throws' because it's a lower-level utility

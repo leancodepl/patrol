@@ -270,12 +270,18 @@ if (await $.platform.mobile.isPermissionDialogVisible(timeout: Duration(seconds:
 ```
 
 <Warning>
-  Patrol can handle permissions on iOS only if the device language is set to
-  English (preferably US). That's because there's no way to refer to a specific
-  view in a language-independent way (like resourceId on Android).
+  Patrol finds system dialogs, settings toggles and the photo picker by their
+  label, so it needs to know the text the OS shows in the device language.
+  Labels are shipped for 52 locales on iOS and 55 on Android, and the
+  region is taken into account (e.g. `en-GB`, `pt-BR`, `es-MX`, `fr-CA`,
+  `zh-Hant-TW`). They have been verified on devices only for English, German,
+  French, Polish, Japanese and Korean. Android labels come from AOSP, so
+  emulators and Pixel devices on recent Android versions are covered, but
+  manufacturer skins (e.g. Samsung One UI) and older Android versions may use
+  different text. On an unsupported locale, Patrol throws an error instead of
+  looking for English labels.
 
-If you want to handle permissions on iOS device with non-English locale, do it
-manually:
+If a label doesn't match on your device, tap it manually:
 
 ```dart
 await $.platform.ios.tap(
