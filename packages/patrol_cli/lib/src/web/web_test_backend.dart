@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:package_config/package_config.dart';
+import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
@@ -62,6 +63,8 @@ class WebTestBackend {
       ..detail('Starting web test execution...')
       ..info('Building Flutter web app...');
 
+    _throwIfInterrupted();
+
     // Start Flutter web server
     final flutterProcess = await _startFlutterWebServer(
       options,
@@ -69,6 +72,8 @@ class WebTestBackend {
     );
 
     try {
+      _killOnDispose(flutterProcess);
+
       // Wait for server to be ready and get the URL
       final baseUrl = await _waitForWebServer(
         flutterProcess,
@@ -83,6 +88,9 @@ class WebTestBackend {
         hideTestSteps: hideTestSteps,
         clearTestSteps: clearTestSteps,
       );
+    } catch (_) {
+      _throwIfInterrupted();
+      rethrow;
     } finally {
       // Clean up Flutter process gracefully
       _logger.detail('Stopping Flutter web server...');
@@ -102,6 +110,23 @@ class WebTestBackend {
         await flutterProcess.exitCode;
       }
     }
+  }
+
+  /// [_disposeScope] is disposed mid-run only by SIGINT.
+  void _throwIfInterrupted() {
+    if (_disposeScope.disposed) {
+      throwToolInterrupted('web test run was interrupted');
+    }
+  }
+
+  /// Kills [process] when the run is interrupted, including while [process]
+  /// was starting.
+  void _killOnDispose(Process process) {
+    if (_disposeScope.disposed) {
+      process.kill();
+      _throwIfInterrupted();
+    }
+    process.disposedBy(_disposeScope);
   }
 
   Future<void> develop(
@@ -265,9 +290,10 @@ class WebTestBackend {
           }
         });
 
-    // Check if process exits unexpectedly
+    // Check if process exits unexpectedly. `flutter` can exit with code 0 on
+    // SIGINT.
     flutterProcess.exitCode.then((exitCode) {
-      if (!completer.isCompleted && exitCode != 0) {
+      if (!completer.isCompleted) {
         stdoutSubscription.cancel();
         stderrSubscription.cancel();
         completer.completeError(
@@ -424,6 +450,8 @@ class WebTestBackend {
     required bool hideTestSteps,
     required bool clearTestSteps,
   }) async {
+    _throwIfInterrupted();
+
     _logger.info('Running Playwright tests against: $baseUrl');
     final completer = Completer<void>();
 
@@ -445,20 +473,20 @@ class WebTestBackend {
         ..detail('Test results will be saved to: $testResultsDir')
         ..detail('Test report will be saved to: $testReportDir');
 
-      final playwrightProcess =
-          await _processManager.start(
-              ['npx', 'playwright', 'test', 'tests/test.spec.ts'],
-              workingDirectory: webRunnerPath,
-              environment: {
-                ...Platform.environment,
-                'BASE_URL': baseUrl,
-                'PATROL_TEST_RESULTS_DIR': testResultsDir,
-                'PATROL_TEST_REPORT_DIR': testReportDir,
-                ...options.toEnvironmentVariables(),
-              },
-              runInShell: true,
-            )
-            ..disposedBy(scope);
+      _throwIfInterrupted();
+      final playwrightProcess = await _processManager.start(
+        ['npx', 'playwright', 'test', 'tests/test.spec.ts'],
+        workingDirectory: webRunnerPath,
+        environment: {
+          ...Platform.environment,
+          'BASE_URL': baseUrl,
+          'PATROL_TEST_RESULTS_DIR': testResultsDir,
+          'PATROL_TEST_REPORT_DIR': testReportDir,
+          ...options.toEnvironmentVariables(),
+        },
+        runInShell: true,
+      );
+      _killOnDispose(playwrightProcess);
 
       final isShardedRun = (options.workers ?? 0) > 1;
       if (isShardedRun) {

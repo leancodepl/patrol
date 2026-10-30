@@ -7,6 +7,8 @@
   display, `--show-flutter-logs` output and the test summary. (#3245)
 - Fix `--flutter-command` and `PATROL_FLUTTER_COMMAND` splitting quoted text on spaces, so a quoted
   Flutter path with spaces works. Add `splitCommandLine` to the public API. (#3026)
+- Fix Ctrl+C during a web `patrol test` being ignored until the web app finished building, after
+  which the run hung. It now stops the Flutter web server and exits at any phase of the run.
 
 ## 4.8.0
 
