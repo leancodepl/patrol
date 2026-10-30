@@ -46,6 +46,7 @@ class FlutterTool {
   io.Process? _attachProcess;
   var _pendingHotRestart = false;
   String? _attachFailure;
+  final _attachFailed = Completer<String>();
   void Function()? _onRestartCompleted;
   void Function()? _onRestartFailed;
 
@@ -84,6 +85,11 @@ class FlutterTool {
     _onRestartFailed = null;
     callback?.call();
   }
+
+  /// Completes with the reason once `flutter attach` has exited without
+  /// attaching: its exit code and what it wrote to stderr. Hot restart is
+  /// unavailable from then on.
+  Future<String> get attachFailed => _attachFailed.future;
 
   /// Forwards logs and hot restarts the app when "r" is pressed.
   Future<void> attachForHotRestart({
@@ -223,6 +229,7 @@ class FlutterTool {
         }
         final failure = 'Hot Restart is not available: $reason';
         _attachFailure = failure;
+        _attachFailed.maybeComplete(failure);
         _logger.err(failure);
         completer.maybeComplete();
       });
