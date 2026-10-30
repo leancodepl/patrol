@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:platform/platform.dart';
@@ -20,16 +21,19 @@ void main() {
 
   late FlutterTool flutterTool;
   late MockProcessManager processManager;
+  late MockLogger logger;
   late Platform platform;
+  late StreamController<List<int>> stdin;
 
   setUp(() {
     final disposeScope = DisposeScope();
-    final stdin = StreamController<List<int>>();
+    stdin = StreamController<List<int>>();
     processManager = MockProcessManager();
+    logger = MockLogger();
     platform = FakePlatform();
 
     flutterTool = FlutterTool(
-      logger: MockLogger(),
+      logger: logger,
       parentDisposeScope: disposeScope,
       processManager: processManager,
       platform: platform,
@@ -37,11 +41,50 @@ void main() {
     );
   });
 
+  /// Defaults to a process that neither prints anything nor exits.
+  MockProcess stubProcess({
+    List<String> stdout = const [],
+    List<String> stderr = const [],
+    Future<int>? exitCode,
+  }) {
+    final process = MockProcess();
+    when(() => process.stdout).thenAnswer(
+      (_) =>
+          Stream<List<int>>.fromIterable(
+            stdout.map((line) => utf8.encode('$line\n')),
+          ).asyncMap((chunk) async {
+            await Future<void>.delayed(const Duration(milliseconds: 40));
+            return chunk;
+          }),
+    );
+    // A process that has already exited still has its last lines in flight.
+    when(() => process.stderr).thenAnswer(
+      (_) =>
+          Stream<List<int>>.fromIterable(
+            stderr.map((line) => utf8.encode('$line\n')),
+          ).asyncMap((chunk) async {
+            await Future<void>.delayed(const Duration(milliseconds: 20));
+            return chunk;
+          }),
+    );
+    when(
+      () => process.exitCode,
+    ).thenAnswer((_) => exitCode ?? Completer<int>().future);
+    when(() => processManager.start(any())).thenAnswer((_) async => process);
+    // `logs` starts its process with `runInShell`, which is a separate
+    // invocation as far as mocktail is concerned.
+    when(
+      () => processManager.start(any(), runInShell: any(named: 'runInShell')),
+    ).thenAnswer((_) async => process);
+    return process;
+  }
+
   group('FlutterTool', () {
     test(
       'hotRestart requested before attach completes is queued, then sent',
       () async {
         final process = MockProcess();
+        when(() => process.exitCode).thenAnswer((_) => Completer<int>().future);
         final processStdin = _MockIOSink();
         final processStdout = StreamController<List<int>>();
         when(() => process.stdout).thenAnswer((_) => processStdout.stream);
@@ -80,6 +123,7 @@ void main() {
       'hotRestart onCompleted fires when the restart completes, not sooner',
       () async {
         final process = MockProcess();
+        when(() => process.exitCode).thenAnswer((_) => Completer<int>().future);
         final processStdin = _MockIOSink();
         final processStdout = StreamController<List<int>>();
         when(() => process.stdout).thenAnswer((_) => processStdout.stream);
@@ -118,6 +162,7 @@ void main() {
       'hotRestart onFailed fires when Flutter rejects the restart',
       () async {
         final process = MockProcess();
+        when(() => process.exitCode).thenAnswer((_) => Completer<int>().future);
         final processStdin = _MockIOSink();
         final processStdout = StreamController<List<int>>();
         when(() => process.stdout).thenAnswer((_) => processStdout.stream);
@@ -163,14 +208,7 @@ void main() {
       },
     );
     test('attach passes deviceId correctly', () {
-      final process = MockProcess();
-      when(
-        () => process.stdout,
-      ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
-      when(
-        () => process.stderr,
-      ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
-      when(() => processManager.start(any())).thenAnswer((_) async => process);
+      stubProcess();
 
       flutterTool.attach(
         flutterCommand: flutterCommand,
@@ -187,14 +225,7 @@ void main() {
     // `flutter attach` exits with a usage error on an option it does not
     // define. Check `flutter attach --help` before extending this set.
     test('attach passes only options flutter attach defines', () {
-      final process = MockProcess();
-      when(
-        () => process.stdout,
-      ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
-      when(
-        () => process.stderr,
-      ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
-      when(() => processManager.start(any())).thenAnswer((_) async => process);
+      stubProcess();
 
       flutterTool.attach(
         flutterCommand: flutterCommand,
@@ -230,6 +261,7 @@ void main() {
       () async {
         const url = 'http://127.0.0.1:54296/4crAtS2Ux7w=/';
         final process = MockProcess();
+        when(() => process.exitCode).thenAnswer((_) => Completer<int>().future);
         when(() => process.stdout).thenAnswer(
           (_) => Stream<List<int>>.fromIterable([
             utf8.encode('Flutter run key commands.\n'),
@@ -276,6 +308,137 @@ void main() {
         expect(args, isNot(contains('logs')));
       },
     );
+
+    test('attach returns and reports why when the process exits', () async {
+      stubProcess(
+        stderr: ['Could not find an option named "--flavor".'],
+        exitCode: Future.value(64),
+      );
+
+      await flutterTool.attach(
+        flutterCommand: flutterCommand,
+        deviceId: 'testDeviceId',
+        target: 'target',
+        appId: 'appId',
+        dartDefines: {},
+        openBrowser: false,
+      );
+
+      final reported = verify(
+        () => logger.err(captureAny()),
+      ).captured.map((message) => message.toString()).join('\n');
+      expect(reported, contains('Hot Restart is not available'));
+      expect(reported, contains('exited with code 64'));
+      expect(reported, contains('Could not find an option named "--flavor".'));
+    });
+
+    test('attachFailed carries why attach exited before attaching', () async {
+      stubProcess(
+        stderr: ['Could not find an option named "--flavor".'],
+        exitCode: Future.value(64),
+      );
+
+      await flutterTool.attach(
+        flutterCommand: flutterCommand,
+        deviceId: 'testDeviceId',
+        target: 'target',
+        appId: 'appId',
+        dartDefines: {},
+        openBrowser: false,
+      );
+
+      final reason = await flutterTool.attachFailed.timeout(
+        const Duration(seconds: 1),
+      );
+      expect(reason, contains('exited with code 64'));
+      expect(reason, contains('Could not find an option named "--flavor".'));
+    });
+
+    test(
+      'attachFailed stays pending when attach exits once attached',
+      () async {
+        final exited = Completer<int>();
+        stubProcess(
+          stdout: ['Flutter run key commands.'],
+          exitCode: exited.future,
+        );
+
+        await flutterTool.attach(
+          flutterCommand: flutterCommand,
+          deviceId: 'testDeviceId',
+          target: 'target',
+          appId: 'appId',
+          dartDefines: {},
+          openBrowser: false,
+        );
+        exited.complete(0);
+
+        var failed = false;
+        unawaited(flutterTool.attachFailed.then((_) => failed = true));
+        await Future<void>.delayed(const Duration(milliseconds: 1200));
+        expect(failed, isFalse);
+      },
+    );
+
+    test('logs returns and reports why when the process exits', () async {
+      stubProcess(
+        stderr: ['You must specify a --flavor option to select one.'],
+        exitCode: Future.value(1),
+      );
+
+      await flutterTool.logs('testDeviceId', flutterCommand: flutterCommand);
+
+      final reported = verify(
+        () => logger.err(captureAny()),
+      ).captured.map((message) => message.toString()).join('\n');
+      expect(reported, contains('Logs are not available'));
+      expect(reported, contains('exited with code 1'));
+      expect(reported, contains('You must specify a --flavor option'));
+    });
+
+    test('r reports why the attach died', () async {
+      stubProcess(
+        stderr: ['Could not find an option named "--flavor".'],
+        exitCode: Future.value(64),
+      );
+
+      await flutterTool.attach(
+        flutterCommand: flutterCommand,
+        deviceId: 'testDeviceId',
+        target: 'target',
+        appId: 'appId',
+        dartDefines: {},
+        openBrowser: false,
+      );
+      stdin.add('r'.codeUnits);
+      await Future<void>.delayed(Duration.zero);
+
+      final warned = verify(
+        () => logger.warn(captureAny()),
+      ).captured.map((message) => message.toString()).join('\n');
+      expect(warned, contains('Hot Restart is not available'));
+      expect(warned, isNot(contains('not attached to the app yet')));
+    });
+
+    test('logs survives stdout arriving after the process exits', () async {
+      stubProcess(stdout: ['Showing logs:'], exitCode: Future.value(1));
+
+      await flutterTool.logs('testDeviceId', flutterCommand: flutterCommand);
+      await Future<void>.delayed(const Duration(milliseconds: 80));
+    });
+
+    test('logs does not leave the observation URL pending on exit', () async {
+      stubProcess(exitCode: Future.value(1));
+      final observationUrl = Completer<String>();
+
+      await flutterTool.logs(
+        'testDeviceId',
+        flutterCommand: flutterCommand,
+        observationUrlCompleter: observationUrl,
+      );
+
+      await expectLater(observationUrl.future, throwsA(isA<ToolExit>()));
+    });
   });
 
   group('getObservationUrl', () {

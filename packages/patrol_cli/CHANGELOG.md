@@ -10,6 +10,7 @@
 - Fix `patrol test` on web timing out when the Flutter web server serves https (set up with
   `web_dev_config.yaml`): the server URL is now detected, and the readiness check accepts a
   self-signed certificate from that server. (#3314)
+- Report a dead `flutter attach` or `flutter logs` in `patrol develop`. (#3234)
 
 ## 4.8.0
 
