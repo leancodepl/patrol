@@ -242,13 +242,16 @@ abstract interface class AndroidAutomator implements MobileAutomator {
   /// `android:id/button1`, for example battery optimization permission dialogs.
   Future<void> allowPermission();
 
-  /// Returns a list of currently visible native UI controls, specified by
-  /// [selector], which are currently visible on screen.
+  /// Returns a list of native UI controls specified by [selector].
   ///
-  /// If [selector] is null, returns the whole native UI tree.
+  /// If [selector] is null, returns the whole native UI tree. By default the
+  /// tree skips nodes whose `isVisibleToUser` is false (and their subtrees).
+  /// Pass [includeInvisibleNodes] to keep them, e.g. for WebViews that report
+  /// an on-screen container as invisible. Only applies when [selector] is null.
   Future<AndroidGetNativeViewsResponse> getNativeViews(
-    AndroidSelector? selector,
-  );
+    AndroidSelector? selector, {
+    bool includeInvisibleNodes = false,
+  });
 
   /// Captures a native screenshot ([tag] is added to the file name) for a device
   /// farm to collect. Never throws if the capture fails.

@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Allow `equatable` 3.x by widening the constraint to `>=2.1.0 <4.0.0`.
+- Regenerate API contracts (adds `AndroidGetNativeViewsRequest.includeInvisibleNodes`). (#3287)
 - Regenerate API contracts for the new Android `ConfigureRequest` accessibility flag. (#3227)
 - Regenerate API contracts (adds `AndroidTakeNativeScreenshotRequest`). (#3222)
 
