@@ -46,6 +46,7 @@ class AndroidTestBackend {
            FlutterDoctor(
              processManager: processManager,
              projectRoot: rootDirectory,
+             parentDisposeScope: parentDisposeScope,
            ),
        _disposeScope = DisposeScope(),
        _logger = logger {

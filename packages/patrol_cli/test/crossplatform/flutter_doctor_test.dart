@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/memory.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_doctor.dart';
@@ -13,6 +14,8 @@ void main() {
   group('FlutterDoctor', () {
     const command = FlutterCommand('fvm', ['flutter']);
     late MockProcessManager processManager;
+    late MockProcess process;
+    late DisposeScope disposeScope;
     late StreamController<List<int>> doctorStdout;
     late FlutterDoctor flutterDoctor;
 
@@ -21,8 +24,9 @@ void main() {
     setUp(() {
       processManager = MockProcessManager();
       doctorStdout = StreamController<List<int>>();
-      final process = MockProcess();
+      process = MockProcess();
       when(() => process.stdout).thenAnswer((_) => doctorStdout.stream);
+      when(() => process.kill()).thenReturn(true);
       when(() => process.stderr).thenAnswer((_) => const Stream.empty());
       when(
         () => processManager.start(
@@ -31,9 +35,11 @@ void main() {
           runInShell: any(named: 'runInShell'),
         ),
       ).thenAnswer((_) async => process);
+      disposeScope = DisposeScope();
       flutterDoctor = FlutterDoctor(
         processManager: processManager,
         projectRoot: MemoryFileSystem.test().directory('/project'),
+        parentDisposeScope: disposeScope,
       );
     });
 
@@ -87,6 +93,20 @@ void main() {
       await doctorStdout.close();
 
       expect(await javaBinary, isNull);
+    });
+
+    test('kills a running doctor when its owner is disposed', () async {
+      final javaBinary = flutterDoctor.firstLineWhere(
+        command,
+        (line) => line.contains('Java binary at'),
+      );
+      printLine('[✓] Flutter (Channel stable)');
+      await pumpEventQueue();
+
+      await disposeScope.dispose();
+
+      expect(await javaBinary, isNull);
+      verify(() => process.kill()).called(1);
     });
   });
 }

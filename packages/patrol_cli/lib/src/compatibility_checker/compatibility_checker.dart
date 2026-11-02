@@ -27,6 +27,7 @@ class CompatibilityChecker {
            FlutterDoctor(
              processManager: processManager,
              projectRoot: projectRoot,
+             parentDisposeScope: DisposeScope(),
            ),
        _disposeScope = DisposeScope(),
        _logger = logger;

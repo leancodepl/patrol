@@ -141,6 +141,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
     final flutterDoctor = FlutterDoctor(
       processManager: _processManager,
       projectRoot: rootDirectory,
+      parentDisposeScope: _disposeScope,
     );
 
     final androidTestBackend = AndroidTestBackend(

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show Process;
 
+import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:process/process.dart';
@@ -13,15 +14,23 @@ import 'package:process/process.dart';
 /// Android toolchain section, which the doctor prints after about a second.
 /// The full run takes several seconds longer, mostly to discover devices, so
 /// each lookup completes as soon as its line appears.
+///
+/// A doctor run that is still going when the parent dispose scope is disposed
+/// is killed, and lookups waiting for it return null.
 class FlutterDoctor {
   FlutterDoctor({
     required ProcessManager processManager,
     required Directory projectRoot,
+    required DisposeScope parentDisposeScope,
   }) : _processManager = processManager,
-       _projectRoot = projectRoot;
+       _projectRoot = projectRoot,
+       _disposeScope = DisposeScope() {
+    _disposeScope.disposedBy(parentDisposeScope);
+  }
 
   final ProcessManager _processManager;
   final Directory _projectRoot;
+  final DisposeScope _disposeScope;
   final _runs = <String, _DoctorRun>{};
 
   /// The first line of `flutter doctor --verbose` that satisfies [test], or
@@ -42,14 +51,17 @@ class FlutterDoctor {
         workingDirectory: _projectRoot.path,
         runInShell: true,
       ),
+      _disposeScope,
     );
     return run.firstLineWhere(test);
   }
 }
 
 class _DoctorRun {
-  _DoctorRun(Future<Process> process) {
+  _DoctorRun(Future<Process> process, DisposeScope disposeScope) {
+    disposeScope.addDispose(_finish);
     _started = process.then((process) {
+      process.disposedBy(disposeScope);
       process.stdout
           .transform(const Utf8Decoder(allowMalformed: true))
           .transform(const LineSplitter())
@@ -60,7 +72,8 @@ class _DoctorRun {
             },
             onDone: _finish,
             onError: (Object _) => _finish(),
-          );
+          )
+          .disposedBy(disposeScope);
       process.stderr.drain<void>().ignore();
     }, onError: (Object _) => _finish());
   }
