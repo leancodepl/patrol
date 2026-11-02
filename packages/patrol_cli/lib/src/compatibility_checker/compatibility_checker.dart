@@ -8,6 +8,7 @@ import 'package:patrol_cli/src/base/extensions/completer.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/compatibility_checker/version_compatibility.dart';
+import 'package:patrol_cli/src/crossplatform/flutter_doctor.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:process/process.dart';
@@ -18,13 +19,21 @@ class CompatibilityChecker {
     required Directory projectRoot,
     required ProcessManager processManager,
     required Logger logger,
+    FlutterDoctor? flutterDoctor,
   }) : _projectRoot = projectRoot,
        _processManager = processManager,
+       _flutterDoctor =
+           flutterDoctor ??
+           FlutterDoctor(
+             processManager: processManager,
+             projectRoot: projectRoot,
+           ),
        _disposeScope = DisposeScope(),
        _logger = logger;
 
   final Directory _projectRoot;
   final ProcessManager _processManager;
+  final FlutterDoctor _flutterDoctor;
   final DisposeScope _disposeScope;
   final Logger _logger;
 
@@ -62,6 +71,7 @@ Check the compatibility table at: https://patrol.leancode.co/documentation/compa
     if (targetPlatform == TargetPlatform.android) {
       await _checkJavaVersion(
         flutterCommand,
+        _flutterDoctor,
         DisposeScope(),
         _processManager,
         _projectRoot,
@@ -162,6 +172,7 @@ Check the compatibility table at: https://patrol.leancode.co/documentation/compa
 
 Future<void> _checkJavaVersion(
   FlutterCommand flutterCommand,
+  FlutterDoctor flutterDoctor,
   DisposeScope disposeScope,
   ProcessManager processManager,
   Directory projectRoot,
@@ -170,58 +181,40 @@ Future<void> _checkJavaVersion(
   Version? javaVersion;
   final javaCompleterVersion = Completer<Version?>();
 
-  await disposeScope.run((scope) async {
-    final processFlutter =
-        await processManager.start(
-            [
-              flutterCommand.executable,
-              ...flutterCommand.arguments,
-              'doctor',
-              '--verbose',
-            ],
-            workingDirectory: projectRoot.path,
-            runInShell: true,
+  final javaVersionLine = await flutterDoctor.firstLineWhere(
+    flutterCommand,
+    (line) => line.contains('• Java version'),
+  );
+  if (javaVersionLine != null) {
+    final versionString = javaVersionLine.split(' ').last.replaceAll(')', '');
+    javaCompleterVersion.maybeComplete(Version.parse(versionString));
+  }
+
+  if (!javaCompleterVersion.isCompleted) {
+    await disposeScope.run((scope) async {
+      final processJava =
+          await processManager.start(
+              ['javac', '--version'],
+              workingDirectory: projectRoot.path,
+              runInShell: true,
+            )
+            ..disposedBy(scope);
+
+      processJava
+          .listenStdOut(
+            (line) {
+              if (line.startsWith('javac')) {
+                javaCompleterVersion.maybeComplete(
+                  Version.parse(line.split(' ').last),
+                );
+              }
+            },
+            onDone: () => javaCompleterVersion.maybeComplete(null),
+            onError: (error) => javaCompleterVersion.maybeComplete(null),
           )
-          ..disposedBy(scope);
-
-    processFlutter
-        .listenStdOut(
-          (line) {
-            if (line.contains('• Java version')) {
-              final versionString = line.split(' ').last.replaceAll(')', '');
-              javaCompleterVersion.maybeComplete(Version.parse(versionString));
-            }
-          },
-          onDone: () async {
-            if (!javaCompleterVersion.isCompleted) {
-              final processJava =
-                  await processManager.start(
-                      ['javac', '--version'],
-                      workingDirectory: projectRoot.path,
-                      runInShell: true,
-                    )
-                    ..disposedBy(scope);
-
-              processJava
-                  .listenStdOut(
-                    (line) {
-                      if (line.startsWith('javac')) {
-                        javaCompleterVersion.maybeComplete(
-                          Version.parse(line.split(' ').last),
-                        );
-                      }
-                    },
-                    onDone: () => javaCompleterVersion.maybeComplete(null),
-                    onError: (error) =>
-                        javaCompleterVersion.maybeComplete(null),
-                  )
-                  .disposedBy(scope);
-            }
-          },
-          onError: (error) => javaCompleterVersion.maybeComplete(null),
-        )
-        .disposedBy(scope);
-  });
+          .disposedBy(scope);
+    });
+  }
 
   javaVersion = await javaCompleterVersion.future;
 

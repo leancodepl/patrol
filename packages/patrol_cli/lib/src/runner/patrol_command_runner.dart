@@ -28,6 +28,7 @@ import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart'
 import 'package:patrol_cli/src/compatibility_checker/version_compatibility.dart';
 import 'package:patrol_cli/src/coverage/coverage_tool.dart';
 import 'package:patrol_cli/src/coverage/web_coverage_tool.dart';
+import 'package:patrol_cli/src/crossplatform/flutter_doctor.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
@@ -137,6 +138,11 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       logger: _logger,
     );
 
+    final flutterDoctor = FlutterDoctor(
+      processManager: _processManager,
+      projectRoot: rootDirectory,
+    );
+
     final androidTestBackend = AndroidTestBackend(
       adb: adb,
       processManager: _processManager,
@@ -144,6 +150,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       rootDirectory: rootDirectory,
       parentDisposeScope: _disposeScope,
       logger: _logger,
+      flutterDoctor: flutterDoctor,
     );
 
     final iosTestBackend = IOSTestBackend(
@@ -191,6 +198,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
           projectRoot: rootDirectory,
           processManager: _processManager,
           logger: _logger,
+          flutterDoctor: flutterDoctor,
         ),
         analytics: _analytics,
         logger: _logger,
@@ -207,6 +215,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
           projectRoot: rootDirectory,
           processManager: _processManager,
           logger: _logger,
+          flutterDoctor: flutterDoctor,
         ),
         pubspecReader: PubspecReader(projectRoot: rootDirectory),
         flutterTool: FlutterTool(
@@ -236,6 +245,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
           projectRoot: rootDirectory,
           processManager: _processManager,
           logger: _logger,
+          flutterDoctor: flutterDoctor,
         ),
         pubspecReader: PubspecReader(projectRoot: rootDirectory),
         androidTestBackend: androidTestBackend,

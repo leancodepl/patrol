@@ -9,10 +9,10 @@ import 'package:meta/meta.dart';
 import 'package:patrol_cli/src/android/android_test_codegen.dart';
 import 'package:patrol_cli/src/android/android_video_recording_manager.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
-import 'package:patrol_cli/src/base/extensions/completer.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
+import 'package:patrol_cli/src/crossplatform/flutter_doctor.dart';
 import 'package:patrol_cli/src/crossplatform/test_manifest.dart';
 import 'package:patrol_cli/src/crossplatform/test_manifest_generator.dart';
 import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
@@ -36,10 +36,17 @@ class AndroidTestBackend {
     required Directory rootDirectory,
     required DisposeScope parentDisposeScope,
     required Logger logger,
+    FlutterDoctor? flutterDoctor,
   }) : _adb = adb,
        _processManager = processManager,
        _rootDirectory = rootDirectory,
        _platform = platform,
+       _flutterDoctor =
+           flutterDoctor ??
+           FlutterDoctor(
+             processManager: processManager,
+             projectRoot: rootDirectory,
+           ),
        _disposeScope = DisposeScope(),
        _logger = logger {
     _disposeScope.disposedBy(parentDisposeScope);
@@ -47,6 +54,7 @@ class AndroidTestBackend {
 
   final Adb _adb;
   final ProcessManager _processManager;
+  final FlutterDoctor _flutterDoctor;
   final Platform _platform;
   final Directory _rootDirectory;
   final DisposeScope _disposeScope;
@@ -253,46 +261,18 @@ class AndroidTestBackend {
   Future<void> loadJavaPathFromFlutterDoctor(
     FlutterCommand flutterCommand,
   ) async {
-    final javaCompleterPath = Completer<String?>();
-
-    await _disposeScope.run((scope) async {
-      final process =
-          await _processManager.start([
-              flutterCommand.executable,
-              ...flutterCommand.arguments,
-              'doctor',
-              '--verbose',
-            ], runInShell: true)
-            ..disposedBy(scope);
-
-      process
-          .listenStdOut(
-            (line) {
-              if (line.contains('• Java binary at:') &&
-                  javaCompleterPath.isCompleted == false) {
-                var path = line.replaceAll('• Java binary at:', '').trim();
-                // If the path is /usr/bin/java, then it's not the real path,
-                // but symlink, so we're not setting JAVA_HOME path.
-                // Otherwise, we remove the `/bin/java` part, to get a proper
-                // JAVA_HOME path.
-                if (path != '/usr/bin/java') {
-                  path = path.replaceAll(
-                    _platform.isWindows ? r'\bin\java' : '/bin/java',
-                    '',
-                  );
-                  javaCompleterPath.maybeComplete(path);
-                } else {
-                  javaCompleterPath.maybeComplete(null);
-                }
-              }
-            },
-            onDone: () => javaCompleterPath.maybeComplete(null),
-            onError: (error) => javaCompleterPath.maybeComplete(null),
-          )
-          .disposedBy(scope);
-    });
-
-    javaPath = await javaCompleterPath.future;
+    final javaBinaryLine = await _flutterDoctor.firstLineWhere(
+      flutterCommand,
+      (line) => line.contains('• Java binary at:'),
+    );
+    final path = javaBinaryLine?.replaceAll('• Java binary at:', '').trim();
+    // If the path is /usr/bin/java, then it's not the real path,
+    // but symlink, so we're not setting JAVA_HOME path.
+    // Otherwise, we remove the `/bin/java` part, to get a proper
+    // JAVA_HOME path.
+    javaPath = path == null || path == '/usr/bin/java'
+        ? null
+        : path.replaceAll(_platform.isWindows ? r'\bin\java' : '/bin/java', '');
   }
 
   /// Execute `flutter build apk --config-only` to generate the gradlew file.
