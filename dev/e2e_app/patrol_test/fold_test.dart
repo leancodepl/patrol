@@ -1,5 +1,5 @@
-// The fold API is experimental.
-// ignore_for_file: experimental_member_use
+// The fold API is experimental. Flutter 3.38 doesn't report it yet.
+// ignore_for_file: experimental_member_use, unnecessary_ignore
 
 import 'dart:io';
 
