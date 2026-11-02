@@ -135,10 +135,7 @@ Finding? checkMacosRunnerUITestsFile(MacOSCheckContext ctx) {
 
 /// M2: the RunnerUITests native target exists in the Xcode project.
 Finding? checkMacosRunnerUITestsTarget(MacOSCheckContext ctx) {
-  final hasTarget = RegExp(
-    r'/\* RunnerUITests \*/ = \{\s*isa = PBXNativeTarget',
-  ).hasMatch(ctx.pbxproj!);
-  if (hasTarget) {
+  if (ctx.runnerUITestsTargetBlock != null) {
     return null;
   }
   return Finding(

@@ -53,19 +53,23 @@ class DarwinCheckContext {
 
   bool get hybrid => podfileExists && spmDetected;
 
+  /// Multi-line pbxproj objects of type [isa], optionally only those named
+  /// [name]. Key order inside a block is not assumed: `isa` need not be first.
+  Iterable<String> objectBlocks(String isa, {String? name}) {
+    final comment = name == null ? '[^*]*' : RegExp.escape(name);
+    return RegExp(
+          '\\t\\t\\w+ /\\* $comment \\*/ = \\{\\n.*?\\n\\t\\t\\};',
+          dotAll: true,
+        )
+        .allMatches(pbxproj ?? '')
+        .map((match) => match.group(0)!)
+        .where((block) => block.contains('isa = $isa;'));
+  }
+
   /// The `PBXNativeTarget` block of [name], or null when it cannot be
   /// isolated (missing target or unexpected pbxproj formatting).
-  String? nativeTargetBlock(String name) {
-    final contents = pbxproj;
-    if (contents == null) {
-      return null;
-    }
-    return RegExp(
-      '/\\* ${RegExp.escape(name)} \\*/ = \\{\\s*isa = PBXNativeTarget;'
-      r'.*?\n\t\t\};',
-      dotAll: true,
-    ).firstMatch(contents)?.group(0);
-  }
+  String? nativeTargetBlock(String name) =>
+      objectBlocks('PBXNativeTarget', name: name).firstOrNull;
 
   String? get runnerUITestsTargetBlock => nativeTargetBlock('RunnerUITests');
 
@@ -111,11 +115,7 @@ class DarwinCheckContext {
   ({Set<String> uiTests, Set<String> app}) deploymentTargets(String variable) {
     final uiTests = <String>{};
     final app = <String>{};
-    final blocks = RegExp(
-      r'= \{\s*isa = XCBuildConfiguration;.*?\n\t\t\};',
-      dotAll: true,
-    ).allMatches(pbxproj ?? '').map((match) => match.group(0)!);
-    for (final block in blocks) {
+    for (final block in objectBlocks('XCBuildConfiguration')) {
       final version = RegExp(
         '$variable = ([\\d.]+);',
       ).firstMatch(block)?.group(1);
@@ -134,8 +134,10 @@ class DarwinCheckContext {
     if (contents == null) {
       return null;
     }
+    // One-line objects (PBXBuildFile, PBXFileReference) end on their own
+    // line; matching them as multi-line would swallow the next object.
     return RegExp(
-      '$id /\\*[^*]*\\*/ = \\{.*?\\n\\t\\t\\};',
+      '\\b$id /\\*[^*]*\\*/ = \\{(?:[^\\n]*\\};|\\n.*?\\n\\t\\t\\};)',
       dotAll: true,
     ).firstMatch(contents)?.group(0);
   }

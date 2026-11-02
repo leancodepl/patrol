@@ -176,6 +176,69 @@ void main() {
     });
   });
 
+  group('pbxproj formatting', () {
+    const targetHeader =
+        '\t\tAA2 /* RunnerUITests */ = {\n\t\t\tisa = PBXNativeTarget;\n';
+
+    test('finds a target whose isa is not the first key', () {
+      // Seen in the patrol example app after an SPM migration.
+      writeSpmProject();
+      write(
+        'ios/Runner.xcodeproj/project.pbxproj',
+        _pbxproj().replaceFirst(
+          targetHeader,
+          '\t\tGG1 /* RunnerUITests */ = {\n'
+          '\t\t\tisa = PBXGroup;\n'
+          '\t\t\tchildren = (\n'
+          '\t\t\t);\n'
+          '\t\t};\n'
+          '\t\tAA2 /* RunnerUITests */ = {\n'
+          '\t\t\tproductName = RunnerUITests;\n'
+          '\t\t\tisa = PBXNativeTarget;\n',
+        ),
+      );
+      expect(idsOf(iosFindings(context())), ['I12']);
+    });
+
+    test('a one-line object does not swallow the next block', () {
+      // The Runner's Frameworks phase follows RunnerUITests' product file
+      // reference; it must not make RunnerUITests look SPM-linked.
+      writeSpmProject();
+      write(
+        'ios/Runner.xcodeproj/project.pbxproj',
+        _pbxproj()
+            .replaceFirst(
+              '\t\t\t\tP2 /* FlutterGeneratedPluginSwiftPackage */,\n'
+                  '\t\t\t);\n'
+                  '\t\t};\n'
+                  '\t\tBBBBBBBBBBBBBBBBBBBBBBB2',
+              '\t\t\t);\n'
+                  '\t\t};\n'
+                  '\t\tBBBBBBBBBBBBBBBBBBBBBBB2',
+            )
+            .replaceFirst(
+              targetHeader,
+              '$targetHeader'
+              '\t\t\tproductReference = DDDDDDDDDDDDDDDDDDDDDDD1 /* RunnerUITests.xctest */;\n',
+            )
+            .replaceFirst(
+              '\t\tBBBBBBBBBBBBBBBBBBBBBBB2 /* ShellScript */',
+              '\t\tDDDDDDDDDDDDDDDDDDDDDDD1 /* RunnerUITests.xctest */ = {isa = PBXFileReference; '
+                  'path = RunnerUITests.xctest; };\n'
+                  '\t\tEE1 /* Frameworks */ = {\n'
+                  '\t\t\tisa = PBXFrameworksBuildPhase;\n'
+                  '\t\t\tfiles = (\n'
+                  '\t\t\t\tP3 /* FlutterGeneratedPluginSwiftPackage in '
+                  'Frameworks */,\n'
+                  '\t\t\t);\n'
+                  '\t\t};\n'
+                  '\t\tBBBBBBBBBBBBBBBBBBBBBBB2 /* ShellScript */',
+            ),
+      );
+      expect(idsOf(iosFindings(context())), contains('I6'));
+    });
+  });
+
   group('I0 integration mechanism', () {
     test('errors when neither CocoaPods nor SPM is present', () {
       write('ios/Runner.xcodeproj/project.pbxproj', _pbxproj(spm: false));
