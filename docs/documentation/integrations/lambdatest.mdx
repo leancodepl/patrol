@@ -6,7 +6,7 @@ title: LambdaTest
 
 [LambdaTest App Test Automation] is a popular cloud device farm.
 
-<Warning>This integration is currently Android-only.</Warning>
+## Android
 
 ### Change runner
 
@@ -56,7 +56,76 @@ Uploaded testsuite, "app_id": "lt://APP1016047291733312896265135",
 }
 ```
 
+## iOS (real devices)
+
+LambdaTest runs XCUITest on real devices with one session per test, and it
+decides the sessions before the run starts. It takes the test list from
+`PatrolGeneratedTests.inc` inside `RunnerUITests.xctest`. Without that file the
+whole suite runs as a single `testInvocations()` session.
+
+### Enable build-time test discovery
+
+Follow [build-time test discovery](/documentation/ci/build-time-test-discovery):
+set `emit_test_manifest: true` and switch `RunnerUITests.m` to the static runner.
+
+### Ship `PatrolGeneratedTests.inc` in the test bundle
+
+`#include` only compiles the generated tests in. LambdaTest also needs the file
+itself inside `RunnerUITests.xctest`:
+
+1. Run `patrol build ios` once, so `ios/RunnerUITests/PatrolGeneratedTests.inc` exists.
+2. In Xcode, add it to the `RunnerUITests` group and tick **only** the
+   `RunnerUITests` target. It lands in **Build Phases → Copy Bundle Resources**.
+
+Xcode then copies and signs the file with every build. The `.inc` stays in
+`.gitignore`; only the project reference is committed.
+
+### Build and upload
+
+```bash
+patrol build ios --release
+
+products=build/ios_integ/Build/Products/Release-iphoneos
+mkdir -p lt/app/Payload lt/tests/Payload
+cp -R "$products/Runner.app" lt/app/Payload/
+cp -R "$products/RunnerUITests-Runner.app" lt/tests/Payload/
+(cd lt/app && zip -qr ../app.ipa Payload)
+(cd lt/tests && zip -qr ../tests.ipa Payload)
+```
+
+Upload `lt/app.ipa` and `lt/tests.ipa` with `type=xcuit-ios` ([see docs][LT_xcui_docs]).
+
+### Run
+
+Pass the generated classes as `only-testing`:
+
+```bash
+only_testing=$(awk '/^@implementation /{print $2}' ios/RunnerUITests/PatrolGeneratedTests.inc \
+  | jq -R . | jq -sc .)
+
+curl -u "$LT_USERNAME:$LT_ACCESS_KEY" \
+  -X POST https://mobile-api.lambdatest.com/framework/v1/xcui/build \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"app\": \"$APP_ID\",
+    \"testSuite\": \"$TEST_SUITE_ID\",
+    \"device\": [\"iPhone 16-18\"],
+    \"only-testing\": $only_testing,
+    \"build\": \"Patrol iOS\"
+  }"
+```
+
+Each Dart test gets its own session, named after the test.
+
+<Warning>
+  Without `only-testing`, LambdaTest also runs every Objective-C method whose name
+  starts with `test` from SDKs linked into the test runner (for example
+  `testBlock` or `testOverride` from the Google Maps SDK). They aren't tests, so
+  they fail and mark the build as failed.
+</Warning>
+
 [LT_app_docs]: https://www.lambdatest.com/support/docs/getting-started-with-espresso-testing/#running-your-first-test-a-step-by-step-guide
 [LT_test_docs]: https://www.lambdatest.com/support/docs/getting-started-with-espresso-testing/#step-2-upload-your-test-suite
 [LT_execute_docs]: https://www.lambdatest.com/support/docs/getting-started-with-espresso-testing/#step-3-executing-the-test
+[LT_xcui_docs]: https://www.lambdatest.com/support/docs/getting-started-with-xcuitest/
 [LambdaTest App Test Automation]: https://www.lambdatest.com/app-test-automation
