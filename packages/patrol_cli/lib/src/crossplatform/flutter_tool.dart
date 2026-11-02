@@ -19,6 +19,7 @@ class FlutterTool {
     required DisposeScope parentDisposeScope,
     required Logger logger,
     this.onQuit,
+    this.onHotRestartFailed,
     Future<void> Function()? onExit,
   }) : _stdin = stdin,
        _processManager = processManager,
@@ -35,6 +36,10 @@ class FlutterTool {
   final DisposeScope _disposeScope;
   final Logger _logger;
   final Future<void> Function()? onQuit;
+
+  /// Fires whenever `flutter attach` rejects a hot restart (usually a compile
+  /// error), whether it came from [hotRestart] or from `r` on stdin.
+  final void Function()? onHotRestartFailed;
   final Future<void> Function() _onExit;
 
   var _hotRestartActive = false;
@@ -295,6 +300,7 @@ class FlutterTool {
 
             if (line.startsWith('Try again after fixing the above error')) {
               _settleRestart(_onRestartFailed);
+              onHotRestartFailed?.call();
             }
 
             if (line.startsWith('The Flutter DevTools debugger and profiler')) {
