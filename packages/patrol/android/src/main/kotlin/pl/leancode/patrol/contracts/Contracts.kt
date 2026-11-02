@@ -33,6 +33,12 @@ class Contracts {
     fine,
   }
 
+  enum class AndroidFoldPosture {
+    closed,
+    halfOpen,
+    open,
+  }
+
   enum class IOSElementType {
     any,
     other,
@@ -748,6 +754,18 @@ class Contracts {
   data class AndroidTakeNativeScreenshotRequest (
     val tag: String
   )
+
+  data class AndroidSetFoldPostureRequest (
+    val posture: AndroidFoldPosture
+  )
+
+  data class AndroidSetFoldPostureResponse (
+    val previousPosture: AndroidFoldPosture? = null
+  ){
+    fun hasPreviousPosture(): Boolean {
+      return previousPosture != null
+    }
+  }
 
   data class IOSTakeCameraPhotoRequest (
     val shutterButtonSelector: IOSSelector? = null,

@@ -325,6 +325,17 @@ class AndroidTakeNativeScreenshotRequest {
   late String tag;
 }
 
+enum AndroidFoldPosture { closed, halfOpen, open }
+
+class AndroidSetFoldPostureRequest {
+  late AndroidFoldPosture posture;
+}
+
+class AndroidSetFoldPostureResponse {
+  // Null for other states, such as the rear display.
+  AndroidFoldPosture? previousPosture;
+}
+
 class IOSTakeCameraPhotoRequest {
   IOSSelector? shutterButtonSelector;
   IOSSelector? doneButtonSelector;
@@ -447,6 +458,12 @@ abstract class AndroidAutomator<AndroidServer, DartClient> {
 
   // permissions
   void allowPermission();
+
+  // foldables
+  AndroidSetFoldPostureResponse setFoldPosture(
+    AndroidSetFoldPostureRequest request,
+  );
+  void resetFoldPosture();
 }
 
 abstract class IosAutomator<IOSServer, DartClient> {
