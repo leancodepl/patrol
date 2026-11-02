@@ -501,9 +501,24 @@ class AndroidTestBackend {
               workingDirectory: _rootDirectory.childDirectory('android').path,
             )
             ..disposedBy(scope);
-      process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
+      // The connected test task exits with 0 even when it could not install
+      // the app, so detect that from its output.
+      String? installFailure;
+      void checkInstall(String line) {
+        if (installFailure == null && isInstallFailure(line)) {
+          installFailure = line.trim();
+        }
+      }
+
+      process
+          .listenStdOut((l) {
+            checkInstall(l);
+            _logger.detail('\t: $l');
+          })
+          .disposedBy(scope);
       process
           .listenStdErr((l) {
+            checkInstall(l);
             const prefix = 'There were failing tests. ';
             if (l.contains(prefix)) {
               final msg = l.substring(prefix.length + 2);
@@ -537,12 +552,15 @@ class AndroidTestBackend {
         }
       }
 
-      if (exitCode == 0 &&
-          !interruptible &&
-          noTestsExecuted(patrolLogReader.totalTests)) {
-        const cause = 'no test reported a result';
+      if (exitCode == 0 && !interruptible && installFailure != null) {
+        const cause = 'the app could not be installed';
         task.fail('Failed to execute tests of $subject ($cause)');
-        throwToolExit(noTestsExecutedMessage);
+        throwToolExit(
+          'Gradle could not install the app, so no tests ran: '
+          '$installFailure\n'
+          'A common cause is a device that is out of storage. Run with '
+          '--verbose to see the full Gradle output.',
+        );
       } else if (exitCode == 0) {
         task.complete('Completed executing $subject');
       } else if (exitCode != 0 && interruptible) {
@@ -559,18 +577,16 @@ class AndroidTestBackend {
     });
   }
 
-  /// Whether a run that exited successfully must still fail.
-  ///
-  /// Gradle's connected test task succeeds when it cannot install the app,
-  /// for example when the device is out of storage, and then no test runs.
+  /// Whether [line] of the Gradle connected test output reports that an APK
+  /// could not be installed, for example because the device is out of
+  /// storage.
   @visibleForTesting
-  static bool noTestsExecuted(int reportedTests) => reportedTests == 0;
+  static bool isInstallFailure(String line) =>
+      line.contains('Failed to install APK');
 
+  /// Whether [line] of `am instrument` output reports that no test ran.
   @visibleForTesting
-  static const noTestsExecutedMessage =
-      'No tests were executed. The app may have failed to install, for '
-      'example because the device is out of storage. Run with --verbose to '
-      'see the output of the test runner.';
+  static bool reportsNoTests(String line) => line.trim() == 'OK (0 tests)';
 
   /// Makes a checkout that was never built ready for `flutter attach`.
   ///
@@ -869,6 +885,7 @@ class AndroidTestBackend {
       // `am instrument -w` exits 0 even when tests fail, so detect failure from
       // its textual output instead of the exit code.
       var failed = false;
+      var ranNoTests = false;
       final process =
           await _adb.instrument(
               packageName: instrumentPackage,
@@ -884,6 +901,9 @@ class AndroidTestBackend {
                 l.contains('Process crashed')) {
               failed = true;
             }
+            if (reportsNoTests(l)) {
+              ranNoTests = true;
+            }
             _logger.detail('\t: $l');
           })
           .disposedBy(scope);
@@ -894,12 +914,13 @@ class AndroidTestBackend {
       processLogcat.kill();
       _logger.info(patrolLogReader.summary);
 
-      if (exitCode == 0 &&
-          !failed &&
-          noTestsExecuted(patrolLogReader.totalTests)) {
-        const cause = 'no test reported a result';
+      if (exitCode == 0 && !failed && ranNoTests) {
+        const cause = 'no test ran';
         task.fail('Failed to execute tests of $subject ($cause)');
-        throwToolExit(noTestsExecutedMessage);
+        throwToolExit(
+          'The instrumentation reported that no test ran. Check that the '
+          'requested tests exist in the installed test APK.',
+        );
       } else if (exitCode == 0 && !failed) {
         task.complete('Completed executing $subject');
       } else {

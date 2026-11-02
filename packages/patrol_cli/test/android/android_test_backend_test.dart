@@ -364,13 +364,41 @@ void main() {
       });
     });
 
-    group('noTestsExecuted', () {
-      test('fails a run in which no test reported a result', () {
-        expect(AndroidTestBackend.noTestsExecuted(0), isTrue);
+    group('isInstallFailure', () {
+      test('detects a failed APK install', () {
+        expect(
+          AndroidTestBackend.isInstallFailure(
+            'java.lang.RuntimeException: Failed to install APK '
+            '/app/build/app/outputs/apk/dev/debug/app-dev-debug.apk: '
+            'Performing Streamed Install',
+          ),
+          isTrue,
+        );
       });
 
-      test('passes a run in which tests reported results', () {
-        expect(AndroidTestBackend.noTestsExecuted(3), isFalse);
+      test('ignores other Gradle output', () {
+        expect(
+          AndroidTestBackend.isInstallFailure(
+            'Failed to uninstall package de.example.app. '
+            'Output: Failure [DELETE_FAILED_INTERNAL_ERROR]',
+          ),
+          isFalse,
+        );
+        expect(
+          AndroidTestBackend.isInstallFailure('BUILD SUCCESSFUL in 10s'),
+          isFalse,
+        );
+      });
+    });
+
+    group('reportsNoTests', () {
+      test('detects a run without tests', () {
+        expect(AndroidTestBackend.reportsNoTests('OK (0 tests)'), isTrue);
+      });
+
+      test('ignores runs with tests', () {
+        expect(AndroidTestBackend.reportsNoTests('OK (1 test)'), isFalse);
+        expect(AndroidTestBackend.reportsNoTests('OK (3 tests)'), isFalse);
       });
     });
   });
