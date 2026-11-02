@@ -159,11 +159,14 @@ For each PR:
    - Regenerate the docs page and test:
      `cd packages/patrol_cli && dart run lib/src/compatibility_checker/generate_compatibility_table.dart && dart test test/compatibility_checker/`
      (writes `docs/documentation/compatibility-table.mdx`).
-5. **Verify on CI's Flutter** (prepend `~/fvm/versions/<ver>/bin` to `PATH`):
-   - `melos bootstrap` from the repo root; commit the lockfile changes it makes
-     (e.g. `dev/e2e_app/pubspec.lock`), and only those. Release PRs open at the
-     same time can conflict there; after one merges, merge `origin/master` into
-     the others and re-run `melos bootstrap`;
+5. **Commit** — on CI's Flutter (prepend `~/fvm/versions/<ver>/bin` to `PATH`),
+   run `melos bootstrap` from the repo root. Commit the edits above together
+   with the lockfile changes it makes (e.g. `dev/e2e_app/pubspec.lock`), and
+   only those: `Prepare patrol_log 0.10.2 release`. The checks in the next step
+   read the commit, not the working tree. Release PRs open at the same time can
+   conflict in the lockfiles; after one merges, merge `origin/master` into the
+   others and re-run `melos bootstrap`.
+6. **Verify the commit**, still on CI's Flutter; amend it with any fixes:
    - the publish dry-run the package's prepare workflow uses
      (`flutter pub publish --dry-run` or `dart pub publish --dry-run`, see
      `packages.md`). For patrol, the file list must include
@@ -174,11 +177,10 @@ For each PR:
      this PR needs isn't published, so the PR is early;
    - `tool/check_changelog.sh`, then `scripts/unreleased.sh <pkg>` again with
      `BASE=HEAD`: the package shows its new version and no Unreleased section.
-6. **Commit and open the PR** — message `Prepare patrol_log 0.10.2 release`, PR
-   against `master`. Body: the version, two or three highlights, the tag to
-   push after merging, the other release PRs of this round (links, and which
-   wait for this one), and what you verified.
-7. **Expect on CI** — the semver check is enforced on this branch, so a red one
+7. **Open the PR** against `master`. Body: the version, two or three
+   highlights, the tag to push after merging, the other release PRs of this
+   round (links, and which wait for this one), and what you verified.
+8. **Expect on CI** — the semver check is enforced on this branch, so a red one
    is real; `pana` is noise as usual. If `Resolve against published
    dependencies` or `Smoke (… patrol_cli)` fails in pub get with "doesn't match
    any versions", a sibling this PR needs isn't on pub.dev yet. **Stop here.**

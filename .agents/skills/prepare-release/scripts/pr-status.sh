@@ -19,10 +19,11 @@ query='query($owner: String!, $name: String!, $after: String) {
       pageInfo { hasNextPage endCursor }
       nodes {
         number title isDraft mergeable reviewDecision additions deletions
-        headRefName isCrossRepository author { login }
+        headRefName headRefOid isCrossRepository author { login }
         files(first: 100) { nodes { path } }
-        latestReviews(first: 20) { nodes { author { login } state submittedAt } }
+        latestReviews(first: 20) { nodes { author { login } state submittedAt commit { oid } } }
         reviewThreads(first: 60) {
+          pageInfo { hasNextPage }
           nodes {
             isResolved path
             opener: comments(first: 1) { nodes { author { login } body } }
@@ -60,6 +61,7 @@ def noise($fork; $release):
 
 .[]
 | (.author.login // "ghost") as $me
+| .headRefOid as $head
 | .commits.nodes[0].commit as $c
 | $c.committedDate as $pushed
 | .isCrossRepository as $fork
@@ -82,24 +84,32 @@ def noise($fork; $release):
        lastAt: .latest.nodes[0].createdAt} ] as $open
 | [ $open[] | select(.opener | bot | not) ] as $human
 | ([ $open[] | select(.opener | bot) ] | length) as $botThreads
+| .reviewThreads.pageInfo.hasNextPage as $moreThreads
 | [ .latestReviews.nodes[] | select((.author.login // "ghost") | (bot or . == $me) | not) ] as $reviews
-| ([ $reviews[] | select(.state == "APPROVED") | .submittedAt ] | max) as $approvedAt
+| [ $reviews[] | select(.state == "APPROVED") ] as $approvals
+| ([ $approvals[].submittedAt ] | max) as $approvedAt
+| (($approvals | length) > 0 and all($approvals[]; .commit.oid != $head)) as $staleApproval
 # A reviewer spoke after the last push and the author has not answered since.
+# GitHub exposes no push time (Commit.pushedDate is null), so the date of the
+# head commit stands in: a commit made before the review and pushed after it
+# still counts as waiting. That can only move a PR to `work`, never to `ready`.
 | ([ $human[] | select(.last != $me) | .lastAt ] | max) as $askedAt
 | ($askedAt != null and $askedAt > $pushed) as $waiting
 | ([ .files.nodes[].path | capture("^packages/(?<p>[^/]+)/").p ] | unique) as $packages
 | ([ .files.nodes[].path | select(startswith("packages/") | not) | split("/")[0] ] | unique) as $other
 | {number, title, author: $me, draft: .isDraft, fork: $fork, mergeable, review: (.reviewDecision // "NONE"),
    size: (.additions + .deletions), additions, deletions, pushed: $pushed,
-   approvedAt: $approvedAt, approvalPredatesPush: ($approvedAt != null and $approvedAt < $pushed),
+   approvedAt: $approvedAt, approvalPredatesPush: $staleApproval,
    waitingOnAuthor: $waiting, realFailures: $real, noiseFailures: $noise, pending: $pending,
-   humanThreads: $human, botThreads: $botThreads, packages: $packages, otherPaths: $other,
+   humanThreads: $human, botThreads: $botThreads, moreThreads: $moreThreads,
+   packages: $packages, otherPaths: $other,
    reviewers: [ $reviews[] | "\(.author.login):\(.state)@\(.submittedAt[5:10])" ]}
 | .bucket = (
     if .draft then "far"
     elif .mergeable == "CONFLICTING" or .review == "CHANGES_REQUESTED" or .waitingOnAuthor
       or (.realFailures | length) > 0 then "work"
-    elif .review == "APPROVED" and (.humanThreads | length) == 0 and .botThreads == 0 then "ready"
+    elif .review == "APPROVED" and (.humanThreads | length) == 0 and .botThreads == 0
+      and (.moreThreads | not) then "ready"
     elif .review == "APPROVED" or .size <= 400 then "near"
     else "far" end)'
 
@@ -138,6 +148,7 @@ jq -r --slurp '
      elif .mergeable == "UNKNOWN" then "mergeability not computed yet" else empty end),
     (if .waitingOnAuthor then "waiting on author" else empty end),
     (if .approvalPredatesPush then "approval predates last push" else empty end),
+    (if .moreThreads then "over 60 review threads, only the first 60 counted" else empty end),
     (if .pending > 0 then "\(.pending) checks pending" else empty end) ];
   def where: (.packages + (.otherPaths | map("+" + .))) | join(",");
   group_by(.bucket) | map({key: .[0].bucket, value: .}) | from_entries as $b

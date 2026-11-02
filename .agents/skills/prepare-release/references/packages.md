@@ -77,11 +77,11 @@ What CI resolves against pub.dev:
 
 Nothing covers patrol_finders, patrol_cli, or patrol_mcp's `adb`, so run
 `scripts/check-floors.sh <pkg>` before opening a release PR. It removes the
-overrides, downgrades every sibling to its floor and analyzes `lib/`. Since a
-dependent's release PR waits until the sibling it needs is published, every
-floor should be on pub.dev. The script still accepts a floor equal to the
-sibling's version in the tree (a branch stacked on the sibling's release
-branch), and says so.
+overrides, downgrades every sibling to its floor and analyzes `lib/` and
+`bin/`. Since a dependent's release PR waits until the sibling it needs is
+published, every floor should be on pub.dev. The script still accepts a floor
+equal to the sibling's version in the tree (a branch stacked on the sibling's
+release branch), and says so.
 
 Both jobs above fail in pub get with "doesn't match any versions" when a
 constraint points at a sibling version that isn't on pub.dev yet: the PR was

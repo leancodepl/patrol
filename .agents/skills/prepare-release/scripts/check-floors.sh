@@ -89,7 +89,8 @@ check() {
   if grep -q '^  plugins:' analysis_options.yaml 2>/dev/null; then
     perl -0pi -e 's/\n  plugins:\n(?:    - .*\n)+/\n/' analysis_options.yaml
   fi
-  dart analyze lib
+  # bin/ ships too, and can call a sibling directly (patrol_mcp's uses patrol_cli).
+  if [ -d bin ]; then dart analyze lib bin; else dart analyze lib; fi
 }
 
 if [ $# -gt 0 ]; then

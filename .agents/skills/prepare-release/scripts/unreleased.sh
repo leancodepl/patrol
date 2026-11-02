@@ -27,11 +27,12 @@ packages=("$@")
 
 pubspec_version() { show "packages/$1/pubspec.yaml" | awk '/^version:/ { print $2; exit }'; }
 
-# The `## Unreleased` section, if the changelog starts with one.
+# The `## Unreleased` section, if the changelog starts with one. awk reads to the
+# end: exiting early can SIGPIPE `git show`, which pipefail turns into a failure.
 unreleased_section() {
   show "packages/$1/CHANGELOG.md" | awk '
-    /^## / { n++; if (n == 1 && $0 !~ /Unreleased/) exit; next }
-    n == 1'
+    /^## / { n++; if (n == 1) u = ($0 ~ /Unreleased/); next }
+    n == 1 && u'
 }
 
 # Files besides pubspec.yaml that hold the version and must match it.
