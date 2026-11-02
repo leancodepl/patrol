@@ -35,7 +35,6 @@ List<Finding> macosFindings(MacOSCheckContext ctx) {
     checkMacosRunnerUITestsFile(ctx),
     checkMacosRunnerUITestsTarget(ctx),
     checkMacosEmbedding(ctx),
-    checkMacosAssembleBuildPhases(ctx),
     checkRunnerEntitlements(ctx),
     checkUITestsEntitlementsCopied(ctx),
     checkCodeSignEntitlements(ctx),
@@ -199,66 +198,6 @@ Finding? checkMacosEmbedding(MacOSCheckContext ctx) {
   }
 
   return null; // M0 already reported the missing mechanism.
-}
-
-final _macosAssembleBuildScript = RegExp(
-  r'macos_assemble\.sh[\\"'
-  "'"
-  r']*\s+build',
-);
-final _macosAssembleEmbedScript = RegExp(
-  r'macos_assemble\.sh[\\"'
-  "'"
-  r']*\s+embed',
-);
-
-/// M4: both macos_assemble phases exist on RunnerUITests (scoped — the
-/// Runner target has its own copies) and build runs before embed.
-Finding? checkMacosAssembleBuildPhases(MacOSCheckContext ctx) {
-  final scripts = ctx.runnerUITestsScriptPhases;
-  if (scripts == null) {
-    // M2 reports the missing target.
-    return null;
-  }
-  final hasBuild = scripts.any(_macosAssembleBuildScript.hasMatch);
-  final hasEmbed = scripts.any(_macosAssembleEmbedScript.hasMatch);
-  if (hasBuild && hasEmbed) {
-    final ordered = ctx.scriptPhasesOrdered(
-      buildScript: _macosAssembleBuildScript,
-      embedScript: _macosAssembleEmbedScript,
-    );
-    if (ordered == false) {
-      return const Finding(
-        id: 'M4',
-        severity: Severity.warning,
-        summary:
-            'In RunnerUITests, `macos_assemble embed` runs before '
-            '`macos_assemble build` — embedding needs the artifacts the '
-            'build phase produces.',
-        fix:
-            'Drag `macos_assemble build` above `macos_assemble embed` '
-            '(the docs screenshot shows the recommended full order).',
-        docsUrl: '$docsBaseUrl#macos-setup-order-build-phases',
-      );
-    }
-    return null;
-  }
-  final missing = [
-    if (!hasBuild) '`macos_assemble build`',
-    if (!hasEmbed) '`macos_assemble embed`',
-  ].join(' and ');
-  return Finding(
-    id: 'M4',
-    severity: Severity.error,
-    summary:
-        'Missing $missing Run Script build phase(s) in the RunnerUITests '
-        'target.',
-    fix:
-        'Add the two Run Script phases calling '
-        r'"$FLUTTER_ROOT/packages/flutter_tools/bin/macos_assemble.sh" with '
-        '`build` and `embed`, ordered as shown in the docs.',
-    docsUrl: '$docsBaseUrl#macos-setup-add-build-phases',
-  );
 }
 
 bool _plistBoolTrue(String plist, String key) =>
@@ -429,12 +368,6 @@ Finding? macosManualVerificationNotice(MacOSCheckContext ctx) {
   final hasParallelismCarriers = ctx.files.any(
     (path) => path.endsWith('.xcscheme') || path.endsWith('.xctestplan'),
   );
-  final orderCheckable =
-      ctx.scriptPhasesOrdered(
-        buildScript: _macosAssembleBuildScript,
-        embedScript: _macosAssembleEmbedScript,
-      ) !=
-      null;
   final configSetsCheckable =
       ctx.configurationNames('Runner') != null &&
       ctx.configurationNames('RunnerUITests') != null;
@@ -442,11 +375,12 @@ Finding? macosManualVerificationNotice(MacOSCheckContext ctx) {
   final items = [
     if (!configSetsCheckable)
       'RunnerUITests uses the same Configuration Set as Runner',
-    if (!orderCheckable)
-      'the two macos_assemble Build Phases are ordered as in the docs',
     if (!hasParallelismCarriers)
       'parallel execution is disabled for all schemes (no scheme or test-plan files to verify)',
   ];
+  if (items.isEmpty) {
+    return null;
+  }
 
   return Finding(
     id: 'M8',
