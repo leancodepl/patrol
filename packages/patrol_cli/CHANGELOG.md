@@ -1,5 +1,8 @@
 ## Unreleased
 
+- Fix `patrol test` on Android passing with `Total: 0` when no test ran, for example because the
+  app could not be installed on a device that is out of storage. Gradle's connected test task
+  reports success in that case; Patrol now fails the run.
 - Allow `equatable` 3.x by widening the constraint to `>=2.1.0 <4.0.0`. Resolution stays on 2.x until `cli_completion` supports 3.x.
 - Add `patrol coverage pull`, which splits the JaCoCo `.ec` coverage of a patrol Android run into a standard `jacoco.exec` and a Dart `patrol_lcov.info`, merging duplicate `SF:` records across tests and shards. `--input <file or directory>` reads local `.ec` files (e.g. emulator.wtf or Firebase Test Lab outputs); `--browserstack-build-id` downloads them from BrowserStack, merging every session (shard) unless `--browserstack-session-id` is given, and fails fast on builds that ran with `clearPackageData:true`, which is incompatible with coverage there. (#3066)
 - Fix `idevicesyslog` not being scoped to the device under test, so concurrent runs on a host with

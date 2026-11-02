@@ -363,5 +363,15 @@ void main() {
         expect(androidTestBackend.verifyAndroidSdkResolved, returnsNormally);
       });
     });
+
+    group('noTestsExecuted', () {
+      test('fails a run in which no test reported a result', () {
+        expect(AndroidTestBackend.noTestsExecuted(0), isTrue);
+      });
+
+      test('passes a run in which tests reported results', () {
+        expect(AndroidTestBackend.noTestsExecuted(3), isFalse);
+      });
+    });
   });
 }

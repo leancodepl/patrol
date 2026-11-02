@@ -537,7 +537,13 @@ class AndroidTestBackend {
         }
       }
 
-      if (exitCode == 0) {
+      if (exitCode == 0 &&
+          !interruptible &&
+          noTestsExecuted(patrolLogReader.totalTests)) {
+        const cause = 'no test reported a result';
+        task.fail('Failed to execute tests of $subject ($cause)');
+        throwToolExit(noTestsExecutedMessage);
+      } else if (exitCode == 0) {
         task.complete('Completed executing $subject');
       } else if (exitCode != 0 && interruptible) {
         task.complete('App shut down on request');
@@ -552,6 +558,19 @@ class AndroidTestBackend {
       }
     });
   }
+
+  /// Whether a run that exited successfully must still fail.
+  ///
+  /// Gradle's connected test task succeeds when it cannot install the app,
+  /// for example when the device is out of storage, and then no test runs.
+  @visibleForTesting
+  static bool noTestsExecuted(int reportedTests) => reportedTests == 0;
+
+  @visibleForTesting
+  static const noTestsExecutedMessage =
+      'No tests were executed. The app may have failed to install, for '
+      'example because the device is out of storage. Run with --verbose to '
+      'see the output of the test runner.';
 
   /// Makes a checkout that was never built ready for `flutter attach`.
   ///
@@ -875,7 +894,13 @@ class AndroidTestBackend {
       processLogcat.kill();
       _logger.info(patrolLogReader.summary);
 
-      if (exitCode == 0 && !failed) {
+      if (exitCode == 0 &&
+          !failed &&
+          noTestsExecuted(patrolLogReader.totalTests)) {
+        const cause = 'no test reported a result';
+        task.fail('Failed to execute tests of $subject ($cause)');
+        throwToolExit(noTestsExecutedMessage);
+      } else if (exitCode == 0 && !failed) {
         task.complete('Completed executing $subject');
       } else {
         const cause = 'am instrument reported failing tests';
