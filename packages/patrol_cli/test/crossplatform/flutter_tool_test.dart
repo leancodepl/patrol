@@ -21,10 +21,13 @@ void main() {
   late FlutterTool flutterTool;
   late MockProcessManager processManager;
   late Platform platform;
+  late StreamController<List<int>> stdin;
+  late int hotRestartFailures;
 
   setUp(() {
     final disposeScope = DisposeScope();
-    final stdin = StreamController<List<int>>();
+    stdin = StreamController<List<int>>();
+    hotRestartFailures = 0;
     processManager = MockProcessManager();
     platform = FakePlatform();
 
@@ -34,6 +37,7 @@ void main() {
       processManager: processManager,
       platform: platform,
       stdin: stdin.stream,
+      onHotRestartFailed: () => hotRestartFailures++,
     );
   });
 
@@ -159,6 +163,49 @@ void main() {
         processStdout.add(utf8.encode('Restarted application in 1,234ms.\n'));
         await Future<void>.delayed(const Duration(milliseconds: 10));
         expect(completed, isFalse);
+        await processStdout.close();
+      },
+    );
+    test(
+      'onHotRestartFailed fires when Flutter rejects a restart from stdin',
+      () async {
+        final process = MockProcess();
+        final processStdin = _MockIOSink();
+        final processStdout = StreamController<List<int>>();
+        when(() => process.stdout).thenAnswer((_) => processStdout.stream);
+        when(
+          () => process.stderr,
+        ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
+        when(() => process.stdin).thenReturn(processStdin);
+        when(() => processStdin.add(any())).thenReturn(null);
+        when(
+          () => processManager.start(any()),
+        ).thenAnswer((_) async => process);
+
+        final attach = flutterTool.attach(
+          flutterCommand: flutterCommand,
+          deviceId: 'testDeviceId',
+          target: 'target',
+          appId: 'appId',
+          dartDefines: {},
+          openBrowser: false,
+        );
+        processStdout.add(utf8.encode('Flutter run key commands.\n'));
+        await attach;
+
+        stdin.add('R'.codeUnits);
+        await Future<void>.delayed(const Duration(milliseconds: 10));
+        verify(() => processStdin.add('R'.codeUnits)).called(1);
+
+        processStdout.add(
+          utf8.encode('Try again after fixing the above error(s).\n'),
+        );
+        await Future<void>.delayed(const Duration(milliseconds: 10));
+        expect(hotRestartFailures, 1);
+
+        processStdout.add(utf8.encode('Restarted application in 1,234ms.\n'));
+        await Future<void>.delayed(const Duration(milliseconds: 10));
+        expect(hotRestartFailures, 1);
         await processStdout.close();
       },
     );

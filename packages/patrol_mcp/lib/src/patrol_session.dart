@@ -382,6 +382,7 @@ final class PatrolSession {
       },
       onLogEntry: _handleEntry,
       onTestsCompleted: _handleTestsCompleted,
+      onHotRestartFailed: _handleHotRestartFailed,
     );
     _developService = developService;
 
@@ -415,45 +416,52 @@ final class PatrolSession {
     //  1) mason_logger output goes to stderr (not stdout / the JSON protocol)
     //  2) every line is captured for the patrol.log file and output buffer
     final capturingStdout = _CapturingStdout(io.stderr, _pushOutput);
+    // mason_logger writes err/warn to stderr - including the compiler errors
+    // `flutter attach` prints when a hot restart fails.
+    final capturingStderr = _CapturingStdout(io.stderr, _pushOutput);
 
-    // Redirect stdout inside this zone to our capturing wrapper.
-    // mason_logger resolves its stdout handle via IOOverrides.
-    io.IOOverrides.runZoned(stdout: () => capturingStdout, () {
-      // Fire-and-forget: developService.run() blocks for the entire develop
-      // session (gradle/xcodebuild + flutter attach stay alive for hot
-      // restart). Test completion is detected by callbacks, not by run()
-      // returning.
-      final runFuture = developService.run(options);
-      // The chain below is this session's full teardown: _cleanup() plus
-      // run()'s own finally block (finalizer uninstall, entrypoint proxy
-      // cleanup). _start awaits it (via _runFuture) before a new session may
-      // start, so the old session can't dispose shared state or delete the
-      // new session's freshly generated entrypoint from under it.
-      final sessionDone = Future.any([runFuture, exitCompleter.future])
-          .then((_) async {
-            // Session ended (e.g. user sent quit). If tests haven't already
-            // been marked as done by callbacks, mark idle.
-            if (_testState == TestState.running) {
-              _testState = TestState.idle;
-            }
-            _completeFinish();
-            await _cleanup();
-            // On quit, exitCompleter settles this chain while run() is still
-            // in its finally block - wait for that too.
-            await runFuture;
-          })
-          .catchError((Object err, StackTrace st) async {
-            logger.warning('Develop session error: $err\n$st');
-            _pushOutput('ERROR: $err');
-            if (_testState == TestState.running) {
-              _testState = TestState.finishedFailed;
-            }
-            _completeFinish();
-            await _cleanup();
-          });
-      _runFuture = sessionDone;
-      unawaited(sessionDone);
-    });
+    // Redirect stdout and stderr inside this zone to our capturing wrappers.
+    // mason_logger resolves its handles via IOOverrides.
+    io.IOOverrides.runZoned(
+      stdout: () => capturingStdout,
+      stderr: () => capturingStderr,
+      () {
+        // Fire-and-forget: developService.run() blocks for the entire develop
+        // session (gradle/xcodebuild + flutter attach stay alive for hot
+        // restart). Test completion is detected by callbacks, not by run()
+        // returning.
+        final runFuture = developService.run(options);
+        // The chain below is this session's full teardown: _cleanup() plus
+        // run()'s own finally block (finalizer uninstall, entrypoint proxy
+        // cleanup). _start awaits it (via _runFuture) before a new session may
+        // start, so the old session can't dispose shared state or delete the
+        // new session's freshly generated entrypoint from under it.
+        final sessionDone = Future.any([runFuture, exitCompleter.future])
+            .then((_) async {
+              // Session ended (e.g. user sent quit). If tests haven't already
+              // been marked as done by callbacks, mark idle.
+              if (_testState == TestState.running) {
+                _testState = TestState.idle;
+              }
+              _completeFinish();
+              await _cleanup();
+              // On quit, exitCompleter settles this chain while run() is still
+              // in its finally block - wait for that too.
+              await runFuture;
+            })
+            .catchError((Object err, StackTrace st) async {
+              logger.warning('Develop session error: $err\n$st');
+              _pushOutput('ERROR: $err');
+              if (_testState == TestState.running) {
+                _testState = TestState.finishedFailed;
+              }
+              _completeFinish();
+              await _cleanup();
+            });
+        _runFuture = sessionDone;
+        unawaited(sessionDone);
+      },
+    );
   }
 
   Future<void>? _cleanupFuture;
@@ -552,6 +560,20 @@ final class PatrolSession {
         'The app shut down before the test reported completion. This usually '
         'means the app crashed or exited early rather than a test assertion '
         'failing. Check the output/logs above for the underlying error.';
+    _completeFinish();
+  }
+
+  /// The old program keeps running after a rejected restart, so no test entry
+  /// will ever end this run.
+  void _handleHotRestartFailed() {
+    if (_testState != TestState.running) {
+      return;
+    }
+
+    _testState = TestState.finishedFailed;
+    _finishWarning =
+        'The hot restart failed, most likely because the test target does '
+        'not compile. Fix the errors in the output and call run again.';
     _completeFinish();
   }
 

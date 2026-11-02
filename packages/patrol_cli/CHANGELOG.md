@@ -13,6 +13,8 @@
 - Fix `patrol test` on web timing out when the Flutter web server serves https (set up with
   `web_dev_config.yaml`): the server URL is now detected, and the readiness check accepts a
   self-signed certificate from that server. (#3314)
+- Add `onHotRestartFailed` to `FlutterTool` and `DevelopSessionFactory.create`, called whenever
+  `flutter attach` rejects a hot restart (usually a compile error in the test target) (#3355).
 
 ## 4.8.0
 

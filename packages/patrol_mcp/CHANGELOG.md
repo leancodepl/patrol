@@ -1,6 +1,11 @@
 ## Unreleased
 
 - Fix the `devices` tool and device auto-selection in `run` on Windows (#3296).
+- `run` now ends as failed, with a warning and the compiler errors in `output`,
+  when its hot restart is rejected because the test target does not compile,
+  instead of staying `running` until the timeout (#3355).
+- Capture patrol_cli's stderr (errors and warnings, including compiler errors)
+  in `output` and `patrol.log`; only its stdout was captured before (#3355).
 
 ## 0.2.1
 

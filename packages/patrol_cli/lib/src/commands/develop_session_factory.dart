@@ -38,6 +38,8 @@ class DevelopSessionFactory {
   /// [onTestsCompleted] is forwarded to [DevelopService] for test completion
   /// notifications.
   /// [onLogEntry] is called for every parsed log entry during the session.
+  /// [onHotRestartFailed] is called whenever a hot restart is rejected
+  /// (usually a compile error in the test target).
   /// [verbose] enables verbose logging when `true`.
   static DevelopService create({
     required String projectRoot,
@@ -46,6 +48,7 @@ class DevelopSessionFactory {
     Future<void> Function()? onExit,
     void Function(TestCompletionResult result)? onTestsCompleted,
     void Function(Entry entry)? onLogEntry,
+    void Function()? onHotRestartFailed,
     bool verbose = false,
   }) {
     const fs = LocalFileSystem();
@@ -61,6 +64,7 @@ class DevelopSessionFactory {
       parentDisposeScope: disposeScope,
       logger: logger,
       onExit: onExit,
+      onHotRestartFailed: onHotRestartFailed,
     );
 
     return DevelopService(
