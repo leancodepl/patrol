@@ -85,23 +85,7 @@ class WebTestBackend {
         clearTestSteps: clearTestSteps,
       );
     } finally {
-      // Clean up Flutter process gracefully
-      _logger.detail('Stopping Flutter web server...');
-
-      // Try graceful shutdown first
-      flutterProcess.kill();
-
-      // Wait a bit for graceful shutdown
-      try {
-        await flutterProcess.exitCode.timeout(const Duration(seconds: 5));
-      } on TimeoutException {
-        // Timeout occurred, force kill
-        _logger.detail(
-          'Graceful shutdown timed out, force killing Flutter process...',
-        );
-        flutterProcess.kill(ProcessSignal.sigkill);
-        await flutterProcess.exitCode;
-      }
+      await stopFlutterProcess(flutterProcess);
     }
   }
 
@@ -145,23 +129,53 @@ class WebTestBackend {
         flutterTool.revertInteractiveMode(previousStdinModes);
       }
 
-      // Clean up Flutter process gracefully
-      _logger.detail('Stopping Flutter web server...');
+      await stopFlutterProcess(flutterProcess);
+    }
+  }
 
-      // Try graceful shutdown first
-      flutterProcess.kill();
+  /// Stops `flutter run` together with the processes it started.
+  ///
+  /// Typing `q` makes the Flutter tool shut down its frontend_server and web
+  /// server before it exits. A signal reaches only the direct child process:
+  /// when that is a wrapper such as `fvm flutter` (see `--flutter-command`),
+  /// the Flutter tool and its frontend_server would keep running after Patrol
+  /// exits. Signals remain the fallback when Flutter does not quit in time.
+  @visibleForTesting
+  Future<void> stopFlutterProcess(
+    Process flutterProcess, {
+    Duration timeout = const Duration(seconds: 5),
+  }) async {
+    _logger.detail('Stopping Flutter web server...');
 
-      // Wait a bit for graceful shutdown
-      try {
-        await flutterProcess.exitCode.timeout(const Duration(seconds: 5));
-      } on TimeoutException {
-        // Timeout occurred, force kill
-        _logger.detail(
-          'Graceful shutdown timed out, force killing Flutter process...',
-        );
-        flutterProcess.kill(ProcessSignal.sigkill);
-        await flutterProcess.exitCode;
-      }
+    try {
+      flutterProcess.stdin.add('q'.codeUnits);
+      await flutterProcess.stdin.flush();
+    } on Object catch (err) {
+      _logger.detail('Failed to ask Flutter to quit: $err');
+    }
+    if (await _exitsWithin(flutterProcess, timeout)) {
+      return;
+    }
+
+    _logger.detail('Flutter did not quit in time, terminating it...');
+    flutterProcess.kill();
+    if (await _exitsWithin(flutterProcess, timeout)) {
+      return;
+    }
+
+    _logger.detail(
+      'Graceful shutdown timed out, force killing Flutter process...',
+    );
+    flutterProcess.kill(ProcessSignal.sigkill);
+    await flutterProcess.exitCode;
+  }
+
+  Future<bool> _exitsWithin(Process process, Duration timeout) async {
+    try {
+      await process.exitCode.timeout(timeout);
+      return true;
+    } on TimeoutException {
+      return false;
     }
   }
 
@@ -365,7 +379,7 @@ class WebTestBackend {
     void Function()? revertInteractiveMode, {
     required Stream<List<int>> stdin,
   }) {
-    final streamSubscription = stdin.listen((event) {
+    final streamSubscription = stdin.listen((event) async {
       final char = String.fromCharCode(event.first);
 
       _logger.detail('Flutter stdin: $char');
@@ -399,7 +413,7 @@ class WebTestBackend {
         revertInteractiveMode?.call();
 
         _logger.success('Quitting process...');
-        flutterProcess.kill();
+        await stopFlutterProcess(flutterProcess);
 
         // Call the uninstall function if provided
         // if (onQuit != null) {
