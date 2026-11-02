@@ -442,7 +442,7 @@ class Contracts {
     val isLongClickable: Boolean,
     val isScrollable: Boolean,
     val isSelected: Boolean,
-    val isVisibleToUser: Boolean,
+    val isVisibleToUser: Boolean? = null,
     val visibleBounds: Rectangle,
     val visibleCenter: Point2D,
     val children: List<AndroidNativeView>
@@ -461,6 +461,9 @@ class Contracts {
     }
     fun hasApplicationPackage(): Boolean {
       return applicationPackage != null
+    }
+    fun hasIsVisibleToUser(): Boolean {
+      return isVisibleToUser != null
     }
   }
 

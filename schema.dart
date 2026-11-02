@@ -135,7 +135,7 @@ class AndroidNativeView {
   late bool isLongClickable;
   late bool isScrollable;
   late bool isSelected;
-  late bool isVisibleToUser;
+  bool? isVisibleToUser;
   late Rectangle visibleBounds;
   late Point2D visibleCenter;
   late List<AndroidNativeView> children;
