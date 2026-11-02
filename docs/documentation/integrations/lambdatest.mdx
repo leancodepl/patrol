@@ -73,7 +73,7 @@ set `emit_test_manifest: true` and switch `RunnerUITests.m` to the static runner
 `#include` only compiles the generated tests in. LambdaTest also needs the file
 itself inside `RunnerUITests.xctest`:
 
-1. Run `patrol build ios` once, so `ios/RunnerUITests/PatrolGeneratedTests.inc` exists.
+1. Run `patrol build ios --release` once, so `ios/RunnerUITests/PatrolGeneratedTests.inc` exists.
 2. In Xcode, add it to the `RunnerUITests` group and tick **only** the
    `RunnerUITests` target. It lands in **Build Phases → Copy Bundle Resources**.
 
