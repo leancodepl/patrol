@@ -147,6 +147,9 @@ class WebTestBackend {
   }) async {
     _logger.detail('Stopping Flutter web server...');
 
+    // If Flutter has already exited, the write fails on `done` as well as on
+    // `flush`; the signals below still stop it.
+    flutterProcess.stdin.done.ignore();
     try {
       flutterProcess.stdin.add('q'.codeUnits);
       await flutterProcess.stdin.flush();

@@ -196,6 +196,20 @@ void main() {
       expect(process.signals, [ProcessSignal.sigterm, ProcessSignal.sigkill]);
     });
 
+    test('tolerates a broken pipe when Flutter has already exited', () async {
+      final process = _FakeFlutterProcess(
+        exitsOn: ProcessSignal.sigterm,
+        stdin: IOSink(_BrokenPipe()),
+      );
+
+      await backend.stopFlutterProcess(
+        process,
+        timeout: const Duration(milliseconds: 10),
+      );
+
+      expect(process.signals, [ProcessSignal.sigterm]);
+    });
+
     test('signals Flutter when its stdin is already closed', () async {
       final process = _FakeFlutterProcess(
         exitsOn: ProcessSignal.sigterm,
@@ -219,7 +233,8 @@ class _FakeFlutterProcess implements Process {
     bool quitsOnQ = false,
     this.exitsOn,
     bool stdinClosed = false,
-  }) {
+    IOSink? stdin,
+  }) : _brokenStdin = stdin {
     _stdinController.stream.listen((bytes) {
       stdinText += String.fromCharCodes(bytes);
       if (quitsOnQ && stdinText.contains('q')) {
@@ -237,6 +252,7 @@ class _FakeFlutterProcess implements Process {
   final _exitCode = Completer<int>();
   final _stdinController = StreamController<List<int>>();
   late final _stdin = IOSink(_stdinController.sink);
+  final IOSink? _brokenStdin;
 
   void _exit(int code) {
     if (!_exitCode.isCompleted) {
@@ -245,7 +261,7 @@ class _FakeFlutterProcess implements Process {
   }
 
   @override
-  IOSink get stdin => _stdin;
+  IOSink get stdin => _brokenStdin ?? _stdin;
 
   @override
   Future<int> get exitCode => _exitCode.future;
@@ -267,4 +283,14 @@ class _FakeFlutterProcess implements Process {
 
   @override
   Stream<List<int>> get stderr => const Stream.empty();
+}
+
+/// A pipe whose reader has gone away, like the stdin of an exited process.
+class _BrokenPipe implements StreamConsumer<List<int>> {
+  @override
+  Future<void> addStream(Stream<List<int>> stream) =>
+      Future.error(const SocketException('Broken pipe'));
+
+  @override
+  Future<void> close() => Future.value();
 }
