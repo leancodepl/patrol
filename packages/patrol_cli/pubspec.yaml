@@ -55,3 +55,8 @@ dev_dependencies:
 
 executables:
   patrol: main
+
+# A self-signed certificate and key for local https servers in tests, not a real
+# credential.
+false_secrets:
+  - /test/src/self_signed_certificate.dart

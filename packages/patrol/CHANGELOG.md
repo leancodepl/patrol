@@ -23,6 +23,8 @@
       the posture back to the hinge.
     - on iOS, a foldable simulator, also by angle with `$.platform.ios.setHingeAngle`. It works only
       on simulators run by `patrol test` or `patrol develop`. Requires `patrol_cli` 4.9.0 or newer.
+- Fix the web runner ignoring `--web-ignore-https-errors` while it reads the list of tests, which
+  ended a run against an https web server with `Total: 0`. (#3314)
 
 ## 4.10.0
 

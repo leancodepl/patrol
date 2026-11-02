@@ -3,11 +3,11 @@ import { initialise } from "./initialise"
 import { DartTestEntry, PatrolTestEntry } from "./types"
 
 async function setup(config: FullConfig) {
-  const { baseURL, channel, launchOptions, locale } = config.projects[0].use
+  const { baseURL, channel, launchOptions, locale, ignoreHTTPSErrors } = config.projects[0].use
 
   const browser = await chromium.launch({ ...launchOptions, channel })
 
-  const page = await browser.newPage({ locale })
+  const page = await browser.newPage({ locale, ignoreHTTPSErrors })
 
   if (!baseURL) {
     throw new Error("baseURL is not set")

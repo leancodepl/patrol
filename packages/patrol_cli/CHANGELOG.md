@@ -10,6 +10,9 @@
 - Run a server on the host during iOS simulator runs, which the experimental
   `$.platform.ios.setFoldPosture` uses to fold a foldable simulator such as the iPhone Duo. Requires
   `patrol` 4.11.0 or newer.
+- Fix `patrol test` on web timing out when the Flutter web server serves https (set up with
+  `web_dev_config.yaml`): the server URL is now detected, and the readiness check accepts a
+  self-signed certificate from that server. (#3314)
 
 ## 4.8.0
 
