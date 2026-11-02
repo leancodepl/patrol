@@ -95,8 +95,24 @@ Upload `lt/app.ipa` and `lt/tests.ipa` with `type=xcuit-ios` ([see docs][LT_xcui
 
 ### Run
 
-Pass the generated classes as `only-testing`. Without it, LambdaTest also picks up
-`test*` methods from SDKs linked into the test runner (see the warning below).
+Pass the generated classes as `only-testing`.
+
+<Warning>
+  Without `only-testing`, LambdaTest also runs every Objective-C method whose name
+  starts with `test` from SDKs linked into the test runner (for example
+  `testBlock` or `testOverride` from the Google Maps SDK). The runner links all
+  app pods through `inherit! :complete`, which Patrol requires. These methods
+  aren't tests, so they fail and mark the build as failed.
+
+  It's only strictly needed when such methods exist, but it's safe to always
+  pass it: the list is exactly your Patrol tests. To check whether your app is
+  affected (no output means it isn't):
+
+  ```bash
+  nm "$products/RunnerUITests-Runner.app/PlugIns/RunnerUITests.xctest/RunnerUITests" \
+    | grep -E '[-]\[[^ ]+ test' | grep -v PatrolGeneratedTests_
+  ```
+</Warning>
 
 ```bash
 only_testing=$(awk '/^@implementation /{print $2}' ios/RunnerUITests/PatrolGeneratedTests.inc \
@@ -115,14 +131,6 @@ curl -u "$LT_USERNAME:$LT_ACCESS_KEY" \
 ```
 
 Each Dart test gets its own session, named after the test.
-
-<Warning>
-  Without `only-testing`, LambdaTest also runs every Objective-C method whose name
-  starts with `test` from SDKs linked into the test runner (for example
-  `testBlock` or `testOverride` from the Google Maps SDK). The runner links all
-  app pods through `inherit! :complete`, which Patrol requires. These methods
-  aren't tests, so they fail and mark the build as failed.
-</Warning>
 
 [LT_app_docs]: https://www.lambdatest.com/support/docs/getting-started-with-espresso-testing/#running-your-first-test-a-step-by-step-guide
 [LT_test_docs]: https://www.lambdatest.com/support/docs/getting-started-with-espresso-testing/#step-2-upload-your-test-suite
