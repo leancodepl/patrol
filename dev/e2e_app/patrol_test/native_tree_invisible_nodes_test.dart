@@ -17,17 +17,27 @@ void main() {
         includeInvisibleNodes: true,
       );
 
-      bool contains(List<AndroidNativeView> nodes, String text) => nodes.any(
-        (node) =>
-            node.text == text ||
-            node.contentDescription == text ||
-            contains(node.children, text),
-      );
+      AndroidNativeView? find(List<AndroidNativeView> nodes, String text) {
+        for (final node in nodes) {
+          if (node.text == text || node.contentDescription == text) {
+            return node;
+          }
+          final match = find(node.children, text);
+          if (match != null) {
+            return match;
+          }
+        }
+        return null;
+      }
 
       // Chromium flags the marker below the 5000px spacer as not visible.
-      expect(contains(defaultTree.roots, 'Top marker'), isTrue);
-      expect(contains(defaultTree.roots, 'Offscreen marker'), isFalse);
-      expect(contains(fullTree.roots, 'Offscreen marker'), isTrue);
+      expect(find(defaultTree.roots, 'Top marker')?.isVisibleToUser, isTrue);
+      expect(find(defaultTree.roots, 'Offscreen marker'), isNull);
+      expect(find(fullTree.roots, 'Top marker')?.isVisibleToUser, isTrue);
+      expect(
+        find(fullTree.roots, 'Offscreen marker')?.isVisibleToUser,
+        isFalse,
+      );
     },
     tags: ['webview', 'android'],
   );

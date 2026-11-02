@@ -586,6 +586,7 @@ class AndroidNativeView with Equatable {
     required this.isLongClickable,
     required this.isScrollable,
     required this.isSelected,
+    required this.isVisibleToUser,
     required this.visibleBounds,
     required this.visibleCenter,
     required this.children,
@@ -609,6 +610,7 @@ class AndroidNativeView with Equatable {
   final bool isLongClickable;
   final bool isScrollable;
   final bool isSelected;
+  final bool isVisibleToUser;
   final Rectangle visibleBounds;
   final Point2D visibleCenter;
   final List<AndroidNativeView> children;
@@ -632,6 +634,7 @@ class AndroidNativeView with Equatable {
     isLongClickable,
     isScrollable,
     isSelected,
+    isVisibleToUser,
     visibleBounds,
     visibleCenter,
     children,

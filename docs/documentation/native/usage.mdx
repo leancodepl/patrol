@@ -101,8 +101,8 @@ await $.platform.android.tapAt(
 
 <Warning>
   Nodes kept by `includeInvisibleNodes` can be really off-screen (e.g. below the fold of a
-  WebView). Their center is then outside the display and `tapAt` throws. Scroll the node into
-  view first.
+  WebView). Their center is then outside the display and `tapAt` throws. Such nodes have
+  `isVisibleToUser: false`, so check it and the bounds, and scroll the node into view first.
 </Warning>
 
 ### iOS-specific actions

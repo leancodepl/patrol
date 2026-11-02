@@ -93,6 +93,7 @@ private fun fromUiAccessibilityNodeInfo(
             maxY = visibleBounds.bottom.toDouble()
         ),
         isSelected = obj.isSelected,
+        isVisibleToUser = obj.isVisibleToUser,
         isScrollable = obj.isScrollable,
         isLongClickable = obj.isLongClickable,
         isFocusable = obj.isFocusable,

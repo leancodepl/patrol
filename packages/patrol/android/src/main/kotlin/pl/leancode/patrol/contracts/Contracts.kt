@@ -442,6 +442,7 @@ class Contracts {
     val isLongClickable: Boolean,
     val isScrollable: Boolean,
     val isSelected: Boolean,
+    val isVisibleToUser: Boolean,
     val visibleBounds: Rectangle,
     val visibleCenter: Point2D,
     val children: List<AndroidNativeView>

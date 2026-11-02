@@ -351,6 +351,7 @@ AndroidNativeView _$AndroidNativeViewFromJson(Map<String, dynamic> json) =>
       isLongClickable: json['isLongClickable'] as bool,
       isScrollable: json['isScrollable'] as bool,
       isSelected: json['isSelected'] as bool,
+      isVisibleToUser: json['isVisibleToUser'] as bool,
       visibleBounds: Rectangle.fromJson(
         json['visibleBounds'] as Map<String, dynamic>,
       ),
@@ -379,6 +380,7 @@ Map<String, dynamic> _$AndroidNativeViewToJson(AndroidNativeView instance) =>
       'isLongClickable': instance.isLongClickable,
       'isScrollable': instance.isScrollable,
       'isSelected': instance.isSelected,
+      'isVisibleToUser': instance.isVisibleToUser,
       'visibleBounds': instance.visibleBounds.toJson(),
       'visibleCenter': instance.visibleCenter.toJson(),
       'children': instance.children.map((e) => e.toJson()).toList(),

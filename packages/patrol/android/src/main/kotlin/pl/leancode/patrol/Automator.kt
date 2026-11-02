@@ -65,6 +65,8 @@ private fun fromUiObject2(obj: UiObject2): AndroidNativeView {
         isLongClickable = obj.isLongClickable,
         isScrollable = obj.isScrollable,
         isSelected = obj.isSelected,
+        // UiAutomator only matches nodes that are visible to the user.
+        isVisibleToUser = true,
         visibleBounds = Rectangle(
             minX = bounds.left.toDouble(),
             minY = bounds.top.toDouble(),

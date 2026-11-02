@@ -306,6 +306,7 @@ public struct AndroidNativeView: Codable {
   public var isLongClickable: Bool
   public var isScrollable: Bool
   public var isSelected: Bool
+  public var isVisibleToUser: Bool
   public var visibleBounds: Rectangle
   public var visibleCenter: Point2D
   public var children: [AndroidNativeView]
