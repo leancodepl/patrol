@@ -68,24 +68,18 @@ whole suite runs as a single `testInvocations()` session.
 Follow [build-time test discovery](/documentation/ci/build-time-test-discovery):
 set `emit_test_manifest: true` and switch `RunnerUITests.m` to the static runner.
 
-### Ship `PatrolGeneratedTests.inc` in the test bundle
+### Build and upload
 
 `#include` only compiles the generated tests in. LambdaTest also needs the file
-itself inside `RunnerUITests.xctest`:
-
-1. Run `patrol build ios --release` once, so `ios/RunnerUITests/PatrolGeneratedTests.inc` exists.
-2. In Xcode, add it to the `RunnerUITests` group and tick **only** the
-   `RunnerUITests` target. It lands in **Build Phases → Copy Bundle Resources**.
-
-Xcode then copies and signs the file with every build. The `.inc` stays in
-`.gitignore`; only the project reference is committed.
-
-### Build and upload
+itself inside `RunnerUITests.xctest`, so copy it there after the build:
 
 ```bash
 patrol build ios --release
 
 products=build/ios_integ/Build/Products/Release-iphoneos
+cp ios/RunnerUITests/PatrolGeneratedTests.inc \
+  "$products/RunnerUITests-Runner.app/PlugIns/RunnerUITests.xctest/"
+
 rm -rf lt
 mkdir -p lt/app/Payload lt/tests/Payload
 cp -R "$products/Runner.app" lt/app/Payload/
@@ -93,6 +87,9 @@ cp -R "$products/RunnerUITests-Runner.app" lt/tests/Payload/
 (cd lt/app && zip -qr ../app.ipa Payload)
 (cd lt/tests && zip -qr ../tests.ipa Payload)
 ```
+
+The copy breaks the local code signature. That's fine: LambdaTest re-signs the
+apps before installing them on its devices.
 
 Upload `lt/app.ipa` and `lt/tests.ipa` with `type=xcuit-ios` ([see docs][LT_xcui_docs]).
 
