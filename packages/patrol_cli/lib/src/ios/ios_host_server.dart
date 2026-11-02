@@ -20,7 +20,7 @@ class IOSHostServer {
   }) async {
     final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
     final hostServer = IOSHostServer._(server, hinge, logger);
-    server.listen(hostServer._handleRequest);
+    server.asyncMap(hostServer._handleRequest).listen((_) {});
     logger.detail('iOS host server listening on port ${server.port}');
 
     return hostServer;
