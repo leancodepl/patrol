@@ -82,10 +82,28 @@ final tree = await $.platform.android.getNativeViews(
 );
 ```
 
+The unfiltered tree also walks every off-screen node in every window (system UI, keyboard,
+the whole WebView page), so on long pages it takes noticeably longer. Only pass the flag when
+you need it.
+
 Selector-based actions like `tap(AndroidSelector(...))` still go through UiAutomator, which
-skips these nodes as well. To interact with one, tap its coordinates with `tapAt`. Note that
-`tapAt` takes fractions of the **display** size (`uiDevice.displayWidth/Height`), not of the
-root node's bounds, which usually exclude the system bars.
+skips these nodes as well. To interact with one, tap its coordinates with `tapAt`. It takes
+fractions of the **display** size in physical pixels, not of the root node's bounds, which
+usually exclude the system bars:
+
+```dart
+final display = $.tester.view.display.size;
+final center = node.visibleCenter; // node found in tree.roots
+await $.platform.android.tapAt(
+  Offset(center.x / display.width, center.y / display.height),
+);
+```
+
+<Warning>
+  Nodes kept by `includeInvisibleNodes` can be really off-screen (e.g. below the fold of a
+  WebView). Their center is then outside the display and `tapAt` throws. Scroll the node into
+  view first.
+</Warning>
 
 ### iOS-specific actions
 
