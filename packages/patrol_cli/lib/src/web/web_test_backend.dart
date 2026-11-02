@@ -436,7 +436,7 @@ class WebTestBackend {
     final completer = Completer<void>();
 
     await _disposeScope.run((scope) async {
-      final webRunnerPath = await webRunner;
+      final webRunnerPath = await _webRunnerAfterStart(webRunner);
 
       final testResultsDir =
           options.resultsDir ?? '${Directory.current.path}/test-results';
@@ -526,7 +526,7 @@ class WebTestBackend {
   ) async {
     _logger.info('Running Playwright tests using debugger on port: $port');
 
-    final webRunnerPath = await webRunner;
+    final webRunnerPath = await _webRunnerAfterStart(webRunner);
 
     final testResultsDir =
         options.resultsDir ?? '${Directory.current.path}/test-results';
@@ -614,6 +614,37 @@ class WebTestBackend {
         'Failed to locate patrol package: $err\n'
         'Please ensure your project dependencies are properly resolved by running "dart pub get".',
       );
+    }
+  }
+
+  Future<String> _webRunnerAfterStart(Future<String> early) {
+    return preparedOrRetried(
+      early,
+      _prepareWebRunner,
+      onRetry: (error) => _logger.detail(
+        'Preparing the web runner again after Flutter started: $error',
+      ),
+    );
+  }
+
+  /// Returns the result of [early], or of [retry] if [early] failed.
+  ///
+  /// The web runner is prepared while Flutter compiles the app, which can be
+  /// before `flutter run` has resolved dependencies, for example on a fresh
+  /// checkout with `--no-check-compatibility`. Once the web server is up the
+  /// packages are resolved, so a second attempt succeeds; if it fails too, its
+  /// error is reported.
+  @visibleForTesting
+  static Future<String> preparedOrRetried(
+    Future<String> early,
+    Future<String> Function() retry, {
+    void Function(Object error)? onRetry,
+  }) async {
+    try {
+      return await early;
+    } on Object catch (error) {
+      onRetry?.call(error);
+      return retry();
     }
   }
 
