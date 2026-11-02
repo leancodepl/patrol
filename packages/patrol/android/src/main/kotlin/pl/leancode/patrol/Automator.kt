@@ -622,52 +622,57 @@ class Automator private constructor() {
     fun getNotifications(): List<Notification> {
         Logger.d("getNotifications()")
 
-        val notificationContainers = mutableListOf<UiObject2>()
         val identifiers = listOf(
             "android:id/status_bar_latest_event_content", // notification not bundled
             "com.android.systemui:id/expandableNotificationRow" // notifications bundled
         )
 
-        for (identifier in identifiers) {
-            val objects = uiDevice.findObjects(By.res(identifier))
-            if (identifier == "com.android.systemui:id/expandableNotificationRow") {
-                // the first element is invalid
-                objects.removeFirstOrNull()
+        fun findNotificationContainers(): List<UiObject2> {
+            val notificationContainers = mutableListOf<UiObject2>()
+            for (identifier in identifiers) {
+                val objects = uiDevice.findObjects(By.res(identifier))
+                if (identifier == "com.android.systemui:id/expandableNotificationRow") {
+                    // the first element is invalid
+                    objects.removeFirstOrNull()
+                }
+
+                Logger.i("Found ${objects.size} notification containers with resourceId \"$identifier\"")
+                notificationContainers.addAll(objects)
             }
 
-            Logger.i("Found ${objects.size} notification containers with resourceId \"$identifier\"")
-            notificationContainers.addAll(objects)
+            Logger.d("Found ${notificationContainers.size} notifications")
+            return notificationContainers
         }
 
-        Logger.d("Found ${notificationContainers.size} notifications")
+        // SystemUI can replace a shade row while we read it (e.g. heads-up animating in)
+        return readAllRetryingStale(
+            query = ::findNotificationContainers,
+            read = ::readNotification,
+            log = Logger::i
+        )
+    }
 
-        val notifications = mutableListOf<Notification>()
-        for (notificationContainer in notificationContainers) {
-            val appName = notificationContainer.findObject(By.res("android:id/app_name_text"))?.text
+    private fun readNotification(notificationContainer: UiObject2): Notification {
+        val appName = notificationContainer.findObject(By.res("android:id/app_name_text"))?.text
 
-            val content = notificationContainer.findObject(By.res("android:id/text"))?.text
-                ?: notificationContainer.findObject(By.res("android:id/big_text"))?.text
-                ?: notificationContainer.findObject(By.res("com.android.systemui:id/notification_text"))?.text
-            if (content == null) {
-                Logger.e("Could not find content text")
-            }
-
-            val title = notificationContainer.findObject(By.res("android:id/title"))?.text
-                ?: notificationContainer.findObject(By.res("com.android.systemui:id/notification_title"))?.text
-            if (title == null) {
-                Logger.e("Could not find title text")
-            }
-
-            val notification = Notification(
-                appName = appName,
-                content = content ?: "",
-                title = title ?: ""
-            )
-
-            notifications.add(notification)
+        val content = notificationContainer.findObject(By.res("android:id/text"))?.text
+            ?: notificationContainer.findObject(By.res("android:id/big_text"))?.text
+            ?: notificationContainer.findObject(By.res("com.android.systemui:id/notification_text"))?.text
+        if (content == null) {
+            Logger.e("Could not find content text")
         }
 
-        return notifications
+        val title = notificationContainer.findObject(By.res("android:id/title"))?.text
+            ?: notificationContainer.findObject(By.res("com.android.systemui:id/notification_title"))?.text
+        if (title == null) {
+            Logger.e("Could not find title text")
+        }
+
+        return Notification(
+            appName = appName,
+            content = content ?: "",
+            title = title ?: ""
+        )
     }
 
     fun tapOnNotification(index: Int, timeout: Long? = null) {
