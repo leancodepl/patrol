@@ -63,6 +63,9 @@ class WebTestBackend {
       ..detail('Starting web test execution...')
       ..info('Building Flutter web app...');
 
+    // Install the Playwright runner while Flutter compiles the app.
+    final webRunner = _prepareWebRunner()..ignore();
+
     // Start Flutter web server
     final flutterProcess = await _startFlutterWebServer(
       options,
@@ -80,6 +83,7 @@ class WebTestBackend {
       await _runPlaywrightTests(
         baseUrl,
         options,
+        webRunner: webRunner,
         showFlutterLogs: showFlutterLogs,
         hideTestSteps: hideTestSteps,
         clearTestSteps: clearTestSteps,
@@ -116,6 +120,9 @@ class WebTestBackend {
   }) async {
     _logger.detail('Starting web develop execution...');
 
+    // Install the Playwright runner while Flutter compiles the app.
+    final webRunner = _prepareWebRunner()..ignore();
+
     // Start Flutter web server
     final flutterProcess = await _startFlutterWebServer(options, develop: true);
 
@@ -139,7 +146,7 @@ class WebTestBackend {
       }, stdin: stdin);
 
       // Run Playwright tests
-      await _runPlaywrightDevelop(port, options);
+      await _runPlaywrightDevelop(port, options, webRunner);
     } finally {
       if (previousStdinModes != null) {
         flutterTool.revertInteractiveMode(previousStdinModes);
@@ -420,6 +427,7 @@ class WebTestBackend {
   Future<void> _runPlaywrightTests(
     String baseUrl,
     WebAppOptions options, {
+    required Future<String> webRunner,
     required bool showFlutterLogs,
     required bool hideTestSteps,
     required bool clearTestSteps,
@@ -428,13 +436,7 @@ class WebTestBackend {
     final completer = Completer<void>();
 
     await _disposeScope.run((scope) async {
-      // Ensure web_runner directory exists and is properly set up
-      await _ensureWebRunnerExists();
-
-      final webRunnerPath = await _getWebRunnerPath();
-
-      // Install Node.js dependencies if needed
-      await _ensureNodeDependencies(webRunnerPath);
+      final webRunnerPath = await _webRunnerAfterStart(webRunner);
 
       final testResultsDir =
           options.resultsDir ?? '${Directory.current.path}/test-results';
@@ -517,15 +519,14 @@ class WebTestBackend {
     return completer.future;
   }
 
-  Future<void> _runPlaywrightDevelop(String port, WebAppOptions options) async {
+  Future<void> _runPlaywrightDevelop(
+    String port,
+    WebAppOptions options,
+    Future<String> webRunner,
+  ) async {
     _logger.info('Running Playwright tests using debugger on port: $port');
 
-    // Ensure web_runner directory exists and is properly set up
-    await _ensureWebRunnerExists();
-
-    final webRunnerPath = await _getWebRunnerPath();
-
-    await _ensureNodeDependencies(webRunnerPath);
+    final webRunnerPath = await _webRunnerAfterStart(webRunner);
 
     final testResultsDir =
         options.resultsDir ?? '${Directory.current.path}/test-results';
@@ -614,6 +615,47 @@ class WebTestBackend {
         'Please ensure your project dependencies are properly resolved by running "dart pub get".',
       );
     }
+  }
+
+  Future<String> _webRunnerAfterStart(Future<String> early) {
+    return preparedOrRetried(
+      early,
+      _prepareWebRunner,
+      onRetry: (error) => _logger.detail(
+        'Preparing the web runner again after Flutter started: $error',
+      ),
+    );
+  }
+
+  /// Returns the result of [early], or of [retry] if [early] failed.
+  ///
+  /// The web runner is prepared while Flutter compiles the app, which can be
+  /// before `flutter run` has resolved dependencies, for example on a fresh
+  /// checkout with `--no-check-compatibility`. Once the web server is up the
+  /// packages are resolved, so a second attempt succeeds; if it fails too, its
+  /// error is reported.
+  @visibleForTesting
+  static Future<String> preparedOrRetried(
+    Future<String> early,
+    Future<String> Function() retry, {
+    void Function(Object error)? onRetry,
+  }) async {
+    try {
+      return await early;
+    } on Object catch (error) {
+      onRetry?.call(error);
+      return retry();
+    }
+  }
+
+  /// Checks the Playwright web runner and installs its Node.js dependencies.
+  ///
+  /// Returns the web runner path.
+  Future<String> _prepareWebRunner() async {
+    await _ensureWebRunnerExists();
+    final webRunnerPath = await _getWebRunnerPath();
+    await _ensureNodeDependencies(webRunnerPath);
+    return webRunnerPath;
   }
 
   Future<void> _ensureWebRunnerExists() async {

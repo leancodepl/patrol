@@ -152,4 +152,43 @@ void main() {
       },
     );
   });
+
+  group('preparedOrRetried', () {
+    test('returns the early result without retrying', () async {
+      var retries = 0;
+
+      final path = await WebTestBackend.preparedOrRetried(
+        Future.value('/early'),
+        () async {
+          retries++;
+          return '/retry';
+        },
+      );
+
+      expect(path, '/early');
+      expect(retries, 0);
+    });
+
+    test('retries when the early attempt failed', () async {
+      final errors = <Object>[];
+
+      final path = await WebTestBackend.preparedOrRetried(
+        Future.error(Exception('Package configuration not found.')),
+        () async => '/retry',
+        onRetry: errors.add,
+      );
+
+      expect(path, '/retry');
+      expect(errors, hasLength(1));
+    });
+
+    test('reports the error of the retry when it fails too', () async {
+      final result = WebTestBackend.preparedOrRetried(
+        Future.error(Exception('early')),
+        () => Future.error(StateError('retry')),
+      );
+
+      await expectLater(result, throwsA(isA<StateError>()));
+    });
+  });
 }
