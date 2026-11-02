@@ -51,6 +51,15 @@ enum SetLocationAccuracyRequestLocationAccuracy {
   final String value;
 }
 
+enum AndroidFoldPosture {
+  closed('closed'),
+  halfOpen('halfOpen'),
+  open('open');
+
+  const AndroidFoldPosture(this.value);
+  final String value;
+}
+
 enum IOSElementType {
   any('any'),
   other('other'),
@@ -1283,6 +1292,36 @@ class AndroidTakeNativeScreenshotRequest with Equatable {
 
   @override
   List<Object?> get props => [tag];
+}
+
+@JsonSerializable()
+class AndroidSetFoldPostureRequest with Equatable {
+  const AndroidSetFoldPostureRequest({required this.posture});
+
+  factory AndroidSetFoldPostureRequest.fromJson(Map<String, dynamic> json) =>
+      _$AndroidSetFoldPostureRequestFromJson(json);
+
+  final AndroidFoldPosture posture;
+
+  Map<String, dynamic> toJson() => _$AndroidSetFoldPostureRequestToJson(this);
+
+  @override
+  List<Object?> get props => [posture];
+}
+
+@JsonSerializable()
+class AndroidSetFoldPostureResponse with Equatable {
+  const AndroidSetFoldPostureResponse({this.previousPosture});
+
+  factory AndroidSetFoldPostureResponse.fromJson(Map<String, dynamic> json) =>
+      _$AndroidSetFoldPostureResponseFromJson(json);
+
+  final AndroidFoldPosture? previousPosture;
+
+  Map<String, dynamic> toJson() => _$AndroidSetFoldPostureResponseToJson(this);
+
+  @override
+  List<Object?> get props => [previousPosture];
 }
 
 @JsonSerializable()
