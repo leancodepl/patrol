@@ -29,9 +29,10 @@ dart run skills@ get --agent generic -p patrol -s patrol-setup -s patrol-write-t
 
 If your Patrol tests follow LeanCode's modular architecture (Modules, System, ApiClients), or you
 want to introduce it, add `-s patrol-test-architecture` — it builds on `patrol-write-test`. To
-install every skill, pass `--all` instead of the `-s` options. With neither, the CLI opens an
-interactive picker — in a terminal only; without one, it just lists the available skills. Without
-`-p patrol`, `--all` and the picker also cover skills from your other dependencies.
+migrate a Maestro suite, add `-s patrol-migrate-from-maestro`. To install every skill, pass
+`--all` instead of the `-s` options. With neither, the CLI opens an interactive picker — in a
+terminal only; without one, it just lists the available skills. Without `-p patrol`, `--all` and
+the picker also cover skills from your other dependencies.
 
 The installed skills match the `patrol` version you depend on — rerun the same command after
 upgrading `patrol` to update them, and `dart run skills@ prune` removes them once `patrol` is gone.
@@ -83,3 +84,4 @@ npx skills update
 | [patrol-setup](patrol-setup/SKILL.md) | Set up Patrol E2E testing in a Flutter project for the first time (Android only) — pubspec `patrol` block, native Android wiring, and a first passing test on an Android emulator. | Set up Patrol in this project and get a first test passing |
 | [patrol-write-test](patrol-write-test/SKILL.md) | Write Patrol E2E tests — order of actions, Patrol API and assertion rules, native dialog handling, and test-key conventions. | Write a Patrol test that logs in and verifies the home screen |
 | [patrol-test-architecture](patrol-test-architecture/SKILL.md) | Add-on to patrol-write-test: LeanCode's recommended test architecture (Modules, System, ApiClients) with per-feature keys.dart files. Install it together with patrol-write-test. | Add a checkout test following our modular Patrol architecture |
+| [patrol-migrate-from-maestro](patrol-migrate-from-maestro/SKILL.md) | Migrate Maestro UI flows to Patrol tests — inventory, command mapping, widget keys in place of text selectors, JS hooks moved to Dart, and every migrated test proven green. Uses patrol-setup and patrol-write-test. | Migrate our Maestro flows in `maestro/` to Patrol |

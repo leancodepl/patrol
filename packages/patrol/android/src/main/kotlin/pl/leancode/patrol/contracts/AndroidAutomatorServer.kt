@@ -33,6 +33,8 @@ interface AndroidAutomatorServer {
     fun pickImageFromGallery(request: Contracts.AndroidPickImageFromGalleryRequest)
     fun pickMultipleImagesFromGallery(request: Contracts.AndroidPickMultipleImagesFromGalleryRequest)
     fun allowPermission()
+    fun setFoldPosture(request: Contracts.AndroidSetFoldPostureRequest): Contracts.AndroidSetFoldPostureResponse
+    fun resetFoldPosture()
 }
 
 private val json = Gson()
@@ -125,6 +127,15 @@ fun getAndroidAutomatorRoutes(server: AndroidAutomatorServer): RoutingHttpHandle
     },
     "allowPermission" bind POST to {
       server.allowPermission()
+      Response(OK)
+    },
+    "setFoldPosture" bind POST to {
+      val body = json.fromJson(it.bodyString(), Contracts.AndroidSetFoldPostureRequest::class.java)
+      val response = server.setFoldPosture(body)
+      Response(OK).body(json.toJson(response))
+    },
+    "resetFoldPosture" bind POST to {
+      server.resetFoldPosture()
       Response(OK)
     }
 )

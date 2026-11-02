@@ -32,6 +32,12 @@ public enum SetLocationAccuracyRequestLocationAccuracy: String, Codable {
   case fine = "fine"
 }
 
+public enum AndroidFoldPosture: String, Codable {
+  case closed = "closed"
+  case halfOpen = "halfOpen"
+  case open = "open"
+}
+
 public enum IOSElementType: String, Codable {
   case any = "any"
   case other = "other"
@@ -490,6 +496,14 @@ public struct AndroidTakeCameraPhotoRequest: Codable {
 
 public struct AndroidTakeNativeScreenshotRequest: Codable {
   public var tag: String
+}
+
+public struct AndroidSetFoldPostureRequest: Codable {
+  public var posture: AndroidFoldPosture
+}
+
+public struct AndroidSetFoldPostureResponse: Codable {
+  public var previousPosture: AndroidFoldPosture?
 }
 
 public struct IOSTakeCameraPhotoRequest: Codable {
