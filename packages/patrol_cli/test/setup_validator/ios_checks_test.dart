@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:patrol_cli/src/setup_validator/checks/ios_checks.dart';
@@ -99,8 +100,10 @@ void main() {
       ..writeAsStringSync(contents);
   }
 
-  IOSCheckContext context() =>
-      IOSCheckContext(probe: ProjectProbe(projectRoot: projectRoot));
+  IOSCheckContext context({bool emitTestManifest = false}) => IOSCheckContext(
+    probe: ProjectProbe(projectRoot: projectRoot),
+    emitTestManifest: emitTestManifest,
+  );
 
   /// A complete pure-SPM project (today's leancode_flutter_template layout).
   void writeSpmProject({String project = 'Runner'}) {
@@ -692,6 +695,69 @@ void main() {
       expect(finding.summary, isNot(contains('User Script Sandboxing')));
       // No shared schemes in the fixture, so parallelism goes manual.
       expect(finding.summary, contains('parallel execution'));
+    });
+  });
+
+  group('I14 build-time discovery runner', () {
+    const staticRunner = '''
+@import XCTest;
+@import patrol;
+@import ObjectiveC.runtime;
+
+PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE(RunnerUITests)
+#include "PatrolGeneratedTests.inc"
+''';
+
+    Finding? i14(List<Finding> findings) =>
+        findings.where((finding) => finding.id == 'I14').firstOrNull;
+
+    test('static runner with discovery enabled passes', () {
+      writeSpmProject();
+      write('ios/RunnerUITests/RunnerUITests.m', staticRunner);
+      expect(idsOf(iosFindings(context(emitTestManifest: true))), ['I12']);
+    });
+
+    test('errors when discovery is enabled but the runner is runtime', () {
+      writeSpmProject();
+      final finding = i14(iosFindings(context(emitTestManifest: true)));
+      expect(finding?.severity, Severity.error);
+      expect(finding?.summary, contains('runtime'));
+    });
+
+    test('errors when the static runner lacks the generated #include', () {
+      writeSpmProject();
+      write(
+        'ios/RunnerUITests/RunnerUITests.m',
+        'PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE(RunnerUITests)\n',
+      );
+      final finding = i14(iosFindings(context(emitTestManifest: true)));
+      expect(finding?.severity, Severity.error);
+      expect(finding?.summary, contains('#include'));
+    });
+
+    test('errors on the legacy STATIC_BEGIN/_END macros', () {
+      writeSpmProject();
+      write(
+        'ios/RunnerUITests/RunnerUITests.m',
+        'PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN(RunnerUITests)\n'
+            '#include "PatrolGeneratedTests.inc"\n'
+            'PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_END\n',
+      );
+      final finding = i14(iosFindings(context(emitTestManifest: true)));
+      expect(finding?.severity, Severity.error);
+      expect(finding?.summary, contains('STATIC_BEGIN'));
+    });
+
+    test('warns when the runner is static but discovery is off', () {
+      writeSpmProject();
+      write('ios/RunnerUITests/RunnerUITests.m', staticRunner);
+      final finding = i14(iosFindings(context()));
+      expect(finding?.severity, Severity.warning);
+    });
+
+    test('is silent for the runtime runner without discovery', () {
+      writeSpmProject();
+      expect(i14(iosFindings(context())), isNull);
     });
   });
 }

@@ -112,6 +112,9 @@ class SetupValidator {
       checkIntegrationTestDirectory(ctx),
       checkTestBundleGitignored(ctx),
       checkVersionCompatibility(ctx, cliVersion: _cliVersion),
+      checkDiscoveryTestDirectory(ctx),
+      checkDiscoveryPatrolVersion(ctx),
+      checkDiscoveryOutputGitignored(ctx),
     ].nonNulls.toList();
   }
 
@@ -131,7 +134,12 @@ class SetupValidator {
       if (validatedPlatforms.contains(platform)) {
         final findings = switch (platform) {
           'android' => androidFindings(AndroidCheckContext(probe: _probe)),
-          'ios' => iosFindings(IOSCheckContext(probe: _probe)),
+          'ios' => iosFindings(
+            IOSCheckContext(
+              probe: _probe,
+              emitTestManifest: ctx.emitTestManifest,
+            ),
+          ),
           'macos' => macosFindings(MacOSCheckContext(probe: _probe)),
           _ => <Finding>[],
         };

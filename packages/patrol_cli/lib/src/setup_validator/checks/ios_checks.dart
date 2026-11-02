@@ -8,7 +8,11 @@ const physicalIosDocsUrl =
 
 /// iOS project state shared by checks I0-I13.
 class IOSCheckContext extends DarwinCheckContext {
-  IOSCheckContext({required super.probe}) : super(platformDir: 'ios');
+  IOSCheckContext({required super.probe, this.emitTestManifest = false})
+    : super(platformDir: 'ios');
+
+  /// `patrol.emit_test_manifest: true` in pubspec.yaml.
+  final bool emitTestManifest;
 }
 
 /// Runs all iOS checks in catalog order.
@@ -42,6 +46,7 @@ List<Finding> iosFindings(IOSCheckContext ctx) {
     checkConfigurationSets(ctx),
     checkParallelExecution(ctx),
     checkStrayFlutterTarget(ctx),
+    checkDiscoveryRunner(ctx),
     manualVerificationNotice(ctx),
   ].nonNulls.toList();
 }
@@ -403,6 +408,71 @@ Finding? checkStrayFlutterTarget(IOSCheckContext ctx) {
         'regenerate it.',
     docsUrl: '$docsBaseUrl#faq-test-stops-wait-for-idle',
   );
+}
+
+const _staticRunnerSnippet =
+    '`PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE(RunnerUITests)` followed '
+    'by `#include "PatrolGeneratedTests.inc"`';
+
+/// I14: RunnerUITests.m and `emit_test_manifest` must agree — the static
+/// runner only compiles with the generated .inc, which only discovery emits.
+Finding? checkDiscoveryRunner(IOSCheckContext ctx) {
+  // Same fixed path as `patrol build ios` checks; a missing file is I1.
+  final runner = ctx.probe.readFile('ios/RunnerUITests/RunnerUITests.m');
+  if (runner == null) {
+    return null;
+  }
+  final legacy =
+      runner.contains('PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN') ||
+      runner.contains('PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_END');
+  final staticMacro = runner.contains(
+    'PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC',
+  );
+  final includesGenerated = runner.contains(
+    '#include "PatrolGeneratedTests.inc"',
+  );
+
+  if (legacy) {
+    return const Finding(
+      id: 'I14',
+      severity: Severity.error,
+      summary:
+          'RunnerUITests.m uses the STATIC_BEGIN/_END runner macros from the '
+          'first build-time discovery release; current patrol no longer '
+          'compiles them.',
+      fix: 'Replace both macros with $_staticRunnerSnippet.',
+      docsUrl: discoverySetupDocsUrl,
+    );
+  }
+  if (ctx.emitTestManifest && !(staticMacro && includesGenerated)) {
+    return Finding(
+      id: 'I14',
+      severity: Severity.error,
+      summary: staticMacro
+          ? 'RunnerUITests.m uses the static runner macro but does not '
+                '#include "PatrolGeneratedTests.inc", so no tests compile in.'
+          : '`emit_test_manifest` is enabled, but RunnerUITests.m still uses '
+                'the runtime PATROL_INTEGRATION_TEST_IOS_RUNNER macro — '
+                '`patrol build ios` fails until it is switched.',
+      fix: 'In ios/RunnerUITests/RunnerUITests.m use $_staticRunnerSnippet.',
+      docsUrl: discoverySetupDocsUrl,
+    );
+  }
+  if (!ctx.emitTestManifest && staticMacro) {
+    return const Finding(
+      id: 'I14',
+      severity: Severity.warning,
+      summary:
+          'RunnerUITests.m uses the static (build-time discovery) runner, but '
+          '`emit_test_manifest` is not enabled in pubspec.yaml — every iOS '
+          'build without `--emit-test-manifest` fails.',
+      fix:
+          'Set `emit_test_manifest: true` in the `patrol:` section, or '
+          'restore `PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerUITests)`.',
+      docsUrl: discoverySetupDocsUrl,
+    );
+  }
+  return null;
 }
 
 /// I12: steps that cannot be verified from files, kept to one compact notice.

@@ -9,6 +9,11 @@ const docsBaseUrl = 'https://patrol.leancode.co/documentation';
 const setupDocsUrl = '$docsBaseUrl#setup';
 const compatibilityTableUrl =
     'https://patrol.leancode.co/documentation/compatibility-table';
+const discoverySetupDocsUrl = '$docsBaseUrl/ci/build-time-test-discovery#setup';
+
+/// Oldest patrol whose runner matches the build-time discovery codegen
+/// (`PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE`).
+final minDiscoveryPatrolVersion = Version(4, 10, 0);
 
 /// Parsed pubspec state for the checks. Malformed shapes (scalar root,
 /// non-string values) read as absent so they surface as findings, not crashes.
@@ -76,6 +81,28 @@ class SharedCheckContext {
   bool testFilesIn(String directory) => probe
       .listFilesRecursively(directory)
       .any((path) => path.endsWith(testFileSuffix));
+
+  /// Build-time test discovery opt-in (`patrol.emit_test_manifest: true`).
+  bool get emitTestManifest => patrolSection?['emit_test_manifest'] == true;
+
+  /// patrol version from the nearest pubspec.lock (pub workspaces keep it at
+  /// the workspace root), or null when it can't be resolved.
+  String? get resolvedPatrolVersion {
+    final lockContents = probe
+        .readFilesHereAndAbove('pubspec.lock')
+        .firstOrNull;
+    if (lockContents == null) {
+      return null;
+    }
+    try {
+      final lock = loadYaml(lockContents);
+      final packages = lock is Map ? lock['packages'] : null;
+      final patrol = packages is Map ? packages['patrol'] : null;
+      return patrol is Map ? patrol['version']?.toString() : null;
+    } on YamlException {
+      return null;
+    }
+  }
 }
 
 /// S1: the `patrol` package is declared in pubspec.yaml (any section, any
@@ -271,21 +298,7 @@ Finding? checkVersionCompatibility(
     return null;
   }
 
-  // Nearest lock wins; pub workspaces keep it at the workspace root.
-  final lockContents = ctx.probe
-      .readFilesHereAndAbove('pubspec.lock')
-      .firstOrNull;
-  String? patrolVersion;
-  if (lockContents != null) {
-    try {
-      final lock = loadYaml(lockContents) as Map?;
-      final patrol = (lock?['packages'] as Map?)?['patrol'] as Map?;
-      patrolVersion = patrol?['version']?.toString();
-    } on YamlException {
-      patrolVersion = null;
-    }
-  }
-
+  final patrolVersion = ctx.resolvedPatrolVersion;
   if (patrolVersion == null) {
     return const Finding(
       id: 'S7',
@@ -328,5 +341,94 @@ Finding? checkVersionCompatibility(
         ? 'Upgrade both `patrol` and `patrol_cli` to the latest versions.'
         : 'Either ${options.join(', or ')}.',
     docsUrl: compatibilityTableUrl,
+  );
+}
+
+/// S8: build-time discovery runs tests as host widget tests, which Flutter
+/// refuses for anything under integration_test/.
+Finding? checkDiscoveryTestDirectory(SharedCheckContext ctx) {
+  if (!ctx.emitTestManifest) {
+    return null;
+  }
+  final directory = ctx.testDirectory.replaceFirst(RegExp(r'^\./'), '');
+  if (directory.split('/').first != 'integration_test') {
+    return null;
+  }
+  return Finding(
+    id: 'S8',
+    severity: Severity.error,
+    summary:
+        '`emit_test_manifest` is enabled, but the tests live in '
+        '`$directory/`. Flutter runs anything under integration_test/ only '
+        'on a device, so build-time discovery cannot run there.',
+    fix:
+        'Move the tests to `patrol_test/` and set `test_directory: '
+        'patrol_test`, or disable `emit_test_manifest`.',
+    docsUrl: discoverySetupDocsUrl,
+  );
+}
+
+/// S9: the discovery codegen of this patrol_cli needs a matching patrol;
+/// S7 alone passes older ones and the build fails instead.
+Finding? checkDiscoveryPatrolVersion(SharedCheckContext ctx) {
+  if (!ctx.emitTestManifest) {
+    return null;
+  }
+  final resolved = ctx.resolvedPatrolVersion;
+  if (resolved == null) {
+    // S7 reports the unresolved version.
+    return null;
+  }
+  final Version patrol;
+  try {
+    patrol = Version.parse(resolved);
+  } on FormatException {
+    return null;
+  }
+  if (patrol >= minDiscoveryPatrolVersion) {
+    return null;
+  }
+  return Finding(
+    id: 'S9',
+    severity: Severity.error,
+    summary:
+        '`emit_test_manifest` is enabled, but patrol $resolved is too old for '
+        'build-time discovery (needs $minDiscoveryPatrolVersion or newer).',
+    fix: 'Upgrade `patrol` to ^$minDiscoveryPatrolVersion in pubspec.yaml.',
+    docsUrl: compatibilityTableUrl,
+  );
+}
+
+/// S10: discovery regenerates PatrolGeneratedTests* on every build; they
+/// should not be committed. Checked in ancestor and platform .gitignores.
+Finding? checkDiscoveryOutputGitignored(SharedCheckContext ctx) {
+  if (!ctx.emitTestManifest) {
+    return null;
+  }
+  final gitignores = [
+    ...ctx.probe.readFilesHereAndAbove('.gitignore'),
+    for (final path in [
+      'ios/.gitignore',
+      'ios/RunnerUITests/.gitignore',
+      'android/.gitignore',
+      'android/app/.gitignore',
+    ])
+      ?ctx.probe.readFile(path),
+  ];
+  if (gitignores.any((contents) => contents.contains('PatrolGeneratedTests'))) {
+    return null;
+  }
+  return const Finding(
+    id: 'S10',
+    severity: Severity.notice,
+    summary:
+        'Build-time discovery output (`PatrolGeneratedTests.inc`, '
+        '`PatrolGeneratedTests*.java`) is not gitignored. Patrol regenerates '
+        'these files on every build.',
+    fix:
+        'Add `ios/RunnerUITests/PatrolGeneratedTests.inc` and '
+        '`android/app/src/androidTest/**/PatrolGeneratedTests*.java` to '
+        '.gitignore.',
+    docsUrl: discoverySetupDocsUrl,
   );
 }

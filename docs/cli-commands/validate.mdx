@@ -20,7 +20,9 @@ checks as `patrol doctor`, scoped to the platforms declared under the `patrol:`
 section of your `pubspec.yaml`), then inspects the project files: the pubspec
 configuration, the Android Gradle setup and test class, and the iOS/macOS
 Xcode projects (CocoaPods, Swift Package Manager, and hybrid integrations are
-all recognized).
+all recognized). With [build-time test discovery] enabled
+(`emit_test_manifest: true`), it also checks that the test directory, the
+`patrol` version and the iOS `RunnerUITests.m` runner match that mode.
 
 Every reported finding says what is wrong, how to fix it, and links the docs
 section that covers the step.
@@ -61,3 +63,4 @@ patrol validate --quiet
   recognized and skipped — in add-to-app, Patrol tests run from the host apps.
 
 [setup docs]: /documentation#setup
+[build-time test discovery]: /documentation/ci/build-time-test-discovery

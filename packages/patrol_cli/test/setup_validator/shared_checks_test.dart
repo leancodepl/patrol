@@ -385,4 +385,105 @@ dependencies:
       expect(checkVersionCompatibility(ctx, cliVersion: '4.4.0'), isNull);
     });
   });
+
+  group('build-time discovery', () {
+    const discoveryPubspec =
+        '''
+$_completePubspec  emit_test_manifest: true
+''';
+
+    const discoveryLock = '''
+packages:
+  patrol:
+    version: "4.10.0"
+''';
+
+    SharedCheckContext discoveryContext({void Function()? mutate}) {
+      return contextWith(
+        mutate: () {
+          fs.file('/project/pubspec.yaml').writeAsStringSync(discoveryPubspec);
+          fs.file('/project/pubspec.lock').writeAsStringSync(discoveryLock);
+          fs
+              .file('/project/.gitignore')
+              .writeAsStringSync(
+                'patrol_test/test_bundle.dart\nPatrolGeneratedTests*\n',
+              );
+          mutate?.call();
+        },
+      );
+    }
+
+    test('complete discovery setup passes', () {
+      final ctx = discoveryContext();
+      expect(ctx.emitTestManifest, isTrue);
+      expect(checkDiscoveryTestDirectory(ctx), isNull);
+      expect(checkDiscoveryPatrolVersion(ctx), isNull);
+      expect(checkDiscoveryOutputGitignored(ctx), isNull);
+    });
+
+    test('all discovery checks are silent when discovery is off', () {
+      final ctx = contextWith(
+        mutate: () => fs
+            .file('/project/pubspec.lock')
+            .writeAsStringSync('packages:\n  patrol:\n    version: "4.9.0"\n'),
+      );
+      expect(ctx.emitTestManifest, isFalse);
+      expect(checkDiscoveryPatrolVersion(ctx), isNull);
+      expect(checkDiscoveryOutputGitignored(ctx), isNull);
+    });
+
+    test('S8 errors when tests live under integration_test/', () {
+      final ctx = discoveryContext(
+        mutate: () => fs
+            .file('/project/pubspec.yaml')
+            .writeAsStringSync(
+              '$discoveryPubspec  test_directory: ./integration_test/e2e\n',
+            ),
+      );
+      final finding = checkDiscoveryTestDirectory(ctx);
+      expect(finding?.severity, Severity.error);
+      expect(finding?.summary, contains('integration_test/e2e'));
+    });
+
+    test('S9 errors when patrol is older than 4.10.0', () {
+      final ctx = discoveryContext(
+        mutate: () => fs
+            .file('/project/pubspec.lock')
+            .writeAsStringSync('packages:\n  patrol:\n    version: "4.9.0"\n'),
+      );
+      final finding = checkDiscoveryPatrolVersion(ctx);
+      expect(finding?.severity, Severity.error);
+      expect(finding?.summary, contains('4.9.0'));
+    });
+
+    test('S9 is silent when the version is unresolved (S7 covers it)', () {
+      final ctx = discoveryContext(
+        mutate: () => fs.file('/project/pubspec.lock').deleteSync(),
+      );
+      expect(checkDiscoveryPatrolVersion(ctx), isNull);
+    });
+
+    test('S10 notices when generated sources are not gitignored', () {
+      final ctx = discoveryContext(
+        mutate: () => fs
+            .file('/project/.gitignore')
+            .writeAsStringSync('patrol_test/test_bundle.dart\n'),
+      );
+      expect(checkDiscoveryOutputGitignored(ctx)?.severity, Severity.notice);
+    });
+
+    test('S10 accepts the pattern in a platform .gitignore', () {
+      final ctx = discoveryContext(
+        mutate: () {
+          fs
+              .file('/project/.gitignore')
+              .writeAsStringSync('patrol_test/test_bundle.dart\n');
+          fs.file('/project/ios/.gitignore')
+            ..createSync(recursive: true)
+            ..writeAsStringSync('RunnerUITests/PatrolGeneratedTests.inc\n');
+        },
+      );
+      expect(checkDiscoveryOutputGitignored(ctx), isNull);
+    });
+  });
 }
