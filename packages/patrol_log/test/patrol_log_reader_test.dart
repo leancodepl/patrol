@@ -14,6 +14,7 @@ PatrolLogReader _buildReader({
   bool clearTestSteps = false,
   bool hideTestSteps = false,
   bool hideTestLifecycle = true,
+  String testFileSuffix = '_test.dart',
 }) {
   return PatrolLogReader(
     scope: DisposeScope(),
@@ -25,6 +26,7 @@ PatrolLogReader _buildReader({
     hideTestSteps: hideTestSteps,
     clearTestSteps: clearTestSteps,
     hideTestLifecycle: hideTestLifecycle,
+    testFileSuffix: testFileSuffix,
   );
 }
 
@@ -198,6 +200,26 @@ void main() {
         expect(reader.totalTests, 1);
         expect(reader.successfulTests, 1);
       });
+
+      test(
+        'matches top-level prefixed finish entry to non-prefixed start entry',
+        () async {
+          reader
+            ..parse(
+              _patrolLogLine(_testEntryJson(name: 'my test', status: 'start')),
+            )
+            ..parse(
+              _patrolLogLine(
+                _testEntryJson(name: 'example_test my test', status: 'success'),
+              ),
+            );
+
+          await pumpEventQueue();
+
+          expect(reader.totalTests, 1);
+          expect(reader.successfulTests, 1);
+        },
+      );
 
       test('handles test name with no spaces (single token)', () async {
         reader
@@ -405,6 +427,64 @@ void main() {
 
         expect(reader.totalTests, 1);
         expect(reader.successfulTests, 1);
+      });
+    });
+
+    group('custom test file suffix', () {
+      test(
+        'matches top-level prefixed finish entry to non-prefixed start entry',
+        () async {
+          final reader = _buildReader(testFileSuffix: '_spec.dart');
+          await reader.readEntries();
+          reader
+            ..parse(
+              _patrolLogLine(_testEntryJson(name: 'my test', status: 'start')),
+            )
+            ..parse(
+              _patrolLogLine(
+                _testEntryJson(name: 'example_spec my test', status: 'success'),
+              ),
+            );
+
+          await pumpEventQueue();
+          reader.close();
+
+          expect(reader.totalTests, 1);
+          expect(reader.successfulTests, 1);
+        },
+      );
+
+      test('prints the finished test with its file path', () async {
+        final logs = <String>[];
+        final reader = _buildReader(
+          capturedLogs: logs,
+          hideTestLifecycle: false,
+          testFileSuffix: '_spec.dart',
+        );
+        await reader.readEntries();
+        reader
+          ..parse(
+            _patrolLogLine(
+              _testEntryJson(name: 'grants permission', status: 'start'),
+            ),
+          )
+          ..parse(
+            _patrolLogLine(
+              _testEntryJson(
+                name: 'flows.example_spec grants permission',
+                status: 'failure',
+                error: 'Error',
+              ),
+            ),
+          );
+
+        await pumpEventQueue();
+        reader.close();
+
+        expect(logs.last, contains('grants permission'));
+        expect(logs.last, isNot(contains('flows.example_spec')));
+        expect(logs.last, contains('/flows/example_spec.dart'));
+        expect(reader.failedTestsList, contains('/flows/example_spec.dart'));
       });
     });
 

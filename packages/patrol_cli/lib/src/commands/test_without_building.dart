@@ -128,6 +128,7 @@ class TestWithoutBuildingCommand extends PatrolCommand {
       dartDefineFromFilePaths: const [],
       buildName: null,
       buildNumber: null,
+      testFileSuffix: config.testFileSuffix,
     );
 
     final showFlutterLogs = boolArg('show-flutter-logs');

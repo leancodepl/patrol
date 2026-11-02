@@ -453,6 +453,7 @@ class AndroidTestBackend {
               showFlutterLogs: showFlutterLogs,
               hideTestSteps: hideTestSteps,
               clearTestSteps: clearTestSteps,
+              testFileSuffix: options.flutter.testFileSuffix,
               onLogEntry: composeLogEntryCallback(
                 onLogEntry: onLogEntry,
                 videoRecordingManager: videoRecordingManager,
@@ -722,6 +723,7 @@ class AndroidTestBackend {
               showFlutterLogs: showFlutterLogs,
               hideTestSteps: hideTestSteps,
               clearTestSteps: clearTestSteps,
+              testFileSuffix: options.flutter.testFileSuffix,
               onLogEntry: composeLogEntryCallback(
                 onLogEntry: onLogEntry,
                 videoRecordingManager: videoRecordingManager,
@@ -839,6 +841,7 @@ class AndroidTestBackend {
               showFlutterLogs: showFlutterLogs,
               hideTestSteps: hideTestSteps,
               clearTestSteps: clearTestSteps,
+              testFileSuffix: options.flutter.testFileSuffix,
               onLogEntry: onLogEntry,
             )
             ..listen()

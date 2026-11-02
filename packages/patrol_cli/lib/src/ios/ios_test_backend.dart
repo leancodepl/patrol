@@ -473,6 +473,7 @@ class IOSTestBackend {
               showFlutterLogs: showFlutterLogs,
               hideTestSteps: hideTestSteps,
               clearTestSteps: clearTestSteps,
+              testFileSuffix: options.flutter.testFileSuffix,
               onLogEntry:
                   videoRecordingManager?.wrapOnLogEntry(onLogEntry) ??
                   onLogEntry,
