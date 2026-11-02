@@ -210,6 +210,39 @@ import 'example/example_test.dart' as example__example_test;''');
       );
     });
 
+    test(
+      'escapes import aliases that clash with Dart keywords or bundle names',
+      () {
+        // given
+        // A test file named after a keyword, or after a name the generated
+        // bundle uses (e.g. `main.dart` with `test_file_suffix: .dart`), must
+        // not break the bundle. Group names stay unchanged.
+        // See https://github.com/leancodepl/patrol/issues/2222
+        final tests = [
+          fs.path.join('patrol_test', 'main.dart'),
+          fs.path.join('patrol_test', 'class.dart'),
+          fs.path.join('patrol_test', 'test.dart'),
+          fs.path.join('patrol_test', 'flows', 'main.dart'),
+        ];
+
+        // when
+        final imports = testBundler.generateImports(testDirectory, tests);
+        final groupsCode = testBundler.generateGroupsCode(testDirectory, tests);
+
+        // then
+        expect(imports, r'''
+import 'main.dart' as main$;
+import 'class.dart' as class$;
+import 'test.dart' as test$;
+import 'flows/main.dart' as flows__main;''');
+        expect(groupsCode, r'''
+group('main', main$.main);
+group('class', class$.main);
+group('test', test$.main);
+group('flows.main', flows__main.main);''');
+      },
+    );
+
     test('generates groups from relative paths', () {
       // given
       final tests = [

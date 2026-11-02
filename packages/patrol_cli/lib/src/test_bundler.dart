@@ -19,6 +19,29 @@ class TestBundler {
   static const _devtoolsEntrypointDirectory = 'integration_test';
   static const _devtoolsEntrypointFileName = 'patrol_test_bundle.dart';
 
+  /// Names that can't be used as the import alias of a test file in the
+  /// generated bundle: Dart reserved words and built-in identifiers, and the
+  /// names the bundle itself declares or references where the generated
+  /// `group()` calls are placed.
+  static const _reservedImportAliases = {
+    // Reserved words.
+    'assert', 'break', 'case', 'catch', 'class', 'const', 'continue',
+    'default', 'do', 'else', 'enum', 'extends', 'false', 'final', 'finally',
+    'for', 'if', 'in', 'is', 'new', 'null', 'rethrow', 'return', 'super',
+    'switch', 'this', 'throw', 'true', 'try', 'var', 'void', 'while', 'with',
+    // Built-in identifiers, and identifiers reserved in async functions.
+    'abstract', 'as', 'covariant', 'deferred', 'dynamic', 'export',
+    'extension', 'external', 'factory', 'Function', 'get', 'implements',
+    'import', 'interface', 'late', 'library', 'mixin', 'operator', 'part',
+    'required', 'set', 'static', 'typedef', 'await', 'yield',
+    // Names declared or referenced by the bundle templates.
+    'main', 'constants', 'test', 'group', 'print', 'jsonEncode',
+    'testExplorationCompleter', 'platformAutomator', 'binding',
+    'dartTestGroup', 'appService', 'createDartTestGroup',
+    'writeTestManifest', 'reportGroupStructure', 'runAppService',
+    'debugDefaultTargetPlatformOverride',
+  };
+
   final Directory _projectRoot;
   final FileSystem _fs;
   final Logger _logger;
@@ -293,7 +316,7 @@ ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e
         web: web,
       );
       final testName = _createTestName(testDirectory, testFilePath);
-      imports.add("import '$importPath' as $testName;");
+      imports.add("import '$importPath' as ${_createImportAlias(testName)};");
     }
 
     return imports.join('\n');
@@ -322,7 +345,7 @@ ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e
     for (final testFilePath in testFilePaths) {
       final testName = _createTestName(testDirectory, testFilePath);
       final groupName = testName.replaceAll('__', '.');
-      final testEntrypoint = '$testName.main';
+      final testEntrypoint = '${_createImportAlias(testName)}.main';
       groups.add("group('$groupName', $testEntrypoint);");
     }
     return groups.join('\n');
@@ -353,6 +376,19 @@ ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e
 
     // Dart source code uses forward slashes regardless of the host platform.
     return relativeTestFilePath.replaceAll(_fs.path.separator, '/');
+  }
+
+  /// Returns the import alias of the test file named [testName].
+  ///
+  /// [testName] is used as is, unless it is one of [_reservedImportAliases]
+  /// (e.g. for a test file named `main.dart`), which wouldn't compile. Then a
+  /// `$` is appended, which [_createTestName] never produces, so the alias
+  /// can't clash with the one of another test file.
+  String _createImportAlias(String testName) {
+    if (_reservedImportAliases.contains(testName)) {
+      return '$testName\$';
+    }
+    return testName;
   }
 
   /// Builds a valid Dart identifier used as the import alias (and, after
