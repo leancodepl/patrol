@@ -1,5 +1,9 @@
 ## Unreleased
 
+- Support Android code coverage with the test orchestrator's `clearPackageData:true` on Android
+  12+: each test's coverage is appended to the coverage file as the `shell` user, so it is no
+  longer limited to the first test. Reading the per-test runs needs a `patrol_cli` release that
+  includes this change. (#3359)
 - Add `includeInvisibleNodes` to `$.platform.android.getNativeViews()` to keep nodes some WebViews report as invisible, and `AndroidNativeView.isVisibleToUser` to tell them apart. (#3287)
 
 ## 4.11.0

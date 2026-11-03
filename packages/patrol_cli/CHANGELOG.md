@@ -1,3 +1,9 @@
+## Unreleased
+
+- `patrol coverage pull` now reads coverage from runs with `clearPackageData:true` (one run per
+  test, written by `patrol` on Android 12+) and no longer refuses those BrowserStack builds.
+  (#3359)
+
 ## 4.9.0
 
 - Add `patrol coverage pull`, which splits the JaCoCo `.ec` coverage of a patrol Android run into a
