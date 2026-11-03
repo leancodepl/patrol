@@ -1,3 +1,7 @@
+## Unreleased
+
+- Report the elapsed duration when drag helpers exhaust their iterations. (#2103)
+
 ## 3.7.0
 
 - Add optional `description` parameter to Flutter actions (`tap`, `enterText`, `scrollTo`, etc.). When set, it replaces the auto-generated patrol log step text and wraps failures as `failed on: <description>`. (#3242)
