@@ -204,19 +204,20 @@ void patrolTest(
           await patrolTester.takeNativeScreenshot('failure');
         }
         if (constants.hotRestartEnabled) {
+          final details = switch (err) {
+            TestFailure(:final message?) => message,
+            _ => '$err\n$st',
+          };
+          // Details first: patrol_mcp stops collecting them at the failure entry.
+          details
+              .split('\n')
+              .forEach((line) => patrolLog.log(ErrorEntry(message: line)));
           patrolLog.log(
             TestEntry(
               name: global_state.currentTestFullName,
               status: TestEntryStatus.failure,
             ),
           );
-          final details = switch (err) {
-            TestFailure(:final message?) => message,
-            _ => '$err\n$st',
-          };
-          details
-              .split('\n')
-              .forEach((line) => patrolLog.log(ErrorEntry(message: line)));
         }
         rethrow;
       }
