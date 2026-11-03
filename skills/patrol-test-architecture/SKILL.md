@@ -1,31 +1,16 @@
 ---
 name: patrol-test-architecture
-description: Write Patrol E2E tests using LeanCode's recommended architecture — Modules, System, and ApiClients — with shared test keys. Use when structuring a Patrol test suite, organizing reusable test code into modules, or writing tests in a project that already follows this modular architecture.
+description: Add-on to patrol-write-test for Patrol test suites built on LeanCode's recommended architecture — Modules, System, and ApiClients — with per-feature keys.dart files. Use together with patrol-write-test when the project's Patrol tests already follow this architecture (e.g. a `patrol_test/modules/` directory and a `testApp` wrapper), or when the user asks to introduce it or to organize test code into modules.
 ---
 
-# Order of actions when writing new tests
+This skill builds on **patrol-write-test**: follow it for the order of actions, Patrol MCP usage, Patrol test rules and test keys, and apply the changes below on top. Where the two differ, this skill wins.
 
-1. Read the key files directly (modules aggregator, test wrapper, main keys.dart, and the specific app feature files for the scenario). These are known paths — don't search for them, open them directly
-2. Inspect existing modules for functions that can be reused
-3. Also think if one of existing functions can be adjusted to match its existing usage and new test
-4. Assign test keys to required elements if they are not assigned yet
-5. Start writing test: reuse existing modules/functions + put new test steps in new test file
-6. Write patrol actions directly in the test file, do not create new methods in modules
-7. Run the test frequently during development — don't wait until the full test is written. Run after completing each logical group of steps to catch failures early
-8. After full test passes, reorganize new code into existing/new modules. This is mandatory — the test file must only call module methods, not use Patrol APIs directly
-9. Rerun the test after reorganizing to confirm it still passes
+# Changes to the order of actions
 
-# Patrol MCP Usage
-
-When working with Patrol tests:
-
-- Use `patrol-run({ "testFile": "patrol_test/your_test.dart" })` to run tests and wait for completion
-- If no session running: starts new session with specified test file
-- If session already running: automatically restarts current tests
-- Use `patrol-screenshot({ "platform": "android" })` or `patrol-screenshot({ "platform": "ios" })` to capture screenshots for debugging test failures
-- Use `patrol-quit({})` to quit the session gracefully
-- Use `patrol-status({})` to check current status and recent output
-- Use `patrol-native-tree({})` to fetch the current native UI tree hierarchy for writing native interactions and interactions with apps other than the app under test.
+- Start by reading the key files directly (modules aggregator, test wrapper, main keys.dart, and the specific app feature files for the scenario). These are known paths — don't search for them, open them directly
+- Look for functions to reuse or adjust in the existing modules
+- While writing the test, still write patrol actions directly in the test file — do not create new methods in modules yet
+- After full test passes, reorganize new code into existing/new modules instead of plain reusable functions. This is mandatory — the test file must only call module methods, not use Patrol APIs directly
 
 # Patrol Test Architecture
 
@@ -44,83 +29,20 @@ When working with Patrol tests:
 - Split long methods in modules when the method is hard to read and navigate due to its length and it represents multiple logical steps that can be descriptively named
 - If there is a series of steps which is reused in many tests as a whole (e.g., long onboarding flow) create a wrapper method in the module which will call private methods for each step
 
-# Patrol Tests Rules
-
-## Patrol API
-
-- Any file that directly uses Patrol APIs (`$()`, `.scrollTo()`, `.tap()`, `.enterText()`, `.waitUntilVisible()`, etc.) should `import 'package:patrol/patrol.dart';`
-- ALWAYS inspect Patrol API before implementing test actions:
-  - Search codebase for existing Patrol API usage patterns
-  - Check $.platform APIs for the specific action
-  - If method not found in codebase, check: https://patrol.leancode.co/
-  - Only implement after confirming the correct API method
-- ALWAYS inspect `$.platform` methods before implementing test actions
-- Don't use flutter_test package. Use only patrol api
-- Only run tests with Patrol MCP server for single test and `patrol test` for all tests. Never use `flutter test` command
-- Do not write patrolSetUp and patrolTearDown methods on your own
-
-## Action Rules
-
-- Don't use `$.pump`, `waitUntilVisible` or `waitUntilExists` and other wait methods after or before tap, scrollTo and enterText. Patrol handles it automatically. Do this only at the end of the test
-- To find widgets, use only keys
-- Don't write try catch blocks unless absolutely necessary
-- After writing test check if it works by running it with MCP server, fix it if it fails
-- If test fails because element was not found, check if it need to be scrolled to in the app code and adjust the test if needed
-
-## Assertion Rules
-
-- Don't write assertions after actions, but do write them at the end of the test
-- Prefer using `waitUntilVisible` as assertion at the end of the test
-- Use `expect()` for assertions only when `waitUntilVisible` is not enough
-
-## Native Dialog Handling
-
-- ALWAYS handle native dialogs that appear during the flow:
-  - Handle dialogs immediately after the action that triggers them
-  - For native permissions prefer `$.platform.mobile.grantPermissionWhenInUse` over `$.platform.mobile.tap`
-
 # Test Keys
 
-- Assign a key ONLY to widgets involved in testing
-- ONLY add the `key` parameter to existing widgets
+On top of the test-key rules in patrol-write-test, keys live in per-feature keys.dart files aggregated by a main `Keys` class:
+
 - Create new keys.dart files if needed
 - Always have a maximum of one keys.dart file per feature directory, but the file can contain multiple classes
+- ALWAYS create keys.dart to store keys for the feature/widget they belong to, NOT in the main lib directory
 - Add imports for keys.dart files
 - Update main keys.dart aggregator
-- NEVER change widget signatures
-- NEVER refactor existing code structure
-- NEVER hardcode keys in the app, you must use keys from the keys.dart file
-- NEVER create new widgets in the app
-- NEVER create a key that is not assigned to a widget
-- Always make sure that each key value is unique
-- ALWAYS create keys.dart to store keys for the feature/widget they belong to, NOT in the main lib directory
-- ALWAYS sort keys alphabetically
 - The main `Keys` class in `lib/keys.dart` should only import and aggregate keys from feature-specific keys.dart files
 - ALWAYS assign keys using this exact pattern: `key: keys.feature.widgetName` (unless you are using parameterized keys)
-- Add keys as first parameter to the widget constructor
 - Group related keys in a class named after the screen (e.g. `HomeKeys`). Use a private subclass of `ValueKey<String>` to prefix all key values with the page or widget name
 - For common widgets store them in WidgetKeys class. File containing this class should be placed in the directory that the common widget is defined
 - For widgets located in separate package (e.g. widgetbook) follow this pattern: in `widgetbook` directory create `keys.dart` file with `WidgetKeys` class. Those keys are assigned with `widgetKeys.tile`. Then, in keys.dart lib/ add it to the list of pages with `final widgetKeys = ds.widgetKeys;` (ds being the imported package, e.g. `import 'package:common_ui/widgets/keys.dart' as ds;`)
-
-- If widget is not unique (for example generated from a list) use a parameterized key
-
-  - ALWAYS prefer using enums or DTOs as the parameter if they already exist
-  - Use existing widget properties for parameterized keys
-  - NEVER assign a parameterized key in the app and then use fixed values for it in the keys file (and vice versa)
-  - NEVER create helper methods, use parameterized keys instead
-  - When widgets are generated from existing enums or DTOs, always use parameterized keys with the those enum/DTO values as the parameter
-
-  Use individual keys when:
-
-  - Widgets are hardcoded and known at compile time
-  - Widgets have distinct, meaningful names
-
-  Use parameterized keys when:
-
-  - Widgets are generated from dynamic data
-  - Widgets are generated from a DTO or enums
-  - Number of widgets is variable or large
-  - Widgets are generated in loops or from lists
 
 **Steps to assign a key to a widget:**
 

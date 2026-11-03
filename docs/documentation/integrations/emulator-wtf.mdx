@@ -1,0 +1,102 @@
+---
+title: emulator.wtf
+---
+
+[emulator.wtf] runs Android instrumentation tests on hosted emulators. Patrol
+tests need no special support there: build the APKs with `patrol build android`
+and hand them to [ew-cli].
+
+<Info>
+  Before you proceed, make sure that you've completed the [native setup] guide.
+</Info>
+
+## Running tests
+
+```bash
+patrol build android
+```
+
+```bash
+ew-cli \
+  --app build/app/outputs/apk/debug/app-debug.apk \
+  --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+  --device model=Pixel7,version=34 \
+  --use-orchestrator
+```
+
+Credentials come from `--token` or the `EW_API_TOKEN` env var. See the
+[ew-cli docs][ew-cli] for devices, sharding and outputs.
+
+## Dart code coverage
+
+Patrol can collect Dart line coverage on emulator.wtf the same way it does on
+[BrowserStack][bs coverage]: the app embeds it into the JaCoCo `.ec` files
+emulator.wtf already collects, and `patrol coverage pull` turns them into a
+`patrol_lcov.info`.
+
+<Steps>
+  <Step>
+    Instrument the app under test. In **android/app/build.gradle.kts** set
+    `enableAndroidTestCoverage = true` (AGP 8+; `testCoverageEnabled = true` on
+    AGP 7) on the debug build type.
+  </Step>
+  <Step>
+    Declare the storage permission in a debug-only manifest,
+    **android/app/src/debug/AndroidManifest.xml**. ew-cli refuses to start a
+    coverage run without it:
+
+    ```xml
+    <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+        <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    </manifest>
+    ```
+
+    On API levels below 29 the permission must also be granted at runtime; see
+    [emulator.wtf's coverage docs][ew coverage].
+  </Step>
+  <Step>
+    Build with the coverage dart-defines:
+
+    ```bash
+    patrol build android --dart-define=PATROL_BS_COVERAGE=true --dart-define='PATROL_BS_COVERAGE_PACKAGES=^package:my_app/'
+    ```
+
+    `PATROL_BS_COVERAGE_PACKAGES` and `PATROL_BS_COVERAGE_FORCE_COMPILE` work
+    as described in the [BrowserStack guide][bs coverage].
+  </Step>
+  <Step>
+    Run with coverage and keep package data between tests. Clearing it is
+    incompatible with coverage, as on [BrowserStack][bs coverage]:
+
+    ```bash
+    ew-cli \
+      --app build/app/outputs/apk/debug/app-debug.apk \
+      --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+      --device model=Pixel7,version=34 \
+      --use-orchestrator --no-clear-package-data \
+      --with-coverage \
+      --outputs coverage \
+      --outputs-dir ew-out
+    ```
+
+    With the orchestrator, emulator.wtf downloads one `.ec` file per test into
+    `ew-out`; without it, one per shard.
+  </Step>
+  <Step>
+    Split and merge the downloaded files:
+
+    ```bash
+    patrol coverage pull --input ew-out --output coverage
+    ```
+
+    This reads every `.ec` file under `ew-out` and writes
+    `coverage/jacoco.exec` (Java/Kotlin) and `coverage/patrol_lcov.info` (Dart,
+    merged across all tests and shards).
+  </Step>
+</Steps>
+
+[emulator.wtf]: https://emulator.wtf
+[ew-cli]: https://docs.emulator.wtf
+[ew coverage]: https://docs.emulator.wtf/concepts/coverage/
+[native setup]: /documentation
+[bs coverage]: /documentation/integrations/browserstack#dart-code-coverage-android

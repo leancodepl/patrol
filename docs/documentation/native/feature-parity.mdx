@@ -9,7 +9,9 @@ We strive for high feature parity across platforms, but in some cases it's
 impossible to reach 100%. Web support is available for browser-specific automation.
 
 <Warning>
-  macOS support is still in alpha and does not have platform automation implemented yet.
+  macOS support is still in alpha. A small set of platform automation APIs is
+  available via `$.platform.macos` (native tap/wait, `NSAlert` dialogs, and
+  application menu bar items).
 </Warning>
 
 ## Mobile features
@@ -79,6 +81,17 @@ These features are available via `$.platform.ios`:
 | [iOS Pick image from gallery]| ✅          |
 | [iOS Pick multiple images]   | ✅          |
 | Interact with WebView        | ✅          |
+
+## macOS-specific features
+
+These features are available via `$.platform.macos`:
+
+| **Feature**                  | **macOS**   |
+| ---------------------------- | ----------- |
+| Tap                          | ✅          |
+| Wait until visible           | ✅          |
+| Handle `NSAlert` dialogs     | ✅          |
+| Tap application menu items   | ✅          |
 
 ## Web-specific features
 

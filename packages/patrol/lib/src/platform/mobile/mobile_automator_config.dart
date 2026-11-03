@@ -46,6 +46,12 @@ class MobileAutomatorConfig {
   /// Port on [host] on which Patrol server instrumentation is running.
   String get port => _portOverride ?? _defaultPort();
 
+  /// The explicitly configured port, if any.
+  ///
+  /// Unlike [port], reading this does not resolve the default port, so it can
+  /// be copied between configs before the runtime ports are loaded.
+  String? get portOverride => _portOverride;
+
   /// Time after which the connection with the native automator will fail.
   ///
   /// It must be longer than [findTimeout].

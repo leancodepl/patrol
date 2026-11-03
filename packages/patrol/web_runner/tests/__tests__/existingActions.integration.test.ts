@@ -642,3 +642,22 @@ test("addCookie - supports additional cookie properties", async ({ browser }) =>
 
   await context.close()
 })
+
+// ---------------------------------------------------------------------------
+// 20. takeNativeScreenshot
+// ---------------------------------------------------------------------------
+test("takeNativeScreenshot - captures screenshot through the dispatch layer", async ({ browser }) => {
+  const { context, page, pageManager } = await setup(browser)
+
+  await page.setContent("<html><body>Screenshot Test Page</body></html>")
+
+  const savedPath = (await handlePatrolPlatformAction(pageManager, {
+    action: "takeNativeScreenshot",
+    params: { tag: "test_screenshot_tag" },
+  })) as string
+
+  expect(savedPath).toBeDefined()
+  expect(savedPath).toContain("test_screenshot_tag.png")
+
+  await context.close()
+})
