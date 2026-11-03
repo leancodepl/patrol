@@ -66,6 +66,8 @@ private fun fromUiObject2(obj: UiObject2): AndroidNativeView {
         isLongClickable = obj.isLongClickable,
         isScrollable = obj.isScrollable,
         isSelected = obj.isSelected,
+        // UiAutomator only matches nodes that are visible to the user.
+        isVisibleToUser = true,
         visibleBounds = Rectangle(
             minX = bounds.left.toDouble(),
             minY = bounds.top.toDouble(),
@@ -375,10 +377,10 @@ class Automator private constructor() {
         return uiObjects2.map { fromUiObject2(it) }
     }
 
-    fun getNativeUITrees(): List<AndroidNativeView> {
-        Logger.d("getNativeUITrees()")
+    fun getNativeUITrees(includeInvisibleNodes: Boolean): List<AndroidNativeView> {
+        Logger.d("getNativeUITrees(includeInvisibleNodes=$includeInvisibleNodes)")
 
-        return getWindowTrees(uiDevice, uiAutomation)
+        return getWindowTrees(uiDevice, uiAutomation, includeInvisibleNodes)
     }
 
     fun tap(uiSelector: UiSelector, bySelector: BySelector, index: Int, timeout: Long? = null) {

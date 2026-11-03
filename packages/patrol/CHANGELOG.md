@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Add `includeInvisibleNodes` to `$.platform.android.getNativeViews()` to keep nodes some WebViews report as invisible, and `AndroidNativeView.isVisibleToUser` to tell them apart. (#3287)
 - Fix `getNotifications()` on Android failing with `StaleObjectException` when SystemUI changes a
   notification row during the read. The shade is re-read once, and rows that are still changing
   after that are skipped. (#3351)
