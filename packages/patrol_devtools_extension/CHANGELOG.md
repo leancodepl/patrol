@@ -1,10 +1,14 @@
-## Unreleased
+## 0.5.0-dev.1
 
 - Allow `equatable` 3.x by widening the constraint to `>=2.1.0 <4.0.0`.
 - Regenerate API contracts (adds `AndroidGetNativeViewsRequest.includeInvisibleNodes` and `AndroidNativeView.isVisibleToUser`). Show `isVisibleToUser` in the native view details. (#3287)
 - Regenerate API contracts for the new Android `ConfigureRequest` accessibility flag. (#3227)
 - Regenerate API contracts (adds `AndroidTakeNativeScreenshotRequest`). (#3222)
 - Regenerate API contracts (adds `AndroidSetFoldPostureRequest`). (#3336)
+- Render the web view hierarchy (the page's DOM) when connected to a Flutter web app, alongside the
+  existing Android and iOS trees. Nodes are labelled by test id, DOM id or accessible label so the
+  tree doesn't read as a wall of identical `flt-semantics` entries, and the details panel shows role,
+  aria-label, test id, text, visibility and bounds.
 
 ## 0.4.1
 

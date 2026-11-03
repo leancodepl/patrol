@@ -202,6 +202,18 @@ class FlutterVersion {
     return FlutterVersion(frameworkVersion, channel);
   }
 
+  /// The version, or null when there is no Flutter CLI to ask.
+  ///
+  /// `patrol test-without-building --input` is meant for machines that have no
+  /// Flutter, so there the version is simply unknown.
+  static FlutterVersion? tryFromCLI(FlutterCommand flutterCommand) {
+    try {
+      return FlutterVersion.fromCLI(flutterCommand);
+    } on Object {
+      return null;
+    }
+  }
+
   final String version;
   final String channel;
 }
