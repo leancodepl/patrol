@@ -125,7 +125,10 @@ separately here:
 |---------|----------------------|------------------|
 | [Build-time test discovery](/documentation/ci/build-time-test-discovery) — one native class per test file, `PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE` runner macro | 4.8.0 | 4.10.0 |
 | Build-time test discovery — first release, `PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN`/`_END` runner macro | 4.7.0 | 4.9.0 |
-| [Native screenshots](/cli-commands/test#screenshots) — `screenshot_on_failure`, `$.takeNativeScreenshot('tag')` | 4.8.0 | 4.10.0 |
+| [Native screenshots on Android](/cli-commands/test#on-android) — `screenshot_on_failure`, `$.takeNativeScreenshot('tag')` | 4.8.0 | 4.10.0 |
+| [Screenshots on web](/cli-commands/test#on-web) — `screenshot_on_failure`, `$.takeNativeScreenshot('tag')`, PNGs in the per-test Playwright output directory | 4.8.0 | Unreleased |
+| Foldable iOS simulators (experimental) — `$.platform.ios.setFoldPosture`, `$.platform.ios.setHingeAngle` | 4.9.0 | 4.11.0 |
+| Dart coverage on Android device farms — `PATROL_BS_COVERAGE`, [`patrol coverage pull`](/cli-commands/coverage) | 4.9.0 | 4.11.0 |
 
 The two build-time discovery rows are alternatives, not a range: the runner macro
 changed in the second one, so `patrol_cli` 4.8.0 and newer no longer accept the

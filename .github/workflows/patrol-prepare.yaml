@@ -263,9 +263,15 @@ jobs:
         if: success() || failure()
         run: dart format --set-exit-if-changed .
 
+      # The Dart `skills` CLI installs agent skills from the archive's skills/,
+      # a symlink to the repo-root catalog; fail if pub didn't follow it.
       - name: flutter pub publish --dry-run
         if: success() || failure()
-        run: flutter pub publish --dry-run
+        shell: bash
+        run: |
+          flutter pub publish --dry-run | tee "$RUNNER_TEMP/publish-dry-run.txt"
+          grep -q 'patrol-write-test' "$RUNNER_TEMP/publish-dry-run.txt" \
+            || { echo "::error::skills/ is missing from the patrol package archive"; exit 1; }
 
       - name: flutter pub get (example app)
         if: success() || failure()

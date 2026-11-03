@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class WebViewScreen extends StatefulWidget {
-  const WebViewScreen({super.key, required this.title, required this.url});
+  const WebViewScreen({super.key, required this.title, this.url, this.asset})
+    : assert((url == null) != (asset == null));
 
   final String title;
-  final String url;
+  final String? url;
+  final String? asset;
 
   @override
   State<WebViewScreen> createState() => _WebViewScreenState();
@@ -26,8 +28,12 @@ class _WebViewScreenState extends State<WebViewScreen> {
           onPageFinished: (url) => print('WebView finished loading: $url'),
           onWebResourceError: (error) => print('WebView error: $error'),
         ),
-      )
-      ..loadRequest(Uri.parse(widget.url));
+      );
+    if (widget.asset case final asset?) {
+      controller.loadFlutterAsset(asset);
+    } else {
+      controller.loadRequest(Uri.parse(widget.url!));
+    }
   }
 
   @override

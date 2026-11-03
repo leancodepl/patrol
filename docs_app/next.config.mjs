@@ -4,6 +4,31 @@ import { fileURLToPath } from "node:url"
 const withMDX = createMDX()
 const repoRoot = fileURLToPath(new URL("..", import.meta.url))
 
+function getUrlFromEnv(name) {
+  const url = process.env[name]
+  if (!url) return
+
+  if (!URL.canParse(url)) {
+    console.warn(`${name} is not a valid URL ("${url}")`)
+    return
+  }
+
+  return url
+}
+
+function getDispatchRedirects() {
+  const dispatchUrl = getUrlFromEnv("PATROL_DISPATCH_URL")
+  if (!dispatchUrl) return []
+
+  return [
+    {
+      source: "/dispatch/:path*",
+      destination: new URL("/:path*", dispatchUrl).href,
+      permanent: false,
+    },
+  ]
+}
+
 /** @type {import('next').NextConfig} */
 const config = {
   outputFileTracingRoot: repoRoot,
@@ -12,6 +37,7 @@ const config = {
     root: repoRoot,
   },
   redirects: async () => [
+    ...getDispatchRedirects(),
     {
       source: "/patrol/native/feature-parity",
       destination: "/native/feature-parity",
