@@ -648,34 +648,35 @@ class Automator private constructor() {
     fun getNotifications(): List<Notification> {
         Logger.d("getNotifications()")
 
-        val identifiers = listOf(
-            "android:id/status_bar_latest_event_content", // notification not bundled
-            "com.android.systemui:id/expandableNotificationRow" // notifications bundled
-        )
-
-        fun findNotificationContainers(): List<UiObject2> {
-            val notificationContainers = mutableListOf<UiObject2>()
-            for (identifier in identifiers) {
-                val objects = uiDevice.findObjects(By.res(identifier))
-                if (identifier == "com.android.systemui:id/expandableNotificationRow") {
-                    // the first element is invalid
-                    objects.removeFirstOrNull()
-                }
-
-                Logger.i("Found ${objects.size} notification containers with resourceId \"$identifier\"")
-                notificationContainers.addAll(objects)
-            }
-
-            Logger.d("Found ${notificationContainers.size} notifications")
-            return notificationContainers
-        }
-
         // SystemUI can replace a shade row while we read it (e.g. heads-up animating in)
         return readAllRetryingStale(
             query = ::findNotificationContainers,
             read = ::readNotification,
-            log = Logger::i
+            onRetry = { Logger.i("$it notifications went stale, re-reading the shade") },
+            onSkipped = { Logger.e("Skipped $it notifications that were still stale after re-reading") }
         )
+    }
+
+    private val notificationContainerIds = listOf(
+        "android:id/status_bar_latest_event_content", // notification not bundled
+        "com.android.systemui:id/expandableNotificationRow" // notifications bundled
+    )
+
+    private fun findNotificationContainers(): List<UiObject2> {
+        val notificationContainers = mutableListOf<UiObject2>()
+        for (identifier in notificationContainerIds) {
+            val objects = uiDevice.findObjects(By.res(identifier))
+            if (identifier == "com.android.systemui:id/expandableNotificationRow") {
+                // the first element is invalid
+                objects.removeFirstOrNull()
+            }
+
+            Logger.i("Found ${objects.size} notification containers with resourceId \"$identifier\"")
+            notificationContainers.addAll(objects)
+        }
+
+        Logger.d("Found ${notificationContainers.size} notifications")
+        return notificationContainers
     }
 
     private fun readNotification(notificationContainer: UiObject2): Notification {
