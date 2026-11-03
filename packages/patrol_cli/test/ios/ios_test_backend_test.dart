@@ -282,26 +282,77 @@ void main() {
           ..writeAsStringSync(body);
       }
 
-      IOSAppOptions options({required bool emitTestManifest}) => IOSAppOptions(
-        flutter: const FlutterAppOptions(
-          command: FlutterCommand('flutter'),
+      IOSAppOptions options({
+        required bool emitTestManifest,
+        BuildMode buildMode = BuildMode.release,
+        bool simulator = false,
+      }) => IOSAppOptions(
+        flutter: FlutterAppOptions(
+          command: const FlutterCommand('flutter'),
           target: 'patrol_test/test_bundle.dart',
           flavor: null,
-          buildMode: BuildMode.release,
-          dartDefines: {},
-          dartDefineFromFilePaths: [],
+          buildMode: buildMode,
+          dartDefines: const {},
+          dartDefineFromFilePaths: const [],
           buildName: null,
           buildNumber: null,
         ),
         bundleId: 'com.company.app',
         scheme: 'Runner',
-        configuration: 'Release',
-        simulator: false,
+        configuration: buildMode.createConfiguration(null),
+        simulator: simulator,
         osVersion: 'latest',
         appServerPort: 8080,
         testServerPort: 8081,
         emitTestManifest: emitTestManifest,
       );
+
+      test('rejects debug mode on a physical device', () async {
+        writeRunner(static: false);
+
+        await expectLater(
+          iosTestBackend.build(
+            options(emitTestManifest: false, buildMode: BuildMode.debug),
+          ),
+          throwsA(
+            isA<ToolExit>().having(
+              (e) => e.message,
+              'message',
+              contains('not possible in debug mode'),
+            ),
+          ),
+        );
+      });
+
+      // The build stops at the runner check that follows the build mode
+      // check, so reaching it means the build mode was accepted.
+      for (final (buildMode, simulator) in [
+        (BuildMode.profile, false),
+        (BuildMode.release, false),
+        (BuildMode.debug, true),
+      ]) {
+        final target = simulator ? 'a simulator' : 'a physical device';
+        test('accepts ${buildMode.name} mode on $target', () async {
+          writeRunner(static: true);
+
+          await expectLater(
+            iosTestBackend.build(
+              options(
+                emitTestManifest: false,
+                buildMode: buildMode,
+                simulator: simulator,
+              ),
+            ),
+            throwsA(
+              isA<ToolExit>().having(
+                (e) => e.message,
+                'message',
+                contains('build-time discovery is disabled'),
+              ),
+            ),
+          );
+        });
+      }
 
       test('explains the missing include when discovery is disabled', () async {
         writeRunner(static: true);

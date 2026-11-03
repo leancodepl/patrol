@@ -1,5 +1,9 @@
 ## Unreleased
 
+- Allow profile builds on physical iOS devices (`patrol build ios --profile`,
+  `patrol test --profile`). Only debug builds are rejected there now, since they need JIT.
+  Profile builds keep the Dart VM service, so performance can be measured while the tests run.
+  (#2210)
 - Fix `patrol develop --use-prebuilt-apks` failing with `flutter build bundle failed with code 64` on
   projects with a flavor, by no longer passing `--flavor` to `flutter build bundle`, which defines no
   such option. Only a checkout that had never generated the Dart plugin registrant was affected, which
