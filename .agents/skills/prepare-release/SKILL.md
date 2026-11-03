@@ -247,6 +247,6 @@ Far: #3280, #3282, drafts
 ## Keeping this skill current
 
 When a new failing check turns out to be noise, add it to `ci-noise.md` and to
-the `noise` function in `scripts/pr-status.sh`. When a package or a version file
-is added, update `packages.md` and `extra_version_file` in
-`scripts/unreleased.sh`.
+the `noise` function in `scripts/pr-status.sh`. When a package, a version file,
+or a path that ships in another package's archive is added, update `packages.md`
+and `extra_version_file` or `extra_paths` in `scripts/unreleased.sh`.

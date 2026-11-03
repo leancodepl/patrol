@@ -43,6 +43,15 @@ extra_version_file() {
   esac
 }
 
+# Paths outside packages/<pkg> that ship in its archive: patrol bundles the
+# DevTools extension build, and skills/ through the packages/patrol/skills
+# symlink, which `git log` doesn't follow.
+extra_paths() {
+  case "$1" in
+    patrol) echo packages/patrol_devtools_extension skills ;;
+  esac
+}
+
 for p in "${packages[@]}"; do
   echo "== $p"
 
@@ -122,7 +131,7 @@ for p in "${packages[@]}"; do
       grep -qE "#$pr([^0-9]|$)" <<< "$section" && continue
       title="$(git log -1 --format=%b "$sha" | sed -n '/./{p;q;}')"
       missing+=("#$pr ${title:-$subject}")
-    done < <(git log --first-parent --format='%H%x09%s' "$stable_tag..$base" -- "packages/$p")
+    done < <(git log --first-parent --format='%H%x09%s' "$stable_tag..$base" -- "packages/$p" $(extra_paths "$p"))
     if [ ${#missing[@]} -gt 0 ]; then
       echo "  merged since $stable_tag, not cited in Unreleased (may be fine for CI/test/docs-only PRs):"
       printf '    %s\n' "${missing[@]}"

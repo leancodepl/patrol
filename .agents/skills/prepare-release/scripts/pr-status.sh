@@ -114,9 +114,14 @@ def noise($fork; $release):
     else "far" end)'
 
 fetch_page() {
-  local attempt
+  local attempt out
   for attempt in 1 2 3; do
-    gh api graphql -f owner=leancodepl -f name=patrol ${1:+-f after="$1"} -f query="$query" && return
+    # gh prints a failed response's body to stdout too, so pass on only the
+    # output of the attempt that succeeds.
+    if out="$(gh api graphql -f owner=leancodepl -f name=patrol ${1:+-f after="$1"} -f query="$query")"; then
+      printf '%s\n' "$out"
+      return
+    fi
     echo "page request failed (attempt $attempt), retrying" >&2
   done
   return 1

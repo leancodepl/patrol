@@ -123,6 +123,9 @@ the dependent needs a release of its own.
 
 | PR | Packages | Notes |
 |---|---|---|
+| #3352, #3353, #3354 | patrol_log 0.10.2, patrol_finders 3.7.0, patrol_mcp 0.2.2 | the first round with one PR per package: opened together, since none needed another's new version; each tag on its own merge commit |
+| #3357 | patrol_cli 4.9.0 | opened once patrol_log 0.10.2 was on pub.dev; bumps `patrol_log: ^0.10.2`; two opt-in feature rows in the compatibility table, no `versionCompatibilityList` split |
+| #3356 | patrol 4.11.0 | opened with #3357 and tagged right after it (paired features); bumps `patrol_log: ^0.10.2` |
 | #3285 | patrol 4.10.0, patrol_cli 4.8.0 | one PR for both (before the one-PR-per-package rule); opt-in features section added; changelog entries trimmed before merge |
 | #3293 | patrol_mcp 0.2.1 | three version files, changelog fold |
 | #3231 | patrol_log 0.10.1 | squash-merged; the tag points at the squash commit |
