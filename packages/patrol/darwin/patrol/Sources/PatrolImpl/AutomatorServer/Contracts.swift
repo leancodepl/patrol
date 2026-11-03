@@ -287,6 +287,7 @@ public struct IOSSelector: Codable {
 
 public struct AndroidGetNativeViewsRequest: Codable {
   public var selector: AndroidSelector?
+  public var includeInvisibleNodes: Bool
 }
 
 public struct IOSGetNativeViewsRequest: Codable {
@@ -311,6 +312,7 @@ public struct AndroidNativeView: Codable {
   public var isLongClickable: Bool
   public var isScrollable: Bool
   public var isSelected: Bool
+  public var isVisibleToUser: Bool?
   public var visibleBounds: Rectangle
   public var visibleCenter: Point2D
   public var children: [AndroidNativeView]

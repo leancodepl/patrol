@@ -870,7 +870,7 @@ packages:
       path: "../../packages/patrol"
       relative: true
     source: path
-    version: "4.10.0"
+    version: "4.11.0"
   patrol_cli:
     dependency: "direct dev"
     description:
