@@ -40,6 +40,8 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
     private Map<String, Boolean> dartTestCaseSkipMap = new HashMap<>();
     private String coverageFilePath;
     private boolean coverageEnabled;
+    // clearPackageData mode: each test's coverage is appended by the shell user.
+    private boolean shellAppendCoverage;
     private boolean generatedSetUpDone = false;
 
     /** Simple name of the class written by build-time test discovery (`patrol build android --emit-test-manifest`). */
@@ -66,16 +68,20 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             );
             arguments.putString("coverage", "false");
             BrowserStackCoverage.INSTANCE.exportDartCoverageDir(getTargetContext());
-            // Best-effort: the orchestrator forwards its own args to us, but a
-            // farm may strip this one. `patrol coverage pull` checks too.
+            // Best-effort: a farm may strip this arg; writeMergedCoverage
+            // also switches to shell-append when the direct write fails.
             if ("true".equalsIgnoreCase(arguments.getString("clearPackageData"))) {
-                Logger.INSTANCE.e(
-                    "BS coverage: clearPackageData=true is incompatible with "
-                        + "coverage — pm clear between tests revokes this app's "
-                        + "permission to write the coverage file, so only the "
-                        + "first test will be reported. Run coverage builds with "
-                        + "clearPackageData:false."
-                );
+                if (canShellAppendCoverage()) {
+                    shellAppendCoverage = true;
+                    Logger.INSTANCE.i("BS coverage: clearPackageData=true, appending each test via shell");
+                } else {
+                    Logger.INSTANCE.e(
+                        "BS coverage: clearPackageData=true needs Android 12+ (API 31) "
+                            + "and a shared-storage coverageFile — pm clear revokes this "
+                            + "app's access to the coverage file, so only the first test "
+                            + "will be reported."
+                    );
+                }
             }
         }
 
@@ -110,10 +116,9 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
 
     /**
      * BrowserStack's `coverageFile` (shared storage) when given — that's the
-     * only place its coverage API picks the file up from. Writing there works
-     * only with `clearPackageData:false`: `pm clear` between tests revokes the
-     * app's permission and the write fails with EACCES from the second test on
-     * (see the check in onCreate).
+     * only place its coverage API picks the file up from. With
+     * `clearPackageData:true` the app can't write there after the first test
+     * (EACCES), so that mode goes through {@link #appendCoverageViaShell}.
      */
     private File resolveCoverageFile() {
         if (coverageFilePath != null && !coverageFilePath.isEmpty()) {
@@ -148,6 +153,17 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
                 .getMethod("getExecutionData", boolean.class)
                 .invoke(agent, false);
 
+            // clearPackageData with the arg stripped by the farm: pm clear left
+            // the file in place but took this app's access to it.
+            if (!shellAppendCoverage && covFile.exists() && !covFile.canWrite() && canShellAppendCoverage()) {
+                Logger.INSTANCE.i("BS coverage: " + covFile.getAbsolutePath() + " not writable, switching to shell-append");
+                shellAppendCoverage = true;
+            }
+            if (shellAppendCoverage) {
+                appendCoverageViaShell(covFile, data, agent);
+                return;
+            }
+
             File parent = covFile.getParentFile();
             if (parent != null && !parent.exists()) {
                 parent.mkdirs();
@@ -161,22 +177,32 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             // timeout - hands the farm a Dart-less .ec, losing every earlier
             // test's Dart coverage.
             File staging = new File(covFile.getAbsolutePath() + ".patrol-staging");
-            try (FileOutputStream fos = new FileOutputStream(staging, /* append= */ false)) {
-                fos.write(data);
-                fos.flush();
-                fos.getFD().sync();
-            }
-            Logger.INSTANCE.i("BS coverage: staged " + data.length + " JaCoCo bytes in " + staging.getAbsolutePath());
+            try {
+                try (FileOutputStream fos = new FileOutputStream(staging, /* append= */ false)) {
+                    fos.write(data);
+                    fos.flush();
+                    fos.getFD().sync();
+                }
+                Logger.INSTANCE.i("BS coverage: staged " + data.length + " JaCoCo bytes in " + staging.getAbsolutePath());
 
-            BrowserStackCoverage.INSTANCE.appendDartCoverage(getTargetContext(), staging);
+                BrowserStackCoverage.INSTANCE.appendDartCoverage(getTargetContext(), staging, null);
 
-            if (!staging.renameTo(covFile)) {
-                // A same-directory rename is atomic on the filesystems Android
-                // uses here. If it is refused anyway, fall back to a copy so
-                // the run still produces coverage.
-                Logger.INSTANCE.e("BS coverage: rename to " + covFile.getAbsolutePath() + " failed, copying instead", null);
-                copyFile(staging, covFile);
+                if (!staging.renameTo(covFile)) {
+                    // A same-directory rename is atomic on the filesystems Android
+                    // uses here. If it is refused anyway, fall back to a copy so
+                    // the run still produces coverage.
+                    Logger.INSTANCE.e("BS coverage: rename to " + covFile.getAbsolutePath() + " failed, copying instead", null);
+                    copyFile(staging, covFile);
+                    staging.delete();
+                }
+            } catch (IOException e) {
                 staging.delete();
+                // Same as the canWrite() check above, for when it didn't catch it.
+                if (!isPermissionDenied(e) || !canShellAppendCoverage()) throw e;
+                Logger.INSTANCE.e("BS coverage: direct write denied, switching to shell-append", e);
+                shellAppendCoverage = true;
+                appendCoverageViaShell(covFile, data, agent);
+                return;
             }
             Logger.INSTANCE.i("BS coverage: merged file now " + covFile.length() + " bytes");
         } catch (ClassNotFoundException e) {
@@ -193,6 +219,48 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         } catch (Throwable t) {
             Logger.INSTANCE.e("BS coverage: writeMergedCoverage failed " + t.getMessage(), t);
         }
+    }
+
+    /** The shell user can write a shared-storage coverageFile, not app-internal storage. */
+    private boolean canShellAppendCoverage() {
+        return coverageFilePath != null && !coverageFilePath.isEmpty()
+            && !coverageFilePath.startsWith("/data/")
+            && BrowserStackCoverage.INSTANCE.canAppendViaShell();
+    }
+
+    private static boolean isPermissionDenied(IOException e) {
+        String message = e.getMessage();
+        return message != null && (message.contains("EACCES") || message.contains("Permission denied"));
+    }
+
+    /**
+     * Appends this process's coverage (JaCoCo `data` plus its Dart LCOV) to
+     * `covFile` as the shell user. JaCoCo reads concatenated dumps, so every
+     * test under `clearPackageData` adds its own block. JaCoCo probes and Dart
+     * LCOV are cleared only after the append is confirmed, so a failure doesn't
+     * lose them.
+     */
+    private void appendCoverageViaShell(File covFile, byte[] data, Object agent) throws Exception {
+        File staging = new File(getTargetContext().getCacheDir(), "coverage.patrol-staging");
+        try (FileOutputStream fos = new FileOutputStream(staging, /* append= */ false)) {
+            fos.write(data);
+        }
+        BrowserStackCoverage.INSTANCE.appendDartCoverage(
+            getTargetContext(), staging, BrowserStackCoverage.INSTANCE.newRunId());
+        byte[] bytes = new byte[(int) staging.length()];
+        try (FileInputStream in = new FileInputStream(staging)) {
+            int off = 0;
+            while (off < bytes.length) {
+                int read = in.read(bytes, off, bytes.length - off);
+                if (read < 0) break;
+                off += read;
+            }
+        }
+        BrowserStackCoverage.INSTANCE.appendViaShell(this, covFile.getAbsolutePath(), bytes);
+        staging.delete();
+        // Hand over only new probes and LCOV on the next append in this process.
+        agent.getClass().getMethod("reset").invoke(agent);
+        BrowserStackCoverage.INSTANCE.clearDartCoverage(getTargetContext());
     }
 
     private static void copyFile(File from, File to) throws IOException {

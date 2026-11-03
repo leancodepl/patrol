@@ -26,10 +26,8 @@ import 'package:patrol_cli/src/runner/patrol_command.dart';
 /// (`--input`, a file or a directory searched recursively), e.g. the outputs of
 /// emulator.wtf or Firebase Test Lab.
 ///
-/// Refuses BrowserStack builds that ran with `clearPackageData:true`: coverage
-/// and `clearPackageData` are mutually exclusive there (see
-/// [buildUsedClearPackageData]), and a first-test-only result is worse than an
-/// error.
+/// With `clearPackageData:true` each test appends its own run to the session's
+/// file (Android 12+), and the runs are merged here.
 class CoveragePullCommand extends PatrolCommand {
   CoveragePullCommand({required Logger logger, required FileSystem fs})
     : _logger = logger,
@@ -182,14 +180,10 @@ class CoveragePullCommand extends PatrolCommand {
     }
 
     if (buildUsedClearPackageData(build) ?? false) {
-      _logger.err(
-        'Build $buildId ran with clearPackageData:true, which is incompatible '
-        'with coverage on BrowserStack: pm clear between tests revokes the '
-        "app's permission to write the coverage file, so only the first test's "
-        'coverage would be reported. Re-run the coverage build with '
-        'clearPackageData:false (keep it true for regular runs).',
+      _logger.info(
+        'Build $buildId ran with clearPackageData:true: expecting one Dart '
+        'coverage run per test (needs Android 12+ devices).',
       );
-      return null;
     }
 
     // Without --session-id, pull and merge every session (shard) in the build.
@@ -228,6 +222,7 @@ class CoveragePullCommand extends PatrolCommand {
     var jacocoSessions = 0;
     var execBlocks = 0;
     var dartChunks = 0;
+    var dartRuns = 0;
 
     for (final source in sources) {
       final BsCoverageSplitResult split;
@@ -242,11 +237,13 @@ class CoveragePullCommand extends PatrolCommand {
       jacocoSessions += split.jacocoSessions;
       execBlocks += split.executionDataBlocks;
       dartChunks += split.dartChunks;
+      dartRuns += split.dartRuns;
     }
 
     _logger.info(
       'Parsed: $jacocoSessions JaCoCo session(s), $execBlocks class probe(s), '
-      '$dartChunks Dart chunk(s) from ${sources.length} coverage file(s).',
+      '$dartChunks Dart chunk(s) in $dartRuns run(s) from ${sources.length} '
+      'coverage file(s).',
     );
     if (dartChunks == 0) {
       _logger.warn(
