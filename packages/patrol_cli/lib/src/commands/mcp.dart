@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'dart:io' as io;
 
 import 'package:mcp_dart/mcp_dart.dart' hide Logger;
+import 'package:meta/meta.dart';
+import 'package:patrol_cli/src/base/command_line.dart';
 import 'package:patrol_cli/src/base/constants.dart' as constants;
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/mcp/device_lister.dart';
@@ -182,19 +184,21 @@ class McpCommand extends PatrolCommand {
     );
   }
 
-  /// Flags forwarded to `patrol develop`, preferring real arguments
-  /// (`patrol mcp -- --flavor dev`) over `PATROL_FLAGS`.
-  ///
-  /// The env var cannot express a value containing spaces, because it has to be
-  /// split on whitespace to become an argument list (#3026). Arguments arrive
-  /// already split, so they have no such limit.
-  List<String> _developArgs(Map<String, String> env) {
-    final passedThrough = argResults?.rest ?? const [];
+  List<String> _developArgs(Map<String, String> env) =>
+      developArgsFrom(argResults?.rest ?? const [], env['PATROL_FLAGS']);
+
+  /// Flags forwarded to `patrol develop`: the arguments after `--`
+  /// (`patrol mcp -- --flavor dev`), or else [patrolFlags] split as
+  /// [splitCommandLine] does, so a quoted value keeps its spaces.
+  @visibleForTesting
+  static List<String> developArgsFrom(
+    List<String> passedThrough,
+    String? patrolFlags,
+  ) {
     if (passedThrough.isNotEmpty) {
       return passedThrough;
     }
-    final fromEnv = env['PATROL_FLAGS'] ?? '';
-    return fromEnv.isEmpty ? const [] : fromEnv.split(RegExp(r'\s+'));
+    return splitCommandLine(patrolFlags ?? '');
   }
 
   McpServer _buildServer(PatrolSession session) {
