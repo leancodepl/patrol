@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add `patrol validate` command that checks whether the project's Patrol setup is complete and says how to fix what's missing. Failed `patrol test`/`patrol build` runs and runs that discover no tests (`Total: 0`) now print a hint pointing at it. (#3217)
+
 ## 4.9.0
 
 - Add `patrol coverage pull`, which splits the JaCoCo `.ec` coverage of a patrol Android run into a
