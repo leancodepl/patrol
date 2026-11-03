@@ -154,7 +154,9 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
             )
         } else {
             // When both selectors are null, return the full native tree
-            val trees = automation.getNativeUITrees()
+            val trees = automation.getNativeUITrees(
+                includeInvisibleNodes = request.includeInvisibleNodes
+            )
             return AndroidGetNativeViewsResponse(
                 roots = trees
             )

@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add `includeInvisibleNodes` to `$.platform.android.getNativeViews()` to keep nodes some WebViews report as invisible, and `AndroidNativeView.isVisibleToUser` to tell them apart. (#3287)
+
 ## 4.11.0
 
 - Add macOS platform automation via `$.platform.macos`: `tap` and `waitUntilVisible` for native

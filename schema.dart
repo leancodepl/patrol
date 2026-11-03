@@ -108,6 +108,9 @@ class IOSSelector {
 
 class AndroidGetNativeViewsRequest {
   AndroidSelector? selector;
+  // Only used when selector is null (full tree). false (default) drops nodes
+  // whose isVisibleToUser is false, like uiautomator's dumpWindowHierarchy().
+  late bool includeInvisibleNodes;
 }
 
 class IOSGetNativeViewsRequest {
@@ -132,6 +135,7 @@ class AndroidNativeView {
   late bool isLongClickable;
   late bool isScrollable;
   late bool isSelected;
+  bool? isVisibleToUser;
   late Rectangle visibleBounds;
   late Point2D visibleCenter;
   late List<AndroidNativeView> children;
