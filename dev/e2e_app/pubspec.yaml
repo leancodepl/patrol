@@ -52,6 +52,7 @@ flutter:
   assets:
     - assets/gpx.gpx
     - assets/iframe_content.html
+    - assets/offscreen_content.html
 
 patrol:
   app_name: Patrol example

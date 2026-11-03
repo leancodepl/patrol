@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:meta/meta.dart';
 import 'package:patrol/src/platform/android/android_automator.dart';
 import 'package:patrol/src/platform/android/android_automator_config.dart';
 import 'package:patrol/src/platform/android/android_automator_empty.dart'
@@ -22,6 +23,7 @@ import 'package:patrol/src/platform/macos/macos_automator_empty.dart'
 import 'package:patrol/src/platform/macos/macos_automator_empty.dart'
     if (dart.library.io) 'package:patrol/src/platform/macos/macos_automator_native.dart'
     as native_macos_automator;
+import 'package:patrol/src/platform/mobile/fold_posture.dart';
 import 'package:patrol/src/platform/selector.dart';
 import 'package:patrol/src/platform/web/web_automator.dart';
 import 'package:patrol/src/platform/web/web_automator_config.dart';
@@ -1105,6 +1107,16 @@ class MobileAutomator {
     return platform.action.mobile(
       android: platform.android.isVirtualDevice,
       ios: platform.ios.isVirtualDevice,
+    );
+  }
+
+  /// Folds a foldable device to [posture] and waits for the app to move to the
+  /// other display, if it does. **Experimental.**
+  @experimental
+  Future<void> setFoldPosture(FoldPosture posture) {
+    return platform.action.mobile(
+      android: () => platform.android.setFoldPosture(posture),
+      ios: () => platform.ios.setFoldPosture(posture),
     );
   }
 }

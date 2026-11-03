@@ -154,7 +154,9 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
             )
         } else {
             // When both selectors are null, return the full native tree
-            val trees = automation.getNativeUITrees()
+            val trees = automation.getNativeUITrees(
+                includeInvisibleNodes = request.includeInvisibleNodes
+            )
             return AndroidGetNativeViewsResponse(
                 roots = trees
             )
@@ -267,6 +269,16 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
 
     override fun takeNativeScreenshot(request: Contracts.AndroidTakeNativeScreenshotRequest) {
         automation.takeNativeScreenshot(request.tag)
+    }
+
+    override fun setFoldPosture(request: Contracts.AndroidSetFoldPostureRequest): Contracts.AndroidSetFoldPostureResponse {
+        val previousPosture = automation.setFoldPosture(request.posture)
+
+        return Contracts.AndroidSetFoldPostureResponse(previousPosture)
+    }
+
+    override fun resetFoldPosture() {
+        automation.resetFoldPosture()
     }
 
     override fun takeCameraPhoto(request: Contracts.AndroidTakeCameraPhotoRequest) {
