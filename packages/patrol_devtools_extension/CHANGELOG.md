@@ -1,4 +1,4 @@
-## Unreleased
+## 0.5.0-dev.1
 
 - Allow `equatable` 3.x by widening the constraint to `>=2.1.0 <4.0.0`.
 - Regenerate API contracts (adds `AndroidGetNativeViewsRequest.includeInvisibleNodes` and `AndroidNativeView.isVisibleToUser`). Show `isVisibleToUser` in the native view details. (#3287)
