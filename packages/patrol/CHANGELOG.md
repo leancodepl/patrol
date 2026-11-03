@@ -1,3 +1,18 @@
+## 4.12.0-dev.1
+
+- **`patrol develop` on web requires Flutter 3.47.0 or newer.** Web Hot Restart needs
+  [flutter/flutter#183838](https://github.com/flutter/flutter/pull/183838), first released in
+  3.47.0; `patrol_cli` now exits with an error below it. Every other platform keeps working on
+  3.32.0.
+- Support the DevTools extension inspector on web: `patrol.getNativeUITree` returns the page's DOM, so
+  with semantics enabled you see the `<flt-semantics>` elements carrying the roles, labels and text that
+  web selectors match.
+- Report the failure details of a failing test in `patrol develop`, not just the failure status.
+- Fix the develop-mode idle loop leaking across hot restarts on web, which flooded the console with
+  assertions from a disposed `EngineFlutterView`.
+- Fix the Playwright develop driver idling forever after `flutter run` closes the browser.
+- Add `includeInvisibleNodes` to `$.platform.android.getNativeViews()` to keep nodes some WebViews report as invisible, and `AndroidNativeView.isVisibleToUser` to tell them apart. (#3287)
+
 ## Unreleased
 
 - Remove the placeholder `GoogleService-Info.plist` and `google-services.json` from the example app, so security scanners no longer flag the published package. (#3360)
@@ -6,17 +21,9 @@
   12+: each test's coverage is appended to the coverage file as the `shell` user, so it is no
   longer limited to the first test. Reading the per-test runs needs a `patrol_cli` release that
   includes this change. (#3359)
-- Add `includeInvisibleNodes` to `$.platform.android.getNativeViews()` to keep nodes some WebViews report as invisible, and `AndroidNativeView.isVisibleToUser` to tell them apart. (#3287)
 - Add R8 consumer rules to the Android plugin, so release-mode tests with minification enabled no
   longer need app-side keep rules for Patrol and the test runners, including `AndroidJUnit4` for the
   tests that build-time discovery generates. (#3334)
-- Support the DevTools extension inspector on web: `patrol.getNativeUITree` returns the page's DOM, so
-  with semantics enabled you see the `<flt-semantics>` elements carrying the roles, labels and text that
-  web selectors match.
-- Report the failure details of a failing test in `patrol develop`, not just the failure status.
-- Fix the develop-mode idle loop leaking across hot restarts on web, which flooded the console with
-  assertions from a disposed `EngineFlutterView`.
-- Fix the Playwright develop driver idling forever after `flutter run` closes the browser.
 
 ## 4.11.0
 
