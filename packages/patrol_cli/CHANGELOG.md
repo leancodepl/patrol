@@ -1,3 +1,9 @@
+## Unreleased
+
+- Add native screenshots on iOS, collected by `patrol test` from the `.xcresult` into
+  `<test-directory>/screenshots`. Requires Xcode 16 or newer. See the
+  [docs](https://patrol.leancode.co/cli-commands/test#ios). (#3271)
+
 ## 4.9.0
 
 - Add `patrol coverage pull`, which splits the JaCoCo `.ec` coverage of a patrol Android run into a
