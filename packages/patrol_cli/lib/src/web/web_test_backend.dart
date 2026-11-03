@@ -4,6 +4,7 @@ import 'dart:io' as io;
 import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart';
+import 'package:meta/meta.dart';
 import 'package:package_config/package_config.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
@@ -214,15 +215,14 @@ class WebTestBackend {
           _logger.detail('Flutter: $line');
 
           // Look for the server URL in Flutter output
-          final urlMatch = RegExp(r'http://[^/]+:\d+').firstMatch(line);
+          final url = extractWebServerUrl(line);
 
           // [CHROME]: DevTools listening on ws://127.0.0.1:38861/devtools/browser/431953d3-ef67-428f-9321-9317256022d0
-          if (urlMatch != null && !completer.isCompleted) {
-            final url = urlMatch.group(0)!;
+          if (url != null && !completer.isCompleted) {
             _logger.info('Web server started at: $url');
 
             // Verify server is actually responding before completing
-            _verifyServerReady(url)
+            verifyServerReady(url)
                 .then((isReady) {
                   if (!completer.isCompleted && isReady) {
                     // IMPORTANT: Do NOT cancel subscriptions here!
@@ -647,15 +647,28 @@ class WebTestBackend {
     }
   }
 
-  Future<bool> _verifyServerReady(String url) async {
+  /// Extracts the web server URL from a `flutter run` output line, e.g.
+  /// "lib/main.dart is being served at https://localhost:8080". Returns null
+  /// unless [line] contains an http or https URL with a port.
+  @visibleForTesting
+  static String? extractWebServerUrl(String line) =>
+      RegExp(r'https?://[^/\s]+:\d+').firstMatch(line)?.group(0);
+
+  @visibleForTesting
+  Future<bool> verifyServerReady(String url) async {
     try {
       _logger.detail('Verifying server is ready at: $url');
 
-      // Try to make a simple HTTP request to verify server is responding
+      // Try to make a simple HTTP request to verify server is responding.
+      // Accepts a self-signed certificate only from this server; whether the
+      // browser trusts it is up to --web-ignore-https-errors.
+      final uri = Uri.parse(url);
       final client = HttpClient()
-        ..connectionTimeout = const Duration(seconds: 5);
+        ..connectionTimeout = const Duration(seconds: 5)
+        ..badCertificateCallback = (cert, host, port) =>
+            host == uri.host && port == uri.port;
 
-      final request = await client.getUrl(Uri.parse(url));
+      final request = await client.getUrl(uri);
       final response = await request.close();
 
       client.close();

@@ -130,7 +130,14 @@ void main() {
 ## Agent skills
 
 Patrol ships [agent skills][skills] that teach AI coding agents how to write Patrol tests following
-best practices — see the catalog for what's available and how to install them.
+best practices. They're bundled with this package — install them into your agent with:
+
+```bash
+dart run skills@ get --agent claude -p patrol -s patrol-setup -s patrol-write-test  # or --agent cursor, …
+```
+
+This needs Dart 3.12 or newer. See the catalog for what's available and for install options on
+older SDKs.
 
 ## 🛠️ Maintained by LeanCode
 

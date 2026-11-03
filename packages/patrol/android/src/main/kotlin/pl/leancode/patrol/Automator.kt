@@ -30,6 +30,7 @@ import androidx.test.uiautomator.UiObject
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.UiObjectNotFoundException
 import androidx.test.uiautomator.UiSelector
+import pl.leancode.patrol.contracts.Contracts.AndroidFoldPosture
 import pl.leancode.patrol.contracts.Contracts.AndroidNativeView
 import pl.leancode.patrol.contracts.Contracts.AndroidSelector
 import pl.leancode.patrol.contracts.Contracts.KeyboardBehavior
@@ -65,6 +66,8 @@ private fun fromUiObject2(obj: UiObject2): AndroidNativeView {
         isLongClickable = obj.isLongClickable,
         isScrollable = obj.isScrollable,
         isSelected = obj.isSelected,
+        // UiAutomator only matches nodes that are visible to the user.
+        isVisibleToUser = true,
         visibleBounds = Rectangle(
             minX = bounds.left.toDouble(),
             minY = bounds.top.toDouble(),
@@ -264,6 +267,29 @@ class Automator private constructor() {
 
     fun disableDarkMode() = executeShellCommand("cmd uimode night no")
 
+    fun setFoldPosture(posture: AndroidFoldPosture): AndroidFoldPosture? {
+        val states = parseFoldDeviceStates(uiDevice.executeShellCommand("cmd device_state print-states"))
+        val state = states[posture]
+            ?: throw PatrolException(
+                "setFoldPosture() works only on foldable devices (Android 12+), and this one has no $posture posture"
+            )
+        val previousState = uiDevice.executeShellCommand("cmd device_state print-state").trim().toIntOrNull()
+        val previousPosture = states.entries.firstOrNull { it.value == previousState }?.key
+
+        Logger.d("setFoldPosture($posture): device state $previousState -> $state")
+        val output = uiDevice.executeShellCommand("cmd device_state state $state")
+        if (output.contains("Error")) {
+            throw PatrolException("Failed to set device state $state: $output")
+        }
+
+        return previousPosture
+    }
+
+    fun resetFoldPosture() {
+        Logger.d("resetFoldPosture()")
+        uiDevice.executeShellCommand("cmd device_state state reset")
+    }
+
     fun enableAirplaneMode() {
         val enabled = isAirplaneModeOn()
         if (enabled) {
@@ -351,10 +377,10 @@ class Automator private constructor() {
         return uiObjects2.map { fromUiObject2(it) }
     }
 
-    fun getNativeUITrees(): List<AndroidNativeView> {
-        Logger.d("getNativeUITrees()")
+    fun getNativeUITrees(includeInvisibleNodes: Boolean): List<AndroidNativeView> {
+        Logger.d("getNativeUITrees(includeInvisibleNodes=$includeInvisibleNodes)")
 
-        return getWindowTrees(uiDevice, uiAutomation)
+        return getWindowTrees(uiDevice, uiAutomation, includeInvisibleNodes)
     }
 
     fun tap(uiSelector: UiSelector, bySelector: BySelector, index: Int, timeout: Long? = null) {

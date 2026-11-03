@@ -8,10 +8,15 @@
 #      (Codex, GitHub Copilot, Antigravity, …). This is the only per-tool wiring in the
 #      repo; every skill flows through `.agents/skills`, so there is nothing per-tool to
 #      forget when adding one.
-#   2. Every `SKILL.md` under `skills/` (the published user catalog) and `.agents/skills/`
+#   2. `packages/patrol/skills` is a symlink resolving to `skills/`, so `dart pub publish`
+#      bundles the user catalog into the `patrol` package, where the Dart `skills` CLI
+#      (`dart run skills@ get`) finds it in the user's dependency tree.
+#   3. Every `SKILL.md` under `skills/` (the published user catalog) and `.agents/skills/`
 #      (contributor skills) has valid frontmatter: a `name` that matches its folder and is
 #      kebab-case, plus a non-empty `description` — the two fields the open Agent Skills
 #      standard (agentskills.io) requires.
+#   4. Every skill under `skills/` is named `patrol-<name>` — the Dart `skills` CLI skips
+#      skills that don't start with the package name.
 #
 set -euo pipefail
 
@@ -33,7 +38,20 @@ else
   echo "✓ $link -> $expected"
 fi
 
-# 2. SKILL.md frontmatter validity
+# 2. packages/patrol/skills symlink -> skills (bundled into the published package)
+link="packages/patrol/skills"
+expected="../../skills"
+if [ ! -L "$link" ]; then
+  err "$link must be a symlink to '$expected' (so the skills ship with the patrol package)"
+elif [ "$(readlink "$link")" != "$expected" ]; then
+  err "$link points to '$(readlink "$link")', expected '$expected'"
+elif [ ! -d "$link" ]; then
+  err "$link is a broken symlink (does not resolve to a directory)"
+else
+  echo "✓ $link -> $expected"
+fi
+
+# 3 & 4. SKILL.md frontmatter validity
 shopt -s nullglob
 count=0
 for skill in skills/*/SKILL.md .agents/skills/*/SKILL.md; do
@@ -57,6 +75,10 @@ for skill in skills/*/SKILL.md .agents/skills/*/SKILL.md; do
   fi
   if [ -n "$name" ] && ! printf '%s' "$name" | grep -qE '^[a-z0-9]+(-[a-z0-9]+)*$'; then
     err "$skill: name '$name' must be kebab-case"; ok=0
+  fi
+
+  if [ -n "$name" ] && [[ "$skill" == skills/* ]] && [[ "$name" != patrol-* ]]; then
+    err "$skill: name '$name' must start with 'patrol-' (the Dart skills CLI skips it otherwise)"; ok=0
   fi
 
   if [ "$ok" -eq 1 ]; then echo "✓ $skill"; fi

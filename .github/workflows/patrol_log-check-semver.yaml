@@ -11,6 +11,10 @@ jobs:
     name: Check semver
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      statuses: write
+
     strategy:
       fail-fast: false
       matrix:
@@ -22,13 +26,6 @@ jobs:
           uses: actions/checkout@v4
           with:
             fetch-depth: 0
-  
-        - name: Get last released version
-          id: get_last_released_version
-          run: |
-            last_version=$(git tag --list 'patrol_log-v*' | grep -v '\-dev\.[0-9]\+$' | sort -V | tail -n 1 | sed 's/^patrol_log-v//')
-            echo "last_version=$last_version" >> $GITHUB_ENV
-            echo "::set-output name=last_version::$last_version"
 
         - name: Set up Flutter
           uses: subosito/flutter-action@v2
@@ -36,11 +33,10 @@ jobs:
             flutter-version: ${{ matrix.flutter-version }}
             channel: ${{ matrix.flutter-channel }}
 
-        - name: Install dart-apitool
-          run: dart pub global activate dart_apitool 0.23.0
-
-        - name: Check API changes
-          run: |
-            dart-apitool diff \
-            --old pub://patrol_log/${{ steps.get_last_released_version.outputs.last_version }} \
-            --new packages/patrol_log
+        # Fails only on release/* branches; elsewhere it just reports the
+        # recommended version in a `semver (patrol_log)` commit status.
+        - name: Check semver
+          uses: ./.github/actions/check-semver
+          with:
+            package: patrol_log
+            path: packages/patrol_log
