@@ -17,10 +17,5 @@ dart run patrol test
 This app allows the user to sign in with Google. This requires some
 configuration, but it's not needed if you don't plan on using this feature.
 
-**Android**
-
-Place `google-services.json` in `android/app`.
-
-**iOS**
-
-Place `GoogleService-Info.plist` in `ios/Runner`.
+Firebase is configured in `lib/firebase_options.dart` and is initialized only
+when the app is built with `--dart-define=FIREBASE_ENABLED=true`.
