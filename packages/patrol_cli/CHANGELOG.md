@@ -1,6 +1,10 @@
 ## Unreleased
 
 - Migrate to the `NativePlatform` API of `platform` 3.2.0 and drop the `<3.2.0` pin. **patrol_cli now requires Dart 3.12 (Flutter 3.44) or newer**: `platform` 3.2.0 needs `meta` 1.18, which Flutter pins only from 3.44 on. Older Flutter versions keep resolving 4.8.x.
+- Fix `patrol develop --use-prebuilt-apks` failing with `flutter build bundle failed with code 64` on
+  projects with a flavor, by no longer passing `--flavor` to `flutter build bundle`, which defines no
+  such option. Only a checkout that had never generated the Dart plugin registrant was affected, which
+  is every fresh CI checkout. (#3297)
 
 ## 4.9.0
 
