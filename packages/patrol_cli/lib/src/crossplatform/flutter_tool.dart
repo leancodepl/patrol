@@ -433,8 +433,7 @@ class FlutterTool {
   }
 
   void revertInteractiveMode(StdinModes stdinModes) {
-    // stdin may already be closed (e.g. after Ctrl+C); the terminal is going
-    // away anyway, so a failure here is harmless.
+    // stdin may already be closed (e.g. after Ctrl+C).
     try {
       io.stdin.lineMode = stdinModes.lineMode;
     } on io.StdinException catch (err) {
@@ -446,8 +445,7 @@ class FlutterTool {
     _logger.detail('Interactive shell mode disabled.');
   }
 
-  /// Opens [url] in the system browser. Public so that backends which drive
-  /// `flutter run` themselves (e.g. web develop) can reuse it.
+  /// Opens [url] in the system browser.
   Future<void> openDevtoolsPage(String url) async {
     io.Process? process;
     switch (_platform.operatingSystem) {

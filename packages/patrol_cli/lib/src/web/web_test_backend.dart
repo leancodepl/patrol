@@ -23,13 +23,10 @@ const _kDefaultWebServerTimeoutSeconds = 120;
 /// Backstop for the teardown window when no replacement run ever starts.
 const _kRestartTeardownWindow = Duration(seconds: 3);
 
-/// How long to assume a hot restart is still running before another "r"
-/// resends it. A warm restart lands in well under a second, and `flutter run`
-/// ignores a redundant key, so erring towards resending costs nothing.
+/// How long a hot restart counts as in flight before another "r" resends it.
 const _kRestartOutcomeWindow = Duration(seconds: 5);
 
-/// Strips the `[  +12 ms]` prefix that `flutter run --verbose` puts on every
-/// line. Harmless on non-verbose output.
+/// Strips the `[  +12 ms]` prefix `flutter run --verbose` adds to each line.
 final _flutterLogPrefix = RegExp(r'^\[[\s\d+ms]*\]\s?');
 
 const _developKeyCommands =
@@ -61,18 +58,14 @@ class WebTestBackend {
 
   Process? _playwrightDevelopProcess;
 
-  /// True once the app is up and the Playwright driver is attached to it.
-  /// `flutter run` accepts key commands long before that, and a restart sent
-  /// while the first devFS upload is still in flight kills the session
-  /// (flutter/flutter#182377).
+  /// True once the app is up and Playwright is attached; a restart before that
+  /// kills the session (flutter/flutter#182377).
   bool _hotRestartActive = false;
 
   /// An "r" pressed before the session was attached, replayed once it is.
   String? _pendingHotRestartTarget;
 
-  /// True between asking `flutter run` for a hot restart and it reporting the
-  /// outcome. `flutter run` silently ignores key commands while it is busy, so
-  /// without this the user would press "r" and see nothing happen.
+  /// True while a hot restart is in flight, when `flutter run` ignores keys.
   bool _restartInFlight = false;
 
   DateTime? _restartRequestedAt;
@@ -80,9 +73,6 @@ class WebTestBackend {
   DateTime? _restartSettledAt;
 
   /// Whether output still belongs to the run a restart is replacing.
-  ///
-  /// The replacement run announcing its first test closes this; the clock is
-  /// only a backstop for a restart after which no run ever starts.
   bool get _inRestartTeardown {
     if (_restartInFlight) {
       return true;
@@ -92,8 +82,7 @@ class WebTestBackend {
         DateTime.now().difference(settled) < _kRestartTeardownWindow;
   }
 
-  /// Set once the resident `flutter run` is gone, so the startup sequence stops
-  /// waiting for a Chrome that will never come up.
+  /// Set once the resident `flutter run` is gone.
   int? _flutterExitCode;
 
   /// Set on quit so subprocess kills aren't surfaced as unexpected exits.
@@ -125,11 +114,7 @@ class WebTestBackend {
     // this is just noop, because `flutter run` already builds the web app
   }
 
-  /// Runs an already-built app, served at [baseUrl], with the Playwright runner
-  /// in [runnerPath].
-  ///
-  /// Nothing is bundled, compiled or resolved here, so this works on a machine
-  /// that has Node but no Flutter.
+  /// Runs an already-built app served at [baseUrl]; needs Node, not Flutter.
   Future<void> executePrebuilt(
     WebAppOptions options, {
     required String baseUrl,
@@ -197,12 +182,8 @@ class WebTestBackend {
     }
   }
 
-  /// Runs a develop session on web.
-  ///
-  /// One `flutter run -d chrome` and one Playwright driver live for the whole
-  /// session; "r" does a real Flutter hot restart, which both survive.
-  /// Requires https://github.com/flutter/flutter/pull/183838, without which
-  /// hot restart silently serves stale code for entrypoints outside `lib/`.
+  /// Runs a develop session on web, where "r" hot restarts the resident
+  /// `flutter run`. Requires Flutter 3.47 (flutter/flutter#183838).
   Future<void> develop(
     FlutterTool flutterTool,
     WebAppOptions options,
@@ -224,9 +205,7 @@ class WebTestBackend {
       previousStdinModes = flutterTool.enableInteractiveMode();
     }
 
-    // Pick the Chrome debugging port up front instead of scraping it out of
-    // `flutter run --verbose` output. It's then known before Chrome even
-    // launches, so consumers (e.g. MCP screenshots) can use it right away.
+    // Chosen up front so MCP screenshots can use it before Chrome launches.
     final debuggerPort = await bindUnusedPort<int>((port) => port);
     _debuggerPort = '$debuggerPort';
 
@@ -238,8 +217,7 @@ class WebTestBackend {
     _flutterProcess = flutterProcess;
 
     final exited = Completer<void>();
-    // Nothing awaits `exited` until the startup sequence below finishes, so a
-    // crash during it would be an unhandled async error that skips `finally`.
+    // Without this, a crash during startup is unhandled and skips `finally`.
     unawaited(exited.future.then((_) {}, onError: (Object _) {}));
 
     final stdinSubscription = stdin.listen((event) async {
@@ -295,8 +273,7 @@ class WebTestBackend {
         await _serveDevtools(options);
       }
 
-      // The session lives as long as `flutter run` does. Quitting completes it
-      // through _stopFlutterProcess, a crash through the exitCode handler.
+      // Lives as long as `flutter run`; ended by quit or its exit handler.
       await exited.future;
     } finally {
       await stdinSubscription.cancel();
@@ -309,10 +286,8 @@ class WebTestBackend {
     }
   }
 
-  /// Serves DevTools so the Patrol extension is reachable on web.
-  ///
-  /// The instance `flutter run` serves can't find the extension for a web app
-  /// (see [WebDevtoolsServer]), so we stand up our own.
+  /// Serves DevTools with the Patrol extension, which the one `flutter run`
+  /// serves can't find for a web app.
   Future<void> _serveDevtools(WebAppOptions options) async {
     final debugServiceUri = _debugServiceUri;
     if (debugServiceUri == null) {
@@ -346,10 +321,6 @@ class WebTestBackend {
     }
   }
 
-  /// Asks the resident `flutter run` for a hot restart.
-  ///
-  /// The `flush()` matters: without it the byte sits in the pipe buffer and
-  /// `flutter run` never sees the key command.
   /// Opens the session to hot restarts and replays one queued while it booted.
   void _markAttached() {
     if (_hotRestartActive) {
@@ -366,6 +337,7 @@ class WebTestBackend {
     }
   }
 
+  /// Asks the resident `flutter run` for a hot restart.
   Future<void> _requestHotRestart(String target) async {
     final process = _flutterProcess;
     if (process == null) {
@@ -406,8 +378,7 @@ class WebTestBackend {
     _logger.detail('Stopping Flutter web server...');
 
     try {
-      // Ask flutter to quit so it closes Chrome itself. A hard kill (SIGTERM)
-      // leaves the Chrome child process orphaned on macOS.
+      // Quit via flutter so it closes Chrome; a hard kill orphans it on macOS.
       process.stdin.add('q'.codeUnits);
       await process.stdin.flush();
     } on Object catch (err) {
@@ -425,11 +396,7 @@ class WebTestBackend {
     }
   }
 
-  /// Attaches the session-long listeners to the resident `flutter run`.
-  ///
-  /// This owns the only subscription to flutter's stdout, so the readiness
-  /// signal and the restart outcome are read from the same stream instead of
-  /// competing subscriptions.
+  /// Attaches the only listeners to the resident `flutter run`'s output.
   Future<void> _watchFlutterRun(Process process, Completer<void> exited) async {
     final debugServiceReady = Completer<void>();
     _debugServiceReady = debugServiceReady;
@@ -474,9 +441,7 @@ class WebTestBackend {
   void _onFlutterLine(String rawLine) {
     final line = rawLine.replaceFirst(_flutterLogPrefix, '');
 
-    // PATROL_LOG entries reach us twice: flutter forwards the app's `print`,
-    // and the Playwright driver re-emits them from the browser console. The
-    // Playwright stream is the one wired into PatrolLogReader, so drop these.
+    // Playwright re-emits these and its copy is the one PatrolLogReader reads.
     if (line.contains('PATROL_LOG')) {
       return;
     }
@@ -512,10 +477,7 @@ class WebTestBackend {
       return;
     }
 
-    // A restart tears the previous run down mid-flight, so the failures and
-    // render assertions it reports belong to the run being replaced. The last
-    // of them land just after `flutter run` confirms the restart, hence the
-    // grace period. Outside it a real failure must still reach the user.
+    // Failures from the run a restart replaces are noise; later ones are real.
     if (_inRestartTeardown &&
         (line.contains('EXCEPTION CAUGHT') ||
             line.contains('RethrownDartError') ||
@@ -555,8 +517,7 @@ class WebTestBackend {
       if (browserDebugPort != null)
         '--web-browser-debug-port=$browserDebugPort',
       if (options.webPort != null) '--web-port=${options.webPort}',
-      // dwds traces each hot restart step only under --verbose, so without it
-      // a restart that hangs leaves no record of which step never returned.
+      // Only --verbose shows which dwds step a hung restart stopped at.
       if (_logger.level == Level.verbose) '--verbose',
       '--target=${options.flutter.target}',
       '--${options.flutter.buildMode.name}',
@@ -665,8 +626,7 @@ class WebTestBackend {
     return completer.future;
   }
 
-  /// Whether [url] answers with HTTP 200. Unlike [verifyServerReady] this is
-  /// silent, so it can be used as a poll without flooding verbose logs.
+  /// Whether [url] answers with HTTP 200, without logging, for polling.
   Future<bool> _httpOk(Uri url) async {
     final client = HttpClient()..connectionTimeout = const Duration(seconds: 2);
     try {
@@ -680,9 +640,8 @@ class WebTestBackend {
     }
   }
 
-  /// Waits until Chrome's CDP endpoint answers on [debuggerPort] and the
-  /// Flutter debug service has attached to the page. The CDP poll is what
-  /// lets develop run without `--verbose`.
+  /// Waits for Chrome's CDP endpoint on [debuggerPort] and the Flutter debug
+  /// service attaching to the page.
   Future<void> _waitForWebDebugger(
     Process flutterProcess,
     int debuggerPort, {
@@ -721,8 +680,7 @@ class WebTestBackend {
 
     _logger.info('Debugger started at port: $debuggerPort');
 
-    // Chrome answering CDP doesn't mean the app page is running yet. The debug
-    // service line is printed right before Flutter calls the app's main().
+    // CDP answers before the app runs; this line comes right before main().
     final ready = _debugServiceReady;
     if (ready != null && !ready.isCompleted) {
       await ready.future.timeout(
@@ -854,8 +812,7 @@ class WebTestBackend {
       ..detail('Test results will be saved to: $testResultsDir')
       ..detail('Test report will be saved to: $testReportDir');
 
-    // The driver attaches to the browser Flutter launched and idles for the
-    // whole session; it survives hot restarts, so don't wait for it to exit.
+    // The driver survives hot restarts and idles for the whole session.
     final playwrightProcess = await _processManager.start(
       ['npx', 'ts-node', 'tests/develop.ts'],
       workingDirectory: webRunnerPath,
@@ -1046,10 +1003,7 @@ class WebTestBackend {
     }
   }
 
-  /// Runs [command] with a hard timeout, killing the process if it exceeds it.
-  ///
-  /// Unlike `.timeout()` alone, this actually terminates the spawned process
-  /// instead of leaving it running in the background holding lockfiles.
+  /// Runs [command], killing it and its children if it exceeds the timeout.
   Future<ProcessResult> _runInstallWithTimeout(
     List<String> command, {
     required String workingDirectory,
@@ -1061,8 +1015,7 @@ class WebTestBackend {
       runInShell: true,
     );
 
-    // Drain stdout/stderr concurrently so a full pipe buffer can't stall the
-    // process, and capture them for error reporting.
+    // Drain both pipes so a full buffer can't stall the process.
     final stdoutFuture = process.stdout
         .transform(const SystemEncoding().decoder)
         .join();
@@ -1076,9 +1029,8 @@ class WebTestBackend {
         const Duration(seconds: _kDependencyTimeoutSeconds),
       );
     } on TimeoutException {
+      await _killProcessTree(process.pid);
       process.kill(ProcessSignal.sigkill);
-      // Shell descendants can keep the pipes open past the kill, so bound the
-      // drain too.
       await Future.wait([
         stdoutFuture,
         stderrFuture,
@@ -1092,5 +1044,25 @@ class WebTestBackend {
       await stdoutFuture,
       await stderrFuture,
     );
+  }
+
+  /// Kills every descendant of [pid]; `npm` children outlive the shell.
+  Future<void> _killProcessTree(int pid) async {
+    try {
+      if (Platform.isWindows) {
+        await _processManager.run(['taskkill', '/T', '/F', '/PID', '$pid']);
+        return;
+      }
+      final children = await _processManager.run(['pgrep', '-P', '$pid']);
+      final childPids = LineSplitter.split(
+        children.stdout as String,
+      ).map(int.tryParse).nonNulls;
+      for (final childPid in childPids) {
+        await _killProcessTree(childPid);
+        _processManager.killPid(childPid, ProcessSignal.sigkill);
+      }
+    } catch (err) {
+      _logger.detail('Could not kill the process tree of $pid: $err');
+    }
   }
 }
