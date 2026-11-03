@@ -19,14 +19,7 @@ abstract class VideoRecordingManager {
 
   /// One-line summary of saved recordings for the CLI summary, or `null` if
   /// nothing was recorded.
-  String? get recordingSummary {
-    if (_savedVideos.isEmpty) {
-      return null;
-    }
-    final count = _savedVideos.length;
-    final directory = path.dirname(_savedVideos.first);
-    return 'Recorded $count video${count == 1 ? '' : 's'} to $directory';
-  }
+  String? get recordingSummary => videoRecordingSummary(_savedVideos);
 
   /// Starts video recording for a test case.
   Future<void> startRecording(String testName);
@@ -64,21 +57,21 @@ abstract class VideoRecordingManager {
     }
   }
 
-  /// Sanitizes test name for use in filename.
-  @protected
-  String sanitizeTestName(String testName) {
-    // Remove file path prefix and keep only the actual test name
-    final parts = testName.split(' ');
-    if (parts.length > 1) {
-      // Skip the first part which is usually the file path
-      return parts.skip(1).join(' ').replaceAll(RegExp(r'[^\w\-\s]'), '_');
-    }
-    return testName.replaceAll(RegExp(r'[^\w\-\s]'), '_');
-  }
-
   /// Cleanup method to stop any ongoing recording.
   Future<void> dispose() async {
     await _operations;
     await stopRecording();
   }
+}
+
+/// One-line summary of [savedVideos] for the CLI summary, or `null` if the
+/// list is empty. Shared by the per-test recorders and the iOS `.xcresult`
+/// extractor so every platform reports recordings the same way.
+String? videoRecordingSummary(List<String> savedVideos) {
+  if (savedVideos.isEmpty) {
+    return null;
+  }
+  final count = savedVideos.length;
+  final directory = path.dirname(savedVideos.first);
+  return 'Recorded $count video${count == 1 ? '' : 's'} to $directory';
 }

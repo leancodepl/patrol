@@ -54,7 +54,7 @@ class AndroidVideoRecordingManager extends VideoRecordingManager {
     _currentTestName = testName;
     _currentVideoFilename = _config.generateVideoFilename(
       deviceId: _device.id,
-      testName: sanitizeTestName(testName),
+      testName: testName,
     );
     _currentDeviceVideoPath = _config.getAndroidDeviceVideoPath(
       _currentVideoFilename!,

@@ -9,7 +9,7 @@
   /// attachments must be added from the test method. So the automator captures
   /// the image and parks it here; the runner drains the buffer on the test
   /// thread once the Dart test finishes (see PatrolIntegrationTestIosRunner.h).
-  @objc public class PatrolScreenshotBuffer: NSObject {
+  @objc(PatrolScreenshotBuffer) public class PatrolScreenshotBuffer: NSObject {
     @objc public static let sharedBuffer = PatrolScreenshotBuffer()
 
     private let lock = NSLock()
