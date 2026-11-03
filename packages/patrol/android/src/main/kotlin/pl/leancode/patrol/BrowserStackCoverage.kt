@@ -148,12 +148,15 @@ internal object BrowserStackCoverage {
      * can still write a shared-storage file that `pm clear` orphaned, so every
      * test under `clearPackageData` adds its own block instead of hitting EACCES.
      * Throws when the append can't be confirmed, so the caller keeps its data.
+     * A short append is cut back off first, so the file stays readable.
      */
     fun appendViaShell(instrumentation: Instrumentation, path: String, bytes: ByteArray) {
         // Commands are split on whitespace, and `path` lands inside sh quotes.
         require(path.none { it.isWhitespace() || it == '\'' }) { "unsupported coverage path: $path" }
         val automation = instrumentation.getUiAutomation(Configurator.getInstance().uiAutomationFlags)
         File(path).parent?.let { runShell(automation, "mkdir -p $it") }
+        // An existing file always has a size, so a missing one means stat failed.
+        runShell(automation, "touch $path")
 
         // Stream into a side file first: if this process dies mid-write, only
         // that file is torn, never the coverage file every earlier test is in.
@@ -167,17 +170,22 @@ internal object BrowserStackCoverage {
         val staged = fileSize(automation, part)
         check(staged == bytes.size.toLong()) { "staged $staged of ${bytes.size} bytes in $part" }
 
-        val before = fileSize(automation, path)
+        val before = fileSize(automation, path) ?: error("could not stat $path")
         runShell(automation, "sh -c cat<'$part'>>'$path'")
         val after = fileSize(automation, path)
         runShell(automation, "rm -f $part")
-        check(after - before == bytes.size.toLong()) { "shell append to $path failed ($before -> $after)" }
+        if (after != before + bytes.size) {
+            // A short append (e.g. ENOSPC) leaves a torn block that makes every
+            // run in the file unreadable, including earlier tests'.
+            runShell(automation, "truncate -s $before $path")
+            error("shell append to $path failed ($before -> $after), restored to ${fileSize(automation, path)}")
+        }
         Logger.i("$TAG: shell-appended ${bytes.size} bytes to $path ($before -> $after)")
     }
 
-    /** Size of [path] as the shell user sees it, 0 when missing. */
-    private fun fileSize(automation: android.app.UiAutomation, path: String): Long =
-        runShell(automation, "stat -c %s $path").trim().toLongOrNull() ?: 0L
+    /** Size of [path] as the shell user sees it, null when stat prints none. */
+    private fun fileSize(automation: android.app.UiAutomation, path: String): Long? =
+        runShell(automation, "stat -c %s $path").trim().toLongOrNull()
 
     private fun runShell(automation: android.app.UiAutomation, command: String): String =
         ParcelFileDescriptor.AutoCloseInputStream(automation.executeShellCommand(command))
