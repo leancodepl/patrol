@@ -33,6 +33,9 @@ class _BiometricsScreenState extends State<BiometricsScreen> {
 
   Future<void> _checkEnrollment() async {
     final biometrics = await _auth.getAvailableBiometrics();
+    if (!mounted) {
+      return;
+    }
     setState(
       () => _status = biometrics.isEmpty
           ? 'No biometrics'

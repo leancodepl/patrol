@@ -293,8 +293,8 @@ class Automator private constructor() {
     private var simulatedBiometrics: SimulatedBiometrics? = null
 
     private fun biometrics(): SimulatedBiometrics {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-            throw PatrolException("Simulating biometrics needs Android 11+ (API 30)")
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+            throw PatrolException("Simulating biometrics needs Android 12+ (API 31)")
         }
 
         return simulatedBiometrics

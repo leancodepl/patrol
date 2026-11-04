@@ -100,5 +100,10 @@ class IOSHostServer {
   Future<void> close() async {
     await _server.close(force: true);
     await _hinge.close();
+    try {
+      await _biometrics.restore();
+    } on Exception catch (err) {
+      _logger.detail('Failed to restore biometric enrollment: $err');
+    }
   }
 }

@@ -603,9 +603,11 @@ class IOSAutomator extends NativeMobileAutomator
       final view = ui.PlatformDispatcher.instance.implicitView;
       final sizeBefore = view?.physicalSize;
 
-      final response = await _postToHostServer('setHingeAngle', {
-        'degrees': degrees,
-      });
+      final response = await _postToHostServer(
+        'setHingeAngle',
+        'setHingeAngle',
+        {'degrees': degrees},
+      );
 
       // Only a closed hinge uses the cover display.
       final previousDegrees = switch (response) {
@@ -623,37 +625,53 @@ class IOSAutomator extends NativeMobileAutomator
   @override
   Future<void> enrollBiometrics() async {
     await wrapRequest('enrollBiometrics', () async {
-      await _postToHostServer('setBiometricEnrollment', {'enrolled': true});
+      await _postToHostServer('enrollBiometrics', 'setBiometricEnrollment', {
+        'enrolled': true,
+      });
     });
   }
 
   @override
   Future<void> unenrollBiometrics() async {
     await wrapRequest('unenrollBiometrics', () async {
-      await _postToHostServer('setBiometricEnrollment', {'enrolled': false});
+      await _postToHostServer('unenrollBiometrics', 'setBiometricEnrollment', {
+        'enrolled': false,
+      });
     });
   }
 
   @override
   Future<void> acceptBiometricAuthentication() async {
     await wrapRequest('acceptBiometricAuthentication', () async {
-      await _postToHostServer('sendBiometricMatch', {'match': true});
+      await _postToHostServer(
+        'acceptBiometricAuthentication',
+        'sendBiometricMatch',
+        {'match': true},
+      );
     });
   }
 
   @override
   Future<void> rejectBiometricAuthentication() async {
     await wrapRequest('rejectBiometricAuthentication', () async {
-      await _postToHostServer('sendBiometricMatch', {'match': false});
+      await _postToHostServer(
+        'rejectBiometricAuthentication',
+        'sendBiometricMatch',
+        {'match': false},
+      );
     });
   }
 
-  /// Sends [body] to the `patrol` CLI, which does what a simulator can't do
-  /// from the inside, and returns the decoded response.
+  /// Sends [body] to the [route] of the `patrol` CLI, which does what a
+  /// simulator can't do from the inside, and returns the decoded response.
+  ///
+  /// Errors name [method], the API the test called.
   Future<Object?> _postToHostServer(
-    String action,
+    String method,
+    String route,
     Map<String, Object?> body,
   ) async {
+    final action = '$method()';
     final hostServerPort = PatrolRuntimePorts.hostServerPort();
     if (hostServerPort == null) {
       throw PatrolActionException(
@@ -664,7 +682,7 @@ class IOSAutomator extends NativeMobileAutomator
 
     final response = await http
         .post(
-          Uri.http('$_hostServerAddress:$hostServerPort', '/$action'),
+          Uri.http('$_hostServerAddress:$hostServerPort', '/$route'),
           body: jsonEncode(body),
         )
         .timeout(_config.connectionTimeout);

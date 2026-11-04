@@ -23,6 +23,7 @@ void main() {
       biometrics = MockSimulatorBiometrics();
       when(() => biometrics.setEnrolled(any())).thenAnswer((_) async {});
       when(() => biometrics.sendMatch(any())).thenAnswer((_) async {});
+      when(biometrics.restore).thenAnswer((_) async {});
       server = await IOSHostServer.start(
         hinge: hinge,
         biometrics: biometrics,
@@ -119,6 +120,12 @@ void main() {
 
       expect(response.statusCode, HttpStatus.internalServerError);
       verifyNever(() => biometrics.sendMatch(any()));
+    });
+
+    test('restores the biometric enrollment when it closes', () async {
+      await server.close();
+
+      verify(biometrics.restore).called(1);
     });
 
     test('responds with 404 to an unknown path', () async {

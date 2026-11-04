@@ -319,7 +319,7 @@ abstract interface class AndroidAutomator implements MobileAutomator {
   /// Enrolls a biometric on every sensor of the device, so that apps can use
   /// biometric authentication.
   ///
-  /// Needs Android 11+. Switches the sensors to a test HAL until
+  /// Needs Android 12+. Switches the sensors to a test HAL until
   /// [unenrollBiometrics], so apps can't use keys bound to biometrics, such as
   /// a `CryptoObject`, in the meantime. **Experimental.**
   @experimental

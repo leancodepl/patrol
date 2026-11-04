@@ -26,8 +26,36 @@ class SimulatorBiometrics {
   // notifications, so posting both works for Face ID and Touch ID simulators.
   static const _sensors = ['pearl', 'fingerTouch'];
 
+  /// The enrollment before the first [setEnrolled], which [restore] brings
+  /// back. Null until then.
+  bool? _initialEnrolled;
+
   /// Enrolls a face (or finger), or removes it when [enrolled] is false.
   Future<void> setEnrolled(bool enrolled) async {
+    _initialEnrolled ??= await isEnrolled();
+    await _setEnrolled(enrolled);
+  }
+
+  /// Whether a face (or finger) is enrolled.
+  Future<bool> isEnrolled() async {
+    // Prints "<name> <state>".
+    final output = await _notifyutil(['-g', enrollmentNotification]);
+    return output.trim().split(RegExp(r'\s+')).last == '1';
+  }
+
+  /// Brings back the enrollment from before the first [setEnrolled], so a
+  /// test that didn't unenroll doesn't leak into later runs.
+  Future<void> restore() async {
+    final initialEnrolled = _initialEnrolled;
+    if (initialEnrolled == null) {
+      return;
+    }
+
+    _initialEnrolled = null;
+    await _setEnrolled(initialEnrolled);
+  }
+
+  Future<void> _setEnrolled(bool enrolled) async {
     _logger.detail('Setting biometric enrollment of $_deviceId to $enrolled');
 
     await _notifyutil([
@@ -51,7 +79,7 @@ class SimulatorBiometrics {
     }
   }
 
-  Future<void> _notifyutil(List<String> arguments) async {
+  Future<String> _notifyutil(List<String> arguments) async {
     final command = [
       'xcrun',
       'simctl',
@@ -66,6 +94,8 @@ class SimulatorBiometrics {
         '`${command.join(' ')}` failed: ${result.stdErr}',
       );
     }
+
+    return result.stdOut;
   }
 }
 

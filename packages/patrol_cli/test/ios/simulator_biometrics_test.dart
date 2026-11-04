@@ -11,14 +11,19 @@ void main() {
     late MockProcessManager processManager;
     late SimulatorBiometrics biometrics;
     late List<List<String>> commands;
+    late String enrollmentState;
 
     setUp(() {
       processManager = MockProcessManager();
       commands = [];
+      enrollmentState = '0';
       when(() => processManager.run(any())).thenAnswer((invocation) async {
-        commands.add(
-          (invocation.positionalArguments.first as List<Object>).cast(),
-        );
+        final command = (invocation.positionalArguments.first as List<Object>)
+            .cast<String>();
+        if (command.contains('-g')) {
+          return ProcessResult(0, 0, '${command.last} $enrollmentState\n', '');
+        }
+        commands.add(command);
         return ProcessResult(0, 0, '', '');
       });
       biometrics = SimulatorBiometrics(
@@ -37,6 +42,24 @@ void main() {
         [...notifyutil, '-s', 'com.apple.BiometricKit.enrollmentChanged', '1'],
         [...notifyutil, '-p', 'com.apple.BiometricKit.enrollmentChanged'],
       ]);
+    });
+
+    test('restores the enrollment from before the first change', () async {
+      enrollmentState = '1';
+      await biometrics.setEnrolled(false);
+      await biometrics.setEnrolled(true);
+      await biometrics.setEnrolled(false);
+      commands.clear();
+
+      await biometrics.restore();
+
+      expect(commands.first.last, '1');
+    });
+
+    test('restores nothing when the enrollment never changed', () async {
+      await biometrics.restore();
+
+      expect(commands, isEmpty);
     });
 
     test('unenrolls by clearing the enrollment state', () async {

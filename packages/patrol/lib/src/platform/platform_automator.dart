@@ -1130,7 +1130,7 @@ class MobileAutomator {
   /// use biometric authentication.
   ///
   /// On iOS, works only on simulators run by `patrol test` or
-  /// `patrol develop`. On Android, needs Android 11+ and switches the sensors
+  /// `patrol develop`. On Android, needs Android 12+ and switches the sensors
   /// to a test HAL until [unenrollBiometrics], so keys bound to biometrics
   /// don't work. **Experimental.**
   @experimental
