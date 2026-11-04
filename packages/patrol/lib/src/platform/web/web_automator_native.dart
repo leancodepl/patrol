@@ -368,4 +368,14 @@ class WebAutomator implements web_automator.WebAutomator {
     );
     return result as String;
   }
+
+  @override
+  Future<void> takeNativeScreenshot(String tag) async {
+    await callPlaywright(
+      'takeNativeScreenshot',
+      {'tag': tag},
+      logger: _config.logger,
+      patrolLog: _patrolLog,
+    );
+  }
 }
