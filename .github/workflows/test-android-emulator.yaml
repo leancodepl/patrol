@@ -7,18 +7,6 @@ on:
     - cron: "0 */12 * * *"
   pull_request_target:
     types: [opened, synchronize]
-    paths:
-      - 'packages/patrol/**'
-      - 'packages/patrol_finders/**'
-      - 'packages/patrol_log/**'
-      - 'packages/patrol_cli/**'
-      - 'packages/adb/**'
-      - 'packages/patrol_gen/**'
-      - 'dev/e2e_app/**'
-      - 'schema.dart'
-      - 'gen_from_schema'
-      - '!**.md'
-      - '!**.mdx'
 
 permissions:
   contents: read
@@ -28,8 +16,38 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  changes:
+    name: changes
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      relevant: ${{ steps.decide.outputs.relevant }}
+    steps:
+      - name: Filter paths
+        id: filter
+        if: github.event_name == 'pull_request_target'
+        uses: dorny/paths-filter@0e4a8c6effa4802afeda77dc8d303f8176d7dfad # v3.0.4
+        with:
+          predicate-quantifier: every
+          filters: |
+            relevant:
+              - '{packages/patrol/**,packages/patrol_finders/**,packages/patrol_log/**,packages/patrol_cli/**,packages/adb/**,packages/patrol_gen/**,dev/e2e_app/**,schema.dart,gen_from_schema}'
+              - '!**/*.md'
+              - '!**/*.mdx'
+      - name: Decide whether to run
+        id: decide
+        run: |
+          if [ "${{ github.event_name }}" != "pull_request_target" ]; then
+            echo "relevant=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "relevant=${{ steps.filter.outputs.relevant }}" >> "$GITHUB_OUTPUT"
+          fi
+
   run_tests:
     name: Flutter ${{ matrix.flutter-version }} on API ${{ matrix.api-level }}
+    needs: changes
+    if: ${{ needs.changes.outputs.relevant == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 55
     outputs:
@@ -159,3 +177,17 @@ jobs:
       SLACK_MESSAGE_TITLE: ${{ needs.run_tests.outputs.SLACK_MESSAGE_TITLE }}
       URL_TO_DETAILS: ${{ needs.run_tests.outputs.URL_TO_DETAILS }}
     secrets: inherit
+
+  test-android-emulator-gate:
+    name: test android emulator gate
+    needs: [changes, run_tests]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify required jobs passed
+        run: |
+          if [ "${{ contains(needs.*.result, 'failure') }}" = "true" ] || [ "${{ contains(needs.*.result, 'cancelled') }}" = "true" ]; then
+            echo "A required job did not pass: ${{ join(needs.*.result, ' ') }}"
+            exit 1
+          fi
+          echo "All required jobs passed or were skipped: ${{ join(needs.*.result, ' ') }}"
