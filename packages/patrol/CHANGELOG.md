@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Remove the placeholder `GoogleService-Info.plist` and `google-services.json` from the example app, so security scanners no longer flag the published package. (#3360)
 - Add web platform screenshot support via `$.takeNativeScreenshot('tag')`. (#3047)
 - Support Android code coverage with the test orchestrator's `clearPackageData:true` on Android
   12+: each test's coverage is appended to the coverage file as the `shell` user, so it is no
