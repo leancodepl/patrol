@@ -10,8 +10,6 @@ import static org.junit.Assume.*;
 import android.app.Instrumentation;
 import android.content.Intent;
 import android.os.Bundle;
-import android.system.ErrnoException;
-import android.system.OsConstants;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnitRunner;
 
@@ -70,8 +68,8 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             );
             arguments.putString("coverage", "false");
             BrowserStackCoverage.INSTANCE.exportDartCoverageDir(getTargetContext());
-            // Best-effort: a farm may strip this arg; writeMergedCoverage
-            // also switches to shell-append when the direct write fails.
+            // Best-effort: the orchestrator forwards its own args to us, but a
+            // farm may strip this one. `patrol coverage pull` checks too.
             if ("true".equalsIgnoreCase(arguments.getString("clearPackageData"))) {
                 if (canShellAppendCoverage()) {
                     switchToShellAppend("clearPackageData=true, appending each test via shell");
@@ -154,11 +152,6 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
                 .getMethod("getExecutionData", boolean.class)
                 .invoke(agent, false);
 
-            // clearPackageData with the arg stripped by the farm: pm clear left
-            // the file in place but took this app's access to it.
-            if (!shellAppendCoverage && covFile.exists() && !covFile.canWrite() && canShellAppendCoverage()) {
-                switchToShellAppend(covFile.getAbsolutePath() + " not writable, switching to shell-append");
-            }
             if (shellAppendCoverage) {
                 appendCoverageViaShell(covFile, data, agent);
                 return;
@@ -177,32 +170,22 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             // timeout - hands the farm a Dart-less .ec, losing every earlier
             // test's Dart coverage.
             File staging = new File(covFile.getAbsolutePath() + ".patrol-staging");
-            try {
-                try (FileOutputStream fos = new FileOutputStream(staging, /* append= */ false)) {
-                    fos.write(data);
-                    fos.flush();
-                    fos.getFD().sync();
-                }
-                Logger.INSTANCE.i("BS coverage: staged " + data.length + " JaCoCo bytes in " + staging.getAbsolutePath());
+            try (FileOutputStream fos = new FileOutputStream(staging, /* append= */ false)) {
+                fos.write(data);
+                fos.flush();
+                fos.getFD().sync();
+            }
+            Logger.INSTANCE.i("BS coverage: staged " + data.length + " JaCoCo bytes in " + staging.getAbsolutePath());
 
-                BrowserStackCoverage.INSTANCE.appendDartCoverage(getTargetContext(), staging, null);
+            BrowserStackCoverage.INSTANCE.appendDartCoverage(getTargetContext(), staging, null);
 
-                if (!staging.renameTo(covFile)) {
-                    // A same-directory rename is atomic on the filesystems Android
-                    // uses here. If it is refused anyway, fall back to a copy so
-                    // the run still produces coverage.
-                    Logger.INSTANCE.e("BS coverage: rename to " + covFile.getAbsolutePath() + " failed, copying instead", null);
-                    copyFile(staging, covFile);
-                    staging.delete();
-                }
-            } catch (IOException e) {
+            if (!staging.renameTo(covFile)) {
+                // A same-directory rename is atomic on the filesystems Android
+                // uses here. If it is refused anyway, fall back to a copy so
+                // the run still produces coverage.
+                Logger.INSTANCE.e("BS coverage: rename to " + covFile.getAbsolutePath() + " failed, copying instead", null);
+                copyFile(staging, covFile);
                 staging.delete();
-                // Same as the canWrite() check above, for when it didn't catch it.
-                if (!isPermissionDenied(e) || !canShellAppendCoverage()) throw e;
-                Logger.INSTANCE.e("BS coverage: direct write denied", e);
-                switchToShellAppend("direct write denied, switching to shell-append");
-                appendCoverageViaShell(covFile, data, agent);
-                return;
             }
             Logger.INSTANCE.i("BS coverage: merged file now " + covFile.length() + " bytes");
         } catch (ClassNotFoundException e) {
@@ -231,15 +214,6 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
     private void switchToShellAppend(String reason) {
         shellAppendCoverage = true;
         Logger.INSTANCE.i("BS coverage: " + reason);
-    }
-
-    private static boolean isPermissionDenied(IOException e) {
-        // libcore wraps the errno in the FileNotFoundException it throws.
-        if (e.getCause() instanceof ErrnoException) {
-            return ((ErrnoException) e.getCause()).errno == OsConstants.EACCES;
-        }
-        String message = e.getMessage();
-        return message != null && message.contains("Permission denied");
     }
 
     /**
