@@ -5,8 +5,8 @@
   such option. Only a checkout that had never generated the Dart plugin registrant was affected, which
   is every fresh CI checkout. (#3297)
 - `patrol coverage pull` now reads coverage from runs with `clearPackageData:true` (one run per
-  test, written by `patrol` on Android 12+) and no longer refuses those BrowserStack builds.
-  (#3359)
+  test, written by `patrol` on Android 12+) and no longer refuses those BrowserStack builds. A
+  session that kept only the first test's run (older Android) still fails. (#3359)
 
 ## 4.9.0
 

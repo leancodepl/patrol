@@ -20,6 +20,9 @@ void main() {
       expect(result.jacocoSessions, 1);
       expect(result.executionDataBlocks, 1);
       expect(result.dartChunks, 2);
+      // A direct-mode dump is one untagged run.
+      expect(result.dartRuns, 1);
+      expect(result.taggedDartRuns, 0);
       expect(
         result.dartLcov,
         'TN:a\nSF:package:app/a.dart\nDA:1,1\nend_of_record\n',
@@ -65,6 +68,7 @@ void main() {
       expect(result.executionDataBlocks, 2);
       expect(result.dartChunks, 3);
       expect(result.dartRuns, 2);
+      expect(result.taggedDartRuns, 2);
       expect(result.dartLcov, 'SF:a\nend_of_record\nSF:b\nend_of_record\n');
 
       final reparsed = splitJacocoExec(result.jacocoBytes);
@@ -83,6 +87,7 @@ void main() {
       final result = splitJacocoExec(w.toBytes());
 
       expect(result.dartRuns, 2);
+      expect(result.taggedDartRuns, 1);
       expect(result.dartLcov, 'SF:a\nend_of_record\nSF:b\nend_of_record\n');
     });
 

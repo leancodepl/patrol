@@ -27,7 +27,8 @@ import 'package:patrol_cli/src/runner/patrol_command.dart';
 /// emulator.wtf or Firebase Test Lab.
 ///
 /// With `clearPackageData:true` each test appends its own run to the session's
-/// file (Android 12+), and the runs are merged here.
+/// file (Android 12+), and the runs are merged here. A BrowserStack session
+/// that kept only the first test's run (older Android) is an error.
 class CoveragePullCommand extends PatrolCommand {
   CoveragePullCommand({required Logger logger, required FileSystem fs})
     : _logger = logger,
@@ -145,6 +146,7 @@ class CoveragePullCommand extends PatrolCommand {
         (
           label: _fs.path.relative(file.path, from: _fs.path.dirname(path)),
           bytes: file.readAsBytesSync(),
+          clearPackageData: false,
         ),
     ];
   }
@@ -179,7 +181,8 @@ class CoveragePullCommand extends PatrolCommand {
       return null;
     }
 
-    if (buildUsedClearPackageData(build) ?? false) {
+    final clearPackageData = buildUsedClearPackageData(build) ?? false;
+    if (clearPackageData) {
       _logger.info(
         'Build $buildId ran with clearPackageData:true: expecting one Dart '
         'coverage run per test (needs Android 12+ devices).',
@@ -211,7 +214,11 @@ class CoveragePullCommand extends PatrolCommand {
         return null;
       }
       _logger.info('Session $sid: downloaded ${bytes.length} bytes');
-      sources.add((label: 'Session $sid', bytes: bytes));
+      sources.add((
+        label: 'Session $sid',
+        bytes: bytes,
+        clearPackageData: clearPackageData,
+      ));
     }
     return sources;
   }
@@ -230,6 +237,17 @@ class CoveragePullCommand extends PatrolCommand {
         split = splitJacocoExec(source.bytes);
       } on FormatException catch (e) {
         _logger.err('${source.label}: failed to parse coverage: ${e.message}');
+        return 1;
+      }
+      if (source.clearPackageData &&
+          split.dartChunks > 0 &&
+          split.taggedDartRuns == 0) {
+        _logger.err(
+          '${source.label}: ran with clearPackageData:true but holds no '
+          "per-test Dart coverage runs, so only the first test's coverage was "
+          'kept (device below Android 12, or a coverageFile the shell user '
+          "can't write). Re-run on Android 12+ or with clearPackageData:false.",
+        );
         return 1;
       }
       mergedJacoco.add(split.jacocoBytes);
@@ -330,4 +348,10 @@ class _BsHttpException implements Exception {
   final String message;
 }
 
-typedef _CoverageSource = ({String label, Uint8List bytes});
+/// [clearPackageData]: the source ran with `clearPackageData:true`, so every
+/// test should have appended its own run-tagged Dart coverage.
+typedef _CoverageSource = ({
+  String label,
+  Uint8List bytes,
+  bool clearPackageData,
+});

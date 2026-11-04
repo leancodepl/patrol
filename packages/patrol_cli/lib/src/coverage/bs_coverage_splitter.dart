@@ -11,6 +11,7 @@ class BsCoverageSplitResult {
     required this.executionDataBlocks,
     required this.dartChunks,
     required this.dartRuns,
+    required this.taggedDartRuns,
   });
 
   /// A valid JaCoCo binary file containing only the standard `SessionInfo` +
@@ -32,6 +33,11 @@ class BsCoverageSplitResult {
   /// Number of separate Dart coverage dumps (one per test process under
   /// `clearPackageData:true`, else usually one).
   final int dartRuns;
+
+  /// How many of [dartRuns] carry a run id. Only shell-appended runs do, so
+  /// zero under `clearPackageData:true` means only the first test's coverage
+  /// made it into the file.
+  final int taggedDartRuns;
 }
 
 /// JaCoCo .exec splitter. Reads the binary block stream and partitions it into
@@ -157,6 +163,7 @@ BsCoverageSplitResult splitJacocoExec(Uint8List bytes) {
     executionDataBlocks: execData,
     dartChunks: totalDartChunks,
     dartRuns: runs.length,
+    taggedDartRuns: runs.keys.where((runId) => runId.isNotEmpty).length,
   );
 }
 
