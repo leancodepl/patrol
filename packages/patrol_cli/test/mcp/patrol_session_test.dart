@@ -601,6 +601,28 @@ packages:
       await session.dispose();
     });
 
+    test('carries the lines logged before the failing test too', () async {
+      final fake = FakeDevelop();
+      final session = sessionWith(fake);
+      final run = runOnce(session);
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+
+      fake
+        ..reportError('Expected: <42>')
+        ..reportError('  Actual: <1>')
+        ..reportTestFailed('counts');
+
+      final result = await run;
+      expect(result.status.testState, TestState.finishedFailed);
+      expect(
+        result.status.error,
+        'Test "counts" failed.\n'
+        'Expected: <42>\n'
+        '  Actual: <1>',
+      );
+      await session.dispose();
+    });
+
     test('is absent when the run passes', () async {
       final fake = FakeDevelop();
       final session = sessionWith(fake);
