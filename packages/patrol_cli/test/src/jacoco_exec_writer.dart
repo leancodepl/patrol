@@ -53,8 +53,8 @@ class JacocoExecWriter {
   /// Without [runId] writes the older id format (pre per-test runs).
   void dartChunk(int seq, int total, String lcov, {String? runId}) {
     final b64 = base64.encode(utf8.encode(lcov));
-    final run = runId == null ? '' : '$runId:';
-    sessionInfo('PATROL_DART_COV:$run$seq:$total:$b64');
+    final runPrefix = runId == null ? '' : '$runId:';
+    sessionInfo('PATROL_DART_COV:$runPrefix$seq:$total:$b64');
   }
 
   void executionData(int classId, String name, int probeCount) {

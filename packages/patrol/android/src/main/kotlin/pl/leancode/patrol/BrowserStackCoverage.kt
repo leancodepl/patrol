@@ -70,6 +70,7 @@ internal object BrowserStackCoverage {
      * holds several runs; no ':' allowed, the host splits the id on it.
      */
     fun appendDartCoverage(context: Context, coverageFile: File, runId: String?) {
+        require(runId?.contains(':') != true) { "runId must not contain ':': $runId" }
         val t0 = android.os.SystemClock.elapsedRealtime()
         val sourceDir = dartCoverageDir(context)
         if (!sourceDir.exists() || !sourceDir.isDirectory) {
@@ -113,13 +114,13 @@ internal object BrowserStackCoverage {
         FileOutputStream(coverageFile, /* append = */ true).use { fos ->
             DataOutputStream(fos).use { out ->
                 val now = System.currentTimeMillis()
-                val run = if (runId == null) "" else "$runId:"
+                val runPrefix = if (runId == null) "" else "$runId:"
                 chunks.forEachIndexed { index, chunk ->
                     val b64 = android.util.Base64.encodeToString(
                         chunk,
                         android.util.Base64.NO_WRAP
                     )
-                    val id = "$ID_PREFIX$run${index + 1}:${chunks.size}:$b64"
+                    val id = "$ID_PREFIX$runPrefix${index + 1}:${chunks.size}:$b64"
                     out.writeByte(BLOCK_SESSIONINFO.toInt())
                     out.writeUTF(id)
                     out.writeLong(now)

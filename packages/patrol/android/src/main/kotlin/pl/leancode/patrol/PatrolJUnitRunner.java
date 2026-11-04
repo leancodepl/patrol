@@ -10,6 +10,8 @@ import static org.junit.Assume.*;
 import android.app.Instrumentation;
 import android.content.Intent;
 import android.os.Bundle;
+import android.system.ErrnoException;
+import android.system.OsConstants;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnitRunner;
 
@@ -72,8 +74,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             // also switches to shell-append when the direct write fails.
             if ("true".equalsIgnoreCase(arguments.getString("clearPackageData"))) {
                 if (canShellAppendCoverage()) {
-                    shellAppendCoverage = true;
-                    Logger.INSTANCE.i("BS coverage: clearPackageData=true, appending each test via shell");
+                    switchToShellAppend("clearPackageData=true, appending each test via shell");
                 } else {
                     Logger.INSTANCE.e(
                         "BS coverage: clearPackageData=true needs Android 12+ (API 31) "
@@ -156,8 +157,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             // clearPackageData with the arg stripped by the farm: pm clear left
             // the file in place but took this app's access to it.
             if (!shellAppendCoverage && covFile.exists() && !covFile.canWrite() && canShellAppendCoverage()) {
-                Logger.INSTANCE.i("BS coverage: " + covFile.getAbsolutePath() + " not writable, switching to shell-append");
-                shellAppendCoverage = true;
+                switchToShellAppend(covFile.getAbsolutePath() + " not writable, switching to shell-append");
             }
             if (shellAppendCoverage) {
                 appendCoverageViaShell(covFile, data, agent);
@@ -199,8 +199,8 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
                 staging.delete();
                 // Same as the canWrite() check above, for when it didn't catch it.
                 if (!isPermissionDenied(e) || !canShellAppendCoverage()) throw e;
-                Logger.INSTANCE.e("BS coverage: direct write denied, switching to shell-append", e);
-                shellAppendCoverage = true;
+                Logger.INSTANCE.e("BS coverage: direct write denied", e);
+                switchToShellAppend("direct write denied, switching to shell-append");
                 appendCoverageViaShell(covFile, data, agent);
                 return;
             }
@@ -228,9 +228,18 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             && BrowserStackCoverage.INSTANCE.canAppendViaShell();
     }
 
+    private void switchToShellAppend(String reason) {
+        shellAppendCoverage = true;
+        Logger.INSTANCE.i("BS coverage: " + reason);
+    }
+
     private static boolean isPermissionDenied(IOException e) {
+        // libcore wraps the errno in the FileNotFoundException it throws.
+        if (e.getCause() instanceof ErrnoException) {
+            return ((ErrnoException) e.getCause()).errno == OsConstants.EACCES;
+        }
         String message = e.getMessage();
-        return message != null && (message.contains("EACCES") || message.contains("Permission denied"));
+        return message != null && message.contains("Permission denied");
     }
 
     /**

@@ -246,7 +246,7 @@ Nothing on the device side is BrowserStack-specific: the same setup works on oth
     </Warning>
   </Step>
   <Step>
-    Start the build with `"coverage": "true"`. `useOrchestrator` can be either value, `clearPackageData:true` (which needs `useOrchestrator:true`) works too (see the note below), and sharding works.
+    Start the build with `"coverage": "true"`. `useOrchestrator` can be either value and sharding works. `clearPackageData:true` works too, with `useOrchestrator:true` (see the note below).
   </Step>
   <Step>
     Pull and merge the result once the build finishes:
@@ -282,4 +282,3 @@ Nothing on the device side is BrowserStack-specific: the same setup works on oth
 [bs_ios_app_docs]: https://www.browserstack.com/docs/app-automate/api-reference/xcuitest/apps#upload-an-app
 [bs_ios_test_docs]: https://www.browserstack.com/docs/app-automate/api-reference/xcuitest/tests#upload-a-test-suite
 [bs_execute_ios_docs]: https://www.browserstack.com/docs/app-automate/api-reference/xcuitest/builds#execute-a-build
-
