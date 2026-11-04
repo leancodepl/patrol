@@ -277,4 +277,29 @@ abstract interface class IOSAutomator implements MobileAutomator {
   /// simulator APIs. **Experimental.**
   @experimental
   Future<void> setHingeAngle(double degrees);
+
+  /// Enrolls a face (or a finger, on a Touch ID simulator), so that apps can
+  /// use biometric authentication.
+  ///
+  /// Works only on simulators run by `patrol test` or `patrol develop`.
+  /// **Experimental.**
+  @experimental
+  Future<void> enrollBiometrics();
+
+  /// Removes the face (or finger) enrolled with [enrollBiometrics].
+  /// **Experimental.**
+  @experimental
+  Future<void> unenrollBiometrics();
+
+  /// Answers the pending Face ID (or Touch ID) prompt with a matching face.
+  ///
+  /// Call it once the app shows the prompt. **Experimental.**
+  @experimental
+  Future<void> acceptBiometricAuthentication();
+
+  /// Answers the pending Face ID (or Touch ID) prompt with a non-matching face.
+  ///
+  /// Call it once the app shows the prompt. **Experimental.**
+  @experimental
+  Future<void> rejectBiometricAuthentication();
 }

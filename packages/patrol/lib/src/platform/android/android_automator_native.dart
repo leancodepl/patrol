@@ -653,4 +653,30 @@ class AndroidAutomator extends NativeMobileAutomator
   Future<void> resetFoldPosture() async {
     await wrapRequest('resetFoldPosture', _client.resetFoldPosture);
   }
+
+  @override
+  Future<void> enrollBiometrics() async {
+    await wrapRequest('enrollBiometrics', _client.enrollBiometrics);
+  }
+
+  @override
+  Future<void> unenrollBiometrics() async {
+    await wrapRequest('unenrollBiometrics', _client.unenrollBiometrics);
+  }
+
+  @override
+  Future<void> acceptBiometricAuthentication() async {
+    await wrapRequest(
+      'acceptBiometricAuthentication',
+      _client.acceptBiometricAuthentication,
+    );
+  }
+
+  @override
+  Future<void> rejectBiometricAuthentication() async {
+    await wrapRequest(
+      'rejectBiometricAuthentication',
+      _client.rejectBiometricAuthentication,
+    );
+  }
 }

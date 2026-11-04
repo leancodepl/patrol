@@ -468,6 +468,12 @@ abstract class AndroidAutomator<AndroidServer, DartClient> {
     AndroidSetFoldPostureRequest request,
   );
   void resetFoldPosture();
+
+  // biometrics
+  void enrollBiometrics();
+  void unenrollBiometrics();
+  void acceptBiometricAuthentication();
+  void rejectBiometricAuthentication();
 }
 
 abstract class IosAutomator<IOSServer, DartClient> {

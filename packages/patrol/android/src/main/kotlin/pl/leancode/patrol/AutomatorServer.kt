@@ -281,6 +281,22 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
         automation.resetFoldPosture()
     }
 
+    override fun enrollBiometrics() {
+        automation.enrollBiometrics()
+    }
+
+    override fun unenrollBiometrics() {
+        automation.unenrollBiometrics()
+    }
+
+    override fun acceptBiometricAuthentication() {
+        automation.acceptBiometricAuthentication()
+    }
+
+    override fun rejectBiometricAuthentication() {
+        automation.rejectBiometricAuthentication()
+    }
+
     override fun takeCameraPhoto(request: Contracts.AndroidTakeCameraPhotoRequest) {
         val isEmulator = isVirtualDevice().isVirtualDevice
 

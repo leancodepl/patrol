@@ -290,6 +290,38 @@ class Automator private constructor() {
         uiDevice.executeShellCommand("cmd device_state state reset")
     }
 
+    private var simulatedBiometrics: SimulatedBiometrics? = null
+
+    private fun biometrics(): SimulatedBiometrics {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            throw PatrolException("Simulating biometrics needs Android 11+ (API 30)")
+        }
+
+        return simulatedBiometrics
+            ?: SimulatedBiometrics(targetContext, { uiAutomation }, uiDevice::executeShellCommand)
+                .also { simulatedBiometrics = it }
+    }
+
+    fun enrollBiometrics() {
+        Logger.d("enrollBiometrics()")
+        biometrics().enroll()
+    }
+
+    fun unenrollBiometrics() {
+        Logger.d("unenrollBiometrics()")
+        biometrics().unenroll()
+    }
+
+    fun acceptBiometricAuthentication() {
+        Logger.d("acceptBiometricAuthentication()")
+        biometrics().accept()
+    }
+
+    fun rejectBiometricAuthentication() {
+        Logger.d("rejectBiometricAuthentication()")
+        biometrics().reject()
+    }
+
     fun enableAirplaneMode() {
         val enabled = isAirplaneModeOn()
         if (enabled) {

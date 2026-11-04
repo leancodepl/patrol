@@ -35,6 +35,10 @@ interface AndroidAutomatorServer {
     fun allowPermission()
     fun setFoldPosture(request: Contracts.AndroidSetFoldPostureRequest): Contracts.AndroidSetFoldPostureResponse
     fun resetFoldPosture()
+    fun enrollBiometrics()
+    fun unenrollBiometrics()
+    fun acceptBiometricAuthentication()
+    fun rejectBiometricAuthentication()
 }
 
 private val json = Gson()
@@ -136,6 +140,22 @@ fun getAndroidAutomatorRoutes(server: AndroidAutomatorServer): RoutingHttpHandle
     },
     "resetFoldPosture" bind POST to {
       server.resetFoldPosture()
+      Response(OK)
+    },
+    "enrollBiometrics" bind POST to {
+      server.enrollBiometrics()
+      Response(OK)
+    },
+    "unenrollBiometrics" bind POST to {
+      server.unenrollBiometrics()
+      Response(OK)
+    },
+    "acceptBiometricAuthentication" bind POST to {
+      server.acceptBiometricAuthentication()
+      Response(OK)
+    },
+    "rejectBiometricAuthentication" bind POST to {
+      server.rejectBiometricAuthentication()
       Response(OK)
     }
 )

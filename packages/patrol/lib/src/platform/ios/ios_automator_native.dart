@@ -600,29 +600,15 @@ class IOSAutomator extends NativeMobileAutomator
   @override
   Future<void> setHingeAngle(double degrees) async {
     await wrapRequest('setHingeAngle', () async {
-      final hostServerPort = PatrolRuntimePorts.hostServerPort();
-      if (hostServerPort == null) {
-        throw PatrolActionException(
-          'setHingeAngle() works only on iOS simulators run by `patrol test` '
-          'or `patrol develop`',
-        );
-      }
-
       final view = ui.PlatformDispatcher.instance.implicitView;
       final sizeBefore = view?.physicalSize;
 
-      final response = await http
-          .post(
-            Uri.http('$_hostServerAddress:$hostServerPort', '/setHingeAngle'),
-            body: jsonEncode({'degrees': degrees}),
-          )
-          .timeout(_config.connectionTimeout);
-      if (response.statusCode != io.HttpStatus.ok) {
-        throw PatrolActionException('setHingeAngle() failed: ${response.body}');
-      }
+      final response = await _postToHostServer('setHingeAngle', {
+        'degrees': degrees,
+      });
 
       // Only a closed hinge uses the cover display.
-      final previousDegrees = switch (jsonDecode(response.body)) {
+      final previousDegrees = switch (response) {
         {'previousDegrees': final num degrees} => degrees,
         _ => null,
       };
@@ -632,5 +618,60 @@ class IOSAutomator extends NativeMobileAutomator
         await waitForDisplaySwitch(view, sizeBefore);
       }
     });
+  }
+
+  @override
+  Future<void> enrollBiometrics() async {
+    await wrapRequest('enrollBiometrics', () async {
+      await _postToHostServer('setBiometricEnrollment', {'enrolled': true});
+    });
+  }
+
+  @override
+  Future<void> unenrollBiometrics() async {
+    await wrapRequest('unenrollBiometrics', () async {
+      await _postToHostServer('setBiometricEnrollment', {'enrolled': false});
+    });
+  }
+
+  @override
+  Future<void> acceptBiometricAuthentication() async {
+    await wrapRequest('acceptBiometricAuthentication', () async {
+      await _postToHostServer('sendBiometricMatch', {'match': true});
+    });
+  }
+
+  @override
+  Future<void> rejectBiometricAuthentication() async {
+    await wrapRequest('rejectBiometricAuthentication', () async {
+      await _postToHostServer('sendBiometricMatch', {'match': false});
+    });
+  }
+
+  /// Sends [body] to the `patrol` CLI, which does what a simulator can't do
+  /// from the inside, and returns the decoded response.
+  Future<Object?> _postToHostServer(
+    String action,
+    Map<String, Object?> body,
+  ) async {
+    final hostServerPort = PatrolRuntimePorts.hostServerPort();
+    if (hostServerPort == null) {
+      throw PatrolActionException(
+        '$action works only on iOS simulators run by `patrol test` or '
+        '`patrol develop`',
+      );
+    }
+
+    final response = await http
+        .post(
+          Uri.http('$_hostServerAddress:$hostServerPort', '/$action'),
+          body: jsonEncode(body),
+        )
+        .timeout(_config.connectionTimeout);
+    if (response.statusCode != io.HttpStatus.ok) {
+      throw PatrolActionException('$action failed: ${response.body}');
+    }
+
+    return jsonDecode(response.body);
   }
 }

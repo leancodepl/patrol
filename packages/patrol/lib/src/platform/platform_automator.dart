@@ -1125,6 +1125,54 @@ class MobileAutomator {
       ios: () => platform.ios.setFoldPosture(posture),
     );
   }
+
+  /// Enrolls a biometric, such as a face or a fingerprint, so that apps can
+  /// use biometric authentication.
+  ///
+  /// On iOS, works only on simulators run by `patrol test` or
+  /// `patrol develop`. On Android, needs Android 11+ and switches the sensors
+  /// to a test HAL until [unenrollBiometrics], so keys bound to biometrics
+  /// don't work. **Experimental.**
+  @experimental
+  Future<void> enrollBiometrics() {
+    return platform.action.mobile(
+      android: platform.android.enrollBiometrics,
+      ios: platform.ios.enrollBiometrics,
+    );
+  }
+
+  /// Removes the biometric enrolled with [enrollBiometrics]. **Experimental.**
+  @experimental
+  Future<void> unenrollBiometrics() {
+    return platform.action.mobile(
+      android: platform.android.unenrollBiometrics,
+      ios: platform.ios.unenrollBiometrics,
+    );
+  }
+
+  /// Answers the pending biometric prompt with the enrolled biometric, so the
+  /// authentication succeeds.
+  ///
+  /// Call it once the app shows the prompt. **Experimental.**
+  @experimental
+  Future<void> acceptBiometricAuthentication() {
+    return platform.action.mobile(
+      android: platform.android.acceptBiometricAuthentication,
+      ios: platform.ios.acceptBiometricAuthentication,
+    );
+  }
+
+  /// Answers the pending biometric prompt with a biometric that isn't
+  /// enrolled, so the authentication attempt fails.
+  ///
+  /// Call it once the app shows the prompt. **Experimental.**
+  @experimental
+  Future<void> rejectBiometricAuthentication() {
+    return platform.action.mobile(
+      android: platform.android.rejectBiometricAuthentication,
+      ios: platform.ios.rejectBiometricAuthentication,
+    );
+  }
 }
 
 /// Platform-specific action router.

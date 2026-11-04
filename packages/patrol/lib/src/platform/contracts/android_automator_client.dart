@@ -135,6 +135,22 @@ class AndroidAutomatorClient {
     return _sendRequest('resetFoldPosture');
   }
 
+  Future<void> enrollBiometrics() {
+    return _sendRequest('enrollBiometrics');
+  }
+
+  Future<void> unenrollBiometrics() {
+    return _sendRequest('unenrollBiometrics');
+  }
+
+  Future<void> acceptBiometricAuthentication() {
+    return _sendRequest('acceptBiometricAuthentication');
+  }
+
+  Future<void> rejectBiometricAuthentication() {
+    return _sendRequest('rejectBiometricAuthentication');
+  }
+
   Future<Map<String, dynamic>> _sendRequest(
     String requestName, [
     Map<String, dynamic>? request,
