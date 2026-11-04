@@ -259,9 +259,10 @@ Nothing on the device side is BrowserStack-specific: the same setup works on oth
   </Step>
 </Steps>
 
-<Note>
+<Info>
   With `clearPackageData:true`, `pm clear` between tests revokes the app's access to the shared coverage file. Patrol then appends each test's coverage as the `shell` user instead, and `patrol coverage pull` merges the per-test runs. This needs Android 12+ (API 31) devices; on older ones only the first test's coverage is reported, so use `clearPackageData:false` there.
-</Note>
+</Info>
+
 [BrowserStack App Automate]: https://www.browserstack.com/app-automate
 [mobile-tools]: https://github.com/leancodepl/mobile-tools
 [bs_account]: https://www.browserstack.com/accounts/profile
