@@ -35,7 +35,7 @@ jobs:
         flutter-version: ['3.38.x']
         flutter-channel: ['stable']
         device_model: ['iphone16pro']
-        locale: ['en', 'fr', 'de_DE', 'pl', 'ja']
+        locale: ['en', 'fr', 'de_DE', 'pl', 'ja', 'ko', 'pt_BR', 'pt_PT']
         os_version: ['18.3']
         os: [iOS]
 

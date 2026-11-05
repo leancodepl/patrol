@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="patrol_localization_locale">ja</string>
+
     <!-- Airplane mode toggle -->
     <string name="airplane_mode">機内モード</string>
 

@@ -21,7 +21,7 @@ jobs:
       matrix:
         flutter-version: ['3.38.x']
         flutter-channel: ['stable']
-        locale: ['en', 'fr', 'de', 'pl', 'ja']
+        locale: ['en', 'fr', 'de', 'pl', 'ja', 'ko', 'pt_BR', 'pt_PT']
         os: ['Android API']
         include:
           - device_model: 'MediumPhone.arm'
