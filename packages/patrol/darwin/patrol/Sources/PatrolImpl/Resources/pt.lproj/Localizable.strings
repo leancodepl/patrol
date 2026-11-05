@@ -2,7 +2,7 @@
 "ok" = "OK";
 "allow" = "Permitir";
 "allow_once" = "Permitir Uma Vez";
-"allow_while_using_app" = "Permitir Durante o Uso do App";
+"allow_while_using_app" = "Permitir Durante Uso do App";
 "dont_allow" = "Não Permitir";
 "limit_access" = "Limitar Acesso…";  // … is a Unicode ellipsis
 "allow_full_access" = "Permitir Acesso Total";
@@ -14,8 +14,8 @@
 "developer" = "Desenvolvedor";
 "dark_appearance" = "Aparência Escura";
 "display_brightness" = "Tela e Brilho";
-"dark" = "Escuro";
-"light" = "Claro";
+"dark" = "Escura";
+"light" = "Clara";
 
 /* Location precision */
 "precise_off" = "Preciso: Desligado";
