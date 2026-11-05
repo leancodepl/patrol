@@ -30,6 +30,7 @@ import androidx.test.uiautomator.UiObject
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.UiObjectNotFoundException
 import androidx.test.uiautomator.UiSelector
+import androidx.test.uiautomator.Until
 import pl.leancode.patrol.contracts.Contracts.AndroidFoldPosture
 import pl.leancode.patrol.contracts.Contracts.AndroidNativeView
 import pl.leancode.patrol.contracts.Contracts.AndroidSelector
@@ -312,14 +313,23 @@ class Automator private constructor() {
         biometrics().unenroll()
     }
 
-    fun acceptBiometricAuthentication() {
-        Logger.d("acceptBiometricAuthentication()")
-        biometrics().accept()
+    fun passBiometric() {
+        Logger.d("passBiometric()")
+        biometrics().pass()
     }
 
-    fun rejectBiometricAuthentication() {
-        Logger.d("rejectBiometricAuthentication()")
-        biometrics().reject()
+    fun failBiometric() {
+        Logger.d("failBiometric()")
+        biometrics().fail()
+    }
+
+    /** Taps the cancel button of the system's biometric prompt. */
+    fun cancelBiometric() {
+        Logger.d("cancelBiometric()")
+        val selector = By.res(AutomatorConstants.BIOMETRIC_PROMPT_NEGATIVE_BUTTON_RES_ID)
+        val button = uiDevice.wait(Until.findObject(selector), timeoutMillis)
+            ?: throw UiObjectNotFoundException("cancel button of the biometric prompt")
+        button.click()
     }
 
     fun enableAirplaneMode() {

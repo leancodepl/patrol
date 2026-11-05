@@ -131,6 +131,10 @@ class IosAutomatorClient {
     return IOSAllowFaceIdPermissionResponse.fromJson(json);
   }
 
+  Future<void> cancelBiometric() {
+    return _sendRequest('cancelBiometric');
+  }
+
   Future<Map<String, dynamic>> _sendRequest(
     String requestName, [
     Map<String, dynamic>? request,

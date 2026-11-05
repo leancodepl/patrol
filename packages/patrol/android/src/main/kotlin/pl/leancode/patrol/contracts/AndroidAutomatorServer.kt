@@ -37,8 +37,9 @@ interface AndroidAutomatorServer {
     fun resetFoldPosture()
     fun enrollBiometrics()
     fun unenrollBiometrics()
-    fun acceptBiometricAuthentication()
-    fun rejectBiometricAuthentication()
+    fun passBiometric()
+    fun failBiometric()
+    fun cancelBiometric()
 }
 
 private val json = Gson()
@@ -150,12 +151,16 @@ fun getAndroidAutomatorRoutes(server: AndroidAutomatorServer): RoutingHttpHandle
       server.unenrollBiometrics()
       Response(OK)
     },
-    "acceptBiometricAuthentication" bind POST to {
-      server.acceptBiometricAuthentication()
+    "passBiometric" bind POST to {
+      server.passBiometric()
       Response(OK)
     },
-    "rejectBiometricAuthentication" bind POST to {
-      server.rejectBiometricAuthentication()
+    "failBiometric" bind POST to {
+      server.failBiometric()
+      Response(OK)
+    },
+    "cancelBiometric" bind POST to {
+      server.cancelBiometric()
       Response(OK)
     }
 )

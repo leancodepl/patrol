@@ -643,26 +643,34 @@ class IOSAutomator extends NativeMobileAutomator
   }
 
   @override
-  Future<void> acceptBiometricAuthentication() async {
-    await wrapRequest('acceptBiometricAuthentication', () async {
+  Future<void> passBiometric() async {
+    await wrapRequest('passBiometric', () async {
       await _allowFaceIdPermission();
-      await _postToHostServer(
-        'acceptBiometricAuthentication',
-        'sendBiometricMatch',
-        {'match': true},
-      );
+      await _postToHostServer('passBiometric', 'sendBiometricMatch', {
+        'match': true,
+      });
     });
   }
 
   @override
-  Future<void> rejectBiometricAuthentication() async {
-    await wrapRequest('rejectBiometricAuthentication', () async {
+  Future<void> failBiometric() async {
+    await wrapRequest('failBiometric', () async {
       await _allowFaceIdPermission();
-      await _postToHostServer(
-        'rejectBiometricAuthentication',
-        'sendBiometricMatch',
-        {'match': false},
-      );
+      await _postToHostServer('failBiometric', 'sendBiometricMatch', {
+        'match': false,
+      });
+    });
+  }
+
+  @override
+  Future<void> cancelBiometric() async {
+    await wrapRequest('cancelBiometric', () async {
+      await _allowFaceIdPermission();
+      // Face ID shows Cancel only after a failed attempt.
+      await _postToHostServer('cancelBiometric', 'sendBiometricMatch', {
+        'match': false,
+      });
+      await _client.cancelBiometric();
     });
   }
 

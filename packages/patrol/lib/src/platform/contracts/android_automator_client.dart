@@ -143,12 +143,16 @@ class AndroidAutomatorClient {
     return _sendRequest('unenrollBiometrics');
   }
 
-  Future<void> acceptBiometricAuthentication() {
-    return _sendRequest('acceptBiometricAuthentication');
+  Future<void> passBiometric() {
+    return _sendRequest('passBiometric');
   }
 
-  Future<void> rejectBiometricAuthentication() {
-    return _sendRequest('rejectBiometricAuthentication');
+  Future<void> failBiometric() {
+    return _sendRequest('failBiometric');
+  }
+
+  Future<void> cancelBiometric() {
+    return _sendRequest('cancelBiometric');
   }
 
   Future<Map<String, dynamic>> _sendRequest(

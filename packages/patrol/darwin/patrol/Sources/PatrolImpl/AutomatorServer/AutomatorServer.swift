@@ -357,6 +357,12 @@
       }
     }
 
+    func cancelBiometric() throws {
+      return try runCatching {
+        try automator.cancelBiometric()
+      }
+    }
+
     // MARK: Camera
 
     func takeCameraPhoto(request: IOSTakeCameraPhotoRequest) throws {

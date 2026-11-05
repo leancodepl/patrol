@@ -1150,31 +1150,44 @@ class MobileAutomator {
     );
   }
 
-  /// Answers the pending biometric prompt with the enrolled biometric, so the
-  /// authentication succeeds.
+  /// Presents the enrolled face or finger to the pending biometric prompt, so
+  /// the authentication passes.
   ///
   /// Call it once the app shows the prompt. On iOS, if the system first asks
   /// whether the app may use Face ID, this taps OK; to test a denial, call
   /// [denyPermission] before. **Experimental.**
   @experimental
-  Future<void> acceptBiometricAuthentication() {
+  Future<void> passBiometric() {
     return platform.action.mobile(
-      android: platform.android.acceptBiometricAuthentication,
-      ios: platform.ios.acceptBiometricAuthentication,
+      android: platform.android.passBiometric,
+      ios: platform.ios.passBiometric,
     );
   }
 
-  /// Answers the pending biometric prompt with a biometric that isn't
-  /// enrolled, so the authentication attempt fails.
+  /// Presents a face or finger that isn't enrolled to the pending biometric
+  /// prompt, so the attempt fails. The prompt stays open for another try.
   ///
   /// Call it once the app shows the prompt. On iOS, if the system first asks
   /// whether the app may use Face ID, this taps OK; to test a denial, call
   /// [denyPermission] before. **Experimental.**
   @experimental
-  Future<void> rejectBiometricAuthentication() {
+  Future<void> failBiometric() {
     return platform.action.mobile(
-      android: platform.android.rejectBiometricAuthentication,
-      ios: platform.ios.rejectBiometricAuthentication,
+      android: platform.android.failBiometric,
+      ios: platform.ios.failBiometric,
+    );
+  }
+
+  /// Cancels the pending biometric prompt, as if the user tapped its cancel
+  /// button. The app gets a user cancellation.
+  ///
+  /// Face ID shows its cancel button only after a failed attempt, so on iOS
+  /// this first fails once, like [failBiometric]. **Experimental.**
+  @experimental
+  Future<void> cancelBiometric() {
+    return platform.action.mobile(
+      android: platform.android.cancelBiometric,
+      ios: platform.ios.cancelBiometric,
     );
   }
 }

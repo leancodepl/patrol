@@ -944,6 +944,25 @@
       }
     }
 
+    /// Taps Cancel in the system's Face ID (or Touch ID) prompt. Face ID shows Cancel only after a
+    /// failed attempt.
+    func cancelBiometric() throws {
+      try runAction("cancelling the biometric prompt") {
+        let cancel = try Localization.getLocalizedString(key: "cancel")
+        // Depending on the iOS version, CoreAuthUI or SpringBoard shows the prompt.
+        let coreAuthUI = XCUIApplication(bundleIdentifier: "com.apple.CoreAuthUI")
+        guard
+          let button = self.waitForAnyElement(
+            elements: [coreAuthUI.buttons[cancel], self.springboard.buttons[cancel]],
+            timeout: self.timeout
+          )
+        else {
+          throw PatrolError.viewNotExists("\(cancel) button in the biometric prompt")
+        }
+        button.tap()
+      }
+    }
+
     func setMockLocation(latitude: Double, longitude: Double) throws {
       if #available(iOS 16.4, *) {
         runAction("setting mock location to \(latitude), \(longitude)") {

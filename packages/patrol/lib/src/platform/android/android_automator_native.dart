@@ -665,18 +665,17 @@ class AndroidAutomator extends NativeMobileAutomator
   }
 
   @override
-  Future<void> acceptBiometricAuthentication() async {
-    await wrapRequest(
-      'acceptBiometricAuthentication',
-      _client.acceptBiometricAuthentication,
-    );
+  Future<void> passBiometric() async {
+    await wrapRequest('passBiometric', _client.passBiometric);
   }
 
   @override
-  Future<void> rejectBiometricAuthentication() async {
-    await wrapRequest(
-      'rejectBiometricAuthentication',
-      _client.rejectBiometricAuthentication,
-    );
+  Future<void> failBiometric() async {
+    await wrapRequest('failBiometric', _client.failBiometric);
+  }
+
+  @override
+  Future<void> cancelBiometric() async {
+    await wrapRequest('cancelBiometric', _client.cancelBiometric);
   }
 }

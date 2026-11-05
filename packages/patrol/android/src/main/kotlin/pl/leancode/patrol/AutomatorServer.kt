@@ -289,12 +289,16 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
         automation.unenrollBiometrics()
     }
 
-    override fun acceptBiometricAuthentication() {
-        automation.acceptBiometricAuthentication()
+    override fun passBiometric() {
+        automation.passBiometric()
     }
 
-    override fun rejectBiometricAuthentication() {
-        automation.rejectBiometricAuthentication()
+    override fun failBiometric() {
+        automation.failBiometric()
+    }
+
+    override fun cancelBiometric() {
+        automation.cancelBiometric()
     }
 
     override fun takeCameraPhoto(request: Contracts.AndroidTakeCameraPhotoRequest) {

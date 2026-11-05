@@ -480,8 +480,9 @@ abstract class AndroidAutomator<AndroidServer, DartClient> {
   // biometrics
   void enrollBiometrics();
   void unenrollBiometrics();
-  void acceptBiometricAuthentication();
-  void rejectBiometricAuthentication();
+  void passBiometric();
+  void failBiometric();
+  void cancelBiometric();
 }
 
 abstract class IosAutomator<IOSServer, DartClient> {
@@ -521,6 +522,7 @@ abstract class IosAutomator<IOSServer, DartClient> {
   IOSAllowFaceIdPermissionResponse allowFaceIdPermission(
     IOSAllowFaceIdPermissionRequest request,
   );
+  void cancelBiometric();
 }
 
 enum IOSElementType {

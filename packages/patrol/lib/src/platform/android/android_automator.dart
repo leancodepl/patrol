@@ -330,15 +330,22 @@ abstract interface class AndroidAutomator implements MobileAutomator {
   @experimental
   Future<void> unenrollBiometrics();
 
-  /// Answers the pending biometric prompt with an enrolled biometric.
+  /// Presents an enrolled biometric to the pending biometric prompt, so the
+  /// authentication passes.
   ///
   /// Call it once the app shows the prompt. **Experimental.**
   @experimental
-  Future<void> acceptBiometricAuthentication();
+  Future<void> passBiometric();
 
-  /// Answers the pending biometric prompt with a biometric that isn't enrolled.
+  /// Presents a biometric that isn't enrolled to the pending biometric prompt,
+  /// so the attempt fails. The prompt stays open for another try.
   ///
   /// Call it once the app shows the prompt. **Experimental.**
   @experimental
-  Future<void> rejectBiometricAuthentication();
+  Future<void> failBiometric();
+
+  /// Taps the cancel button of the pending biometric prompt, so the app gets a
+  /// user cancellation. **Experimental.**
+  @experimental
+  Future<void> cancelBiometric();
 }

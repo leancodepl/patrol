@@ -291,19 +291,30 @@ abstract interface class IOSAutomator implements MobileAutomator {
   @experimental
   Future<void> unenrollBiometrics();
 
-  /// Answers the pending Face ID (or Touch ID) prompt with a matching face.
+  /// Presents a matching face (or finger) to the pending Face ID (or Touch ID)
+  /// prompt, so the authentication passes.
   ///
   /// Call it once the app shows the prompt. If iOS first asks whether the app
   /// may use Face ID, this taps OK; to test a denial, call
   /// `denyPermission()` before. **Experimental.**
   @experimental
-  Future<void> acceptBiometricAuthentication();
+  Future<void> passBiometric();
 
-  /// Answers the pending Face ID (or Touch ID) prompt with a non-matching face.
+  /// Presents a face (or finger) that doesn't match to the pending Face ID (or
+  /// Touch ID) prompt, so the attempt fails. The prompt stays open for another
+  /// try.
   ///
   /// Call it once the app shows the prompt. If iOS first asks whether the app
   /// may use Face ID, this taps OK; to test a denial, call
   /// `denyPermission()` before. **Experimental.**
   @experimental
-  Future<void> rejectBiometricAuthentication();
+  Future<void> failBiometric();
+
+  /// Taps Cancel in the pending Face ID (or Touch ID) prompt, so the app gets
+  /// a user cancellation.
+  ///
+  /// Face ID shows Cancel only after a failed attempt, so this first fails
+  /// once, like [failBiometric]. **Experimental.**
+  @experimental
+  Future<void> cancelBiometric();
 }

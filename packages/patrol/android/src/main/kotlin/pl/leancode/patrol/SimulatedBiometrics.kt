@@ -96,9 +96,9 @@ class SimulatedBiometrics(
         executeShellCommand("settings delete global $PIN_MARKER")
     }
 
-    fun accept() = authenticate("acceptAuthentication")
+    fun pass() = authenticate("acceptAuthentication")
 
-    fun reject() = authenticate("rejectAuthentication")
+    fun fail() = authenticate("rejectAuthentication")
 
     private fun authenticate(method: String) {
         val current = session ?: throw PatrolException("Call enrollBiometrics() first")
