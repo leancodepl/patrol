@@ -5,7 +5,6 @@ import android.app.KeyguardManager
 import android.app.UiAutomation
 import android.content.Context
 import android.hardware.biometrics.BiometricManager
-import android.hardware.biometrics.SensorProperties
 import android.os.Build
 import android.os.Process
 import android.os.SystemClock
@@ -104,10 +103,12 @@ class SimulatedBiometrics(
     }
 
     private fun strongestSensorId(manager: BiometricManager): Int? {
-        // getSensorProperties() is a @TestApi, but SensorProperties is public.
+        // getSensorProperties() and SensorProperties are hidden, so both go through reflection.
         val properties = manager.javaClass.getMethod("getSensorProperties").invoke(manager) as List<*>
 
-        return properties.filterIsInstance<SensorProperties>().maxByOrNull { it.sensorStrength }?.sensorId
+        return properties.filterNotNull()
+            .maxByOrNull { it.callInt("getSensorStrength") }
+            ?.callInt("getSensorId")
     }
 
     private fun waitUntilEnrolled(manager: BiometricManager) {
@@ -133,6 +134,8 @@ class SimulatedBiometrics(
             automation.dropShellPermissionIdentity()
         }
     }
+
+    private fun Any.callInt(method: String): Int = javaClass.getMethod(method).invoke(this) as Int
 
     private fun Any.call(method: String, userId: Int) {
         javaClass.getMethod(method, Int::class.javaPrimitiveType).invoke(this, userId)
