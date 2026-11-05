@@ -1004,6 +1004,17 @@ Map<String, dynamic> _$IOSPickMultipleImagesFromGalleryRequestToJson(
   'appId': instance.appId,
 };
 
+IOSPostDarwinNotificationRequest _$IOSPostDarwinNotificationRequestFromJson(
+  Map<String, dynamic> json,
+) => IOSPostDarwinNotificationRequest(
+  name: json['name'] as String,
+  state: (json['state'] as num?)?.toInt(),
+);
+
+Map<String, dynamic> _$IOSPostDarwinNotificationRequestToJson(
+  IOSPostDarwinNotificationRequest instance,
+) => <String, dynamic>{'name': instance.name, 'state': instance.state};
+
 IOSAllowFaceIdPermissionRequest _$IOSAllowFaceIdPermissionRequestFromJson(
   Map<String, dynamic> json,
 ) => IOSAllowFaceIdPermissionRequest(

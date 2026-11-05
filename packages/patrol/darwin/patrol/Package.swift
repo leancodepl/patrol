@@ -81,7 +81,10 @@ let package = Package(
       name: "patrol",
       dependencies: ["PatrolImpl"],
       path: "Sources/patrol",
-      publicHeadersPath: "include"
+      publicHeadersPath: "include",
+      linkerSettings: [
+        .linkedFramework("LocalAuthentication", .when(platforms: [.iOS]))
+      ]
     ),
   ]
 )

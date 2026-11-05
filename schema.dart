@@ -373,6 +373,12 @@ class IOSPickMultipleImagesFromGalleryRequest {
   late String appId;
 }
 
+// Experiment: posts a Darwin notification from inside the iOS test runner.
+class IOSPostDarwinNotificationRequest {
+  late String name;
+  int? state;
+}
+
 class IOSAllowFaceIdPermissionRequest {
   late int timeoutMillis;
 }
@@ -522,6 +528,7 @@ abstract class IosAutomator<IOSServer, DartClient> {
   IOSAllowFaceIdPermissionResponse allowFaceIdPermission(
     IOSAllowFaceIdPermissionRequest request,
   );
+  void postDarwinNotification(IOSPostDarwinNotificationRequest request);
   void cancelBiometric();
 }
 

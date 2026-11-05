@@ -1459,6 +1459,24 @@ class IOSPickMultipleImagesFromGalleryRequest with Equatable {
 }
 
 @JsonSerializable()
+class IOSPostDarwinNotificationRequest with Equatable {
+  const IOSPostDarwinNotificationRequest({required this.name, this.state});
+
+  factory IOSPostDarwinNotificationRequest.fromJson(
+    Map<String, dynamic> json,
+  ) => _$IOSPostDarwinNotificationRequestFromJson(json);
+
+  final String name;
+  final int? state;
+
+  Map<String, dynamic> toJson() =>
+      _$IOSPostDarwinNotificationRequestToJson(this);
+
+  @override
+  List<Object?> get props => [name, state];
+}
+
+@JsonSerializable()
 class IOSAllowFaceIdPermissionRequest with Equatable {
   const IOSAllowFaceIdPermissionRequest({required this.timeoutMillis});
 

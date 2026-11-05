@@ -849,6 +849,15 @@ class Contracts {
     }
   }
 
+  data class IOSPostDarwinNotificationRequest (
+    val name: String,
+    val state: Long? = null
+  ){
+    fun hasState(): Boolean {
+      return state != null
+    }
+  }
+
   data class IOSAllowFaceIdPermissionRequest (
     val timeoutMillis: Long
   )

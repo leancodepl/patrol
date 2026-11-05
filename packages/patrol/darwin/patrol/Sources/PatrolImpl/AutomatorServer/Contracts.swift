@@ -541,6 +541,11 @@ public struct IOSPickMultipleImagesFromGalleryRequest: Codable {
   public var appId: String
 }
 
+public struct IOSPostDarwinNotificationRequest: Codable {
+  public var name: String
+  public var state: Int?
+}
+
 public struct IOSAllowFaceIdPermissionRequest: Codable {
   public var timeoutMillis: Int
 }

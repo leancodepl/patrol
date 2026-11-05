@@ -27,6 +27,7 @@ protocol IosAutomatorServer {
     func pickMultipleImagesFromGallery(request: IOSPickMultipleImagesFromGalleryRequest) throws
     func debug() throws
     func allowFaceIdPermission(request: IOSAllowFaceIdPermissionRequest) throws -> IOSAllowFaceIdPermissionResponse
+    func postDarwinNotification(request: IOSPostDarwinNotificationRequest) throws
     func cancelBiometric() throws
 }
 
@@ -146,6 +147,12 @@ extension IosAutomatorServer {
         return HTTPResponse(.ok, body: body)
     }
 
+    private func postDarwinNotificationHandler(request: HTTPRequest) throws -> HTTPResponse {
+        let requestArg = try JSONDecoder().decode(IOSPostDarwinNotificationRequest.self, from: request.body)
+        try postDarwinNotification(request: requestArg)
+        return HTTPResponse(.ok)
+    }
+
     private func cancelBiometricHandler(request: HTTPRequest) throws -> HTTPResponse {
         try cancelBiometric()
         return HTTPResponse(.ok)
@@ -248,6 +255,11 @@ extension IosAutomatorServer {
             request in handleRequest(
                 request: request,
                 handler: allowFaceIdPermissionHandler)
+        }
+        server.route(.POST, "postDarwinNotification") {
+            request in handleRequest(
+                request: request,
+                handler: postDarwinNotificationHandler)
         }
         server.route(.POST, "cancelBiometric") {
             request in handleRequest(

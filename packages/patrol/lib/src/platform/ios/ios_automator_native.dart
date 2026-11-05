@@ -674,6 +674,15 @@ class IOSAutomator extends NativeMobileAutomator
     });
   }
 
+  @override
+  Future<void> postDarwinNotification(String name, {int? state}) async {
+    await wrapRequest('postDarwinNotification', () async {
+      await _client.postDarwinNotification(
+        IOSPostDarwinNotificationRequest(name: name, state: state),
+      );
+    });
+  }
+
   /// Taps OK if iOS asks whether the app may use Face ID, which it does before
   /// the app's first Face ID prompt, so tests don't have to.
   ///

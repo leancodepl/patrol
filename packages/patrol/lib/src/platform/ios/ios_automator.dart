@@ -317,4 +317,9 @@ abstract interface class IOSAutomator implements MobileAutomator {
   /// once, like [failBiometric]. **Experimental.**
   @experimental
   Future<void> cancelBiometric();
+
+  /// Experiment: posts the Darwin notification [name] from inside the test
+  /// runner, after setting its state to [state] if given.
+  @experimental
+  Future<void> postDarwinNotification(String name, {int? state});
 }

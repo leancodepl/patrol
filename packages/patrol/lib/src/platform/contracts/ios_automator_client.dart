@@ -131,6 +131,12 @@ class IosAutomatorClient {
     return IOSAllowFaceIdPermissionResponse.fromJson(json);
   }
 
+  Future<void> postDarwinNotification(
+    IOSPostDarwinNotificationRequest request,
+  ) {
+    return _sendRequest('postDarwinNotification', request.toJson());
+  }
+
   Future<void> cancelBiometric() {
     return _sendRequest('cancelBiometric');
   }

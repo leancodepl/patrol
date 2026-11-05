@@ -1,6 +1,7 @@
 #if PATROL_ENABLED
 
   import Foundation
+  import notify
 
   final class AutomatorServer: MobileAutomatorServer, IosAutomatorServer {
 
@@ -360,6 +361,31 @@
     func cancelBiometric() throws {
       return try runCatching {
         try automator.cancelBiometric()
+      }
+    }
+
+    // Experiment: the test runner runs inside the simulator, so its Darwin
+    // notifications reach the same notifyd as `simctl spawn <udid> notifyutil`.
+    func postDarwinNotification(request: IOSPostDarwinNotificationRequest) throws {
+      return try runCatching {
+        if let state = request.state {
+          var token: Int32 = 0
+          let registered = notify_register_check(request.name, &token)
+          guard registered == NOTIFY_STATUS_OK else {
+            throw PatrolError.internal("notify_register_check(\(request.name)) failed: \(registered)")
+          }
+          let set = notify_set_state(token, UInt64(state))
+          notify_cancel(token)
+          guard set == NOTIFY_STATUS_OK else {
+            throw PatrolError.internal("notify_set_state(\(request.name)) failed: \(set)")
+          }
+        }
+
+        let posted = notify_post(request.name)
+        guard posted == NOTIFY_STATUS_OK else {
+          throw PatrolError.internal("notify_post(\(request.name)) failed: \(posted)")
+        }
+        Logger.shared.i("posted Darwin notification \(request.name), state: \(String(describing: request.state))")
       }
     }
 

@@ -30,7 +30,7 @@ Runs tests that use flutter_test and patrol APIs as native macOS / iOS integrati
   s.ios.deployment_target = '13.0'
   s.osx.deployment_target = '10.14'
   s.weak_framework = 'XCTest'
-  s.ios.framework  = 'UIKit'
+  s.ios.frameworks = 'UIKit', 'LocalAuthentication'
   s.osx.framework  = 'AppKit'
   s.resource_bundles = {
     'patrol_privacy' => ['patrol/Sources/PatrolImpl/Resources/PrivacyInfo.xcprivacy']
