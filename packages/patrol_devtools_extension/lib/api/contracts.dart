@@ -539,17 +539,21 @@ class IOSSelector with Equatable {
 
 @JsonSerializable()
 class AndroidGetNativeViewsRequest with Equatable {
-  const AndroidGetNativeViewsRequest({this.selector});
+  const AndroidGetNativeViewsRequest({
+    this.selector,
+    required this.includeInvisibleNodes,
+  });
 
   factory AndroidGetNativeViewsRequest.fromJson(Map<String, dynamic> json) =>
       _$AndroidGetNativeViewsRequestFromJson(json);
 
   final AndroidSelector? selector;
+  final bool includeInvisibleNodes;
 
   Map<String, dynamic> toJson() => _$AndroidGetNativeViewsRequestToJson(this);
 
   @override
-  List<Object?> get props => [selector];
+  List<Object?> get props => [selector, includeInvisibleNodes];
 }
 
 @JsonSerializable()
@@ -591,6 +595,7 @@ class AndroidNativeView with Equatable {
     required this.isLongClickable,
     required this.isScrollable,
     required this.isSelected,
+    this.isVisibleToUser,
     required this.visibleBounds,
     required this.visibleCenter,
     required this.children,
@@ -614,6 +619,7 @@ class AndroidNativeView with Equatable {
   final bool isLongClickable;
   final bool isScrollable;
   final bool isSelected;
+  final bool? isVisibleToUser;
   final Rectangle visibleBounds;
   final Point2D visibleCenter;
   final List<AndroidNativeView> children;
@@ -637,6 +643,7 @@ class AndroidNativeView with Equatable {
     isLongClickable,
     isScrollable,
     isSelected,
+    isVisibleToUser,
     visibleBounds,
     visibleCenter,
     children,
