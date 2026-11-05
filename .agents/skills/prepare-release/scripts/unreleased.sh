@@ -52,6 +52,21 @@ extra_paths() {
   esac
 }
 
+# Features in the compatibility table's opt-in section (in patrol_cli's docs
+# generator) whose minimum version of this package is still `Unreleased`, as
+# feature PRs write it. The release fills in the version.
+unreleased_opt_in_rows() {
+  local column
+  case "$1" in
+    patrol_cli) column=3 ;;
+    patrol) column=4 ;;
+    *) return 0 ;;
+  esac
+  show packages/patrol_cli/lib/src/compatibility_checker/generate_compatibility_table.dart |
+    awk -F'|' -v c="$column" '/^\| / && $c ~ /^ *Unreleased *$/ {
+      sub(/ — .*/, "", $2); gsub(/^ +| +$|\[|\]\([^)]*\)/, "", $2); print $2 }'
+}
+
 for p in "${packages[@]}"; do
   echo "== $p"
 
@@ -80,6 +95,9 @@ for p in "${packages[@]}"; do
     git merge-base --is-ancestor "$tag" "$base" 2>/dev/null || stray+=("$tag")
   done
   [ ${#stray[@]} -gt 0 ] && echo "  !! prerelease tags not on $base: ${stray[*]}"
+
+  opt_in="$(unreleased_opt_in_rows "$p" | paste -sd ',' - | sed 's/,/, /g')"
+  [ -n "$opt_in" ] && echo "  !! opt-in features with an Unreleased minimum $p version: $opt_in"
 
   # Workspace dependencies that have unreleased changes of their own: their
   # release may have to go first, and this package's constraint may need a bump.

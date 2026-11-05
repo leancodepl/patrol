@@ -46,9 +46,10 @@ Read every run:
 1. `git fetch origin --tags`, then run
    [`scripts/unreleased.sh`](scripts/unreleased.sh) (all publishable packages, or
    name some). Per package it prints the versions (pubspec, last stable tag,
-   pub.dev), stray prerelease tags, workspace dependencies with pending changes,
-   `## Unreleased` entries without a PR number, and PRs merged since the last
-   tag that the section doesn't cite.
+   pub.dev), stray prerelease tags, opt-in compatibility rows that still say
+   `Unreleased`, workspace dependencies with pending changes, `## Unreleased`
+   entries without a PR number, and PRs merged since the last tag that the
+   section doesn't cite.
 2. Read it:
    - **Nothing to release** — no Unreleased entries and only CI/test/docs PRs
      since the tag (those are exempt from `tool/check_changelog.sh`).
@@ -73,7 +74,9 @@ Read every run:
    - **Paired features** — patrol + patrol_cli changes that only work together
      are released back to back (two PRs, merged and tagged together), and an
      opt-in one gets a row in the compatibility table's opt-in section (see
-     [Prepare](#2-prepare), step 4).
+     [Prepare](#2-prepare), step 4). A row whose minimum still says
+     `Unreleased` gets the real version in this round's release PR; list it
+     under "Fix in the release PRs".
    - **Stray prerelease tags** (e.g. `patrol-v4.11.0-dev.1` from a web branch that
      never reached master) — not a blocker, but pub.dev shows them as the newest
      upload and the stable version must be above them. Mention them.
@@ -156,6 +159,13 @@ For each PR:
      rises.
    - A new paired opt-in feature gets a row in `_optInFeaturesSection` in
      `generate_compatibility_table.dart` (edited by hand).
+   - Feature PRs often write `Unreleased` as a minimum version in those rows
+     (`unreleased.sh` flags them). Replace it with the version being released,
+     in patrol_cli's PR with the rest of the table, and the patrol column too
+     when patrol goes out in the same round (#3357 wrote patrol 4.11.0 before
+     patrol was tagged). If patrol is released without patrol_cli, do it in
+     patrol's PR and label that PR `skip changelog`: only patrol_cli's docs
+     generator changes.
    - Regenerate the docs page and test:
      `cd packages/patrol_cli && dart run lib/src/compatibility_checker/generate_compatibility_table.dart && dart test test/compatibility_checker/`
      (writes `docs/documentation/compatibility-table.mdx`).
@@ -172,9 +182,12 @@ For each PR:
      `packages.md`). For patrol, the file list must include
      `skills/patrol-*/SKILL.md`. The dry-run resolves through melos' path
      overrides, so it can't catch a too-low sibling floor;
-   - `scripts/check-floors.sh <pkg>`, which analyzes the package against its
-     sibling floors from pub.dev. A "not on pub.dev yet" line means a sibling
-     this PR needs isn't published, so the PR is early;
+   - `tool/check_dependency_floors.sh <pkg>`, which analyzes the package
+     against its sibling floors from pub.dev. A "not on pub.dev yet" line means
+     a sibling this PR needs isn't published, so the PR is early. It rewrites
+     the package's overrides, lockfile and `analysis_options.yaml`; undo with
+     `git checkout -- packages/<pkg>/analysis_options.yaml` and `melos bootstrap`
+     before amending anything;
    - `tool/check_changelog.sh`, then `scripts/unreleased.sh <pkg>` again with
      `BASE=HEAD`: the package shows its new version and no Unreleased section.
 7. **Open the PR** against `master`. Body: the version, two or three
@@ -231,9 +244,9 @@ Keep it scannable: tables and one line per PR, no restating of changelogs.
 | patrol | 4.10.0 | 4.11.0 | macOS automation, skills, BS coverage | patrol_log 0.10.2 |
 | adb | 0.6.1 | — | nothing new | |
 
-Order (one PR each): patrol_log → patrol_finders → patrol → patrol_cli
+Order (one PR each): patrol_log → patrol_finders → patrol, with patrol_cli alongside (independent)
 Open now: patrol_log; patrol waits for patrol_log 0.10.2 on pub.dev
-Fix in the release PRs: entries without PR numbers (#3251, #3242), #3298 cites the issue
+Fix in the release PRs: entries without PR numbers (#3251, #3242), #3298 cites the issue, opt-in row "Screenshots on web" says Unreleased
 Stray prerelease tags: patrol-v4.11.0-dev.1 (web branch)
 
 **PRs**

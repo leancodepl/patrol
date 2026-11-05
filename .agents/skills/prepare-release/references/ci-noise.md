@@ -10,7 +10,7 @@ at step level, so check the log before calling a PR blocked.
 |---|---|---|
 | `pana (<pkg>)` | fails on most PRs: patrol scores 150/160 on every PR (Linux/Windows unsupported), and patrol_cli, patrol_mcp and patrol_finders often lose points too | the score is lower than on other recent PRs for the same package |
 | `Check semver (…)` on non-`release/*` branches | runs from before 2026-10-20 failed until the version was bumped; newer runs only report the recommended version as the `semver (<pkg>)` status | on a `release/*` branch it enforces the version: red there means the pubspec version is too low |
-| `Flutter <ver> on API <n>`, `Flutter <ver> webview on emulator.wtf` on **fork** PRs | the emulator workflows fail for contributors without write access (CONTRIBUTING); a maintainer has to re-run them | same jobs on a leancodepl branch |
+| `Flutter <ver> on API <n>`, `Flutter <ver> webview on emulator.wtf`, failed at the `Check User Permission` step | the emulator workflows stop there when whoever triggered the run lacks write access, as on fork PRs (CONTRIBUTING); a maintainer has to re-run them | failed at any later step, e.g. in a maintainer's re-run: the tests ran. Runs a few months old have no steps left, so the script counts them as real too |
 
 ## Check the failed step first
 

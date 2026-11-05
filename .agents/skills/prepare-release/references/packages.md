@@ -49,11 +49,14 @@ patrol_cli does **not** depend on the patrol package (the `patrol: main` line in
 its pubspec is under `executables:`). The two only have to agree at runtime,
 which the compatibility table covers.
 
-**Release and tag order:** adb and patrol_log first, then patrol_finders, then
-patrol, then patrol_cli, then patrol_mcp. Skip the ones not being released, but
-keep the order of the rest. Each package has its own release PR and its own
-tag on that PR's merge commit. A PR that bumps a sibling constraint is opened
-only after that sibling is on pub.dev.
+**Release and tag order** follows the graph: a package goes out after the
+siblings it depends on. adb and patrol_log go first; patrol_finders and
+patrol_cli need only those; patrol comes after patrol_finders, and patrol_mcp
+after patrol_cli. patrol and patrol_cli don't depend on each other, so they go
+out together, in either order (#3357 merged before #3356, and both tags were
+pushed at once). Skip the packages not being released. Each package has its
+own release PR and its own tag on that PR's merge commit. A PR that bumps a
+sibling constraint is opened only after that sibling is on pub.dev.
 
 ## Local dependency overrides
 
@@ -76,8 +79,8 @@ What CI resolves against pub.dev:
 | patrol_mcp-prepare `Smoke (floor patrol_cli)` | patrol_cli at its floor | for patrol_cli only |
 
 Nothing covers patrol_finders, patrol_cli, or patrol_mcp's `adb`, so run
-`scripts/check-floors.sh <pkg>` before opening a release PR. It removes the
-overrides, downgrades every sibling to its floor and analyzes `lib/` and
+`tool/check_dependency_floors.sh <pkg>` before opening a release PR. It removes
+the overrides, downgrades every sibling to its floor and analyzes `lib/` and
 `bin/`. Since a dependent's release PR waits until the sibling it needs is
 published, every floor should be on pub.dev. The script still accepts a floor
 equal to the sibling's version in the tree (a branch stacked on the sibling's
@@ -125,7 +128,7 @@ the dependent needs a release of its own.
 |---|---|---|
 | #3352, #3353, #3354 | patrol_log 0.10.2, patrol_finders 3.7.0, patrol_mcp 0.2.2 | the first round with one PR per package: opened together, since none needed another's new version; each tag on its own merge commit |
 | #3357 | patrol_cli 4.9.0 | opened once patrol_log 0.10.2 was on pub.dev; bumps `patrol_log: ^0.10.2`; two opt-in feature rows in the compatibility table, no `versionCompatibilityList` split |
-| #3356 | patrol 4.11.0 | opened with #3357 and tagged right after it (paired features); bumps `patrol_log: ^0.10.2` |
+| #3356 | patrol 4.11.0 | opened with #3357, merged after it, tagged together with it (paired features); bumps `patrol_log: ^0.10.2` |
 | #3285 | patrol 4.10.0, patrol_cli 4.8.0 | one PR for both (before the one-PR-per-package rule); opt-in features section added; changelog entries trimmed before merge |
 | #3293 | patrol_mcp 0.2.1 | three version files, changelog fold |
 | #3231 | patrol_log 0.10.1 | squash-merged; the tag points at the squash commit |
