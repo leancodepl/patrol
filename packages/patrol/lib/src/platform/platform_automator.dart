@@ -1153,7 +1153,9 @@ class MobileAutomator {
   /// Answers the pending biometric prompt with the enrolled biometric, so the
   /// authentication succeeds.
   ///
-  /// Call it once the app shows the prompt. **Experimental.**
+  /// Call it once the app shows the prompt. On iOS, if the system first asks
+  /// whether the app may use Face ID, this taps OK; to test a denial, call
+  /// [denyPermission] before. **Experimental.**
   @experimental
   Future<void> acceptBiometricAuthentication() {
     return platform.action.mobile(
@@ -1165,7 +1167,9 @@ class MobileAutomator {
   /// Answers the pending biometric prompt with a biometric that isn't
   /// enrolled, so the authentication attempt fails.
   ///
-  /// Call it once the app shows the prompt. **Experimental.**
+  /// Call it once the app shows the prompt. On iOS, if the system first asks
+  /// whether the app may use Face ID, this taps OK; to test a denial, call
+  /// [denyPermission] before. **Experimental.**
   @experimental
   Future<void> rejectBiometricAuthentication() {
     return platform.action.mobile(

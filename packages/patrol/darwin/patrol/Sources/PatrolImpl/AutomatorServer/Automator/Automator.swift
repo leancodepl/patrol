@@ -256,6 +256,9 @@
     func selectFineLocation() throws
     func selectCoarseLocation() throws
 
+    // MARK: Biometrics
+    func allowFaceIdPermission(timeout: TimeInterval) throws -> Bool
+
     // MARK: Other
     func debug() throws
     func setMockLocation(latitude: Double, longitude: Double) throws

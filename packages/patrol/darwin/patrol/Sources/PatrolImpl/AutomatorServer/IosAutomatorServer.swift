@@ -26,6 +26,7 @@ protocol IosAutomatorServer {
     func pickImageFromGallery(request: IOSPickImageFromGalleryRequest) throws
     func pickMultipleImagesFromGallery(request: IOSPickMultipleImagesFromGalleryRequest) throws
     func debug() throws
+    func allowFaceIdPermission(request: IOSAllowFaceIdPermissionRequest) throws -> IOSAllowFaceIdPermissionResponse
 }
 
 extension IosAutomatorServer {
@@ -136,6 +137,13 @@ extension IosAutomatorServer {
         try debug()
         return HTTPResponse(.ok)
     }
+
+    private func allowFaceIdPermissionHandler(request: HTTPRequest) throws -> HTTPResponse {
+        let requestArg = try JSONDecoder().decode(IOSAllowFaceIdPermissionRequest.self, from: request.body)
+        let response = try allowFaceIdPermission(request: requestArg)
+        let body = try JSONEncoder().encode(response)
+        return HTTPResponse(.ok, body: body)
+    }
 }
 
 extension IosAutomatorServer {
@@ -229,6 +237,11 @@ extension IosAutomatorServer {
             request in handleRequest(
                 request: request,
                 handler: debugHandler)
+        }
+        server.route(.POST, "allowFaceIdPermission") {
+            request in handleRequest(
+                request: request,
+                handler: allowFaceIdPermissionHandler)
         }
     }
 }

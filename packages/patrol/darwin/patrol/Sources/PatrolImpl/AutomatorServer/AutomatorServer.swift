@@ -343,6 +343,20 @@
       }
     }
 
+    // MARK: Biometrics
+
+    func allowFaceIdPermission(
+      request: IOSAllowFaceIdPermissionRequest
+    ) throws -> IOSAllowFaceIdPermissionResponse {
+      return try runCatching {
+        let allowed = try automator.allowFaceIdPermission(
+          timeout: TimeInterval(request.timeoutMillis) / 1000
+        )
+
+        return IOSAllowFaceIdPermissionResponse(allowed: allowed)
+      }
+    }
+
     // MARK: Camera
 
     func takeCameraPhoto(request: IOSTakeCameraPhotoRequest) throws {

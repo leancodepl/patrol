@@ -920,6 +920,30 @@
       }
     }
 
+    // MARK: Biometrics
+
+    /// Taps OK on the alert in which iOS asks whether the app may use Face ID, if the alert
+    /// shows up within [timeout]. Returns whether it did.
+    func allowFaceIdPermission(timeout: TimeInterval) throws -> Bool {
+      return try runAction("allowing Face ID if the app asks for it") {
+        // "Face ID" isn't translated, so this finds the alert in every language.
+        let alert = self.springboard.alerts
+          .containing(NSPredicate(format: "label CONTAINS 'Face ID'"))
+          .firstMatch
+        guard alert.waitForExistence(timeout: timeout) else {
+          return false
+        }
+
+        let ok = try Localization.getLocalizedString(key: "ok")
+        let button = alert.buttons[ok]
+        guard button.exists else {
+          throw PatrolError.viewNotExists("\(ok) button in the Face ID alert")
+        }
+        button.tap()
+        return true
+      }
+    }
+
     func setMockLocation(latitude: Double, longitude: Double) throws {
       if #available(iOS 16.4, *) {
         runAction("setting mock location to \(latitude), \(longitude)") {

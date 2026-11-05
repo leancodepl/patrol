@@ -541,3 +541,11 @@ public struct IOSPickMultipleImagesFromGalleryRequest: Codable {
   public var appId: String
 }
 
+public struct IOSAllowFaceIdPermissionRequest: Codable {
+  public var timeoutMillis: Int
+}
+
+public struct IOSAllowFaceIdPermissionResponse: Codable {
+  public var allowed: Bool
+}
+

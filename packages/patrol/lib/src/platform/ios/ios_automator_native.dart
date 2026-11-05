@@ -47,11 +47,13 @@ class IOSAutomator extends NativeMobileAutomator
 
   // The simulator shares the host's network.
   static const _hostServerAddress = '127.0.0.1';
+  static const _faceIdPermissionTimeout = Duration(seconds: 3);
 
   final _patrolLog = PatrolLogWriter();
   final IOSAutomatorConfig _config;
 
   IosAutomatorClient? _clientInstance;
+  var _faceIdPermissionChecked = false;
 
   // Created lazily so the port is read after [PatrolRuntimePorts.ensureLoaded].
   IosAutomatorClient get _client {
@@ -643,6 +645,7 @@ class IOSAutomator extends NativeMobileAutomator
   @override
   Future<void> acceptBiometricAuthentication() async {
     await wrapRequest('acceptBiometricAuthentication', () async {
+      await _allowFaceIdPermission();
       await _postToHostServer(
         'acceptBiometricAuthentication',
         'sendBiometricMatch',
@@ -654,12 +657,34 @@ class IOSAutomator extends NativeMobileAutomator
   @override
   Future<void> rejectBiometricAuthentication() async {
     await wrapRequest('rejectBiometricAuthentication', () async {
+      await _allowFaceIdPermission();
       await _postToHostServer(
         'rejectBiometricAuthentication',
         'sendBiometricMatch',
         {'match': false},
       );
     });
+  }
+
+  /// Taps OK if iOS asks whether the app may use Face ID, which it does before
+  /// the app's first Face ID prompt, so tests don't have to.
+  ///
+  /// The first call waits a while for the alert, since the app may still be
+  /// about to show it. Later calls only check, because iOS asks once.
+  Future<void> _allowFaceIdPermission() async {
+    final timeout = _faceIdPermissionChecked
+        ? Duration.zero
+        : _faceIdPermissionTimeout;
+    _faceIdPermissionChecked = true;
+
+    final response = await _client.allowFaceIdPermission(
+      IOSAllowFaceIdPermissionRequest(timeoutMillis: timeout.inMilliseconds),
+    );
+    if (response.allowed) {
+      // The Face ID prompt animates in after the alert, and ignores a match
+      // that comes before it.
+      await Future<void>.delayed(const Duration(seconds: 1));
+    }
   }
 
   /// Sends [body] to the [route] of the `patrol` CLI, which does what a

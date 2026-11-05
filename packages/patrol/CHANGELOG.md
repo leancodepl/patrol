@@ -3,7 +3,8 @@
 - Add experimental `$.platform.mobile.enrollBiometrics()`, `unenrollBiometrics()`,
   `acceptBiometricAuthentication()` and `rejectBiometricAuthentication()` to simulate Face ID,
   Touch ID and fingerprint prompts on iOS simulators (with `patrol test` or `patrol develop`) and
-  on Android 12+.
+  on Android 12+. On iOS, accepting or rejecting first taps OK when the system asks whether the
+  app may use Face ID.
 - Remove the placeholder `GoogleService-Info.plist` and `google-services.json` from the example app, so security scanners no longer flag the published package. (#3360)
 - Add web platform screenshot support via `$.takeNativeScreenshot('tag')`. (#3047)
 - Support Android code coverage with the test orchestrator's `clearPackageData:true` on Android

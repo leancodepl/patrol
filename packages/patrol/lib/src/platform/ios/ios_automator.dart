@@ -293,13 +293,17 @@ abstract interface class IOSAutomator implements MobileAutomator {
 
   /// Answers the pending Face ID (or Touch ID) prompt with a matching face.
   ///
-  /// Call it once the app shows the prompt. **Experimental.**
+  /// Call it once the app shows the prompt. If iOS first asks whether the app
+  /// may use Face ID, this taps OK; to test a denial, call
+  /// `denyPermission()` before. **Experimental.**
   @experimental
   Future<void> acceptBiometricAuthentication();
 
   /// Answers the pending Face ID (or Touch ID) prompt with a non-matching face.
   ///
-  /// Call it once the app shows the prompt. **Experimental.**
+  /// Call it once the app shows the prompt. If iOS first asks whether the app
+  /// may use Face ID, this taps OK; to test a denial, call
+  /// `denyPermission()` before. **Experimental.**
   @experimental
   Future<void> rejectBiometricAuthentication();
 }

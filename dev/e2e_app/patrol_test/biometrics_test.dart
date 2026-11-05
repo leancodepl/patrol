@@ -1,8 +1,6 @@
 // The biometrics API is experimental.
 // ignore_for_file: experimental_member_use, unnecessary_ignore
 
-import 'dart:io';
-
 import 'common.dart';
 
 // Needs an iOS simulator run by `patrol test` or an Android 12+ device.
@@ -19,14 +17,9 @@ void main() {
       await $('Check enrollment').tap();
       expect($(#biometricsStatus).text, startsWith('Enrolled'));
 
+      // On iOS, the first prompt waits for the Face ID permission alert, which
+      // the reject below taps through.
       await $('Authenticate').tap();
-      if (Platform.isIOS &&
-          await $.platform.mobile.isPermissionDialogVisible(
-            timeout: const Duration(seconds: 5),
-          )) {
-        // Face ID asks for NSFaceIDUsageDescription the first time.
-        await $.platform.mobile.grantPermissionWhenInUse();
-      }
 
       // A face that doesn't match keeps the prompt open for another try. If
       // the prompt isn't up yet, the reject is lost, which this can't tell.
