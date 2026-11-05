@@ -8,12 +8,10 @@ import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:platform/platform.dart';
 
 class DoctorCommand extends PatrolCommand {
-  DoctorCommand({required Logger logger, required Platform platform})
-    : _logger = logger,
-      _platform = platform;
+  DoctorCommand({required this._logger, required this._platform});
 
   final Logger _logger;
-  final Platform _platform;
+  final NativePlatform _platform;
 
   @override
   String get name => 'doctor';
@@ -79,9 +77,9 @@ class DoctorCommand extends PatrolCommand {
       _logger.success('• Env var \$ANDROID_HOME set to $androidHome');
     } else {
       final linkHint = switch (_platform.operatingSystem) {
-        Platform.linux ||
-        Platform.macOS => 'https://developer.android.com/tools/variables#set',
-        Platform.windows =>
+        NativePlatform.linux || NativePlatform.macOS =>
+          'https://developer.android.com/tools/variables#set',
+        NativePlatform.windows =>
           'https://www.ibm.com/docs/en/rtw/11.0.0?topic=prwut-setting-changing-android-home-path-in-windows-operating-systems',
         _ => '',
       };

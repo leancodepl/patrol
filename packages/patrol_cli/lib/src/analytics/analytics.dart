@@ -31,22 +31,17 @@ class Analytics {
   Analytics({
     required String measurementId,
     required String apiSecret,
-    required FileSystem fs,
-    required Platform platform,
+    required this._fs,
+    required this._platform,
     http.Client? httpClient,
-    required bool isCI,
-    required bool? envAnalyticsEnabled,
-    required Logger logger,
-  }) : _fs = fs,
-       _platform = platform,
-       _httpClient = httpClient ?? http.Client(),
-       _postUrl = _getAnalyticsUrl(measurementId, apiSecret),
-       _isCI = isCI,
-       _envAnalyticsEnabled = envAnalyticsEnabled,
-       _logger = logger;
+    required this._isCI,
+    required this._envAnalyticsEnabled,
+    required this._logger,
+  }) : _httpClient = httpClient ?? http.Client(),
+       _postUrl = _getAnalyticsUrl(measurementId, apiSecret);
 
   final FileSystem _fs;
-  final Platform _platform;
+  final NativePlatform _platform;
 
   final http.Client _httpClient;
   final String _postUrl;

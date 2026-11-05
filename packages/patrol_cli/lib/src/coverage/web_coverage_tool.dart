@@ -13,12 +13,10 @@ import 'package:patrol_cli/src/coverage/coverage_common.dart';
 /// Dart via source maps and writes the same report as the mobile flow.
 class WebCoverageTool {
   WebCoverageTool({
-    required FileSystem fs,
-    required Directory rootDirectory,
-    required Logger logger,
-  }) : _fs = fs,
-       _rootDirectory = rootDirectory,
-       _logger = logger;
+    required this._fs,
+    required this._rootDirectory,
+    required this._logger,
+  });
 
   final FileSystem _fs;
   final Directory _rootDirectory;

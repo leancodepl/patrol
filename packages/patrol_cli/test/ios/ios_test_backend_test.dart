@@ -8,7 +8,7 @@ import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
-import 'package:platform/platform.dart';
+import 'package:platform/testing.dart';
 import 'package:process/process.dart';
 import 'package:test/test.dart';
 
@@ -58,7 +58,7 @@ void main() {
 
       iosTestBackend = IOSTestBackend(
         processManager: FakeProcessManager(),
-        platform: FakePlatform(),
+        platform: TestNativePlatform(),
         fs: fs,
         rootDirectory: fs.currentDirectory,
         parentDisposeScope: DisposeScope(),

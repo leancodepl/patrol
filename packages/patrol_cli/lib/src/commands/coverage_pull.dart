@@ -30,9 +30,7 @@ import 'package:patrol_cli/src/runner/patrol_command.dart';
 /// file (Android 12+), and the runs are merged here. A BrowserStack session
 /// that kept only the first test's run (older Android) is an error.
 class CoveragePullCommand extends PatrolCommand {
-  CoveragePullCommand({required Logger logger, required FileSystem fs})
-    : _logger = logger,
-      _fs = fs {
+  CoveragePullCommand({required this._logger, required this._fs}) {
     argParser
       ..addOption(
         'input',

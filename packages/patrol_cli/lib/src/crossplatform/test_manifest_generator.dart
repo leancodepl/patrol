@@ -17,12 +17,10 @@ import 'package:process/process.dart';
 /// to what runtime discovery would produce.
 class TestManifestGenerator {
   TestManifestGenerator({
-    required ProcessManager processManager,
-    required Directory rootDirectory,
-    required Logger logger,
-  }) : _processManager = processManager,
-       _rootDirectory = rootDirectory,
-       _logger = logger;
+    required this._processManager,
+    required this._rootDirectory,
+    required this._logger,
+  });
 
   final ProcessManager _processManager;
   final Directory _rootDirectory;
