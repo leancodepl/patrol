@@ -67,6 +67,7 @@ let package = Package(
         .process("Resources/pl.lproj"),
         .process("Resources/ja.lproj"),
         .process("Resources/ko.lproj"),
+        .process("Resources/pt.lproj"),
       ],
       swiftSettings: patrolImplSwiftSettings,
       linkerSettings: patrolImplLinkerSettings

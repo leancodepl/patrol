@@ -17,14 +17,14 @@ class Localization {
 
   /**
    * Gets localized string based on device language
-   * Supports English (en), German (de), French (fr), Polish (pl), Japanese (ja) and Korean (ko) languages
+   * Supports English (en), German (de), French (fr), Polish (pl), Japanese (ja), Korean (ko) and Portuguese (pt) languages
    */
   static func getLocalizedString(key: String) throws -> String {  // Mark as throws
     let language = getDeviceLanguage()
     let targetLanguage = language ?? "en"
 
     // Define supported languages
-    let supportedLanguages = ["en", "de", "fr", "pl", "ja", "ko"]
+    let supportedLanguages = ["en", "de", "fr", "pl", "ja", "ko", "pt"]
 
     if let unwrappedLanguage = language {
       Logger.shared.i("Device language: \(unwrappedLanguage)")
