@@ -1,0 +1,30 @@
+/* Permission dialog buttons */
+"ok" = "OK";
+"allow" = "Permitir";
+"allow_once" = "Permitir Uma Vez";
+"allow_while_using_app" = "Permitir Durante o Uso do App";
+"dont_allow" = "Não Permitir";
+"limit_access" = "Limitar Acesso…";  // … is a Unicode ellipsis
+"allow_full_access" = "Permitir Acesso Total";
+
+/* Notification identifiers */
+"open" = "Abrir";
+
+/* Settings navigation */
+"developer" = "Desenvolvedor";
+"dark_appearance" = "Aparência Escura";
+"display_brightness" = "Tela e Brilho";
+"dark" = "Escuro";
+"light" = "Claro";
+
+/* Location precision */
+"precise_off" = "Preciso: Desligado";
+"precise_on" = "Preciso: Ligado";
+
+/* Gallery */
+"add" = "Adicionar";
+
+/* Uninstall app */
+"remove_app" = "Remover App";
+"delete_app" = "Apagar App";
+"delete" = "Apagar";
