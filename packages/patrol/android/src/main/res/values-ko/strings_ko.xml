@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="patrol_localization_locale">ko</string>
+
     <!-- Airplane mode toggle -->
     <string name="airplane_mode">비행기 모드</string>
 

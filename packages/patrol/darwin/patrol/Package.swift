@@ -59,14 +59,9 @@ let package = Package(
         "HTTPParserC",
       ],
       path: "Sources/PatrolImpl",
+      // PrivacyInfo.xcprivacy and every <locale>.lproj.
       resources: [
-        .process("Resources/PrivacyInfo.xcprivacy"),
-        .process("Resources/en.lproj"),
-        .process("Resources/de.lproj"),
-        .process("Resources/fr.lproj"),
-        .process("Resources/pl.lproj"),
-        .process("Resources/ja.lproj"),
-        .process("Resources/ko.lproj"),
+        .process("Resources")
       ],
       swiftSettings: patrolImplSwiftSettings,
       linkerSettings: patrolImplLinkerSettings
