@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -126,6 +127,31 @@ void main() {
       await server.close();
 
       verify(biometrics.restore).called(1);
+    });
+
+    test('restores the enrollment after a request in flight', () async {
+      final enrolling = Completer<void>();
+      final enrollStarted = Completer<void>();
+      when(() => biometrics.setEnrolled(any())).thenAnswer((_) {
+        enrollStarted.complete();
+        return enrolling.future;
+      });
+      final events = <String>[];
+      when(biometrics.restore).thenAnswer((_) async => events.add('restore'));
+
+      // The forced close cuts the connection, so the client sees an error.
+      final response = post('/setBiometricEnrollment', {
+        'enrolled': true,
+      }).then<void>((_) {}, onError: (Object _) {});
+      await enrollStarted.future;
+      final closed = server.close();
+      await Future<void>.delayed(Duration.zero);
+      events.add('enrolled');
+      enrolling.complete();
+      await closed;
+      await response;
+
+      expect(events, ['enrolled', 'restore']);
     });
 
     test('responds with 404 to an unknown path', () async {

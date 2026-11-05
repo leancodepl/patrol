@@ -77,11 +77,23 @@ class SimulatedBiometrics(
             closeSession()
         } finally {
             if (setPin) {
-                setPin = false
-                Logger.d(executeShellCommand("locksettings clear --old $PIN"))
-                executeShellCommand("settings delete global $PIN_MARKER")
+                clearPin()
             }
         }
+    }
+
+    private fun clearPin() {
+        Logger.d(executeShellCommand("locksettings clear --old $PIN"))
+
+        // locksettings reports failures in its output, not its exit code. Keep the PIN's markers
+        // until it's gone, so the next unenroll can retry.
+        val keyguard = context.getSystemService(KeyguardManager::class.java)
+        if (keyguard.isDeviceSecure) {
+            throw PatrolException("unenrollBiometrics(): couldn't remove the PIN $PIN set for biometrics")
+        }
+
+        setPin = false
+        executeShellCommand("settings delete global $PIN_MARKER")
     }
 
     fun accept() = authenticate("acceptAuthentication")

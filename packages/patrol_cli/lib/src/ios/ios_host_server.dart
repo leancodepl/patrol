@@ -25,13 +25,22 @@ class IOSHostServer {
   }) async {
     final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
     final hostServer = IOSHostServer._(server, hinge, biometrics, logger);
-    server.asyncMap(hostServer._handleRequest).listen((_) {});
+    server.asyncMap(hostServer._trackRequest).listen((_) {});
     logger.detail('iOS host server listening on port ${server.port}');
 
     return hostServer;
   }
 
   int get port => _server.port;
+
+  /// Requests still being handled, which [close] waits for.
+  final _inFlight = <Future<void>>{};
+
+  Future<void> _trackRequest(HttpRequest request) {
+    final handled = _handleRequest(request);
+    _inFlight.add(handled);
+    return handled.whenComplete(() => _inFlight.remove(handled));
+  }
 
   Future<void> _handleRequest(HttpRequest request) async {
     final response = request.response;
@@ -99,6 +108,13 @@ class IOSHostServer {
 
   Future<void> close() async {
     await _server.close(force: true);
+    // A request that's still running could otherwise change the enrollment
+    // after it's restored.
+    try {
+      await Future.wait(_inFlight.toList());
+    } on Exception catch (err) {
+      _logger.detail('A request failed while closing: $err');
+    }
     await _hinge.close();
     try {
       await _biometrics.restore();
