@@ -98,10 +98,13 @@ class IOSTestBackend {
       Process process;
 
       final isRealDevice = !options.simulator;
-      final isReleaseMode = options.flutter.buildMode == BuildMode.release;
-      if (isRealDevice && !isReleaseMode) {
+      // Debug builds need JIT, which iOS allows only for apps launched by the
+      // Flutter tooling. Profile and release builds are AOT-compiled.
+      final isDebugMode = options.flutter.buildMode == BuildMode.debug;
+      if (isRealDevice && isDebugMode) {
         throwToolExit(
-          'Running on physical iOS devices is possible only in release mode',
+          'Running on physical iOS devices is not possible in debug mode. '
+          'Use --release or --profile.',
         );
       }
 
