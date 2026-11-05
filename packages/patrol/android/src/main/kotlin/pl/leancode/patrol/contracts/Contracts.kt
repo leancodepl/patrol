@@ -849,4 +849,12 @@ class Contracts {
     }
   }
 
+  data class IOSAllowFaceIdPermissionRequest (
+    val timeoutMillis: Long
+  )
+
+  data class IOSAllowFaceIdPermissionResponse (
+    val allowed: Boolean
+  )
+
 }

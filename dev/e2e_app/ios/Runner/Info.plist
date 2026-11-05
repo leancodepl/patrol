@@ -47,6 +47,8 @@
 	<string>camera</string>
 	<key>NSContactsUsageDescription</key>
 	<string>contacts</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Patrol checks biometrics</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Always and when in use!</string>
 	<key>NSLocationAlwaysUsageDescription</key>

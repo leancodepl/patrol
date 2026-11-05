@@ -1125,6 +1125,71 @@ class MobileAutomator {
       ios: () => platform.ios.setFoldPosture(posture),
     );
   }
+
+  /// Enrolls a biometric, such as a face or a fingerprint, so that apps can
+  /// use biometric authentication.
+  ///
+  /// On iOS, works only on simulators run by `patrol test` or
+  /// `patrol develop`. On Android, needs Android 12+ and switches the sensors
+  /// to a test HAL until [unenrollBiometrics], so keys bound to biometrics
+  /// don't work. **Experimental.**
+  @experimental
+  Future<void> enrollBiometrics() {
+    return platform.action.mobile(
+      android: platform.android.enrollBiometrics,
+      ios: platform.ios.enrollBiometrics,
+    );
+  }
+
+  /// Removes the biometric enrolled with [enrollBiometrics]. **Experimental.**
+  @experimental
+  Future<void> unenrollBiometrics() {
+    return platform.action.mobile(
+      android: platform.android.unenrollBiometrics,
+      ios: platform.ios.unenrollBiometrics,
+    );
+  }
+
+  /// Presents the enrolled face or finger to the pending biometric prompt, so
+  /// the authentication passes.
+  ///
+  /// Call it once the app shows the prompt. On iOS, if the system first asks
+  /// whether the app may use Face ID, this taps OK; to test a denial, call
+  /// [denyPermission] before. **Experimental.**
+  @experimental
+  Future<void> passBiometric() {
+    return platform.action.mobile(
+      android: platform.android.passBiometric,
+      ios: platform.ios.passBiometric,
+    );
+  }
+
+  /// Presents a face or finger that isn't enrolled to the pending biometric
+  /// prompt, so the attempt fails. The prompt stays open for another try.
+  ///
+  /// Call it once the app shows the prompt. On iOS, if the system first asks
+  /// whether the app may use Face ID, this taps OK; to test a denial, call
+  /// [denyPermission] before. **Experimental.**
+  @experimental
+  Future<void> failBiometric() {
+    return platform.action.mobile(
+      android: platform.android.failBiometric,
+      ios: platform.ios.failBiometric,
+    );
+  }
+
+  /// Cancels the pending biometric prompt, as if the user tapped its cancel
+  /// button. The app gets a user cancellation.
+  ///
+  /// Face ID shows its cancel button only after a failed attempt, so on iOS
+  /// this first fails once, like [failBiometric]. **Experimental.**
+  @experimental
+  Future<void> cancelBiometric() {
+    return platform.action.mobile(
+      android: platform.android.cancelBiometric,
+      ios: platform.ios.cancelBiometric,
+    );
+  }
 }
 
 /// Platform-specific action router.

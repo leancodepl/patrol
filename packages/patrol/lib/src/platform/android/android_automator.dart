@@ -315,4 +315,37 @@ abstract interface class AndroidAutomator implements MobileAutomator {
   /// Gives the posture back to the hinge. **Experimental.**
   @experimental
   Future<void> resetFoldPosture();
+
+  /// Enrolls a biometric on every sensor of the device, so that apps can use
+  /// biometric authentication.
+  ///
+  /// Needs Android 12+. Switches the sensors to a test HAL until
+  /// [unenrollBiometrics], so apps can't use keys bound to biometrics, such as
+  /// a `CryptoObject`, in the meantime. **Experimental.**
+  @experimental
+  Future<void> enrollBiometrics();
+
+  /// Removes the biometrics enrolled with [enrollBiometrics] and gives the
+  /// sensors back to the real HAL. **Experimental.**
+  @experimental
+  Future<void> unenrollBiometrics();
+
+  /// Presents an enrolled biometric to the pending biometric prompt, so the
+  /// authentication passes.
+  ///
+  /// Call it once the app shows the prompt. **Experimental.**
+  @experimental
+  Future<void> passBiometric();
+
+  /// Presents a biometric that isn't enrolled to the pending biometric prompt,
+  /// so the attempt fails. The prompt stays open for another try.
+  ///
+  /// Call it once the app shows the prompt. **Experimental.**
+  @experimental
+  Future<void> failBiometric();
+
+  /// Taps the cancel button of the pending biometric prompt, so the app gets a
+  /// user cancellation. **Experimental.**
+  @experimental
+  Future<void> cancelBiometric();
 }
