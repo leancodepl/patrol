@@ -183,8 +183,9 @@ For each PR:
      `skills/patrol-*/SKILL.md`. The dry-run resolves through melos' path
      overrides, so it can't catch a too-low sibling floor;
    - `tool/check_dependency_floors.sh <pkg>`, which analyzes the package
-     against its sibling floors from pub.dev. A "not on pub.dev yet" line means
-     a sibling this PR needs isn't published, so the PR is early. It rewrites
+     against its sibling floors from pub.dev, as CI's `Dependency floors` job
+     does. A "not on pub.dev yet" line means a sibling this PR needs isn't
+     published, so the PR is early. It rewrites
      the package's overrides, lockfile and `analysis_options.yaml`; undo with
      `git checkout -- packages/<pkg>/analysis_options.yaml` and `melos bootstrap`
      before amending anything;
@@ -193,11 +194,12 @@ For each PR:
 7. **Open the PR** against `master`. Body: the version, two or three
    highlights, the tag to push after merging, the other release PRs of this
    round (links, and which wait for this one), and what you verified.
-8. **Expect on CI** — the semver check is enforced on this branch, so a red one
-   is real; `pana` is noise as usual. If `Resolve against published
-   dependencies` or `Smoke (… patrol_cli)` fails in pub get with "doesn't match
-   any versions", a sibling this PR needs isn't on pub.dev yet. **Stop here.**
-   Tagging is a separate run.
+8. **Expect on CI** — the semver and `Dependency floors` checks are enforced on
+   this branch, so a red one is real; `pana` is noise as usual. If
+   `Dependency floors` reports a sibling "not on pub.dev yet", or
+   `Smoke (… patrol_cli)` fails in pub get with "doesn't match any versions", a
+   sibling this PR needs isn't on pub.dev yet. **Stop here.** Tagging is a
+   separate run.
 
 ## 3. Publish
 
