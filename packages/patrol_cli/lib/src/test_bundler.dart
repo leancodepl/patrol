@@ -58,7 +58,7 @@ Future<void> main([List<String> args = const []]) async {
   // This is the entrypoint of the bundled Dart test.
   //
   // [args] are the Dart entrypoint arguments passed by the native side of the
-  // app. They are exposed to tests as `\$.args`.
+  // app. They are exposed to tests as `\$.entrypointArgs`.
   //
   // Its responsibilities are:
   //  * Running a special Dart test that runs before all the other tests and
@@ -104,7 +104,7 @@ Future<void> main([List<String> args = const []]) async {
     );
     await platformAutomator.initialize();
     binding = PatrolBinding.ensureInitialized(platformAutomator)
-      ..args = args;
+      ..entrypointArgs = args;
   }
 
   // A special test to explore the hierarchy of groups and tests. This is a hack
@@ -243,7 +243,7 @@ Future<void> main([List<String> args = const []]) async {
   await platformAutomator.initialize();
 
   PatrolBinding.ensureInitialized(platformAutomator)
-    ..args = args
+    ..entrypointArgs = args
     ..workaroundDebugDefaultTargetPlatformOverride =
         debugDefaultTargetPlatformOverride;
 

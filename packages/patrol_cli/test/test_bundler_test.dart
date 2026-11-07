@@ -387,7 +387,7 @@ group('example.example_test', example__example_test.main);''');
         contents,
         contains('Future<void> main([List<String> args = const []]) async {'),
       );
-      expect(contents, contains('..args = args;'));
+      expect(contents, contains('..entrypointArgs = args;'));
     });
 
     test('develop test bundle main accepts optional entrypoint args', () {
@@ -405,7 +405,7 @@ group('example.example_test', example__example_test.main);''');
         contents,
         contains('Future<void> main([List<String> args = const []]) async {'),
       );
-      expect(contents, contains('..args = args'));
+      expect(contents, contains('..entrypointArgs = args'));
     });
 
     test('proxy entrypoint forwards entrypoint args', () {
