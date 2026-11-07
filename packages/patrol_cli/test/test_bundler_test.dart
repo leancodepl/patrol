@@ -425,11 +425,9 @@ group('example.example_test', example__example_test.main);''');
       );
       expect(
         contents,
-        contains('case final dynamic Function(List<String>) main:'),
+        contains('final dynamic Function(List<String>) main => main(args),'),
       );
-      expect(contents, contains('await main(args);'));
-      expect(contents, contains('case final dynamic Function() main:'));
-      expect(contents, contains('await main();'));
+      expect(contents, contains('final dynamic Function() main => main(),'));
     });
 
     test('does not create proxy for recognized test directory', () {
