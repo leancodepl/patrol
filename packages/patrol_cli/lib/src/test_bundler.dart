@@ -437,12 +437,11 @@ import '$relativeTargetPath' as bundle;
 Future<void> main([List<String> args = const []]) async {
   // A bundle kept with --no-generate-bundle may have a main() without args.
   final Function entrypoint = bundle.main;
-  switch (entrypoint) {
-    case final dynamic Function(List<String>) main:
-      await main(args);
-    case final dynamic Function() main:
-      await main();
-  }
+  await switch (entrypoint) {
+    final dynamic Function(List<String>) main => main(args),
+    final dynamic Function() main => main(),
+    _ => throw StateError('Unsupported main() signature in the test bundle'),
+  };
 }
 ''');
   }
