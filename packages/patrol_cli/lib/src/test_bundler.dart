@@ -437,10 +437,11 @@ import '$relativeTargetPath' as bundle;
 Future<void> main([List<String> args = const []]) async {
   // A bundle kept with --no-generate-bundle may have a main() without args.
   final Function entrypoint = bundle.main;
-  if (entrypoint is dynamic Function(List<String>)) {
-    await entrypoint(args);
-  } else {
-    await (entrypoint as dynamic Function())();
+  switch (entrypoint) {
+    case final dynamic Function(List<String>) main:
+      await main(args);
+    case final dynamic Function() main:
+      await main();
   }
 }
 ''');

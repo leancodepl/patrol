@@ -425,10 +425,11 @@ group('example.example_test', example__example_test.main);''');
       );
       expect(
         contents,
-        contains('if (entrypoint is dynamic Function(List<String>)) {'),
+        contains('case final dynamic Function(List<String>) main:'),
       );
-      expect(contents, contains('await entrypoint(args);'));
-      expect(contents, contains('await (entrypoint as dynamic Function())();'));
+      expect(contents, contains('await main(args);'));
+      expect(contents, contains('case final dynamic Function() main:'));
+      expect(contents, contains('await main();'));
     });
 
     test('does not create proxy for recognized test directory', () {
