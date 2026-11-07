@@ -437,6 +437,13 @@ import '$relativeTargetPath' as bundle;
 Future<void> main([List<String> args = const []]) async {
   // A bundle kept with --no-generate-bundle may have a main() without args.
   final Function entrypoint = bundle.main;
+  if (entrypoint is! dynamic Function(List<String>) && args.isNotEmpty) {
+    print(
+      'Warning: main() in $relativeTargetPath takes no arguments, so the '
+      'entrypoint arguments are dropped. Regenerate the test bundle or add a '
+      'List<String> args parameter to read them with \\\$.entrypointArgs.',
+    );
+  }
   await switch (entrypoint) {
     final dynamic Function(List<String>) main => main(args),
     final dynamic Function() main => main(),
