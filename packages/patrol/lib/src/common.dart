@@ -190,6 +190,7 @@ void patrolTest(
         tester: widgetTester,
         config: config,
         platformAutomator: platformAutomator,
+        args: patrolBinding.args,
       );
       try {
         await callback(patrolTester);
