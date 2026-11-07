@@ -434,7 +434,15 @@ ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e
 
 import '$relativeTargetPath' as bundle;
 
-Future<void> main([List<String> args = const []]) => bundle.main(args);
+Future<void> main([List<String> args = const []]) async {
+  // A bundle kept with --no-generate-bundle may have a main() without args.
+  final Function entrypoint = bundle.main;
+  if (entrypoint is dynamic Function(List<String>)) {
+    await entrypoint(args);
+  } else {
+    await (entrypoint as dynamic Function())();
+  }
+}
 ''');
   }
 }

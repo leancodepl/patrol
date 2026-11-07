@@ -421,11 +421,14 @@ group('example.example_test', example__example_test.main);''');
       // then
       expect(
         contents,
-        contains(
-          'Future<void> main([List<String> args = const []]) => '
-          'bundle.main(args);',
-        ),
+        contains('Future<void> main([List<String> args = const []]) async {'),
       );
+      expect(
+        contents,
+        contains('if (entrypoint is dynamic Function(List<String>)) {'),
+      );
+      expect(contents, contains('await entrypoint(args);'));
+      expect(contents, contains('await (entrypoint as dynamic Function())();'));
     });
 
     test('does not create proxy for recognized test directory', () {
