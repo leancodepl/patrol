@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Add `$.args`, the Dart entrypoint arguments the native side of the app passes to the test bundle's `main` (e.g. `FlutterEngine.dartEntrypointArgs` on Android). Empty when none are passed. Requires a `patrol_cli` release that includes this change.
 - Remove the placeholder `GoogleService-Info.plist` and `google-services.json` from the example app, so security scanners no longer flag the published package. (#3360)
 - Add web platform screenshot support via `$.takeNativeScreenshot('tag')`. (#3047)
 - Support Android code coverage with the test orchestrator's `clearPackageData:true` on Android

@@ -55,8 +55,11 @@ import 'package:test_api/src/backend/invoker.dart';
 ${generateImports(testDirectory, testFilePaths, web: web)}
 // END: GENERATED TEST IMPORTS
 
-Future<void> main() async {
+Future<void> main([List<String> args = const []]) async {
   // This is the entrypoint of the bundled Dart test.
+  //
+  // [args] are the Dart entrypoint arguments passed by the native side of the
+  // app. They are exposed to tests as `\$.args`.
   //
   // Its responsibilities are:
   //  * Running a special Dart test that runs before all the other tests and
@@ -101,7 +104,8 @@ Future<void> main() async {
       config: PlatformAutomatorConfig.defaultConfig(),
     );
     await platformAutomator.initialize();
-    binding = PatrolBinding.ensureInitialized(platformAutomator);
+    binding = PatrolBinding.ensureInitialized(platformAutomator)
+      ..args = args;
   }
 
   // A special test to explore the hierarchy of groups and tests. This is a hack
@@ -233,13 +237,14 @@ import 'package:patrol/src/platform/mobile/patrol_runtime_ports.dart';
 ${generateImports(testDirectory, [testFilePath])}
 // END: GENERATED TEST IMPORTS
 
-Future<void> main() async {
+Future<void> main([List<String> args = const []]) async {
   final platformAutomator = PlatformAutomator(
     config: PlatformAutomatorConfig.defaultConfig(),
   );
   await platformAutomator.initialize();
 
   PatrolBinding.ensureInitialized(platformAutomator)
+    ..args = args
     ..workaroundDebugDefaultTargetPlatformOverride =
         debugDefaultTargetPlatformOverride;
 
@@ -430,7 +435,7 @@ ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e
 
 import '$relativeTargetPath' as bundle;
 
-Future<void> main() => bundle.main();
+Future<void> main([List<String> args = const []]) => bundle.main(args);
 ''');
   }
 }
