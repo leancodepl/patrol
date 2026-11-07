@@ -428,6 +428,14 @@ group('example.example_test', example__example_test.main);''');
         contains('final dynamic Function(List<String>) main => main(args),'),
       );
       expect(contents, contains('final dynamic Function() main => main(),'));
+      expect(
+        contents,
+        contains(
+          'if (entrypoint is! dynamic Function(List<String>) && '
+          'args.isNotEmpty) {',
+        ),
+      );
+      expect(contents, contains(r'read them with \$.entrypointArgs.'));
     });
 
     test('does not create proxy for recognized test directory', () {
