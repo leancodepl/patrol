@@ -45,12 +45,9 @@ class PatrolIntegrationTester extends finders.PatrolTester {
   )
   late final NativeAutomator2 nativeAutomator2;
 
-  /// Dart entrypoint arguments passed by the native side of the app to the
-  /// `main` function of the test bundle, e.g. with
-  /// `FlutterEngine.dartEntrypointArgs` (Android) or `entrypointArgs`
-  /// (iOS/macOS).
-  ///
-  /// Empty when the native side doesn't pass any arguments.
+  /// Dart entrypoint arguments passed by the native side of the app
+  /// (`dartEntrypointArgs` on Android, `entrypointArgs` on iOS and macOS).
+  /// Empty if none were passed.
   final List<String> entrypointArgs;
 
   /// Shorthand for [platformAutomator].
