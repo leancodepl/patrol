@@ -58,14 +58,13 @@ ${generateImports(testDirectory, testFilePaths, web: web)}
 Future<void> main([List<String> args = const []]) async {
   // This is the entrypoint of the bundled Dart test.
   //
-  // [args] are the Dart entrypoint arguments passed by the native side of the
-  // app. They are exposed to tests as `\$.entrypointArgs`.
-  //
   // Its responsibilities are:
   //  * Running a special Dart test that runs before all the other tests and
   //    explores the hierarchy of groups and tests.
   //  * Hosting a PatrolAppService, which the native side of Patrol uses to get
   //    the Dart tests, and to request execution of a specific Dart test.
+  //  * Passing the Dart entrypoint arguments ([args]) from the native side of
+  //    the app to the tests, which read them with `\$.entrypointArgs`.
   //
   // When running on Android, the Android Test Orchestrator, before running the
   // tests, makes an initial run to gather the tests that it will later run. The

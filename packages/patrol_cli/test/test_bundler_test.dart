@@ -372,7 +372,7 @@ group('example.example_test', example__example_test.main);''');
       expect(proxyFile.existsSync(), isTrue);
     });
 
-    test('test bundle main accepts optional entrypoint args', () {
+    test('generates test bundle main that takes entrypoint args', () {
       // given
       final tests = [fs.path.join('patrol_test', 'example_test.dart')];
 
@@ -390,7 +390,7 @@ group('example.example_test', example__example_test.main);''');
       expect(contents, contains('..entrypointArgs = args;'));
     });
 
-    test('develop test bundle main accepts optional entrypoint args', () {
+    test('generates develop test bundle main that takes entrypoint args', () {
       // given
       final testFile = fs.path.join('patrol_test', 'example_test.dart');
 
@@ -408,7 +408,7 @@ group('example.example_test', example__example_test.main);''');
       expect(contents, contains('..entrypointArgs = args'));
     });
 
-    test('proxy entrypoint forwards entrypoint args', () {
+    test('creates proxy entrypoint that forwards entrypoint args', () {
       // given
       fs.directory('integration_test').createSync();
 
