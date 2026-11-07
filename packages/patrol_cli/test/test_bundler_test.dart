@@ -387,7 +387,8 @@ group('example.example_test', example__example_test.main);''');
         contents,
         contains('Future<void> main([List<String> args = const []]) async {'),
       );
-      expect(contents, contains('..entrypointArgs = args;'));
+      expect(contents, contains('_setEntrypointArgs(binding, args);'));
+      expect(contents, contains('(binding as dynamic).entrypointArgs = args;'));
     });
 
     test('generates develop test bundle main that takes entrypoint args', () {
@@ -405,7 +406,8 @@ group('example.example_test', example__example_test.main);''');
         contents,
         contains('Future<void> main([List<String> args = const []]) async {'),
       );
-      expect(contents, contains('..entrypointArgs = args'));
+      expect(contents, contains('_setEntrypointArgs(binding, args);'));
+      expect(contents, contains('(binding as dynamic).entrypointArgs = args;'));
     });
 
     test('creates proxy entrypoint that forwards entrypoint args', () {

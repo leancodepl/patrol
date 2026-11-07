@@ -103,8 +103,8 @@ Future<void> main([List<String> args = const []]) async {
       config: PlatformAutomatorConfig.defaultConfig(),
     );
     await platformAutomator.initialize();
-    binding = PatrolBinding.ensureInitialized(platformAutomator)
-      ..entrypointArgs = args;
+    binding = PatrolBinding.ensureInitialized(platformAutomator);
+    _setEntrypointArgs(binding, args);
   }
 
   // A special test to explore the hierarchy of groups and tests. This is a hack
@@ -168,6 +168,17 @@ ${generateGroupsCode(testDirectory, testFilePaths).split('\n').map((e) => '  $e'
   await platformAutomator.markPatrolAppServiceReady();
 
   await appService.testExecutionCompleted;
+}
+
+// Sets PatrolBinding.entrypointArgs with a dynamic call, so that this bundle
+// still compiles with patrol versions that don't have it. They don't support
+// \$.entrypointArgs, so the arguments are dropped.
+void _setEntrypointArgs(PatrolBinding binding, List<String> args) {
+  try {
+    (binding as dynamic).entrypointArgs = args;
+  } on NoSuchMethodError {
+    // Older patrol version.
+  }
 }
 ''';
 
@@ -242,16 +253,27 @@ Future<void> main([List<String> args = const []]) async {
   );
   await platformAutomator.initialize();
 
-  PatrolBinding.ensureInitialized(platformAutomator)
-    ..entrypointArgs = args
+  final binding = PatrolBinding.ensureInitialized(platformAutomator)
     ..workaroundDebugDefaultTargetPlatformOverride =
         debugDefaultTargetPlatformOverride;
+  _setEntrypointArgs(binding, args);
 
   // START: GENERATED TEST GROUPS
 ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e').join('\n')}
   // END: GENERATED TEST GROUPS
 
   await PatrolRuntimePorts.ensureLoaded();
+}
+
+// Sets PatrolBinding.entrypointArgs with a dynamic call, so that this bundle
+// still compiles with patrol versions that don't have it. They don't support
+// \$.entrypointArgs, so the arguments are dropped.
+void _setEntrypointArgs(PatrolBinding binding, List<String> args) {
+  try {
+    (binding as dynamic).entrypointArgs = args;
+  } on NoSuchMethodError {
+    // Older patrol version.
+  }
 }
 ''';
     final bundle = getBundledTestFile(testDirectory)

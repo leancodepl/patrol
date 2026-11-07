@@ -1,8 +1,8 @@
 ## Unreleased
 
 - Fix the generated test bundle dropping the Dart entrypoint arguments passed by the native side of
-  the app: `main` now takes them and passes them to tests as `$.entrypointArgs`. Needs a `patrol`
-  release that includes this change.
+  the app: `main` now takes them and passes them to tests as `$.entrypointArgs`. Reading them needs
+  a `patrol` release that includes this change; with older `patrol` the bundle still builds.
 - Fix `patrol develop --use-prebuilt-apks` failing with `flutter build bundle failed with code 64` on
   projects with a flavor, by no longer passing `--flavor` to `flutter build bundle`, which defines no
   such option. Only a checkout that had never generated the Dart plugin registrant was affected, which
