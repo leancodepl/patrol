@@ -14,6 +14,7 @@
     "physical-ios-devices-setup",
     "finders",
     "native",
+    "phased-tests",
     "ci",
     "integrations",
     "other"

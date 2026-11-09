@@ -21,15 +21,18 @@ class ListDartTestsResponse {
   late DartGroupEntry group;
 }
 
-enum RunDartTestResponseResult { success, skipped, failure }
+enum RunDartTestResponseResult { success, skipped, failure, continuation }
 
 class RunDartTestRequest {
   late String name;
+  int? phaseIndex;
 }
 
 class RunDartTestResponse {
   late RunDartTestResponseResult result;
   String? details;
+  int? nextPhaseIndex;
+  String? nextPhaseLaunchUrl;
 }
 
 abstract class PatrolAppService<IOSClient, AndroidClient, DartServer> {

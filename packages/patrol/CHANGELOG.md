@@ -1,5 +1,13 @@
 ## Unreleased
 
+- Report the default route name the native side started the engine with, e.g.
+  the link a `PatrolAppLaunch.deepLink` phase opens, instead of the `/`
+  flutter_test puts in its place. (#3282)
+- Add `phases()` so a Patrol test can continue after the app is killed and
+  relaunched (normal start or a deep link). Requires the self-instrumenting
+  Android `:patrolTest` layout; unsupported in `patrol develop` and on macOS.
+  See [Phased tests](https://patrol.leancode.co/documentation/phased-tests).
+  (#1374)
 - Add the optional self-instrumenting Android `:patrolTest` layout, which runs
   JUnit outside the app process. The in-app `androidTest` layout remains
   supported.
