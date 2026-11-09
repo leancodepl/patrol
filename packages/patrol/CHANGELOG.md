@@ -32,6 +32,9 @@
   `getNativeViews` with a selector `instance` on Android failing with "instance() argument is not
   supported for BySelector". `tapOnNotificationBySelector` taps the n-th match, and `getNativeViews`
   returns every match, as on iOS. (#3445)
+- Report the default route name the native side started the engine with, e.g.
+  the link a `PatrolAppLaunch.deepLink` phase opens, instead of the `/`
+  flutter_test puts in its place. (#3282)
 - Add `phases()` so a Patrol test can continue after the app is killed and
   relaunched (normal start or a deep link). Requires the self-instrumenting
   Android `:patrolTest` layout; unsupported in `patrol develop` and on macOS.
