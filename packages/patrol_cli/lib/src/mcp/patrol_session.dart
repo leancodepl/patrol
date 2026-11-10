@@ -183,6 +183,7 @@ class PatrolStatus {
     this.error,
     this.cli,
     this.cliPinWarning,
+    this.logFile,
     this.terminalWarning,
   });
 
@@ -224,7 +225,10 @@ class PatrolStatus {
   /// Set when the project pins a `patrol_cli` other than the one serving it.
   final String? cliPinWarning;
 
-  /// Why the Terminal window following the session log did not open.
+  /// The file the session writes its whole output to while it runs.
+  final String? logFile;
+
+  /// Why the Terminal window following [logFile] did not open.
   final String? terminalWarning;
 
   String get summary => testState.summary;
@@ -246,6 +250,7 @@ class PatrolStatus {
     'error': ?error,
     'cli': ?cli?.toMap(),
     'cliPinWarning': ?cliPinWarning,
+    'logFile': ?logFile,
     'terminalWarning': ?terminalWarning,
     'output': output,
     'summary': summary,
@@ -318,6 +323,9 @@ final class PatrolSession {
 
   /// The log a Terminal window already follows.
   String? _terminalLogPath;
+
+  /// The log the last run wrote to.
+  String? _logPath;
   String? _terminalWarning;
 
   /// The test file as the resolved project sees it, which is not the path the
@@ -460,6 +468,13 @@ final class PatrolSession {
   /// Install as `stdout` for the whole MCP command: forwards every write to
   /// [_diagnosticSink] and captures the lines for `status` and `patrol.log`.
   late final io.Stdout capturingStdout = _CapturingStdout(
+    _diagnosticSink,
+    _pushOutput,
+  );
+
+  /// Install as `stderr` for the whole MCP command. A failed build reports its
+  /// cause only there.
+  late final io.Stdout capturingStderr = _CapturingStdout(
     _diagnosticSink,
     _pushOutput,
   );
@@ -1368,6 +1383,7 @@ final class PatrolSession {
       error: _error,
       cli: cliOrigin,
       cliPinWarning: _cliPinWarning,
+      logFile: _logPath,
       terminalWarning: _terminalWarning,
     );
   }
@@ -1449,7 +1465,7 @@ final class PatrolSession {
   /// Automatically start log streaming and optionally launch terminal
   Future<void> _startLogStreamingAndTerminal() async {
     try {
-      final logPath = await _logStreaming.startLogging(
+      final logPath = _logPath = await _logStreaming.startLogging(
         flutterProjectPath,
         logFile: logFile,
       );
