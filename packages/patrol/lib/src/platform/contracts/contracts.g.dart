@@ -81,6 +81,14 @@ const _$RunDartTestResponseResultEnumMap = {
   RunDartTestResponseResult.continuation: 'continuation',
 };
 
+MarkPatrolAppServiceReadyRequest _$MarkPatrolAppServiceReadyRequestFromJson(
+  Map<String, dynamic> json,
+) => MarkPatrolAppServiceReadyRequest(port: (json['port'] as num?)?.toInt());
+
+Map<String, dynamic> _$MarkPatrolAppServiceReadyRequestToJson(
+  MarkPatrolAppServiceReadyRequest instance,
+) => <String, dynamic>{'port': instance.port};
+
 ConfigureRequest _$ConfigureRequestFromJson(Map<String, dynamic> json) =>
     ConfigureRequest(
       findTimeoutMillis: (json['findTimeoutMillis'] as num).toInt(),

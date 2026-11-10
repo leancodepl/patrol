@@ -41,7 +41,7 @@ interface MobileAutomatorServer {
     fun setLocationAccuracy(request: Contracts.SetLocationAccuracyRequest)
     fun setMockLocation(request: Contracts.SetMockLocationRequest)
     fun stopMockLocation()
-    fun markPatrolAppServiceReady()
+    fun markPatrolAppServiceReady(request: Contracts.MarkPatrolAppServiceReadyRequest)
     fun isVirtualDevice(): Contracts.IsVirtualDeviceResponse
     fun getOsVersion(): Contracts.GetOsVersionResponse
 }
@@ -169,7 +169,8 @@ fun getMobileAutomatorRoutes(server: MobileAutomatorServer): RoutingHttpHandler 
       Response(OK)
     },
     "markPatrolAppServiceReady" bind POST to {
-      server.markPatrolAppServiceReady()
+      val body = json.fromJson(it.bodyString(), Contracts.MarkPatrolAppServiceReadyRequest::class.java)
+      server.markPatrolAppServiceReady(body)
       Response(OK)
     },
     "isVirtualDevice" bind POST to {
