@@ -277,4 +277,44 @@ abstract interface class IOSAutomator implements MobileAutomator {
   /// simulator APIs. **Experimental.**
   @experimental
   Future<void> setHingeAngle(double degrees);
+
+  /// Enrolls a face (or a finger, on a Touch ID simulator), so that apps can
+  /// use biometric authentication.
+  ///
+  /// Works only on simulators run by `patrol test` or `patrol develop`.
+  /// **Experimental.**
+  @experimental
+  Future<void> enrollBiometrics();
+
+  /// Removes the face (or finger) enrolled with [enrollBiometrics].
+  /// **Experimental.**
+  @experimental
+  Future<void> unenrollBiometrics();
+
+  /// Presents a matching face (or finger) to the pending Face ID (or Touch ID)
+  /// prompt, so the authentication passes.
+  ///
+  /// Call it once the app shows the prompt. If iOS first asks whether the app
+  /// may use Face ID, this taps OK; to test a denial, call
+  /// `denyPermission()` before. **Experimental.**
+  @experimental
+  Future<void> passBiometric();
+
+  /// Presents a face (or finger) that doesn't match to the pending Face ID (or
+  /// Touch ID) prompt, so the attempt fails. The prompt stays open for another
+  /// try.
+  ///
+  /// Call it once the app shows the prompt. If iOS first asks whether the app
+  /// may use Face ID, this taps OK; to test a denial, call
+  /// `denyPermission()` before. **Experimental.**
+  @experimental
+  Future<void> failBiometric();
+
+  /// Taps Cancel in the pending Face ID (or Touch ID) prompt, so the app gets
+  /// a user cancellation.
+  ///
+  /// Face ID shows Cancel only after a failed attempt, so this first fails
+  /// once, like [failBiometric]. **Experimental.**
+  @experimental
+  Future<void> cancelBiometric();
 }

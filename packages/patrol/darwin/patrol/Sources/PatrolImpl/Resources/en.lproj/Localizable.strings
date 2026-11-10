@@ -28,3 +28,6 @@
 "remove_app" = "Remove App";
 "delete_app" = "Delete App";
 "delete" = "Delete";
+
+/* Biometric prompt */
+"cancel" = "Cancel";

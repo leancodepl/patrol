@@ -20,6 +20,7 @@ import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_host_server.dart';
 import 'package:patrol_cli/src/ios/ios_video_recording_manager.dart';
+import 'package:patrol_cli/src/ios/simulator_biometrics.dart';
 import 'package:patrol_cli/src/ios/simulator_hinge.dart';
 import 'package:patrol_cli/src/ios/xcode_test_codegen.dart';
 import 'package:patrol_log/patrol_log.dart';
@@ -561,6 +562,11 @@ class IOSTestBackend {
         deviceId: device.id,
         processManager: _processManager,
         fs: _fs,
+        logger: _logger,
+      ),
+      biometrics: SimulatorBiometrics(
+        deviceId: device.id,
+        processManager: _processManager,
         logger: _logger,
       ),
       logger: _logger,

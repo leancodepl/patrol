@@ -1457,3 +1457,36 @@ class IOSPickMultipleImagesFromGalleryRequest with Equatable {
     appId,
   ];
 }
+
+@JsonSerializable()
+class IOSAllowFaceIdPermissionRequest with Equatable {
+  const IOSAllowFaceIdPermissionRequest({required this.timeoutMillis});
+
+  factory IOSAllowFaceIdPermissionRequest.fromJson(Map<String, dynamic> json) =>
+      _$IOSAllowFaceIdPermissionRequestFromJson(json);
+
+  final int timeoutMillis;
+
+  Map<String, dynamic> toJson() =>
+      _$IOSAllowFaceIdPermissionRequestToJson(this);
+
+  @override
+  List<Object?> get props => [timeoutMillis];
+}
+
+@JsonSerializable()
+class IOSAllowFaceIdPermissionResponse with Equatable {
+  const IOSAllowFaceIdPermissionResponse({required this.allowed});
+
+  factory IOSAllowFaceIdPermissionResponse.fromJson(
+    Map<String, dynamic> json,
+  ) => _$IOSAllowFaceIdPermissionResponseFromJson(json);
+
+  final bool allowed;
+
+  Map<String, dynamic> toJson() =>
+      _$IOSAllowFaceIdPermissionResponseToJson(this);
+
+  @override
+  List<Object?> get props => [allowed];
+}

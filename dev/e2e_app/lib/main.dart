@@ -1,6 +1,7 @@
 import 'package:app_links/app_links.dart';
 import 'package:e2e_app/applink_screen.dart';
 import 'package:e2e_app/at_finder_screen.dart';
+import 'package:e2e_app/biometrics_screen.dart';
 import 'package:e2e_app/camera_screen.dart';
 import 'package:e2e_app/external_app_screen.dart';
 import 'package:e2e_app/file_picker_screen.dart';
@@ -327,6 +328,12 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
               MaterialPageRoute<void>(builder: (_) => const UsernamePage()),
             ),
             child: const Text('Open login flow screen'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const BiometricsScreen()),
+            ),
+            child: const Text('Open biometrics screen'),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).push(

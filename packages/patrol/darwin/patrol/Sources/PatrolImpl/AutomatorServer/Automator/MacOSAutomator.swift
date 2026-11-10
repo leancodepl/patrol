@@ -318,6 +318,17 @@
       }
     }
 
+    func allowFaceIdPermission(timeout: TimeInterval) throws -> Bool {
+      // Macs have no Face ID, and Touch ID doesn't ask for permission.
+      return false
+    }
+
+    func cancelBiometric() throws {
+      try runAction("cancelBiometric") {
+        throw PatrolError.methodNotImplemented("cancelBiometric")
+      }
+    }
+
     func isPermissionDialogVisible(timeout: TimeInterval) throws -> Bool {
       try runAction("isPermissionDialogVisible") {
         throw PatrolError.methodNotImplemented("isPermissionDialogVisible")
