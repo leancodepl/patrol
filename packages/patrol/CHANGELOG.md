@@ -5,6 +5,9 @@
   death, e.g. when Android recreates the activity for a deep link. A test that
   does not expect such a restart now fails with a clear message instead of
   hanging. (#3393)
+- On Android, `PatrolAppService` now listens on a free port and reports it to
+  the native runner, so `--app-server-port` no longer has an effect there.
+  (#3393)
 
 ## 5.0.0-dev.1
 
