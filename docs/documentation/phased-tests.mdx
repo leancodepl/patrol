@@ -78,12 +78,62 @@ patrolTest(
 `launch` is **ignored on the first phase**. That process is already started by
 the native runner before Dart runs. Put a deep link on phase 2 or later.
 
+## Continuing in the running app
+
+`PatrolAppLaunch.attach()` starts a phase **without killing the app**. Use it
+when the previous phase can make the app restart its Flutter engine while the
+process keeps running. On Android this happens when the activity is destroyed
+and created again, for example by a deep link that the app opens in a cleared
+task. The Dart test runs in the engine, so it cannot continue past that point
+on its own.
+
+```dart
+patrolTest(
+  'opens a link while the app is running',
+  phases([
+    PatrolPhase(($) async {
+      await $.pumpWidgetAndSettle(const MyApp());
+      // ...
+      await $.platform.mobile.openUrl('https://example.com/path');
+    }),
+    PatrolPhase(
+      ($) async {
+        await $.pumpWidgetAndSettle(const MyApp());
+        // Assert the screen that the link opened.
+      },
+      launch: const PatrolAppLaunch.attach(),
+    ),
+  ]),
+);
+```
+
+The phase before an `attach()` phase ends in one of two ways:
+
+- **The engine restarts.** The phase ends there, even in the middle of its
+  callback, and the code after that point does not run. The next phase runs in
+  the new engine.
+- **The engine keeps running.** The phase runs to its end and the next phase
+  follows in the same engine. This is always the case on iOS.
+
+Write the two phases so that they work in both cases:
+
+- Make the action that can restart the engine the last step of its phase.
+- Do not pass Dart objects from one phase to the next. Use files or other
+  persisted state.
+- The process is the same, so native in-memory state survives.
+
+If the engine restarts in a test that has no `attach()` phase at that point,
+the test fails with a message that says so.
+
+A working example lives in
+[`engine_restart_test.dart`](https://github.com/leancodepl/patrol/blob/master/dev/e2e_app/patrol_test/engine_restart_test.dart).
+
 ## Requirements and limits
 
 <Warning>
   **Android** phased tests need the self-instrumenting [`:patrolTest`] layout.
   The older in-app `androidTest` runner lives inside the app it would kill, so
-  Patrol throws if a test asks to continue.
+  Patrol throws if a test asks to relaunch the app.
 </Warning>
 
 - **Android and iOS only.** macOS fails if a test returns a continuation.

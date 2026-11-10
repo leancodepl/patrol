@@ -27,6 +27,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static pl.leancode.patrol.contracts.Contracts.DartGroupEntry;
 import static pl.leancode.patrol.contracts.Contracts.RunDartTestResponse;
@@ -51,8 +57,29 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
     /** Simple name of the class written by build-time test discovery (`patrol build android --emit-test-manifest`). */
     private static final String GENERATED_TESTS_CLASS = "PatrolGeneratedTests";
 
+    /** How often a running Dart phase is checked for an engine restart. */
+    private static final long ENGINE_RESTART_POLL_MILLIS = 100;
+
+    /**
+     * How long the runner waits for a new engine before an attached phase starts in the old one.
+     * An activity can be destroyed a moment after the action that replaced it returned.
+     */
+    private static final long ATTACH_SETTLE_MILLIS = 2000;
+
+    /** How long the runner waits for a new engine after the connection to the old one broke. */
+    private static final long ENGINE_RESTART_AFTER_DISCONNECT_MILLIS = 10000;
+
     private String targetAppId;
     private boolean clearAppData;
+
+    /** The value of {@link PatrolServer#engineGeneration} for the engine the runner talks to. */
+    private int engineGeneration;
+
+    private final ExecutorService phaseExecutor = Executors.newCachedThreadPool(runnable -> {
+        Thread thread = new Thread(runnable, "patrol-dart-phase");
+        thread.setDaemon(true);
+        return thread;
+    });
 
     @Override
     protected boolean shouldWaitForActivitiesToComplete() {
@@ -600,20 +627,49 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
 
         try {
             Logger.INSTANCE.i(TAG + "Requested execution");
-            RunDartTestResponse response = patrolAppServiceClient.runDartTest(name);
+            engineGeneration = PatrolServer.Companion.getEngineGeneration().get();
 
-            while (response.getResult() == Contracts.RunDartTestResponseResult.continuation) {
-                if (!isSelfInstrumenting()) {
-                    throw new IllegalStateException(
-                            "Phased Patrol tests require the self-instrumenting "
-                                    + ":patrolTest Android layout"
-                    );
+            long phaseIndex = 0;
+            RunDartTestResponse response = runPhase(name, null, false);
+
+            while (true) {
+                if (response == null) {
+                    // The app replaced its Flutter engine while the phase was running. The
+                    // Dart side decides whether the next phase allows that.
+                    Logger.INSTANCE.i(TAG + "Flutter engine restarted during phase " + phaseIndex);
+                    phaseIndex++;
+                    response = runPhase(name, phaseIndex, true);
+                    continue;
+                }
+
+                if (response.getResult() != Contracts.RunDartTestResponseResult.continuation) {
+                    break;
                 }
 
                 final Long nextPhaseIndex = response.getNextPhaseIndex();
                 if (nextPhaseIndex == null) {
                     throw new IllegalStateException(
                             "A phased Patrol test returned continuation without a next phase"
+                    );
+                }
+                phaseIndex = nextPhaseIndex;
+
+                if (Boolean.TRUE.equals(response.getNextPhaseKeepsProcess())) {
+                    // The next phase attaches to the running app: in a new engine if the
+                    // app restarted it, in the same one otherwise.
+                    final boolean engineRestarted = awaitRestartedEngine(ATTACH_SETTLE_MILLIS);
+                    Logger.INSTANCE.i(
+                            TAG + "Attaching phase " + phaseIndex + " to "
+                                    + (engineRestarted ? "a new" : "the same") + " Flutter engine"
+                    );
+                    response = runPhase(name, phaseIndex, engineRestarted);
+                    continue;
+                }
+
+                if (!isSelfInstrumenting()) {
+                    throw new IllegalStateException(
+                            "Phased Patrol tests that relaunch the app require the "
+                                    + "self-instrumenting :patrolTest Android layout"
                     );
                 }
 
@@ -623,8 +679,9 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
                 openApp(targetAppId, response.getNextPhaseLaunchUrl());
 
                 awaitPatrolAppService();
+                engineGeneration = PatrolServer.Companion.getEngineGeneration().get();
                 patrolAppServiceClient = createAppServiceClient();
-                response = patrolAppServiceClient.runDartTest(name, nextPhaseIndex);
+                response = runPhase(name, phaseIndex, false);
             }
 
             // Dump coverage NOW — Dart side has written its per-test LCOV in
@@ -646,6 +703,85 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             Logger.INSTANCE.e(TAG + e.getMessage(), e.getCause());
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Runs one Dart phase and waits for its result.
+     *
+     * @return the response, or {@code null} if the app restarted its Flutter engine before the
+     * phase answered. The runner is then already connected to the new engine.
+     */
+    private RunDartTestResponse runPhase(String name, Long phaseIndex, boolean engineRestarted)
+            throws PatrolAppServiceClientException {
+        final PatrolAppServiceClient client = patrolAppServiceClient;
+        final Future<RunDartTestResponse> call = phaseExecutor.submit(
+                () -> phaseIndex == null && !engineRestarted
+                        ? client.runDartTest(name)
+                        : client.runDartTest(name, phaseIndex, engineRestarted)
+        );
+
+        while (true) {
+            try {
+                return call.get(ENGINE_RESTART_POLL_MILLIS, TimeUnit.MILLISECONDS);
+            } catch (TimeoutException e) {
+                if (attachToRestartedEngine()) {
+                    call.cancel(true);
+                    return null;
+                }
+            } catch (ExecutionException e) {
+                final Throwable cause = e.getCause();
+                if (cause instanceof PatrolAppServiceClientException) {
+                    throw (PatrolAppServiceClientException) cause;
+                }
+                // The connection broke. If the engine restarted, the new one reports its
+                // readiness a moment later. Otherwise the app crashed.
+                if (awaitRestartedEngine(ENGINE_RESTART_AFTER_DISCONNECT_MILLIS)) {
+                    return null;
+                }
+                if (cause instanceof RuntimeException) {
+                    throw (RuntimeException) cause;
+                }
+                throw new RuntimeException(cause);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    /**
+     * Waits up to {@code timeoutMillis} for the app to restart its Flutter engine, and connects
+     * to the new engine if it did.
+     */
+    private boolean awaitRestartedEngine(long timeoutMillis) {
+        final long deadline = System.currentTimeMillis() + timeoutMillis;
+        while (!attachToRestartedEngine()) {
+            if (System.currentTimeMillis() >= deadline) {
+                return false;
+            }
+            try {
+                Thread.sleep(ENGINE_RESTART_POLL_MILLIS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(e);
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Connects to the Flutter engine that replaced the one the runner was talking to, if any.
+     */
+    private boolean attachToRestartedEngine() {
+        final int generation = PatrolServer.Companion.getEngineGeneration().get();
+        if (generation == engineGeneration) {
+            return false;
+        }
+
+        engineGeneration = generation;
+        closePatrolAppServiceClient();
+        patrolAppServiceClient = createAppServiceClient();
+        return true;
     }
 
     private void openApp(String appId, String url) {

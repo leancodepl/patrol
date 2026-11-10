@@ -190,16 +190,30 @@ void patrolTest(
       );
       var callbackToRun = callback;
       var phaseIndex = 0;
-      if (phasedTest != null) {
-        if (constants.hotRestartEnabled) {
-          throw UnsupportedError(
-            'Phased Patrol tests are not supported in develop mode',
-          );
-        }
+      if (phasedTest != null && constants.hotRestartEnabled) {
+        throw UnsupportedError(
+          'Phased Patrol tests are not supported in develop mode',
+        );
+      }
+      if (!constants.hotRestartEnabled) {
         final request =
             await patrolBinding.patrolAppService.testExecutionRequested;
         phaseIndex = request.phaseIndex ?? 0;
-        callbackToRun = phasedTest.phaseAt(phaseIndex).callback;
+        if ((request.engineRestarted ?? false) &&
+            !(phasedTest?.canAttachAt(phaseIndex) ?? false)) {
+          // The native runner found a new Flutter engine while the test was
+          // running in the previous one, and the test did not allow for it.
+          throw StateError(
+            'The app restarted its Flutter engine while this test was '
+            'running${phasedTest == null ? '' : ' phase ${phaseIndex - 1}'}, '
+            'so the Dart test could not continue. If the restart is expected, '
+            'split the test with phases() and start the phase that follows '
+            'the restart with PatrolAppLaunch.attach().',
+          );
+        }
+        if (phasedTest != null) {
+          callbackToRun = phasedTest.phaseAt(phaseIndex).callback;
+        }
       }
 
       if (phaseIndex == 0) {
@@ -212,10 +226,25 @@ void patrolTest(
       }
 
       try {
-        await callbackToRun(patrolTester);
-        final continuation = phasedTest?.continuationAfter(phaseIndex);
-        if (continuation != null) {
-          patrolBinding.patrolAppService.setContinuation(continuation);
+        while (true) {
+          await callbackToRun(patrolTester);
+          final continuation = phasedTest?.continuationAfter(phaseIndex);
+          if (continuation == null) {
+            break;
+          }
+
+          final nextRequest = await patrolBinding.patrolAppService.finishPhase(
+            continuation,
+          );
+          if (nextRequest == null) {
+            // The native runner relaunches the app for the next phase.
+            break;
+          }
+
+          // The next phase attaches to the running app, and the engine is
+          // still alive, so it runs here.
+          phaseIndex = nextRequest.phaseIndex ?? continuation.nextPhaseIndex;
+          callbackToRun = phasedTest!.phaseAt(phaseIndex).callback;
         }
       } catch (_) {
         // Capture the failing screen before teardown pumps the next frame.

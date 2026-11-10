@@ -59,6 +59,25 @@ class PatrolAppServiceClient {
         return client.runDartTest(Contracts.RunDartTestRequest(name, phaseIndex))
     }
 
+    @Throws(PatrolAppServiceClientException::class)
+    fun runDartTest(
+        name: String,
+        phaseIndex: Long?,
+        engineRestarted: Boolean
+    ): Contracts.RunDartTestResponse {
+        Logger.i(
+            "PatrolAppServiceClient.runDartTest($name, phaseIndex=$phaseIndex, " +
+                "engineRestarted=$engineRestarted)"
+        )
+        return client.runDartTest(
+            Contracts.RunDartTestRequest(
+                name,
+                phaseIndex,
+                if (engineRestarted) true else null
+            )
+        )
+    }
+
     fun close() {
         client.close()
     }

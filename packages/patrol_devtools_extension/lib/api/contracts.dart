@@ -259,18 +259,23 @@ class ListDartTestsResponse with Equatable {
 
 @JsonSerializable()
 class RunDartTestRequest with Equatable {
-  const RunDartTestRequest({required this.name, this.phaseIndex});
+  const RunDartTestRequest({
+    required this.name,
+    this.phaseIndex,
+    this.engineRestarted,
+  });
 
   factory RunDartTestRequest.fromJson(Map<String, dynamic> json) =>
       _$RunDartTestRequestFromJson(json);
 
   final String name;
   final int? phaseIndex;
+  final bool? engineRestarted;
 
   Map<String, dynamic> toJson() => _$RunDartTestRequestToJson(this);
 
   @override
-  List<Object?> get props => [name, phaseIndex];
+  List<Object?> get props => [name, phaseIndex, engineRestarted];
 }
 
 @JsonSerializable()
@@ -280,6 +285,7 @@ class RunDartTestResponse with Equatable {
     this.details,
     this.nextPhaseIndex,
     this.nextPhaseLaunchUrl,
+    this.nextPhaseKeepsProcess,
   });
 
   factory RunDartTestResponse.fromJson(Map<String, dynamic> json) =>
@@ -289,6 +295,7 @@ class RunDartTestResponse with Equatable {
   final String? details;
   final int? nextPhaseIndex;
   final String? nextPhaseLaunchUrl;
+  final bool? nextPhaseKeepsProcess;
 
   Map<String, dynamic> toJson() => _$RunDartTestResponseToJson(this);
 
@@ -298,6 +305,7 @@ class RunDartTestResponse with Equatable {
     details,
     nextPhaseIndex,
     nextPhaseLaunchUrl,
+    nextPhaseKeepsProcess,
   ];
 }
 

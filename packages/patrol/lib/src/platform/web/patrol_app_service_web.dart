@@ -171,6 +171,17 @@ class PatrolAppService {
     _continuation = continuation;
   }
 
+  /// Reports the end of the currently running Dart phase.
+  ///
+  /// Web does not support phased tests, so this always returns `null` and
+  /// [runDartTest] reports the continuation as a failure.
+  Future<RunDartTestRequest?> finishPhase(
+    PatrolPhaseContinuation continuation,
+  ) async {
+    setContinuation(continuation);
+    return null;
+  }
+
   /// Marks [dartFileName] as completed with the given [passed] status.
   ///
   /// If an exception was thrown during the test, [details] should contain the
@@ -239,8 +250,6 @@ class PatrolAppService {
     _patrolLog.log(
       TestEntry(name: request.name, status: TestEntryStatus.success),
     );
-    return const RunDartTestResponse(
-      result: RunDartTestResponseResult.success,
-    );
+    return const RunDartTestResponse(result: RunDartTestResponseResult.success);
   }
 }

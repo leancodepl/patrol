@@ -45,10 +45,15 @@ RunDartTestRequest _$RunDartTestRequestFromJson(Map<String, dynamic> json) =>
     RunDartTestRequest(
       name: json['name'] as String,
       phaseIndex: (json['phaseIndex'] as num?)?.toInt(),
+      engineRestarted: json['engineRestarted'] as bool?,
     );
 
 Map<String, dynamic> _$RunDartTestRequestToJson(RunDartTestRequest instance) =>
-    <String, dynamic>{'name': instance.name, 'phaseIndex': instance.phaseIndex};
+    <String, dynamic>{
+      'name': instance.name,
+      'phaseIndex': instance.phaseIndex,
+      'engineRestarted': instance.engineRestarted,
+    };
 
 RunDartTestResponse _$RunDartTestResponseFromJson(Map<String, dynamic> json) =>
     RunDartTestResponse(
@@ -56,6 +61,7 @@ RunDartTestResponse _$RunDartTestResponseFromJson(Map<String, dynamic> json) =>
       details: json['details'] as String?,
       nextPhaseIndex: (json['nextPhaseIndex'] as num?)?.toInt(),
       nextPhaseLaunchUrl: json['nextPhaseLaunchUrl'] as String?,
+      nextPhaseKeepsProcess: json['nextPhaseKeepsProcess'] as bool?,
     );
 
 Map<String, dynamic> _$RunDartTestResponseToJson(
@@ -65,6 +71,7 @@ Map<String, dynamic> _$RunDartTestResponseToJson(
   'details': instance.details,
   'nextPhaseIndex': instance.nextPhaseIndex,
   'nextPhaseLaunchUrl': instance.nextPhaseLaunchUrl,
+  'nextPhaseKeepsProcess': instance.nextPhaseKeepsProcess,
 };
 
 const _$RunDartTestResponseResultEnumMap = {

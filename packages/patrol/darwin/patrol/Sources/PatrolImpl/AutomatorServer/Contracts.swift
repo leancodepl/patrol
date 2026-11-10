@@ -205,6 +205,7 @@ public struct ListDartTestsResponse: Codable {
 public struct RunDartTestRequest: Codable {
   public var name: String
   public var phaseIndex: Int?
+  public var engineRestarted: Bool?
 }
 
 public struct RunDartTestResponse: Codable {
@@ -212,6 +213,7 @@ public struct RunDartTestResponse: Codable {
   public var details: String?
   public var nextPhaseIndex: Int?
   public var nextPhaseLaunchUrl: String?
+  public var nextPhaseKeepsProcess: Bool?
 }
 
 public struct ConfigureRequest: Codable {
