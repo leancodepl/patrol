@@ -10,6 +10,9 @@
 - Add R8 consumer rules to the Android plugin, so release-mode tests with minification enabled no
   longer need app-side keep rules for Patrol and the test runners, including `AndroidJUnit4` for the
   tests that build-time discovery generates. (#3334)
+- Fix `getNotifications()` on Android failing with `StaleObjectException` when SystemUI changes a
+  notification row during the read. A notification that keeps changing is left out of the result.
+  (#3351)
 
 ## 4.11.0
 
