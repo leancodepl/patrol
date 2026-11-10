@@ -115,9 +115,16 @@ The phase before an `attach()` phase ends in one of two ways:
 - **The engine keeps running.** The phase runs to its end and the next phase
   follows in the same engine. This is always the case on iOS.
 
+On Android, Patrol waits up to 2 seconds for a new engine before it starts the
+`attach()` phase in the old one. If the app restarts its engine later, the
+`attach()` phase can start in the old engine, stop when that engine is
+destroyed, and run again from its start in the new one.
+
 Write the two phases so that they work in both cases:
 
 - Make the action that can restart the engine the last step of its phase.
+- Begin the `attach()` phase by waiting for the screen that the restart shows,
+  before any action that changes the app.
 - Do not pass Dart objects from one phase to the next. Use files or other
   persisted state.
 - The process is the same, so native in-memory state survives.

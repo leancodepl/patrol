@@ -7,7 +7,6 @@ import 'dart:io';
 import 'package:http_multi_server/http_multi_server.dart';
 import 'package:patrol/patrol.dart';
 import 'package:patrol/src/common.dart';
-import 'package:patrol/src/constants.dart' as constants;
 import 'package:patrol/src/phases.dart';
 import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:patrol/src/platform/contracts/patrol_app_service_server.dart';
@@ -150,17 +149,14 @@ class PatrolAppService extends PatrolAppServiceServer {
       return null;
     }
 
-    // Swap in fresh completers before unblocking runDartTest, the same way
-    // markDartTestAsCompleted does it for reuseAcrossTests.
-    final completed = _testExecutionCompleted;
-    _testExecutionRequested = Completer<RunDartTestRequest>();
-    _testExecutionCompleted = Completer<_TestExecutionResult>();
-    completed.complete(
+    // The next phase is requested through this service again.
+    _completeExecution(
       _TestExecutionResult(
         passed: true,
         details: null,
         continuation: continuation,
       ),
+      expectAnotherRequest: true,
     );
 
     return testExecutionRequested;
@@ -188,26 +184,35 @@ class PatrolAppService extends PatrolAppServiceServer {
       'that was most recently requested to run was ${request.name}',
     );
 
+    // With the orchestrator off, this same app service serves the next test
+    // too.
+    _completeExecution(
+      _TestExecutionResult(
+        passed: passed,
+        details: details,
+        continuation: passed ? _continuation : null,
+      ),
+      expectAnotherRequest: reuseAcrossTests,
+    );
+  }
+
+  /// Answers the in-flight [runDartTest] with [result].
+  ///
+  /// If [expectAnotherRequest] is true, fresh completers are swapped in
+  /// *before* runDartTest is unblocked, so that the next request gets a clean
+  /// pair. The in-flight runDartTest already holds a reference to the old
+  /// completer, and this runs synchronously, so there is no race.
+  void _completeExecution(
+    _TestExecutionResult result, {
+    required bool expectAnotherRequest,
+  }) {
     final completed = _testExecutionCompleted;
-    final continuation = passed ? _continuation : null;
-    if (reuseAcrossTests) {
-      // The orchestrator is off, so this same app service will serve the next
-      // test too. Swap in fresh completers *before* unblocking runDartTest, so
-      // the next waitForExecutionRequest/runDartTest pair gets a clean pair.
-      // The in-flight runDartTest already holds a reference to `completed`, and
-      // this runs synchronously (no await) before the suite advances to the
-      // next test's waitForExecutionRequest, so there is no race.
+    if (expectAnotherRequest) {
       _testExecutionRequested = Completer<RunDartTestRequest>();
       _testExecutionCompleted = Completer<_TestExecutionResult>();
       _continuation = null;
     }
-    completed.complete(
-      _TestExecutionResult(
-        passed: passed,
-        details: details,
-        continuation: continuation,
-      ),
-    );
+    completed.complete(result);
   }
 
   /// Returns when the native side requests execution of a Dart test. If the
@@ -317,13 +322,6 @@ class PatrolAppService extends PatrolAppServiceServer {
         result: RunDartTestResponseResult.skipped,
         details: 'Test "${request.name}" is skipped in this app build',
       );
-    }
-
-    if (constants.hotRestartEnabled && (request.engineRestarted ?? false)) {
-      // A Hot Restart also starts a new engine. In develop mode tests run
-      // without being requested, so leave this request unanswered, the same as
-      // the one that the previous isolate was serving.
-      return Completer<RunDartTestResponse>().future;
     }
 
     _testExecutionRequested.complete(request);

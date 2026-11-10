@@ -148,6 +148,10 @@ class PatrolAppService {
   /// bundled Dart test file.
   final DartGroupEntry topLevelDartTestGroup;
 
+  /// Whether one app service serves more than one Dart test. Always false on
+  /// web; present for API parity.
+  final reuseAcrossTests = false;
+
   final _testExecutionRequested = Completer<RunDartTestRequest>();
 
   /// A future that completes with the Dart test request.
