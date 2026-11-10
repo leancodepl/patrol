@@ -41,6 +41,12 @@ class RunDartTestResponse {
   bool? nextPhaseKeepsProcess;
 }
 
+class MarkPatrolAppServiceReadyRequest {
+  // The port PatrolAppService listens on in the Flutter engine that makes this
+  // call. Null if the native side chose the port itself.
+  int? port;
+}
+
 abstract class PatrolAppService<IOSClient, AndroidClient, DartServer> {
   ListDartTestsResponse listDartTests();
   RunDartTestResponse runDartTest(RunDartTestRequest request);
@@ -411,7 +417,7 @@ abstract class MobileAutomator<IOSServer, AndroidServer, DartClient> {
   void stopMockLocation();
 
   // TODO(bartekpacia): Move this RPC into a new PatrolNativeTestService service because it doesn't fit here
-  void markPatrolAppServiceReady();
+  void markPatrolAppServiceReady(MarkPatrolAppServiceReadyRequest request);
 
   IsVirtualDeviceResponse isVirtualDevice();
 

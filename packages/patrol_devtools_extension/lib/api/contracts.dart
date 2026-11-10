@@ -310,6 +310,23 @@ class RunDartTestResponse with Equatable {
 }
 
 @JsonSerializable()
+class MarkPatrolAppServiceReadyRequest with Equatable {
+  const MarkPatrolAppServiceReadyRequest({this.port});
+
+  factory MarkPatrolAppServiceReadyRequest.fromJson(
+    Map<String, dynamic> json,
+  ) => _$MarkPatrolAppServiceReadyRequestFromJson(json);
+
+  final int? port;
+
+  Map<String, dynamic> toJson() =>
+      _$MarkPatrolAppServiceReadyRequestToJson(this);
+
+  @override
+  List<Object?> get props => [port];
+}
+
+@JsonSerializable()
 class ConfigureRequest with Equatable {
   const ConfigureRequest({
     required this.findTimeoutMillis,

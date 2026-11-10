@@ -5,6 +5,8 @@
   death, e.g. when Android recreates the activity for a deep link. A test that
   does not expect such a restart now fails with a clear message instead of
   hanging.
+- On Android, `PatrolAppService` now listens on a free port and reports it to
+  the native runner, so `--app-server-port` no longer has an effect there.
 - Report the default route name the native side started the engine with, e.g.
   the link a `PatrolAppLaunch.deepLink` phase opens, instead of the `/`
   flutter_test puts in its place. (#3282)

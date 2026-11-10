@@ -70,6 +70,13 @@ class PatrolServer {
          * reports once, so a change during a test means the app restarted its engine.
          */
         val engineGeneration: AtomicInteger = AtomicInteger()
+
+        /**
+         * The port PatrolAppService listens on in the Flutter engine that reported its
+         * readiness last, or null if the engine did not report one.
+         */
+        @Volatile
+        var appServicePort: Int? = null
     }
 }
 

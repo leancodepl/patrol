@@ -70,6 +70,10 @@ class PatrolRuntimePorts {
     }
   }
 
+  /// The port `PatrolAppService` listens on in this Flutter engine, or null if
+  /// it has not started yet.
+  static int? boundAppServerPort;
+
   /// Port of the native Patrol automation server, or null if not injected.
   static int? testServerPort() => _testServerPort;
 

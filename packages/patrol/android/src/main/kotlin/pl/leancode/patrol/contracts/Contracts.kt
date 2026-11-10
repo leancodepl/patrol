@@ -237,6 +237,14 @@ class Contracts {
     }
   }
 
+  data class MarkPatrolAppServiceReadyRequest (
+    val port: Long? = null
+  ){
+    fun hasPort(): Boolean {
+      return port != null
+    }
+  }
+
   data class ConfigureRequest (
     val findTimeoutMillis: Long,
     val androidDontSuppressAccessibilityServices: Boolean? = null

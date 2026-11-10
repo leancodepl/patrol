@@ -440,7 +440,8 @@
       }
     }
 
-    func markPatrolAppServiceReady() throws {
+    func markPatrolAppServiceReady(request: MarkPatrolAppServiceReadyRequest) throws {
+      // The runner chooses the app service port on Apple platforms, so the reported one is unused.
       onAppReady(true)
     }
 

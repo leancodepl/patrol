@@ -424,7 +424,9 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
         }
     }
 
-    override fun markPatrolAppServiceReady() {
+    override fun markPatrolAppServiceReady(request: Contracts.MarkPatrolAppServiceReadyRequest) {
+        // Set the port first: the runner reads it once it sees the new generation.
+        PatrolServer.appServicePort = request.port?.toInt()
         PatrolServer.engineGeneration.incrementAndGet()
         PatrolServer.appReady.open()
     }

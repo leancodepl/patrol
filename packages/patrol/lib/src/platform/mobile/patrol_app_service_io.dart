@@ -17,7 +17,6 @@ import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as shelf_io;
 
 const _idleTimeout = Duration(hours: 2);
-const _bindTimeout = Duration(seconds: 10);
 
 class _TestExecutionResult {
   const _TestExecutionResult({
@@ -44,8 +43,15 @@ Future<void> runAppService(PatrolAppService service) async {
       .addMiddleware(shelf.logRequests())
       .addHandler(service.handle);
 
-  final server = await _bindServer(service.port);
+  // On Android the engine takes a free port and reports it to the native
+  // runner. A fixed port would not work when the app replaces its Flutter
+  // engine: the new engine starts in the same process before the old one is
+  // destroyed, so the old server still holds the port.
+  final server = await HttpMultiServer.loopback(
+    Platform.isAndroid ? 0 : service.port,
+  );
   server.idleTimeout = _idleTimeout;
+  PatrolRuntimePorts.boundAppServerPort = server.port;
 
   shelf_io.serveRequests(server, pipeline);
 
@@ -54,33 +60,6 @@ Future<void> runAppService(PatrolAppService service) async {
   print(
     'PatrolAppService started, address: ${address.address}, host: ${address.host}, port: ${server.port}',
   );
-}
-
-/// Binds the app service's HTTP server.
-///
-/// When Android recreates the activity, the new Flutter engine starts before
-/// the old one is destroyed. Both live in one process, so the old engine's
-/// server still holds the port for a moment. Wait for it to go away.
-Future<HttpServer> _bindServer(int port) async {
-  final deadline = DateTime.now().add(_bindTimeout);
-  while (true) {
-    try {
-      return await HttpMultiServer.loopback(port);
-    } on SocketException catch (error) {
-      if (!Platform.isAndroid) {
-        rethrow;
-      }
-      if (DateTime.now().isAfter(deadline)) {
-        throw StateError(
-          'PatrolAppService could not bind port $port for '
-          '${_bindTimeout.inSeconds} s: $error. If the app restarted its '
-          'Flutter engine, the previous engine is still running and holds '
-          'the port. Patrol supports one Flutter engine at a time.',
-        );
-      }
-      await Future<void>.delayed(const Duration(milliseconds: 100));
-    }
-  }
 }
 
 /// Implements a stateful HTTP service for querying and executing Dart tests.

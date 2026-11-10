@@ -216,6 +216,10 @@ public struct RunDartTestResponse: Codable {
   public var nextPhaseKeepsProcess: Bool?
 }
 
+public struct MarkPatrolAppServiceReadyRequest: Codable {
+  public var port: Int?
+}
+
 public struct ConfigureRequest: Codable {
   public var findTimeoutMillis: Int
   public var androidDontSuppressAccessibilityServices: Bool?
