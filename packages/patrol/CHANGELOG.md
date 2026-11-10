@@ -1,5 +1,10 @@
 ## Unreleased
 
+- Add `PatrolAppLaunch.attach()`, which starts a phase in the running app. The
+  test continues when the app restarts its Flutter engine without a process
+  death, e.g. when Android recreates the activity for a deep link. A test that
+  does not expect such a restart now fails with a clear message instead of
+  hanging.
 - Report the default route name the native side started the engine with, e.g.
   the link a `PatrolAppLaunch.deepLink` phase opens, instead of the `/`
   flutter_test puts in its place. (#3282)

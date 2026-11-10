@@ -2,10 +2,12 @@
 // ignore_for_file: avoid_print
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:http_multi_server/http_multi_server.dart';
 import 'package:patrol/patrol.dart';
 import 'package:patrol/src/common.dart';
+import 'package:patrol/src/constants.dart' as constants;
 import 'package:patrol/src/phases.dart';
 import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:patrol/src/platform/contracts/patrol_app_service_server.dart';
@@ -15,6 +17,7 @@ import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as shelf_io;
 
 const _idleTimeout = Duration(hours: 2);
+const _bindTimeout = Duration(seconds: 10);
 
 class _TestExecutionResult {
   const _TestExecutionResult({
@@ -41,7 +44,7 @@ Future<void> runAppService(PatrolAppService service) async {
       .addMiddleware(shelf.logRequests())
       .addHandler(service.handle);
 
-  final server = await HttpMultiServer.loopback(service.port);
+  final server = await _bindServer(service.port);
   server.idleTimeout = _idleTimeout;
 
   shelf_io.serveRequests(server, pipeline);
@@ -51,6 +54,25 @@ Future<void> runAppService(PatrolAppService service) async {
   print(
     'PatrolAppService started, address: ${address.address}, host: ${address.host}, port: ${server.port}',
   );
+}
+
+/// Binds the app service's HTTP server.
+///
+/// When Android recreates the activity, the new Flutter engine starts before
+/// the old one is destroyed. Both live in one process, so the old engine's
+/// server still holds the port for a moment. Wait for it to go away.
+Future<HttpServer> _bindServer(int port) async {
+  final deadline = DateTime.now().add(_bindTimeout);
+  while (true) {
+    try {
+      return await HttpMultiServer.loopback(port);
+    } on SocketException {
+      if (!Platform.isAndroid || DateTime.now().isAfter(deadline)) {
+        rethrow;
+      }
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+    }
+  }
 }
 
 /// Implements a stateful HTTP service for querying and executing Dart tests.
@@ -125,6 +147,36 @@ class PatrolAppService extends PatrolAppServiceServer {
   /// Sets the native work that should follow the currently running Dart phase.
   void setContinuation(PatrolPhaseContinuation continuation) {
     _continuation = continuation;
+  }
+
+  /// Reports the end of the currently running Dart phase.
+  ///
+  /// If the next phase attaches to the running app, this answers the native
+  /// side's request now and returns its request for the next phase, which runs
+  /// in this engine. Otherwise the native side has to relaunch the app, so
+  /// this returns `null` and the answer is sent when the test body completes.
+  Future<RunDartTestRequest?> finishPhase(
+    PatrolPhaseContinuation continuation,
+  ) async {
+    if (!continuation.keepsProcess) {
+      setContinuation(continuation);
+      return null;
+    }
+
+    // Swap in fresh completers before unblocking runDartTest, the same way
+    // markDartTestAsCompleted does it for reuseAcrossTests.
+    final completed = _testExecutionCompleted;
+    _testExecutionRequested = Completer<RunDartTestRequest>();
+    _testExecutionCompleted = Completer<_TestExecutionResult>();
+    completed.complete(
+      _TestExecutionResult(
+        passed: true,
+        details: null,
+        continuation: continuation,
+      ),
+    );
+
+    return testExecutionRequested;
   }
 
   /// Marks [dartFileName] as completed with the given [passed] status.
@@ -280,6 +332,13 @@ class PatrolAppService extends PatrolAppServiceServer {
       );
     }
 
+    if (constants.hotRestartEnabled && (request.engineRestarted ?? false)) {
+      // A Hot Restart also starts a new engine. In develop mode tests run
+      // without being requested, so leave this request unanswered, the same as
+      // the one that the previous isolate was serving.
+      return Completer<RunDartTestResponse>().future;
+    }
+
     _testExecutionRequested.complete(request);
 
     final testExecutionResult = await testExecutionCompleted;
@@ -307,6 +366,7 @@ class PatrolAppService extends PatrolAppServiceServer {
       details: testExecutionResult.details,
       nextPhaseIndex: continuation?.nextPhaseIndex,
       nextPhaseLaunchUrl: continuation?.launchUrl,
+      nextPhaseKeepsProcess: continuation?.keepsProcess,
     );
   }
 }

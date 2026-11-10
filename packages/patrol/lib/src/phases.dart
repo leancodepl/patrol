@@ -24,13 +24,33 @@ final class PatrolPhase {
 /// How Patrol launches the app before a phase.
 final class PatrolAppLaunch {
   /// Launches the app using its launcher activity.
-  const PatrolAppLaunch.normal() : url = null;
+  const PatrolAppLaunch.normal() : url = null, keepsProcess = false;
 
   /// Launches the app through [url].
-  const PatrolAppLaunch.deepLink(String this.url) : assert(url != '');
+  const PatrolAppLaunch.deepLink(String this.url)
+    : assert(url != ''),
+      keepsProcess = false;
 
-  /// The deep link URL, or `null` for a normal launch.
+  /// Does not kill or launch the app. The phase runs in the app as the
+  /// previous phase left it.
+  ///
+  /// Use it when the previous phase can make the app restart its Flutter
+  /// engine, for example when Android recreates the activity for a deep link.
+  /// The Dart test cannot survive that, so the previous phase ends where the
+  /// engine stops, even if that is in the middle of its callback. If the
+  /// engine keeps running, the previous phase runs to its end and this phase
+  /// follows in the same engine.
+  ///
+  /// The process keeps its native state in both cases. Dart state is lost only
+  /// when the engine restarts, so do not share Dart objects between the two
+  /// phases.
+  const PatrolAppLaunch.attach() : url = null, keepsProcess = true;
+
+  /// The deep link URL, or `null` if Patrol does not open one.
   final String? url;
+
+  /// Whether the phase starts without killing the app.
+  final bool keepsProcess;
 }
 
 /// Metadata attached to the callback returned by [phases].
@@ -49,7 +69,7 @@ final class PatrolPhases {
     return phases[index];
   }
 
-  /// Describes how to restart the app for the phase after [phaseIndex].
+  /// Describes how to start the phase after [phaseIndex].
   PatrolPhaseContinuation? continuationAfter(int phaseIndex) {
     phaseAt(phaseIndex);
     final nextPhaseIndex = phaseIndex + 1;
@@ -57,19 +77,30 @@ final class PatrolPhases {
       return null;
     }
 
+    final launch = phases[nextPhaseIndex].launch;
     return PatrolPhaseContinuation(
       nextPhaseIndex: nextPhaseIndex,
-      launchUrl: phases[nextPhaseIndex].launch.url,
+      launchUrl: launch.url,
+      keepsProcess: launch.keepsProcess,
     );
+  }
+
+  /// Whether the phase at [phaseIndex] can run in an engine that replaced the
+  /// one the previous phase ran in.
+  bool canAttachAt(int phaseIndex) {
+    return phaseIndex > 0 &&
+        phaseIndex < phases.length &&
+        phases[phaseIndex].launch.keepsProcess;
   }
 }
 
-/// Restart information returned after a Dart phase completes.
+/// How to start the next phase, returned after a Dart phase completes.
 @internal
 final class PatrolPhaseContinuation {
   PatrolPhaseContinuation({
     required this.nextPhaseIndex,
     required this.launchUrl,
+    this.keepsProcess = false,
   });
 
   /// The next Dart phase.
@@ -77,6 +108,9 @@ final class PatrolPhaseContinuation {
 
   /// The deep link used to launch it, or `null` for a normal launch.
   final String? launchUrl;
+
+  /// Whether the next phase attaches to the running app.
+  final bool keepsProcess;
 }
 
 final _phasesByCallback = Expando<PatrolPhases>('Patrol phased test');

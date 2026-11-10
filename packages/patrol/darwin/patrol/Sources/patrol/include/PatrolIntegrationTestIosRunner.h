@@ -387,6 +387,11 @@
             XCTFail(@"A phased Patrol test returned continuation without a next phase");                            \
             return;                                                                                                 \
           }                                                                                                         \
+          if (response.nextPhaseKeepsProcess) {                                                                     \
+            /* The next phase attaches to the running app. The engine survives on iOS, */                           \
+            /* so the same app service runs it. */                                                                  \
+            continue;                                                                                               \
+          }                                                                                                         \
           NSString *launchURL = response.nextPhaseLaunchUrl;                                                        \
           XCUIApplication *app = [[XCUIApplication alloc] init];                                                    \
           [app terminate];                                                                                          \
@@ -656,6 +661,11 @@
       if (phaseIndex == nil) {                                                                                         \
         XCTFail(@"A phased Patrol test returned continuation without a next phase");                                   \
         return;                                                                                                        \
+      }                                                                                                                \
+      if (response.nextPhaseKeepsProcess) {                                                                            \
+        /* The next phase attaches to the running app. The engine survives on iOS, */                                  \
+        /* so the same app service runs it. */                                                                         \
+        continue;                                                                                                      \
       }                                                                                                                \
       NSString *launchURL = response.nextPhaseLaunchUrl;                                                               \
       XCUIApplication *app = [[XCUIApplication alloc] init];                                                           \

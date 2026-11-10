@@ -26,6 +26,9 @@ enum RunDartTestResponseResult { success, skipped, failure, continuation }
 class RunDartTestRequest {
   late String name;
   int? phaseIndex;
+  // True when the native runner attached to a Flutter engine that replaced the
+  // one the test was running in.
+  bool? engineRestarted;
 }
 
 class RunDartTestResponse {
@@ -33,6 +36,9 @@ class RunDartTestResponse {
   String? details;
   int? nextPhaseIndex;
   String? nextPhaseLaunchUrl;
+  // True when the next phase attaches to the running app instead of killing
+  // and relaunching it.
+  bool? nextPhaseKeepsProcess;
 }
 
 abstract class PatrolAppService<IOSClient, AndroidClient, DartServer> {
