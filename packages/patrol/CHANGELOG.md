@@ -7,6 +7,9 @@
   longer limited to the first test. Reading the per-test runs needs a `patrol_cli` release that
   includes this change. (#3359)
 - Add `includeInvisibleNodes` to `$.platform.android.getNativeViews()` to keep nodes some WebViews report as invisible, and `AndroidNativeView.isVisibleToUser` to tell them apart. (#3287)
+- Add R8 consumer rules to the Android plugin, so release-mode tests with minification enabled no
+  longer need app-side keep rules for Patrol and the test runners, including `AndroidJUnit4` for the
+  tests that build-time discovery generates. (#3334)
 
 ## 4.11.0
 
