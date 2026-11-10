@@ -32,7 +32,7 @@ class PatrolAppServiceClient(private val address: String) {
      */
     val port: Int
         get() {
-            PatrolServer.appServicePort?.let { return it }
+            PatrolEngines.appServicePort?.let { return it }
 
             val portStr = patrolBuildConfigString("PATROL_APP_PORT")
             if (portStr == null) {
@@ -56,16 +56,13 @@ class PatrolAppServiceClient(private val address: String) {
 
     @Throws(PatrolAppServiceClientException::class)
     fun runDartTest(name: String): Contracts.RunDartTestResponse {
-        Logger.i("PatrolAppServiceClient.runDartTest($name)")
-        return client.runDartTest(Contracts.RunDartTestRequest(name))
+        return runDartTest(name, null, false)
     }
 
-    @Throws(PatrolAppServiceClientException::class)
-    fun runDartTest(name: String, phaseIndex: Long): Contracts.RunDartTestResponse {
-        Logger.i("PatrolAppServiceClient.runDartTest($name, phaseIndex=$phaseIndex)")
-        return client.runDartTest(Contracts.RunDartTestRequest(name, phaseIndex))
-    }
-
+    /**
+     * Runs [phaseIndex] of the Dart test [name], or the test from its start if it is null.
+     * [engineRestarted] tells the app that the runner attached to a new Flutter engine.
+     */
     @Throws(PatrolAppServiceClientException::class)
     fun runDartTest(
         name: String,

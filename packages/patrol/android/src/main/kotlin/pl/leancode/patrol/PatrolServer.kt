@@ -8,7 +8,6 @@ import org.http4k.routing.routes
 import org.http4k.server.Http4kServer
 import org.http4k.server.KtorCIO
 import org.http4k.server.asServer
-import java.util.concurrent.atomic.AtomicInteger
 
 class PatrolServer {
     private val defaultPort = 8081
@@ -64,19 +63,6 @@ class PatrolServer {
 
     companion object {
         val appReady: ConditionVariable = ConditionVariable()
-
-        /**
-         * How many times PatrolAppService reported its readiness. Every Flutter engine
-         * reports once, so a change during a test means the app restarted its engine.
-         */
-        val engineGeneration: AtomicInteger = AtomicInteger()
-
-        /**
-         * The port PatrolAppService listens on in the Flutter engine that reported its
-         * readiness last, or null if the engine did not report one.
-         */
-        @Volatile
-        var appServicePort: Int? = null
     }
 }
 

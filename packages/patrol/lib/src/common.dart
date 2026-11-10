@@ -195,23 +195,31 @@ void patrolTest(
           'Phased Patrol tests are not supported in develop mode',
         );
       }
+      if (phasedTest != null &&
+          patrolBinding.patrolAppService.reuseAcrossTests) {
+        throw UnsupportedError(
+          'Phased Patrol tests need the Android test orchestrator, so they are '
+          'not supported with BrowserStack Dart coverage',
+        );
+      }
+      // Set when the native runner found a new Flutter engine while the test
+      // was running in the previous one, and the test did not allow for it.
+      String? unexpectedEngineRestart;
       if (!constants.hotRestartEnabled) {
         final request =
             await patrolBinding.patrolAppService.testExecutionRequested;
         phaseIndex = request.phaseIndex ?? 0;
         if ((request.engineRestarted ?? false) &&
             !(phasedTest?.canAttachAt(phaseIndex) ?? false)) {
-          // The native runner found a new Flutter engine while the test was
-          // running in the previous one, and the test did not allow for it.
-          throw StateError(
-            'The app restarted its Flutter engine while this test was '
-            'running${phasedTest == null ? '' : ' phase ${phaseIndex - 1}'}, '
-            'so the Dart test could not continue. If the restart is expected, '
-            'split the test with phases() and start the phase that follows '
-            'the restart with PatrolAppLaunch.attach().',
-          );
-        }
-        if (phasedTest != null) {
+          unexpectedEngineRestart =
+              'The app restarted its Flutter engine, or started another one, '
+              'while this test was running'
+              '${phasedTest == null ? '' : ' phase ${phaseIndex - 1}'}, so the '
+              'Dart test could not continue. If the restart is expected, split '
+              'the test with phases() and start the phase that follows the '
+              'restart with PatrolAppLaunch.attach(). Patrol supports one '
+              'Flutter engine at a time.';
+        } else if (phasedTest != null) {
           callbackToRun = phasedTest.phaseAt(phaseIndex).callback;
         }
       }
@@ -226,6 +234,9 @@ void patrolTest(
       }
 
       try {
+        if (unexpectedEngineRestart != null) {
+          throw StateError(unexpectedEngineRestart);
+        }
         while (true) {
           await callbackToRun(patrolTester);
           final continuation = phasedTest?.continuationAfter(phaseIndex);
@@ -243,7 +254,15 @@ void patrolTest(
 
           // The next phase attaches to the running app, and the engine is
           // still alive, so it runs here.
-          phaseIndex = nextRequest.phaseIndex ?? continuation.nextPhaseIndex;
+          if (nextRequest.name != global_state.currentTestFullName ||
+              nextRequest.phaseIndex != continuation.nextPhaseIndex) {
+            throw StateError(
+              'Expected phase ${continuation.nextPhaseIndex} of this test to '
+              'be requested next, but the native runner requested phase '
+              '${nextRequest.phaseIndex} of "${nextRequest.name}"',
+            );
+          }
+          phaseIndex = continuation.nextPhaseIndex;
           callbackToRun = phasedTest!.phaseAt(phaseIndex).callback;
         }
       } catch (_) {
