@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:mcp_dart/mcp_dart.dart';
+import 'package:meta/meta.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:process/process.dart';
 
@@ -28,6 +29,7 @@ abstract final class NativeTreeService {
       }
 
       final tree = await _fetchNativeTree(
+        device,
         testServerPort ?? defaultTestServerPort,
         processManager,
       );
@@ -44,7 +46,7 @@ abstract final class NativeTreeService {
         );
       }
 
-      final trimmed = _trimTree(tree);
+      final trimmed = trimTree(tree);
 
       return CallToolResult(
         content: [
@@ -54,23 +56,31 @@ abstract final class NativeTreeService {
         ],
         structuredContent: trimmed,
       );
-    } on Exception catch (e) {
+    } catch (err) {
+      // Also catches Errors: a body that is valid JSON but not an object throws
+      // a TypeError, which would otherwise escape the tool callback.
       return CallToolResult(
-        content: [TextContent(text: 'Failed to fetch native tree: $e')],
+        content: [TextContent(text: 'Failed to fetch native tree: $err')],
         isError: true,
       );
     }
   }
 
+  /// The bundle ids installed on the simulator [device]; empty for anything
+  /// else, since `simctl` knows only simulators.
   static Future<List<String>> _getIosInstalledApps(
+    Device device,
     ProcessManager processManager,
   ) async {
+    if (device.targetPlatform != TargetPlatform.iOS || device.real) {
+      return [];
+    }
     try {
       final listApps = await processManager.run([
         'xcrun',
         'simctl',
         'listapps',
-        'booted',
+        device.id,
       ]);
 
       if (listApps.exitCode != 0) {
@@ -95,7 +105,10 @@ abstract final class NativeTreeService {
     return roots == null || roots.isEmpty;
   }
 
-  static Map<String, dynamic> _trimTree(Map<String, dynamic> tree) {
+  /// The tree cut down to what a selector can use, with identity-less
+  /// wrapper nodes hoisted away.
+  @visibleForTesting
+  static Map<String, dynamic> trimTree(Map<String, dynamic> tree) {
     final roots = tree['roots'] as List<dynamic>?;
     if (roots == null) {
       return tree;
@@ -204,12 +217,13 @@ abstract final class NativeTreeService {
   }
 
   static Future<Map<String, dynamic>> _fetchNativeTree(
+    Device device,
     int port,
     ProcessManager processManager,
   ) async {
     final client = HttpClient();
     try {
-      final iosApps = await _getIosInstalledApps(processManager);
+      final iosApps = await _getIosInstalledApps(device, processManager);
 
       final uri = Uri.http('$_host:$port', '/getNativeViews');
       final request = await client.postUrl(uri)

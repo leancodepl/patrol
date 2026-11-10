@@ -103,13 +103,18 @@ an app in a subdirectory (or a package in a pub workspace) is reached from the r
 A session holds its project while it lives — the app, the device and the ports belong to it — so a
 `run` naming another project is refused until the loaded session is quit.
 
+A git worktree is a project of its own. `PROJECT_ROOT=.` in an editor config resolves to the tree the
+server was started in, so a test that lives in another worktree is reached by passing that worktree as
+`projectRoot`, or by naming `testFile` with its absolute path: the project owning the file wins over
+every configured signal, and moves the server once no session is running.
+
 ## Options
 
 | Option | What it does |
 | --- | --- |
 | `--project-root` | The project to work in, when the editor's signals don't point at it. |
 | `--log-file` | Where the session writes its log. |
-| `--show-terminal` | Opens a macOS Terminal with the live log. |
+| `--show-terminal` | Opens a macOS Terminal window with the live log, once per log file for the server's lifetime. When it does not open, results carry `terminalWarning`. |
 | after `--` | Flags for `patrol develop`, e.g. `patrol mcp -- --flavor dev --verbose`. |
 
 `PROJECT_ROOT`, `SHOW_TERMINAL` and `PATROL_FLAGS` work as well, and the CLI's own environment
@@ -138,6 +143,13 @@ To migrate, drop `patrol_mcp` from your `pubspec.yaml` and point your editor's M
 
 Patrol also ships [agent skills](/documentation/other/agent-skills) that complement this server: the
 MCP gives the agent the tools, while a skill teaches it how to use them to write tests well.
+
+## A run that goes quiet
+
+Every `run` and `status` result carries `quietForSeconds` -- how long the session has heard nothing
+from the device -- and `lastTestEntry`, the last test it saw. Once the quiet passes three minutes the
+result also carries a `stallNote` naming it, and a `run` that reaches its timeout says how long the
+quiet lasted. `quit` stops such a run; the next `run` starts a fresh session.
 
 ## Troubleshooting
 
