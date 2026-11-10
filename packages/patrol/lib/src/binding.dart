@@ -223,6 +223,10 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
   /// process of a test, `1` after the first relaunch, and so on. Tests without
   /// phases always run in phase `0`.
   ///
+  /// A phase declared with [PatrolAppLaunch.attach] can run in the same
+  /// process, and even the same test body, as the phase before it. This then
+  /// changes to its index when it starts.
+  ///
   /// It's `null` until the native side asks for a test. `patrolSetUp`,
   /// `patrolTearDown` and the test body run after that; a plain `setUp` can
   /// run before it.
@@ -238,7 +242,8 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
   /// Whether Patrol will kill the app and relaunch it for the next phase of a
   /// phased test.
   ///
-  /// Becomes `true` once a phase that isn't the last one passes, and stays
+  /// Becomes `true` once a phase that isn't the last one passes, unless the
+  /// next phase uses [PatrolAppLaunch.attach], and stays
   /// `true` until the app is killed. It's `false` while the current test is
   /// failing, for example after a framework error during the phase or a
   /// `tearDown` that threw: the test then ends without a relaunch. Check it in

@@ -439,6 +439,7 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
     }
 
     override fun markPatrolAppServiceReady() {
+        PatrolServer.engineGeneration.incrementAndGet()
         PatrolServer.appReady.open()
     }
 

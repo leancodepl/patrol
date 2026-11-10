@@ -426,6 +426,11 @@ static inline void PatrolWithoutQuiescenceWait(void (^block)(void)) {
       if (phaseIndex == nil) {                                                                                      \
         return [self patrolFailureResponse:@"A phased Patrol test returned continuation without a next phase"];     \
       }                                                                                                             \
+      if (response.nextPhaseKeepsProcess) {                                                                         \
+        /* The next phase attaches to the running app. The engine survives on iOS, */                               \
+        /* so the same app service runs it. */                                                                      \
+        continue;                                                                                                   \
+      }                                                                                                             \
       /* Check the link before the app is killed, so a bad one fails the test at once. */                           \
       NSString *launchURL = response.nextPhaseLaunchUrl;                                                            \
       NSURL *url = nil;                                                                                             \
