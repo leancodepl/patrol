@@ -33,6 +33,8 @@ const _instructions =
     '- run auto-selects a device; to target a specific one, call devices and pass its id as run\'s "device".\n'
     '- status is optional and mainly useful for debugging session state and recent output.\n'
     '- native-tree is intended for native interactions and cross-app/native context inspection.\n'
+    '- run and status carry logFile, the whole log of the session; follow it '
+    'with tail -F in a terminal the user can see to show a run live.\n'
     '- every result carries projectRoot, the project the run happened in. testFile is '
     'relative to it or to the workspace the client opened. To work in another checkout, '
     'quit the session and pass projectRoot to run.';
@@ -127,6 +129,7 @@ class McpCommand extends PatrolCommand {
 
     return io.IOOverrides.runZoned(
       stdout: () => session.capturingStdout,
+      stderr: () => session.capturingStderr,
       () => _serve(server, session, transport),
     );
   }

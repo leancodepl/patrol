@@ -152,7 +152,9 @@ MCP gives the agent the tools, while a skill teaches it how to use them to write
 ## When a test fails
 
 A failed `run` carries `error`: the failing test's name, its error and the error lines patrol
-reported after the failure. `output` holds the session's recent log for everything else.
+reported after the failure. `output` holds the session's recent log for everything else, including
+what the build writes to stderr. `logFile` names the file holding the whole log; follow it with
+`tail -F` to watch a run as it goes.
 
 ## A run that goes quiet
 

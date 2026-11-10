@@ -567,6 +567,39 @@ packages:
     );
   });
 
+  test('names the log file in the status once a run has started', () async {
+    final session = sessionWith(FakeDevelop());
+    expect(session.getStatus().toMap(), isNot(contains('logFile')));
+
+    await startSession(session, 'app_test.dart');
+
+    expect(
+      session.getStatus().toMap()['logFile'],
+      '${projectRoot.path}/patrol.log',
+    );
+    await session.dispose();
+  });
+
+  test('captures what is written to stderr, as a failed build does', () async {
+    final session = sessionWith(FakeDevelop());
+    await startSession(session, 'app_test.dart');
+
+    session.capturingStderr.writeln(
+      'Error: unable to find directory entry in pubspec.yaml: assets/.env',
+    );
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+
+    expect(
+      session.getStatus().output,
+      contains('unable to find directory entry in pubspec.yaml: assets/.env'),
+    );
+    await session.dispose();
+    expect(
+      File('${projectRoot.path}/patrol.log').readAsStringSync(),
+      contains('assets/.env'),
+    );
+  });
+
   group('error', () {
     Future<({PatrolStatus status, bool started})> runOnce(
       PatrolSession session,
