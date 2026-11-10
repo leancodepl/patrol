@@ -8,12 +8,19 @@ on:
       - 'packages/patrol_cli/test/compatibility_checker/version_compatibility_test.dart'
   pull_request:
     branches: [ master ]
-    paths:
-      - 'packages/patrol_cli/lib/src/compatibility_checker/version_compatibility.dart'
-      - 'packages/patrol_cli/test/compatibility_checker/version_compatibility_test.dart'
 
 jobs:
+  changes:
+    uses: ./.github/workflows/_relevant.yaml
+    with:
+      filters: |
+        relevant:
+          - 'packages/patrol_cli/lib/src/compatibility_checker/version_compatibility.dart'
+          - 'packages/patrol_cli/test/compatibility_checker/version_compatibility_test.dart'
+
   verify:
+    needs: changes
+    if: ${{ needs.changes.outputs.relevant == 'true' }}
     runs-on: ubuntu-latest
     
     steps:
@@ -45,4 +52,18 @@ jobs:
           echo "$MODIFIED_TABLES"
           echo "Please run 'dart run lib/src/compatibility_checker/generate_compatibility_table.dart' and commit the changes."
           exit 1
-        fi 
+        fi
+
+  verify-compatibility-gate:
+    name: Verify Version Compatibility gate
+    needs: [changes, verify]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify required jobs passed
+        run: |
+          if [ "${{ contains(needs.*.result, 'failure') }}" = "true" ] || [ "${{ contains(needs.*.result, 'cancelled') }}" = "true" ]; then
+            echo "A required job did not pass: ${{ join(needs.*.result, ' ') }}"
+            exit 1
+          fi
+          echo "All required jobs passed or were skipped: ${{ join(needs.*.result, ' ') }}"
