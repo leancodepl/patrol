@@ -218,15 +218,17 @@ void patrolTest(
             !(phasedTest?.canAttachAt(requestedPhaseIndex ?? 0) ?? false)) {
           // The native runner found a new Flutter engine while the test was
           // running in the previous one, and the test did not allow for it.
+          // Thrown here, so that the failure screenshot is taken.
           final restartedPhase = phasedTest == null
               ? ''
               : ' phase ${(requestedPhaseIndex ?? 1) - 1}';
           throw StateError(
-            'The app restarted its Flutter engine while this test was '
-            'running$restartedPhase, '
-            'so the Dart test could not continue. If the restart is expected, '
-            'split the test with phases() and start the phase that follows '
-            'the restart with PatrolAppLaunch.attach().',
+            'The app restarted its Flutter engine, or started another one, '
+            'while this test was running$restartedPhase, so the Dart test '
+            'could not continue. If the restart is expected, split the test '
+            'with phases() and start the phase that follows the restart with '
+            'PatrolAppLaunch.attach(). Patrol supports one Flutter engine at a '
+            'time.',
           );
         }
 
@@ -236,6 +238,12 @@ void patrolTest(
           if (constants.hotRestartEnabled) {
             throw UnsupportedError(
               'Phased Patrol tests are not supported in develop mode',
+            );
+          }
+          if (patrolBinding.patrolAppService.reuseAcrossTests) {
+            throw UnsupportedError(
+              'Phased Patrol tests need the Android test orchestrator, so they '
+              'are not supported with BrowserStack Dart coverage',
             );
           }
           if (const bool.fromEnvironment('COVERAGE_ENABLED') &&
@@ -274,7 +282,15 @@ void patrolTest(
 
           // The next phase attaches to the running app, and the engine is
           // still alive, so it runs here.
-          phaseIndex = nextRequest.phaseIndex ?? continuation.nextPhaseIndex;
+          if (nextRequest.name != global_state.currentTestFullName ||
+              nextRequest.phaseIndex != continuation.nextPhaseIndex) {
+            throw StateError(
+              'Expected phase ${continuation.nextPhaseIndex} of this test to '
+              'be requested next, but the native runner requested phase '
+              '${nextRequest.phaseIndex} of "${nextRequest.name}"',
+            );
+          }
+          phaseIndex = continuation.nextPhaseIndex;
           callbackToRun = phasedTest!.phaseAt(phaseIndex).callback;
         }
       } catch (err, st) {
