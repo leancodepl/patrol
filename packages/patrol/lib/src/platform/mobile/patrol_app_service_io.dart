@@ -66,9 +66,17 @@ Future<HttpServer> _bindServer(int port) async {
   while (true) {
     try {
       return await HttpMultiServer.loopback(port);
-    } on SocketException {
-      if (!Platform.isAndroid || DateTime.now().isAfter(deadline)) {
+    } on SocketException catch (error) {
+      if (!Platform.isAndroid) {
         rethrow;
+      }
+      if (DateTime.now().isAfter(deadline)) {
+        throw StateError(
+          'PatrolAppService could not bind port $port for '
+          '${_bindTimeout.inSeconds} s: $error. If the app restarted its '
+          'Flutter engine, the previous engine is still running and holds '
+          'the port. Patrol supports one Flutter engine at a time.',
+        );
       }
       await Future<void>.delayed(const Duration(milliseconds: 100));
     }
