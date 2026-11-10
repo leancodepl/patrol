@@ -2,13 +2,13 @@ import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:patrol_cli/src/base/extensions/platform.dart';
 import 'package:patrol_cli/src/test_bundler.dart';
-import 'package:platform/platform.dart';
+import 'package:platform/testing.dart';
 import 'package:test/test.dart';
 
 import 'src/common.dart';
 import 'src/mocks.dart';
 
-Directory _initFakeFs(FileSystem fs, Platform platform) {
+Directory _initFakeFs(FileSystem fs, NativePlatform platform) {
   // Create home directory
   fs.directory(fs.path.join(platform.home)).createSync(recursive: true);
   fs.currentDirectory = platform.home;
@@ -22,11 +22,11 @@ Directory _initFakeFs(FileSystem fs, Platform platform) {
 }
 
 void main() {
-  _test(initFakePlatform(Platform.macOS));
-  _test(initFakePlatform(Platform.windows));
+  _test(initFakePlatform(NativePlatform.macOS));
+  _test(initFakePlatform(NativePlatform.windows));
 }
 
-void _test(Platform platform) {
+void _test(NativePlatform platform) {
   const testDirectory = 'patrol_test';
 
   group('(${platform.operatingSystem}) TestBundler', () {
