@@ -3,12 +3,12 @@ import { initialise } from "./initialise"
 import { DartTestEntry, PatrolTestEntry } from "./types"
 
 async function setup(config: FullConfig) {
-  const { baseURL, browserName, channel, launchOptions, locale } = config.projects[0].use
+  const { baseURL, browserName, channel, launchOptions, locale, ignoreHTTPSErrors } = config.projects[0].use
 
   const browserType = { chromium, firefox, webkit }[browserName ?? "chromium"]
   const browser = await browserType.launch({ ...launchOptions, channel })
 
-  const page = await browser.newPage({ locale })
+  const page = await browser.newPage({ locale, ignoreHTTPSErrors })
 
   if (!baseURL) {
     throw new Error("baseURL is not set")
@@ -35,6 +35,7 @@ async function setup(config: FullConfig) {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             return window.__patrol__getTests?.()!
           },
+          undefined,
           { timeout: 120000 },
         )
         .then(v => v.jsonValue()),

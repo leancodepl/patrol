@@ -16,6 +16,19 @@ function getUrlFromEnv(name) {
   return url
 }
 
+function getDispatchRedirects() {
+  const dispatchUrl = getUrlFromEnv("PATROL_DISPATCH_URL")
+  if (!dispatchUrl) return []
+
+  return [
+    {
+      source: "/dispatch/:path*",
+      destination: new URL("/:path*", dispatchUrl).href,
+      permanent: false,
+    },
+  ]
+}
+
 /** @type {import('next').NextConfig} */
 const config = {
   outputFileTracingRoot: repoRoot,
@@ -23,24 +36,8 @@ const config = {
   turbopack: {
     root: repoRoot,
   },
-  rewrites: async () => {
-    const dispatchUrl = getUrlFromEnv("PATROL_DISPATCH_URL")
-    if (!dispatchUrl) return []
-
-    return [
-      // Separate rule, because on Vercel `/dispatch/:path*` with an empty path
-      // rewrites to `/dispatch/`, which the target redirects back to `/dispatch`.
-      {
-        source: "/dispatch",
-        destination: new URL("/dispatch", dispatchUrl).href,
-      },
-      {
-        source: "/dispatch/:path*",
-        destination: new URL("/dispatch/:path*", dispatchUrl).href,
-      },
-    ]
-  },
   redirects: async () => [
+    ...getDispatchRedirects(),
     {
       source: "/patrol/native/feature-parity",
       destination: "/native/feature-parity",

@@ -124,6 +124,17 @@ class AndroidAutomatorClient {
     return _sendRequest('allowPermission');
   }
 
+  Future<AndroidSetFoldPostureResponse> setFoldPosture(
+    AndroidSetFoldPostureRequest request,
+  ) async {
+    final json = await _sendRequest('setFoldPosture', request.toJson());
+    return AndroidSetFoldPostureResponse.fromJson(json);
+  }
+
+  Future<void> resetFoldPosture() {
+    return _sendRequest('resetFoldPosture');
+  }
+
   Future<Map<String, dynamic>> _sendRequest(
     String requestName, [
     Map<String, dynamic>? request,

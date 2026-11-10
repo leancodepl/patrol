@@ -1,18 +1,50 @@
 ## Unreleased
 
 - `web_runner` launches the browser engine set by `patrol test --web-browser` (Chromium by default).
-- Allow `equatable` 3.x by widening the constraint to `>=2.1.0 <4.0.0`. Apps still on `equatable` 2.x keep resolving.
-- BrowserStack Dart coverage now counts never-executed lines by default, the same way `flutter test --coverage` does, when `PATROL_BS_COVERAGE_PACKAGES` is a list of plain anchored prefixes (`^package:my_app/`). The prefixes are passed to the VM as `libraryFilters`, so only the app's own libraries are force-compiled, and only once per app process (`librariesAlreadyCompiled`). Without such prefixes it falls back to executed-code-only coverage and logs why. `PATROL_BS_COVERAGE_FORCE_COMPILE=true`/`false` overrides the default. (#3066)
-- Fix BrowserStack Dart coverage being lost when a session is killed mid-dump. The runner assembled the `.ec` in place - truncating it, writing the JaCoCo dump, then appending the Dart blocks - so a process killed in that window (e.g. the BrowserStack session timeout) left a Dart-less file. It now stages the whole file and swaps it in with a single rename. Per-process Dart LCOVs are also merged on device instead of concatenated, so the embedded payload stays the size of one cumulative snapshot instead of growing with the test count. (#3066)
-- Add BrowserStack-friendly Dart coverage collection. With `--dart-define=PATROL_BS_COVERAGE=true` (plus `PATROL_BS_COVERAGE_PACKAGES=^package:my_app/` to scope it, `PATROL_BS_COVERAGE_FORCE_COMPILE=false` for executed-code-only), patrol gathers Dart line coverage from the running VM service and the Android test runner merges it into the JaCoCo `.exec` that BrowserStack collects. Requires `enableAndroidTestCoverage true` on the app's debug build type and `clearPackageData:false` in the BrowserStack build. Works with the Android test orchestrator on or off; when off, the app service now serves every test from one process. Nothing on the device side is BrowserStack-specific, so it also works on other Android device farms such as emulator.wtf and Firebase Test Lab. (#3066)
-- Add macOS platform automation via `$.platform.macos`:
-    - `tap` / `waitUntilVisible` for native views
-    - `isAlertVisible` / `tapAlertButton` for `NSAlert`
-    - `tapMenu` for the application menu bar
+- Remove the placeholder `GoogleService-Info.plist` and `google-services.json` from the example app, so security scanners no longer flag the published package. (#3360)
+- Add web platform screenshot support via `$.takeNativeScreenshot('tag')`. (#3047)
+- Support Android code coverage with the test orchestrator's `clearPackageData:true` on Android
+  12+: each test's coverage is appended to the coverage file as the `shell` user, so it is no
+  longer limited to the first test. Reading the per-test runs needs a `patrol_cli` release that
+  includes this change. (#3359)
+- Add `includeInvisibleNodes` to `$.platform.android.getNativeViews()` to keep nodes some WebViews report as invisible, and `AndroidNativeView.isVisibleToUser` to tell them apart. (#3287)
+
+## 4.11.0
+
+- Add macOS platform automation via `$.platform.macos`: `tap` and `waitUntilVisible` for native
+  views, `isAlertVisible` and `tapAlertButton` for `NSAlert`, and `tapMenu` for the application
+  menu bar. See the
+  [docs](https://patrol.leancode.co/documentation/native/feature-parity#macos-specific-features).
+  (#3251)
+- Add experimental `$.platform.mobile.setFoldPosture`, which folds and unfolds a foldable device:
+    - on Android 12+, a foldable device or emulator; `$.platform.android.resetFoldPosture` gives
+      the posture back to the hinge.
+    - on iOS, a foldable simulator, also by angle with `$.platform.ios.setHingeAngle`. It works only
+      on simulators run by `patrol test` or `patrol develop`. Requires `patrol_cli` 4.9.0 or newer.
+      (#3336)
+- Add Dart code coverage for BrowserStack and other Android device farms (emulator.wtf, Firebase
+  Test Lab). Build with `--dart-define=PATROL_BS_COVERAGE=true` and
+  `--dart-define=PATROL_BS_COVERAGE_PACKAGES=^package:my_app/`, and the Android test runner merges
+  Dart line coverage into the JaCoCo `.ec` file the farm collects, counting never-executed lines
+  the way `flutter test --coverage` does. `patrol coverage pull` (`patrol_cli` 4.9.0 or newer)
+  splits it into `jacoco.exec` and `patrol_lcov.info`. See the
+  [docs](https://patrol.leancode.co/documentation/integrations/browserstack#dart-code-coverage-android).
+  (#3066)
 - Bundle the Patrol [agent skills](https://github.com/leancodepl/patrol/tree/master/skills) with
   the package. Install them with
   `dart run skills@ get --agent claude -p patrol -s patrol-setup -s patrol-write-test` (or
   `--agent cursor`, …) on Dart 3.12+; see the catalog for the other skills and older SDKs. (#3299)
+- Add the `patrol-migrate-from-maestro` agent skill: migrates Maestro UI flows to Patrol tests,
+  with a Maestro-to-Patrol command mapping. (#3317)
+- Allow `equatable` 3.x by widening the constraint to `>=2.1.0 <4.0.0`, and require `patrol_log`
+  ^0.10.2, which allows it too. Apps still on `equatable` 2.x keep resolving. (#3322)
+- Fix failure messages of tests run in profile or release mode showing
+  `Instance of 'FlutterErrorDetails'` instead of the actual error. (#3325)
+- Fix `web_runner` ignoring its 60 s / 120 s / 300 s waits for the app to initialise, report its
+  tests and expose `__patrol__runTest`: Playwright's 30 s default applied instead, so slow first
+  loads failed. (#3307)
+- Fix the web runner ignoring `--web-ignore-https-errors` while it reads the list of tests, which
+  ended a run against an https web server with `Total: 0`. (#3314)
 
 ## 4.10.0
 

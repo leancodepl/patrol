@@ -2,13 +2,35 @@
 
 - Add `--web-browser` to run web tests in Firefox or WebKit (the engine of Safari and every iOS
   browser) instead of Chromium. Requires `patrol` with the matching `web_runner` change.
-- Allow `equatable` 3.x by widening the constraint to `>=2.1.0 <4.0.0`. Resolution stays on 2.x until `cli_completion` supports 3.x.
-- Add `patrol coverage pull`, which splits the JaCoCo `.ec` coverage of a patrol Android run into a standard `jacoco.exec` and a Dart `patrol_lcov.info`, merging duplicate `SF:` records across tests and shards. `--input <file or directory>` reads local `.ec` files (e.g. emulator.wtf or Firebase Test Lab outputs); `--browserstack-build-id` downloads them from BrowserStack, merging every session (shard) unless `--browserstack-session-id` is given, and fails fast on builds that ran with `clearPackageData:true`, which is incompatible with coverage there. (#3066)
+- Fix `patrol develop --use-prebuilt-apks` failing with `flutter build bundle failed with code 64` on
+  projects with a flavor, by no longer passing `--flavor` to `flutter build bundle`, which defines no
+  such option. Only a checkout that had never generated the Dart plugin registrant was affected, which
+  is every fresh CI checkout. (#3297)
+- `patrol coverage pull` now reads coverage from runs with `clearPackageData:true` (one run per
+  test, written by `patrol` on Android 12+) and no longer refuses those BrowserStack builds. A
+  session that kept only the first test's run (older Android) still fails. (#3359)
+
+## 4.9.0
+
+- Add `patrol coverage pull`, which splits the JaCoCo `.ec` coverage of a patrol Android run into a
+  standard `jacoco.exec` and a Dart `patrol_lcov.info`, merging duplicate records across tests and
+  shards. `--input <file or directory>` reads local `.ec` files (e.g. emulator.wtf or Firebase Test
+  Lab outputs), and `--browserstack-build-id` downloads them from BrowserStack. The Dart coverage
+  comes from `patrol` 4.11.0 or newer. See the
+  [docs](https://patrol.leancode.co/cli-commands/coverage). (#3066)
+- Run a server on the host during iOS simulator runs, which the experimental
+  `$.platform.ios.setFoldPosture` uses to fold a foldable simulator such as the iPhone Duo. Requires
+  `patrol` 4.11.0 or newer. (#3336)
+- Allow `equatable` 3.x by widening the constraint to `>=2.1.0 <4.0.0`, and require `patrol_log`
+  ^0.10.2, which allows it too. Resolution stays on 2.x until `cli_completion` supports 3.x. (#3322)
 - Fix `idevicesyslog` not being scoped to the device under test, so concurrent runs on a host with
   several real iOS devices attached all streamed the same device's log, corrupting the step
-  display, `--show-flutter-logs` output and the test summary. (#3245)
+  display, `--show-flutter-logs` output and the test summary. (#3246)
 - Fix `--flutter-command` and `PATROL_FLUTTER_COMMAND` splitting quoted text on spaces, so a quoted
-  Flutter path with spaces works. Add `splitCommandLine` to the public API. (#3026)
+  Flutter path with spaces works. Add `splitCommandLine` to the public API. (#3315)
+- Fix `patrol test` on web timing out when the Flutter web server serves https (set up with
+  `web_dev_config.yaml`): the server URL is now detected, and the readiness check accepts a
+  self-signed certificate from that server. (#3314)
 
 ## 4.8.0
 
