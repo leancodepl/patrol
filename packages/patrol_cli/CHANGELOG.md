@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Add `--web-browser` to run web tests in Firefox or WebKit (the engine of Safari and every iOS
+  browser) instead of Chromium. Requires `patrol` with the matching `web_runner` change.
 - Fix `patrol develop --use-prebuilt-apks` failing with `flutter build bundle failed with code 64` on
   projects with a flavor, by no longer passing `--flavor` to `flutter build bundle`, which defines no
   such option. Only a checkout that had never generated the Dart plugin registrant was affected, which
