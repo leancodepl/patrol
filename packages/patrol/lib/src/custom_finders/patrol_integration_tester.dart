@@ -15,7 +15,9 @@ class PatrolIntegrationTester extends finders.PatrolTester {
     required super.tester,
     required super.config,
     required this.platformAutomator,
-  }) : _patrolLog = PatrolLogWriter() {
+    List<String> entrypointArgs = const [],
+  }) : entrypointArgs = List.unmodifiable(entrypointArgs),
+       _patrolLog = PatrolLogWriter() {
     nativeAutomator = NativeAutomator(platformAutomator: platformAutomator);
     nativeAutomator2 = NativeAutomator2(platformAutomator: platformAutomator);
   }
@@ -42,6 +44,11 @@ class PatrolIntegrationTester extends finders.PatrolTester {
     'Use platformAutomator instead. This will be removed in a future release.',
   )
   late final NativeAutomator2 nativeAutomator2;
+
+  /// Dart entrypoint arguments passed by the native side of the app
+  /// (`dartEntrypointArgs` on Android, `entrypointArgs` on iOS and macOS).
+  /// Empty if none were passed.
+  final List<String> entrypointArgs;
 
   /// Shorthand for [platformAutomator].
   PlatformAutomator get platform => platformAutomator;
