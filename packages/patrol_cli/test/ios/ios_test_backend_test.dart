@@ -656,6 +656,62 @@ void main() {
       );
     });
 
+    test('decodes a literal plus in a runtime-runner test name', () async {
+      fs.directory('build/out.xcresult').createSync(recursive: true);
+      stubExport(
+        manifest: [
+          {
+            'testIdentifier': 'RunnerUITests/login_test+adds+1__PLUS__1',
+            'attachments': [attachment('a', 'Screen Recording.mp4')],
+          },
+        ],
+        files: {'a': _mp4Bytes},
+      );
+
+      await iosTestBackend.extractAttachments(
+        xcresultPath: 'build/out.xcresult',
+        videoConfig: const VideoRecordingConfig(
+          enabled: true,
+          outputDirectory: 'videos',
+        ),
+        deviceId: 'sim',
+      );
+
+      final files = rootDirectory
+          .childDirectory('videos')
+          .listSync()
+          .map((e) => e.basename);
+      expect(files.single, matches(RegExp(r'^patrol_adds_1_1_sim_\d+\.mp4$')));
+    });
+
+    test('a recording that fails to copy does not lose the others', () async {
+      fs.directory('build/out.xcresult').createSync(recursive: true);
+      // A directory in the way makes the first copy throw.
+      fs.directory('videos/a_test_first.mp4').createSync(recursive: true);
+      stubExport(
+        manifest: [
+          {
+            'testIdentifier': 'RunnerUITests/a_test+first',
+            'attachments': [attachment('a', 'Screen Recording.mp4')],
+          },
+          {
+            'testIdentifier': 'RunnerUITests/a_test+second',
+            'attachments': [attachment('b', 'Screen Recording.mp4')],
+          },
+        ],
+        files: {'a': _mp4Bytes, 'b': _mp4Bytes},
+      );
+
+      final saved = await iosTestBackend.extractAttachments(
+        xcresultPath: 'build/out.xcresult',
+        videoConfig: const _FixedNameVideoConfig(),
+        deviceId: 'sim',
+      );
+
+      expect(saved.single, endsWith('a_test_second.mp4'));
+      expect(fs.file('videos/a_test_second.mp4').existsSync(), isTrue);
+    });
+
     test('one export serves both screenshots and videos', () async {
       fs.directory('build/out.xcresult').createSync(recursive: true);
       stubExport(
@@ -695,6 +751,116 @@ void main() {
       );
     });
   });
+
+  group('IOSTestBackend.patchXcTestRunKeepRecordings', () {
+    late IOSTestBackend iosTestBackend;
+    late MockProcessManager processManager;
+    late Map<String, String> plist;
+
+    setUp(() {
+      processManager = MockProcessManager();
+      final fs = MemoryFileSystem.test();
+      iosTestBackend = IOSTestBackend(
+        processManager: processManager,
+        platform: FakePlatform(),
+        fs: fs,
+        rootDirectory: fs.currentDirectory,
+        parentDisposeScope: DisposeScope(),
+        logger: FakeLogger(),
+      );
+
+      // PlistBuddy over a flat `key:path -> value` map.
+      when(
+        () => processManager.run(any(), runInShell: any(named: 'runInShell')),
+      ).thenAnswer((invocation) async {
+        final args = (invocation.positionalArguments.first as List)
+            .cast<String>();
+        final command = args[args.indexOf('-c') + 1];
+        final print = RegExp(r'^Print :(\S+)$').firstMatch(command);
+        if (print != null) {
+          final value = plist[print.group(1)];
+          return ProcessResult(0, value == null ? 1 : 0, value ?? '', '');
+        }
+        final set = RegExp(r'^Set :(\S+) (\S+)$').firstMatch(command)!;
+        if (!plist.containsKey(set.group(1))) {
+          return ProcessResult(0, 1, '', 'Entry Does Not Exist');
+        }
+        plist[set.group(1)!] = set.group(2)!;
+        return ProcessResult(0, 0, '', '');
+      });
+    });
+
+    test('patches and restores a format-1 xctestrun', () async {
+      plist = {'RunnerUITests:SystemAttachmentLifetime': 'deleteOnSuccess'};
+
+      final previous = await iosTestBackend.patchXcTestRunKeepRecordings(
+        'Runner.xctestrun',
+      );
+      expect(plist['RunnerUITests:SystemAttachmentLifetime'], 'keepAlways');
+
+      await iosTestBackend.restoreXcTestRunLifetimes(
+        'Runner.xctestrun',
+        previous,
+      );
+      expect(
+        plist['RunnerUITests:SystemAttachmentLifetime'],
+        'deleteOnSuccess',
+      );
+    });
+
+    test('patches and restores every configuration of a format-2 xctestrun '
+        '(scheme with a test plan)', () async {
+      const first = 'TestConfigurations:0:TestTargets';
+      const second = 'TestConfigurations:1:TestTargets';
+      plist = {
+        '$first:0:BlueprintName': 'RunnerTests',
+        '$first:0:SystemAttachmentLifetime': 'deleteOnSuccess',
+        '$first:1:BlueprintName': 'RunnerUITests',
+        '$first:1:SystemAttachmentLifetime': 'deleteOnSuccess',
+        '$second:0:BlueprintName': 'RunnerUITests',
+        '$second:0:SystemAttachmentLifetime': 'keepNever',
+      };
+      final original = Map.of(plist);
+
+      final previous = await iosTestBackend.patchXcTestRunKeepRecordings(
+        'Runner.xctestrun',
+      );
+      expect(plist['$first:1:SystemAttachmentLifetime'], 'keepAlways');
+      expect(plist['$second:0:SystemAttachmentLifetime'], 'keepAlways');
+      // Other targets are left alone.
+      expect(plist['$first:0:SystemAttachmentLifetime'], 'deleteOnSuccess');
+
+      await iosTestBackend.restoreXcTestRunLifetimes(
+        'Runner.xctestrun',
+        previous,
+      );
+      expect(plist, original);
+    });
+
+    test('changes nothing when the runner target is not found', () async {
+      plist = {'TestConfigurations:0:TestTargets:0:BlueprintName': 'Other'};
+      final original = Map.of(plist);
+
+      final previous = await iosTestBackend.patchXcTestRunKeepRecordings(
+        'Runner.xctestrun',
+      );
+
+      expect(previous, isEmpty);
+      expect(plist, original);
+    });
+  });
+}
+
+/// Names each video after its test only, so tests can predict the file name.
+class _FixedNameVideoConfig extends VideoRecordingConfig {
+  const _FixedNameVideoConfig()
+    : super(enabled: true, outputDirectory: 'videos');
+
+  @override
+  String generateVideoFilename({
+    required String deviceId,
+    required String testName,
+  }) => '${testName.replaceAll(' ', '_')}.mp4';
 }
 
 class FakeProcessManager extends Fake implements ProcessManager {}

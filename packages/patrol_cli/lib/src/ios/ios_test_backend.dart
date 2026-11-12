@@ -510,9 +510,9 @@ class IOSTestBackend {
         scheme: options.scheme,
         sdkVersion: sdkVersion,
       );
-      String? previousLifetime;
+      var previousLifetimes = const <String, String>{};
       if (recordVideo && !interruptible) {
-        previousLifetime = await _patchXcTestRunKeepRecordings(xctestRunFile);
+        previousLifetimes = await patchXcTestRunKeepRecordings(xctestRunFile);
       }
 
       final process =
@@ -547,9 +547,7 @@ class IOSTestBackend {
 
       // The xctestrun is a reusable build artifact (`test-without-building`),
       // so put the retention policy back once the recordings are in the bundle.
-      if (previousLifetime != null) {
-        await _restoreXcTestRunLifetime(xctestRunFile, previousLifetime);
-      }
+      await restoreXcTestRunLifetimes(xctestRunFile, previousLifetimes);
 
       // Cleanup video recording manager
       await videoRecordingManager?.dispose();
@@ -840,73 +838,121 @@ class IOSTestBackend {
     return jsonEncode(ids);
   }
 
-  static const _lifetimeKey = 'RunnerUITests:SystemAttachmentLifetime';
+  static const _runnerTarget = 'RunnerUITests';
+  static const _lifetimeKey = 'SystemAttachmentLifetime';
 
   /// Makes XCTest keep its per-test screen recording for passing tests too.
-  /// Returns the value to restore afterwards, or `null` if nothing was changed.
+  /// Returns the changed plist keys with the values to restore afterwards.
   ///
   /// xcodebuild generates the xctestrun with `PreferredScreenCaptureFormat =
   /// screenRecording` but `SystemAttachmentLifetime = deleteOnSuccess`, so
   /// without this only failing tests leave a recording in the `.xcresult`.
   /// Set explicitly rather than assumed: a project's own test plan may say
   /// `keepNever`, and then there would be nothing to extract.
-  Future<String?> _patchXcTestRunKeepRecordings(String xctestRunPath) async {
-    final read = await _processManager.run([
-      '/usr/libexec/PlistBuddy',
-      '-c',
-      'Print :$_lifetimeKey',
-      xctestRunPath,
-    ], runInShell: true);
-    final previous = read.stdOut.trim();
-    if (read.exitCode != 0 || previous.isEmpty) {
+  @visibleForTesting
+  Future<Map<String, String>> patchXcTestRunKeepRecordings(
+    String xctestRunPath,
+  ) async {
+    final previous = <String, String>{};
+    final keys = await _lifetimeKeys(xctestRunPath);
+    if (keys.isEmpty) {
       _logger.warn(
-        'Could not read SystemAttachmentLifetime from the xctestrun; only '
-        'failing tests will have a video: ${read.stdErr}',
+        'Could not find SystemAttachmentLifetime of $_runnerTarget in the '
+        'xctestrun; only failing tests will have a video.',
       );
-      return null;
-    }
-    if (previous == 'keepAlways') {
-      return null;
+      return previous;
     }
 
-    final set = await _processManager.run([
-      '/usr/libexec/PlistBuddy',
-      '-c',
-      'Set :$_lifetimeKey keepAlways',
-      xctestRunPath,
-    ], runInShell: true);
-    if (set.exitCode != 0) {
-      _logger.warn(
-        'Failed to patch xctestrun SystemAttachmentLifetime; only failing '
-        'tests will have a video: ${set.stdErr}',
-      );
-      return null;
+    for (final key in keys) {
+      final value = await _readPlistValue(xctestRunPath, key);
+      if (value == null || value == 'keepAlways') {
+        continue;
+      }
+      final set = await _processManager.run([
+        '/usr/libexec/PlistBuddy',
+        '-c',
+        'Set :$key keepAlways',
+        xctestRunPath,
+      ], runInShell: true);
+      if (set.exitCode != 0) {
+        _logger.warn(
+          'Failed to patch xctestrun SystemAttachmentLifetime; only failing '
+          'tests will have a video: ${set.stdErr}',
+        );
+        continue;
+      }
+      previous[key] = value;
+      _logger.detail('Patched xctestrun: $key $value -> keepAlways');
     }
-    _logger.detail(
-      'Patched xctestrun: SystemAttachmentLifetime $previous -> keepAlways',
-    );
     return previous;
   }
 
-  Future<void> _restoreXcTestRunLifetime(
+  /// Puts back the values [patchXcTestRunKeepRecordings] replaced.
+  @visibleForTesting
+  Future<void> restoreXcTestRunLifetimes(
     String xctestRunPath,
-    String value,
+    Map<String, String> previous,
   ) async {
+    for (final MapEntry(:key, :value) in previous.entries) {
+      final result = await _processManager.run([
+        '/usr/libexec/PlistBuddy',
+        '-c',
+        'Set :$key $value',
+        xctestRunPath,
+      ], runInShell: true);
+      if (result.exitCode == 0) {
+        _logger.detail('Restored xctestrun $key = $value');
+      } else {
+        _logger.warn(
+          'Failed to restore xctestrun $key to $value; later runs of this '
+          'build keep every screen recording: ${result.stdErr}',
+        );
+      }
+    }
+  }
+
+  /// Plist keys of the runner target's attachment lifetime: one in a format-1
+  /// xctestrun, one per test configuration in format 2 (schemes with a test
+  /// plan), where targets live under `TestConfigurations[*].TestTargets[*]`.
+  Future<List<String>> _lifetimeKeys(String xctestRunPath) async {
+    const formatOneKey = '$_runnerTarget:$_lifetimeKey';
+    if (await _readPlistValue(xctestRunPath, formatOneKey) != null) {
+      return const [formatOneKey];
+    }
+
+    final keys = <String>[];
+    for (var config = 0; ; config++) {
+      var target = 0;
+      for (; ; target++) {
+        final targetKey = 'TestConfigurations:$config:TestTargets:$target';
+        final name = await _readPlistValue(
+          xctestRunPath,
+          '$targetKey:BlueprintName',
+        );
+        if (name == null) {
+          break;
+        }
+        if (name == _runnerTarget) {
+          keys.add('$targetKey:$_lifetimeKey');
+        }
+      }
+      if (target == 0) {
+        break;
+      }
+    }
+    return keys;
+  }
+
+  /// The value at [key] in the plist at [path], or `null` when there is none.
+  Future<String?> _readPlistValue(String path, String key) async {
     final result = await _processManager.run([
       '/usr/libexec/PlistBuddy',
       '-c',
-      'Set :$_lifetimeKey $value',
-      xctestRunPath,
+      'Print :$key',
+      path,
     ], runInShell: true);
-    if (result.exitCode == 0) {
-      _logger.detail('Restored xctestrun SystemAttachmentLifetime = $value');
-    } else {
-      _logger.warn(
-        'Failed to restore xctestrun SystemAttachmentLifetime to $value; '
-        'later runs of this build keep every screen recording: '
-        '${result.stdErr}',
-      );
-    }
+    final value = result.stdOut.trim();
+    return result.exitCode != 0 || value.isEmpty ? null : value;
   }
 
   /// The 8-byte PNG file signature.
@@ -1087,7 +1133,15 @@ class IOSTestBackend {
           target = destination.childFile('${base}_$i.mp4');
         }
         destination.createSync(recursive: true);
-        source.copySync(target.path);
+        try {
+          source.copySync(target.path);
+        } on FileSystemException catch (err) {
+          // E.g. a name over the file system's limit; keep the other videos.
+          _logger.warn(
+            'Failed to save the video recording for test "$testName": $err',
+          );
+          continue;
+        }
         saved.add(target.path);
         _logger.detail(
           'Video recording saved for test "$testName": ${target.path}',
@@ -1163,7 +1217,8 @@ class IOSTestBackend {
   /// shape the log reader reports on Android, so recordings of the same test
   /// get the same file name on both platforms.
   ///
-  /// Runtime runner: `Target/<file>+<test+name>` (`+` for spaces). Static
+  /// Runtime runner: `Target/<file>+<test+name>` (`+` for spaces, `__PLUS__`
+  /// for a literal `+`). Static
   /// runner: `Target/<class>/<method>`, a generated selector that is looked up
   /// in the build-time manifest; unknown selectors fall back to the method.
   String _dartTestName(String testId, Map<String, String> dartNamesBySelector) {
@@ -1175,7 +1230,7 @@ class IOSTestBackend {
         return dartName;
       }
     }
-    return parts.last.replaceAll('+', ' ');
+    return parts.last.replaceAll('+', ' ').replaceAll('__PLUS__', '+');
   }
 
   /// `<class>/<method>` selector -> Dart test name for every test in the
