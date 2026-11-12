@@ -159,8 +159,10 @@ test run writes, and `patrol coverage pull` turns them into a `patrol_lcov.info`
     as described in the [BrowserStack guide][bs coverage].
   </Step>
   <Step>
-    Run with coverage, keep package data between tests, and pull the coverage
-    directory into the results bucket:
+    Run with coverage and pull the coverage directory into the results bucket.
+    This recipe keeps package data between tests; clearing it works with
+    coverage on Android 12+ on [BrowserStack][bs coverage], but hasn't been
+    verified on Firebase Test Lab:
 
     ```bash
     gcloud firebase test android run \

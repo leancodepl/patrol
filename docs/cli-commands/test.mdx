@@ -210,7 +210,7 @@ Videos are saved as `.mp4` files in `<test-directory>/videos` (override with
 On a device farm like Firebase Test Lab, `--record-video` doesn't apply (the
 tests run via `gcloud`, not `patrol test`), but FTL records its own per-test
 video into the iOS `.xcresult`. Pull it from the native artifacts the same way as
-[iOS screenshots](#ios) — the exported attachments include the `.mp4` recordings.
+[iOS screenshots](#on-ios) — the exported attachments include the `.mp4` recordings.
 
 <Warning>
     Recording is skipped on unsupported devices, and the test still runs.
@@ -224,13 +224,16 @@ video into the iOS `.xcresult`. Pull it from the native artifacts the same way a
 
 ### Screenshots
 
-Patrol can capture native screenshots on Android and iOS — automatically on test
-failure (opt-in) and on demand from a test. On Android this requires `patrol_cli`
-4.8.0 and `patrol` 4.10.0 or newer:
+Patrol can capture screenshots on Android, iOS and web — automatically on test
+failure (opt-in) and on demand from a test:
 
 - Enable failure screenshots by adding `screenshot_on_failure: true` to the
   `patrol` section of your `pubspec.yaml`.
 - Capture on demand with `await $.takeNativeScreenshot('tag')` inside a test.
+
+#### On Android
+
+Requires `patrol_cli` 4.8.0 and `patrol` 4.10.0 or newer.
 
 The capture happens natively (via `androidx.test`) at the moment of failure,
 before teardown, so it shows the actual failing screen. Patrol writes the PNG on
@@ -251,7 +254,20 @@ collects them:
     Works in the `patrol build android` APK as well as `patrol test`.
 </Info>
 
-#### iOS
+<Warning>
+    **Default-path naming limitation.** On the default (runtime-discovery) path
+    each test reports `runDartTest[<dart test name>]`, so the screenshot folder
+    is named from the raw Dart test name. That name may contain spaces/commas
+    (BrowserStack can't render such URLs) or characters like `:` and `/` that
+    Android's `MediaStore` rewrites to `_` on API 29+, which then no longer
+    matches the name the farm reports — so the screenshot isn't associated with
+    the test. Locally (`patrol test`) this is harmless: the files are still
+    pulled to `<test-directory>/screenshots`. For reliable **farm** screenshots,
+    use `emit_test_manifest`: its generated per-test names are identifiers, so
+    they are both filesystem- and URL-safe.
+</Warning>
+
+#### On iOS
 
 The same API works on iOS: enable `screenshot_on_failure: true` and/or call
 `await $.takeNativeScreenshot('tag')`. With `screenshot_on_failure`, the screen is
@@ -294,18 +310,18 @@ On `patrol test`, Patrol extracts the images from the `.xcresult` into
     iOS requires Xcode 16 or newer (`xcrun xcresulttool export attachments`).
 </Info>
 
-<Warning>
-    **Default-path naming limitation.** On the default (runtime-discovery) path
-    each test reports `runDartTest[<dart test name>]`, so the screenshot folder
-    is named from the raw Dart test name. That name may contain spaces/commas
-    (BrowserStack can't render such URLs) or characters like `:` and `/` that
-    Android's `MediaStore` rewrites to `_` on API 29+, which then no longer
-    matches the name the farm reports — so the screenshot isn't associated with
-    the test. Locally (`patrol test`) this is harmless: the files are still
-    pulled to `<test-directory>/screenshots`. For reliable **farm** screenshots,
-    use `emit_test_manifest`: its generated per-test names are identifiers, so
-    they are both filesystem- and URL-safe.
-</Warning>
+#### On web
+
+Web screenshot support is currently unreleased. Playwright captures the active
+page and saves PNGs to `test-results/<per-test-directory>/screenshots/` by default
+(override the results root with `--web-results-dir`; the runner receives it as
+`PATROL_TEST_RESULTS_DIR`). File names contain a timestamp and the sanitized tag,
+and the images are attached to the Playwright report.
+
+`screenshot_on_failure: true` now captures on web too, at the moment of failure
+before teardown; it was previously a no-op on web. On-demand captures use
+`await $.takeNativeScreenshot('tag')`. These captures are separate from
+Playwright's `--web-screenshot=only-on-failure` setting.
 
 ### Web Platform
 
