@@ -1110,6 +1110,9 @@ class IOSTestBackend {
     }
 
     var saved = 0;
+    // Distinct test ids can sanitize to the same name; keep their files apart.
+    final dirNameByTestId = <String, String>{};
+    final nextIndexByDir = <String, int>{};
     for (final testEntry in manifest.whereType<Map<String, dynamic>>()) {
       final testId = testEntry['testIdentifier'] as String? ?? 'unknown';
       final attachments = testEntry['attachments'];
@@ -1117,7 +1120,6 @@ class IOSTestBackend {
         continue;
       }
 
-      var indexInTest = 0;
       for (final attachment in attachments.whereType<Map<String, dynamic>>()) {
         final fileName = attachment['exportedFileName'] as String?;
         if (fileName == null) {
@@ -1137,12 +1139,20 @@ class IOSTestBackend {
           continue;
         }
 
-        final testDir = destination.childDirectory(_sanitize(testId))
+        final dirName = dirNameByTestId.putIfAbsent(
+          testId,
+          () => _uniqueName(_sanitize(testId), dirNameByTestId.values),
+        );
+        final index = nextIndexByDir.update(
+          dirName,
+          (index) => index + 1,
+          ifAbsent: () => 0,
+        );
+        final testDir = destination.childDirectory(dirName)
           ..createSync(recursive: true);
         source.copySync(
-          testDir.childFile('${_sanitize(name)}_$indexInTest.png').path,
+          testDir.childFile('${_sanitize(name)}_$index.png').path,
         );
-        indexInTest++;
         saved++;
       }
     }
@@ -1205,5 +1215,14 @@ class IOSTestBackend {
   /// Makes [value] safe to use as a single path segment.
   String _sanitize(String value) {
     return value.replaceAll(RegExp('[^A-Za-z0-9._-]+'), '_');
+  }
+
+  /// Returns [name], with a numeric suffix when it is already in [taken].
+  String _uniqueName(String name, Iterable<String> taken) {
+    var candidate = name;
+    for (var i = 2; taken.contains(candidate); i++) {
+      candidate = '${name}_$i';
+    }
+    return candidate;
   }
 }

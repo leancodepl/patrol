@@ -1,8 +1,15 @@
 ## Unreleased
 
+- Fix `patrol develop --use-prebuilt-apks` failing with `flutter build bundle failed with code 64` on
+  projects with a flavor, by no longer passing `--flavor` to `flutter build bundle`, which defines no
+  such option. Only a checkout that had never generated the Dart plugin registrant was affected, which
+  is every fresh CI checkout. (#3297)
+- `patrol coverage pull` now reads coverage from runs with `clearPackageData:true` (one run per
+  test, written by `patrol` on Android 12+) and no longer refuses those BrowserStack builds. A
+  session that kept only the first test's run (older Android) still fails. (#3359)
 - Add native screenshots on iOS, collected by `patrol test` from the `.xcresult` into
   `<test-directory>/screenshots`. Requires Xcode 16 or newer. See the
-  [docs](https://patrol.leancode.co/cli-commands/test#ios). (#3271)
+  [docs](https://patrol.leancode.co/cli-commands/test#on-ios). (#3271)
 - Add `--record-video` on physical iOS devices: `patrol test` takes each test's recording from the
   `.xcresult`, named and placed like on Android. Requires Xcode 16 or newer. `patrol develop` still
   records simulators only. (#3289)

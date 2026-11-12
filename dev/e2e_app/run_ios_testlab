@@ -70,7 +70,7 @@ pull_artifacts() {
 		attach_dir="$(mktemp -d)"
 		if xcrun xcresulttool export attachments --path "$xcresult" --output-path "$attach_dir" >/dev/null 2>&1; then
 			python3 - "$attach_dir" "$SCREENSHOTS_DIR" "$VIDEOS_DIR" <<'PY'
-import json, os, re, shutil, sys
+import hashlib, json, os, re, shutil, sys
 attach_dir, shots_dir, videos_dir = sys.argv[1], sys.argv[2], sys.argv[3]
 manifest = os.path.join(attach_dir, "manifest.json")
 
@@ -81,7 +81,9 @@ def slug(s):
 
 if os.path.exists(manifest):
     for test in json.load(open(manifest)):
-        tid = slug(test.get("testIdentifier", "unknown").split("/")[-1])
+        ident = test.get("testIdentifier", "unknown")
+        # Digest of the full id: same-named tests in two classes stay apart.
+        tid = f"{slug(ident)}-{hashlib.sha1(ident.encode()).hexdigest()[:8]}"
         atts = test.get("attachments", [])
         # A screen recording is only interesting for a test that failed.
         failed = any(

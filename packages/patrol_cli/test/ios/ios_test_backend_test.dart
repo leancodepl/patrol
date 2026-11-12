@@ -479,6 +479,47 @@ void main() {
       expect(saved, ['patrol_before_tap_1.png', 'patrol_failure_0.png']);
     });
 
+    test('keeps test ids that sanitize to the same name apart', () async {
+      fs.directory('build/out.xcresult').createSync(recursive: true);
+      stubExport(
+        manifest: [
+          {
+            'testIdentifier': 'RunnerUITests/login+happy',
+            'attachments': [attachment('a', 'patrol_failure')],
+          },
+          {
+            'testIdentifier': 'RunnerUITests/login_happy',
+            'attachments': [attachment('b', 'patrol_failure')],
+          },
+          // The same test reported again (e.g. a retry) must not overwrite.
+          {
+            'testIdentifier': 'RunnerUITests/login+happy',
+            'attachments': [attachment('c', 'patrol_failure')],
+          },
+        ],
+        files: {'a': _pngBytes, 'b': _pngBytes, 'c': _pngBytes},
+      );
+
+      await iosTestBackend.extractAttachments(
+        xcresultPath: 'build/out.xcresult',
+        screenshotsOutputDir: 'screenshots',
+      );
+
+      List<String> filesIn(String dir) {
+        final files = rootDirectory
+            .childDirectory('screenshots')
+            .childDirectory(dir)
+            .listSync();
+        return files.map((e) => e.basename).toList()..sort();
+      }
+
+      expect(filesIn('RunnerUITests_login_happy'), [
+        'patrol_failure_0.png',
+        'patrol_failure_1.png',
+      ]);
+      expect(filesIn('RunnerUITests_login_happy_2'), ['patrol_failure_0.png']);
+    });
+
     test(
       'does not throw and writes nothing when the bundle is missing',
       () async {

@@ -58,8 +58,3 @@ flutter:
         pluginClass: PatrolPlugin
         sharedDarwinSource: true
       web:
-
-# These files don't contain real credentials. They exist only for build to pass.
-false_secrets:
-  - /example/android/app/google-services.json
-  - /example/ios/Runner/GoogleService-Info.plist

@@ -1,11 +1,20 @@
 ## Unreleased
 
+- Remove the placeholder `GoogleService-Info.plist` and `google-services.json` from the example app, so security scanners no longer flag the published package. (#3360)
+- Add web platform screenshot support via `$.takeNativeScreenshot('tag')`. (#3047)
+- Support Android code coverage with the test orchestrator's `clearPackageData:true` on Android
+  12+: each test's coverage is appended to the coverage file as the `shell` user, so it is no
+  longer limited to the first test. Reading the per-test runs needs a `patrol_cli` release that
+  includes this change. (#3359)
 - Add native screenshots on iOS: `screenshot_on_failure: true` and `$.takeNativeScreenshot('tag')`
   now work on simulators and physical devices. See the
-  [docs](https://patrol.leancode.co/cli-commands/test#ios). (#3271)
+  [docs](https://patrol.leancode.co/cli-commands/test#on-ios). (#3271)
 - Fix `RunnerUITests` failing to compile and link with native screenshots on iOS under Swift
   Package Manager. (#3289)
 - Add `includeInvisibleNodes` to `$.platform.android.getNativeViews()` to keep nodes some WebViews report as invisible, and `AndroidNativeView.isVisibleToUser` to tell them apart. (#3287)
+- Add R8 consumer rules to the Android plugin, so release-mode tests with minification enabled no
+  longer need app-side keep rules for Patrol and the test runners, including `AndroidJUnit4` for the
+  tests that build-time discovery generates. (#3334)
 
 ## 4.11.0
 
