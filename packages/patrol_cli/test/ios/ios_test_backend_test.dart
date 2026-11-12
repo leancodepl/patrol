@@ -9,6 +9,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
+import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:platform/platform.dart';
@@ -21,6 +22,14 @@ final _pngBytes = <int>[0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0, 0];
 /// Binary plist signature - what XCTest's automatic "UI Snapshot" element-tree
 /// attachments look like (not an image).
 final _bplistBytes = <int>[0x62, 0x70, 0x6C, 0x69, 0x73, 0x74, 0x30, 0x30];
+
+/// First bytes of an ISO media (.mp4/.mov) file: box size, then `ftyp`.
+final _mp4Bytes = <int>[0, 0, 0, 0x18, 0x66, 0x74, 0x79, 0x70, 0x71, 0x74];
+
+/// The 60-byte "pending attachment" text stub XCTest leaves for a killed run.
+final _stubBytes = utf8.encode(
+  'Unexpected Error: Finished test run with pending attachment.',
+);
 
 void main() {
   group('BuildMode', () {
@@ -372,7 +381,7 @@ void main() {
     });
   });
 
-  group('IOSTestBackend.extractScreenshots', () {
+  group('IOSTestBackend.extractAttachments', () {
     late IOSTestBackend iosTestBackend;
     late MockProcessManager processManager;
     late FileSystem fs;
@@ -458,9 +467,9 @@ void main() {
         },
       );
 
-      await iosTestBackend.extractScreenshots(
+      await iosTestBackend.extractAttachments(
         xcresultPath: 'build/out.xcresult',
-        outputDir: 'screenshots',
+        screenshotsOutputDir: 'screenshots',
       );
 
       final testDir = rootDirectory
@@ -491,9 +500,9 @@ void main() {
         files: {'a': _pngBytes, 'b': _pngBytes, 'c': _pngBytes},
       );
 
-      await iosTestBackend.extractScreenshots(
+      await iosTestBackend.extractAttachments(
         xcresultPath: 'build/out.xcresult',
-        outputDir: 'screenshots',
+        screenshotsOutputDir: 'screenshots',
       );
 
       List<String> filesIn(String dir) {
@@ -514,9 +523,9 @@ void main() {
     test(
       'does not throw and writes nothing when the bundle is missing',
       () async {
-        await iosTestBackend.extractScreenshots(
+        await iosTestBackend.extractAttachments(
           xcresultPath: 'build/missing.xcresult',
-          outputDir: 'screenshots',
+          screenshotsOutputDir: 'screenshots',
         );
 
         verifyNever(
@@ -533,14 +542,325 @@ void main() {
       fs.directory('build/out.xcresult').createSync(recursive: true);
       stubExport(manifest: [], files: {}, exitCode: 1);
 
-      await iosTestBackend.extractScreenshots(
+      await iosTestBackend.extractAttachments(
         xcresultPath: 'build/out.xcresult',
-        outputDir: 'screenshots',
+        screenshotsOutputDir: 'screenshots',
       );
 
       expect(rootDirectory.childDirectory('screenshots').existsSync(), isFalse);
     });
+
+    test('saves screen recordings named like Android videos', () async {
+      fs.directory('build/out.xcresult').createSync(recursive: true);
+      stubExport(
+        manifest: [
+          {
+            'testIdentifier':
+                'RunnerUITests/login_test+logs+in+with+a+valid+password',
+            'attachments': [
+              attachment('a', 'Screen Recording 2026-08-04 at 08.49.20.mp4'),
+              attachment('b', 'Complete Issue Description.txt', failure: true),
+              attachment('c', 'patrol_failure', failure: true),
+            ],
+          },
+          {
+            // Killed develop session: only a text stub, no real video.
+            'testIdentifier': 'RunnerUITests/testPatrolDevelopSession',
+            'attachments': [
+              attachment('d', 'Screen Recording 2026-08-04 at 08.38.36'),
+            ],
+          },
+        ],
+        files: {
+          'a': _mp4Bytes,
+          'b': utf8.encode('Assertion Failure'),
+          'c': _pngBytes,
+          'd': _stubBytes,
+        },
+      );
+
+      final saved = await iosTestBackend.extractAttachments(
+        xcresultPath: 'build/out.xcresult',
+        videoConfig: const VideoRecordingConfig(
+          enabled: true,
+          outputDirectory: 'videos',
+        ),
+        deviceId: 'ABCD-1234',
+      );
+
+      final files = rootDirectory
+          .childDirectory('videos')
+          .listSync()
+          .map((e) => e.basename)
+          .toList();
+      expect(files, hasLength(1));
+      expect(
+        files.single,
+        matches(
+          RegExp(r'^patrol_logs_in_with_a_valid_password_ABCD-1234_\d+\.mp4$'),
+        ),
+      );
+      expect(saved.single, endsWith(files.single));
+      expect(
+        rootDirectory
+            .childDirectory('videos')
+            .childFile(files.single)
+            .readAsBytesSync(),
+        _mp4Bytes,
+      );
+      // No screenshots dir was requested, so none is created.
+      expect(rootDirectory.childDirectory('screenshots').existsSync(), isFalse);
+    });
+
+    test('names static-runner recordings after the Dart test', () async {
+      fs.directory('build/out.xcresult').createSync(recursive: true);
+      fs.file('build/patrol/patrol_test_manifest.json')
+        ..createSync(recursive: true)
+        ..writeAsStringSync('''
+{"group":{"name":"","type":"group","skip":false,"entries":[
+  {"name":"login_test","type":"group","skip":false,"entries":[
+    {"name":"logs in with a valid password","type":"test","skip":false}
+  ]}
+]}}
+''');
+      stubExport(
+        manifest: [
+          {
+            'testIdentifier':
+                'RunnerUITests/PatrolGeneratedTests_login_test/'
+                'test_logs_in_with_a_valid_password',
+            'attachments': [
+              attachment('a', 'Screen Recording 2026-08-04 at 08.49.20.mp4'),
+            ],
+          },
+        ],
+        files: {'a': _mp4Bytes},
+      );
+
+      await iosTestBackend.extractAttachments(
+        xcresultPath: 'build/out.xcresult',
+        videoConfig: const VideoRecordingConfig(
+          enabled: true,
+          outputDirectory: 'videos',
+        ),
+        deviceId: 'sim',
+      );
+
+      final files = rootDirectory
+          .childDirectory('videos')
+          .listSync()
+          .map((e) => e.basename);
+      expect(
+        files.single,
+        matches(RegExp(r'^patrol_logs_in_with_a_valid_password_sim_\d+\.mp4$')),
+      );
+    });
+
+    test('decodes a literal plus in a runtime-runner test name', () async {
+      fs.directory('build/out.xcresult').createSync(recursive: true);
+      stubExport(
+        manifest: [
+          {
+            'testIdentifier': 'RunnerUITests/login_test+adds+1__PLUS__1',
+            'attachments': [attachment('a', 'Screen Recording.mp4')],
+          },
+        ],
+        files: {'a': _mp4Bytes},
+      );
+
+      await iosTestBackend.extractAttachments(
+        xcresultPath: 'build/out.xcresult',
+        videoConfig: const VideoRecordingConfig(
+          enabled: true,
+          outputDirectory: 'videos',
+        ),
+        deviceId: 'sim',
+      );
+
+      final files = rootDirectory
+          .childDirectory('videos')
+          .listSync()
+          .map((e) => e.basename);
+      expect(files.single, matches(RegExp(r'^patrol_adds_1_1_sim_\d+\.mp4$')));
+    });
+
+    test('a recording that fails to copy does not lose the others', () async {
+      fs.directory('build/out.xcresult').createSync(recursive: true);
+      // A directory in the way makes the first copy throw.
+      fs.directory('videos/a_test_first.mp4').createSync(recursive: true);
+      stubExport(
+        manifest: [
+          {
+            'testIdentifier': 'RunnerUITests/a_test+first',
+            'attachments': [attachment('a', 'Screen Recording.mp4')],
+          },
+          {
+            'testIdentifier': 'RunnerUITests/a_test+second',
+            'attachments': [attachment('b', 'Screen Recording.mp4')],
+          },
+        ],
+        files: {'a': _mp4Bytes, 'b': _mp4Bytes},
+      );
+
+      final saved = await iosTestBackend.extractAttachments(
+        xcresultPath: 'build/out.xcresult',
+        videoConfig: const _FixedNameVideoConfig(),
+        deviceId: 'sim',
+      );
+
+      expect(saved.single, endsWith('a_test_second.mp4'));
+      expect(fs.file('videos/a_test_second.mp4').existsSync(), isTrue);
+    });
+
+    test('one export serves both screenshots and videos', () async {
+      fs.directory('build/out.xcresult').createSync(recursive: true);
+      stubExport(
+        manifest: [
+          {
+            'testIdentifier': 'RunnerUITests/RunnerUITests/test_login',
+            'attachments': [
+              attachment('a', 'Screen Recording 2026-08-04 at 08.49.20.mp4'),
+              attachment('b', 'patrol_failure', failure: true),
+            ],
+          },
+        ],
+        files: {'a': _mp4Bytes, 'b': _pngBytes},
+      );
+
+      final saved = await iosTestBackend.extractAttachments(
+        xcresultPath: 'build/out.xcresult',
+        screenshotsOutputDir: 'screenshots',
+        videoConfig: const VideoRecordingConfig(
+          enabled: true,
+          outputDirectory: 'videos',
+        ),
+        deviceId: 'sim',
+      );
+
+      verify(
+        () => processManager.run(any(), runInShell: any(named: 'runInShell')),
+      ).called(1);
+      expect(saved, hasLength(1));
+      expect(
+        rootDirectory
+            .childDirectory('screenshots')
+            .childDirectory('RunnerUITests_RunnerUITests_test_login')
+            .childFile('patrol_failure_0.png')
+            .existsSync(),
+        isTrue,
+      );
+    });
   });
+
+  group('IOSTestBackend.patchXcTestRunKeepRecordings', () {
+    late IOSTestBackend iosTestBackend;
+    late MockProcessManager processManager;
+    late Map<String, String> plist;
+
+    setUp(() {
+      processManager = MockProcessManager();
+      final fs = MemoryFileSystem.test();
+      iosTestBackend = IOSTestBackend(
+        processManager: processManager,
+        platform: FakePlatform(),
+        fs: fs,
+        rootDirectory: fs.currentDirectory,
+        parentDisposeScope: DisposeScope(),
+        logger: FakeLogger(),
+      );
+
+      // PlistBuddy over a flat `key:path -> value` map.
+      when(
+        () => processManager.run(any(), runInShell: any(named: 'runInShell')),
+      ).thenAnswer((invocation) async {
+        final args = (invocation.positionalArguments.first as List)
+            .cast<String>();
+        final command = args[args.indexOf('-c') + 1];
+        final print = RegExp(r'^Print :(\S+)$').firstMatch(command);
+        if (print != null) {
+          final value = plist[print.group(1)];
+          return ProcessResult(0, value == null ? 1 : 0, value ?? '', '');
+        }
+        final set = RegExp(r'^Set :(\S+) (\S+)$').firstMatch(command)!;
+        if (!plist.containsKey(set.group(1))) {
+          return ProcessResult(0, 1, '', 'Entry Does Not Exist');
+        }
+        plist[set.group(1)!] = set.group(2)!;
+        return ProcessResult(0, 0, '', '');
+      });
+    });
+
+    test('patches and restores a format-1 xctestrun', () async {
+      plist = {'RunnerUITests:SystemAttachmentLifetime': 'deleteOnSuccess'};
+
+      final previous = await iosTestBackend.patchXcTestRunKeepRecordings(
+        'Runner.xctestrun',
+      );
+      expect(plist['RunnerUITests:SystemAttachmentLifetime'], 'keepAlways');
+
+      await iosTestBackend.restoreXcTestRunLifetimes(
+        'Runner.xctestrun',
+        previous,
+      );
+      expect(
+        plist['RunnerUITests:SystemAttachmentLifetime'],
+        'deleteOnSuccess',
+      );
+    });
+
+    test('patches and restores every configuration of a format-2 xctestrun '
+        '(scheme with a test plan)', () async {
+      const first = 'TestConfigurations:0:TestTargets';
+      const second = 'TestConfigurations:1:TestTargets';
+      plist = {
+        '$first:0:BlueprintName': 'RunnerTests',
+        '$first:0:SystemAttachmentLifetime': 'deleteOnSuccess',
+        '$first:1:BlueprintName': 'RunnerUITests',
+        '$first:1:SystemAttachmentLifetime': 'deleteOnSuccess',
+        '$second:0:BlueprintName': 'RunnerUITests',
+        '$second:0:SystemAttachmentLifetime': 'keepNever',
+      };
+      final original = Map.of(plist);
+
+      final previous = await iosTestBackend.patchXcTestRunKeepRecordings(
+        'Runner.xctestrun',
+      );
+      expect(plist['$first:1:SystemAttachmentLifetime'], 'keepAlways');
+      expect(plist['$second:0:SystemAttachmentLifetime'], 'keepAlways');
+      // Other targets are left alone.
+      expect(plist['$first:0:SystemAttachmentLifetime'], 'deleteOnSuccess');
+
+      await iosTestBackend.restoreXcTestRunLifetimes(
+        'Runner.xctestrun',
+        previous,
+      );
+      expect(plist, original);
+    });
+
+    test('changes nothing when the runner target is not found', () async {
+      plist = {'TestConfigurations:0:TestTargets:0:BlueprintName': 'Other'};
+      final original = Map.of(plist);
+
+      final previous = await iosTestBackend.patchXcTestRunKeepRecordings(
+        'Runner.xctestrun',
+      );
+
+      expect(previous, isEmpty);
+      expect(plist, original);
+    });
+  });
+}
+
+/// Names each video after its test only, so tests can predict the file name.
+class _FixedNameVideoConfig extends VideoRecordingConfig {
+  const _FixedNameVideoConfig()
+    : super(enabled: true, outputDirectory: 'videos');
+
+  @override
+  String generateVideoFilename({
+    required String deviceId,
+    required String testName,
+  }) => '${testName.replaceAll(' ', '_')}.mp4';
 }
 
 class FakeProcessManager extends Fake implements ProcessManager {}

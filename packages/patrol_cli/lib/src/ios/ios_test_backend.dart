@@ -17,6 +17,7 @@ import 'package:patrol_cli/src/crossplatform/patrol_build_environment.dart';
 import 'package:patrol_cli/src/crossplatform/test_manifest.dart';
 import 'package:patrol_cli/src/crossplatform/test_manifest_generator.dart';
 import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
+import 'package:patrol_cli/src/crossplatform/video_recording_manager.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_host_server.dart';
 import 'package:patrol_cli/src/ios/ios_video_recording_manager.dart';
@@ -412,9 +413,14 @@ class IOSTestBackend {
         ? _resolveOnlyTesting(onlyTests)
         : _generatedClassSelectors();
     await _disposeScope.run((scope) async {
-      // Create video recording manager if enabled
+      final recordVideo = videoConfig?.enabled ?? false;
+
+      // `patrol test` takes XCTest's own per-test recordings out of the
+      // .xcresult after the run (simulators and physical devices alike).
+      // `patrol develop` kills the session before XCTest finalizes them, so it
+      // records with simctl instead; that only works on simulators.
       IOSVideoRecordingManager? videoRecordingManager;
-      if (videoConfig?.enabled ?? false) {
+      if (recordVideo && interruptible) {
         videoRecordingManager = IOSVideoRecordingManager(
           processManager: _processManager,
           rootDirectory: _rootDirectory,
@@ -422,6 +428,13 @@ class IOSTestBackend {
           config: videoConfig!,
           device: device,
           scope: scope,
+        );
+      }
+      if (recordVideo &&
+          (videoConfig!.size != null || videoConfig.bitRate != null)) {
+        _logger.warn(
+          '--video-size and --video-bit-rate apply to Android only and are '
+          'ignored on iOS.',
         );
       }
 
@@ -492,15 +505,21 @@ class IOSTestBackend {
       final task = _logger.task('Running $subject');
 
       final sdkVersion = await getSdkVersion(real: device.real);
+      final xctestRunFile = await xcTestRunPath(
+        real: device.real,
+        scheme: options.scheme,
+        sdkVersion: sdkVersion,
+      );
+      var previousLifetimes = const <String, String>{};
+      if (recordVideo && !interruptible) {
+        previousLifetimes = await patchXcTestRunKeepRecordings(xctestRunFile);
+      }
+
       final process =
           await _processManager.start(
               options.testWithoutBuildingInvocation(
                 device,
-                xcTestRunPath: await xcTestRunPath(
-                  real: device.real,
-                  scheme: options.scheme,
-                  sdkVersion: sdkVersion,
-                ),
+                xcTestRunPath: xctestRunFile,
                 resultBundlePath: reportPath,
                 onlyTesting: onlyTesting,
                 staticRunner:
@@ -526,26 +545,34 @@ class IOSTestBackend {
       patrolLogReader.stopTimer();
       processLogs.kill();
 
+      // The xctestrun is a reusable build artifact (`test-without-building`),
+      // so put the retention policy back once the recordings are in the bundle.
+      await restoreXcTestRunLifetimes(xctestRunFile, previousLifetimes);
+
       // Cleanup video recording manager
       await videoRecordingManager?.dispose();
 
-      // Extract native screenshots (failure and on-demand) from the .xcresult.
-      // Runs whether tests passed or failed - before the exit-code check below
-      // that throws on failure - so failing runs still yield their screenshots.
-      // Skipped in develop, which reuses the bundle across hot restarts.
-      if (collectScreenshots &&
-          !interruptible &&
-          screenshotsOutputDir != null) {
-        await extractScreenshots(
+      // Extract native screenshots (failure and on-demand) and per-test screen
+      // recordings from the .xcresult. Runs whether tests passed or failed -
+      // before the exit-code check below that throws on failure - so failing
+      // runs still yield their artifacts. Skipped in develop, which reuses the
+      // bundle across hot restarts.
+      var savedVideos = const <String>[];
+      final wantScreenshots =
+          collectScreenshots && screenshotsOutputDir != null;
+      if (!interruptible && (wantScreenshots || recordVideo)) {
+        savedVideos = await extractAttachments(
           xcresultPath: reportPath,
-          outputDir: screenshotsOutputDir,
+          screenshotsOutputDir: wantScreenshots ? screenshotsOutputDir : null,
+          videoConfig: recordVideo ? videoConfig : null,
+          deviceId: device.id,
         );
       }
 
       // Don't print the summary in develop
       if (!interruptible) {
         _logger.info(patrolLogReader.summary);
-        final recordingSummary = videoRecordingManager?.recordingSummary;
+        final recordingSummary = videoRecordingSummary(savedVideos);
         if (recordingSummary != null) {
           _logger.info(recordingSummary);
         }
@@ -811,45 +838,166 @@ class IOSTestBackend {
     return jsonEncode(ids);
   }
 
+  static const _runnerTarget = 'RunnerUITests';
+  static const _lifetimeKey = 'SystemAttachmentLifetime';
+
+  /// Makes XCTest keep its per-test screen recording for passing tests too.
+  /// Returns the changed plist keys with the values to restore afterwards.
+  ///
+  /// xcodebuild generates the xctestrun with `PreferredScreenCaptureFormat =
+  /// screenRecording` but `SystemAttachmentLifetime = deleteOnSuccess`, so
+  /// without this only failing tests leave a recording in the `.xcresult`.
+  /// Set explicitly rather than assumed: a project's own test plan may say
+  /// `keepNever`, and then there would be nothing to extract.
+  @visibleForTesting
+  Future<Map<String, String>> patchXcTestRunKeepRecordings(
+    String xctestRunPath,
+  ) async {
+    final previous = <String, String>{};
+    final keys = await _lifetimeKeys(xctestRunPath);
+    if (keys.isEmpty) {
+      _logger.warn(
+        'Could not find SystemAttachmentLifetime of $_runnerTarget in the '
+        'xctestrun; only failing tests will have a video.',
+      );
+      return previous;
+    }
+
+    for (final key in keys) {
+      final value = await _readPlistValue(xctestRunPath, key);
+      if (value == null || value == 'keepAlways') {
+        continue;
+      }
+      final set = await _processManager.run([
+        '/usr/libexec/PlistBuddy',
+        '-c',
+        'Set :$key keepAlways',
+        xctestRunPath,
+      ], runInShell: true);
+      if (set.exitCode != 0) {
+        _logger.warn(
+          'Failed to patch xctestrun SystemAttachmentLifetime; only failing '
+          'tests will have a video: ${set.stdErr}',
+        );
+        continue;
+      }
+      previous[key] = value;
+      _logger.detail('Patched xctestrun: $key $value -> keepAlways');
+    }
+    return previous;
+  }
+
+  /// Puts back the values [patchXcTestRunKeepRecordings] replaced.
+  @visibleForTesting
+  Future<void> restoreXcTestRunLifetimes(
+    String xctestRunPath,
+    Map<String, String> previous,
+  ) async {
+    for (final MapEntry(:key, :value) in previous.entries) {
+      final result = await _processManager.run([
+        '/usr/libexec/PlistBuddy',
+        '-c',
+        'Set :$key $value',
+        xctestRunPath,
+      ], runInShell: true);
+      if (result.exitCode == 0) {
+        _logger.detail('Restored xctestrun $key = $value');
+      } else {
+        _logger.warn(
+          'Failed to restore xctestrun $key to $value; later runs of this '
+          'build keep every screen recording: ${result.stdErr}',
+        );
+      }
+    }
+  }
+
+  /// Plist keys of the runner target's attachment lifetime: one in a format-1
+  /// xctestrun, one per test configuration in format 2 (schemes with a test
+  /// plan), where targets live under `TestConfigurations[*].TestTargets[*]`.
+  Future<List<String>> _lifetimeKeys(String xctestRunPath) async {
+    const formatOneKey = '$_runnerTarget:$_lifetimeKey';
+    if (await _readPlistValue(xctestRunPath, formatOneKey) != null) {
+      return const [formatOneKey];
+    }
+
+    final keys = <String>[];
+    for (var config = 0; ; config++) {
+      var target = 0;
+      for (; ; target++) {
+        final targetKey = 'TestConfigurations:$config:TestTargets:$target';
+        final name = await _readPlistValue(
+          xctestRunPath,
+          '$targetKey:BlueprintName',
+        );
+        if (name == null) {
+          break;
+        }
+        if (name == _runnerTarget) {
+          keys.add('$targetKey:$_lifetimeKey');
+        }
+      }
+      if (target == 0) {
+        break;
+      }
+    }
+    return keys;
+  }
+
+  /// The value at [key] in the plist at [path], or `null` when there is none.
+  Future<String?> _readPlistValue(String path, String key) async {
+    final result = await _processManager.run([
+      '/usr/libexec/PlistBuddy',
+      '-c',
+      'Print :$key',
+      path,
+    ], runInShell: true);
+    final value = result.stdOut.trim();
+    return result.exitCode != 0 || value.isEmpty ? null : value;
+  }
+
   /// The 8-byte PNG file signature.
   static const _pngMagic = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
+
+  /// `ftyp` - the ISO base media file type box, at byte 4 of every .mp4/.mov.
+  static const _isoMediaMagic = [0x66, 0x74, 0x79, 0x70];
 
   /// Prefix that Patrol puts on the names of the screenshots it attaches
   /// (failure and on-demand), so they can be told apart from XCTest's own
   /// automatic attachments during extraction.
   static const _patrolAttachmentPrefix = 'patrol_';
 
-  /// Extracts native screenshots captured during the run from the [xcresultPath]
-  /// bundle into [outputDir], organized per test. Best-effort: never throws.
+  /// Name XCTest gives its automatic per-test screen recording attachment.
+  static const _screenRecordingPrefix = 'Screen Recording';
+
+  /// Extracts the native artifacts of the run from the [xcresultPath] bundle:
+  /// screenshots into [screenshotsOutputDir] (per-test subdirectories) when it
+  /// is given, and per-test screen recordings into
+  /// [VideoRecordingConfig.outputDirectory] when [videoConfig] is given. Returns
+  /// the paths of the saved videos. Best-effort: never throws.
   ///
-  /// On iOS the screenshots ride inside the `.xcresult` that xcodebuild writes
-  /// on the host, so this works identically for simulators and physical devices
-  /// - there is no on-device pull step (unlike Android). We export every
-  /// attachment, then keep only PNG images that are either associated with a
-  /// test failure or were attached by Patrol (name prefixed with `patrol_`).
+  /// On iOS both ride inside the `.xcresult` that xcodebuild writes on the
+  /// host, so this works identically for simulators and physical devices -
+  /// there is no on-device pull step (unlike Android). The bundle is exported
+  /// once and the attachments are split by kind from the manifest.
   @visibleForTesting
-  Future<void> extractScreenshots({
+  Future<List<String>> extractAttachments({
     required String xcresultPath,
-    required String outputDir,
+    String? screenshotsOutputDir,
+    VideoRecordingConfig? videoConfig,
+    String deviceId = '',
   }) async {
     try {
       final xcresult = _fs.directory(xcresultPath);
       if (!xcresult.existsSync()) {
         _logger.detail(
           'No .xcresult bundle at $xcresultPath; '
-          'skipping screenshot extraction.',
+          'skipping attachment extraction.',
         );
-        return;
-      }
-
-      final destination = _rootDirectory.childDirectory(outputDir);
-      // Start clean so this run's artifacts don't mix with a previous run's.
-      if (destination.existsSync()) {
-        destination.deleteSync(recursive: true);
+        return const [];
       }
 
       final exportDir = _fs.systemTempDirectory.createTempSync(
-        'patrol_ios_screenshots',
+        'patrol_ios_attachments',
       );
       try {
         final result = await _processManager.run([
@@ -865,37 +1013,142 @@ class IOSTestBackend {
 
         if (result.exitCode != 0) {
           // Older xcresulttool (pre-Xcode 16) lacks `export attachments`.
-          _logger.detail(
-            'Could not export screenshots from the .xcresult bundle '
+          _logger.warn(
+            'Could not export screenshots/recordings from the .xcresult bundle '
             '(xcresulttool exit code ${result.exitCode}). This requires '
             'Xcode 16 or newer.',
           );
-          return;
+          return const [];
         }
 
         final manifestFile = exportDir.childFile('manifest.json');
-        if (!manifestFile.existsSync()) {
-          _logger.detail('No screenshots were captured during the run.');
-          return;
+        final manifest = manifestFile.existsSync()
+            ? jsonDecode(manifestFile.readAsStringSync())
+            : null;
+
+        if (screenshotsOutputDir != null) {
+          final destination = _rootDirectory.childDirectory(
+            screenshotsOutputDir,
+          );
+          // Start clean so this run's screenshots don't mix with a previous
+          // run's.
+          if (destination.existsSync()) {
+            destination.deleteSync(recursive: true);
+          }
+          final saved = _copyScreenshotsFromExport(
+            manifest: manifest,
+            exportDir: exportDir,
+            destination: destination,
+          );
+          if (saved > 0) {
+            _logger.info('Screenshots saved to ${destination.path}');
+          } else {
+            _logger.detail('No screenshots were captured during the run.');
+          }
         }
 
-        final saved = _copyScreenshotsFromExport(
-          manifest: jsonDecode(manifestFile.readAsStringSync()),
-          exportDir: exportDir,
-          destination: destination,
-        );
-
-        if (saved > 0) {
-          _logger.info('Screenshots saved to ${destination.path}');
-        } else {
-          _logger.detail('No screenshots were captured during the run.');
+        if (videoConfig != null) {
+          // Not wiped first: like Android, every run adds timestamped files.
+          final saved = _copyVideosFromExport(
+            manifest: manifest,
+            exportDir: exportDir,
+            destination: _rootDirectory.childDirectory(
+              videoConfig.outputDirectory,
+            ),
+            config: videoConfig,
+            deviceId: deviceId,
+            dartNamesBySelector: _dartNamesBySelector(),
+          );
+          if (saved.isEmpty) {
+            _logger.warn('No screen recordings were found in the .xcresult.');
+          }
+          return saved;
         }
+        return const [];
       } finally {
         exportDir.deleteSync(recursive: true);
       }
     } catch (err) {
-      _logger.warn('Failed to extract screenshots from the .xcresult: $err');
+      _logger.warn('Failed to extract attachments from the .xcresult: $err');
+      return const [];
     }
+  }
+
+  /// Copies XCTest's per-test screen recordings listed in [manifest] from
+  /// [exportDir] into [destination], named like the Android recordings
+  /// (`patrol_<test>_<device>_<timestamp>.mp4`). Returns the saved paths.
+  ///
+  /// A recording is an attachment named `Screen Recording…` or exported as
+  /// `.mp4`/`.mov`. Its `isAssociatedWithFailure` is `false` even when the test
+  /// failed, so it is not consulted. The magic check drops the 60-byte
+  /// "pending attachment" stub XCTest leaves for a session that was killed.
+  List<String> _copyVideosFromExport({
+    required Object? manifest,
+    required Directory exportDir,
+    required Directory destination,
+    required VideoRecordingConfig config,
+    required String deviceId,
+    Map<String, String> dartNamesBySelector = const {},
+  }) {
+    if (manifest is! List) {
+      return const [];
+    }
+
+    final saved = <String>[];
+    for (final testEntry in manifest.whereType<Map<String, dynamic>>()) {
+      final testId = testEntry['testIdentifier'] as String? ?? 'unknown';
+      final attachments = testEntry['attachments'];
+      if (attachments is! List) {
+        continue;
+      }
+
+      for (final attachment in attachments.whereType<Map<String, dynamic>>()) {
+        final fileName = attachment['exportedFileName'] as String?;
+        if (fileName == null) {
+          continue;
+        }
+        final name = attachment['suggestedHumanReadableName'] as String? ?? '';
+        final lowerFileName = fileName.toLowerCase();
+        final isRecording =
+            name.startsWith(_screenRecordingPrefix) ||
+            lowerFileName.endsWith('.mp4') ||
+            lowerFileName.endsWith('.mov');
+        if (!isRecording) {
+          continue;
+        }
+
+        final source = exportDir.childFile(fileName);
+        if (!source.existsSync() ||
+            !_hasMagic(source, _isoMediaMagic, offset: 4)) {
+          continue;
+        }
+
+        final testName = _dartTestName(testId, dartNamesBySelector);
+        final base = config
+            .generateVideoFilename(deviceId: deviceId, testName: testName)
+            .replaceAll(RegExp(r'\.mp4$'), '');
+        var target = destination.childFile('$base.mp4');
+        // Same millisecond, same test - append an index rather than overwrite.
+        for (var i = 1; target.existsSync(); i++) {
+          target = destination.childFile('${base}_$i.mp4');
+        }
+        destination.createSync(recursive: true);
+        try {
+          source.copySync(target.path);
+        } on FileSystemException catch (err) {
+          // E.g. a name over the file system's limit; keep the other videos.
+          _logger.warn(
+            'Failed to save the video recording for test "$testName": $err',
+          );
+          continue;
+        }
+        saved.add(target.path);
+        _logger.detail(
+          'Video recording saved for test "$testName": ${target.path}',
+        );
+      }
+    }
+    return saved;
   }
 
   /// Copies the Patrol-attached and failure PNG attachments listed in
@@ -936,7 +1189,7 @@ class IOSTestBackend {
         }
 
         final source = exportDir.childFile(fileName);
-        if (!source.existsSync() || !_isPng(source)) {
+        if (!source.existsSync() || !_hasMagic(source, _pngMagic)) {
           continue;
         }
 
@@ -951,24 +1204,60 @@ class IOSTestBackend {
         );
         final testDir = destination.childDirectory(dirName)
           ..createSync(recursive: true);
-        testDir
-            .childFile('${_sanitize(name)}_$index.png')
-            .writeAsBytesSync(source.readAsBytesSync());
+        source.copySync(
+          testDir.childFile('${_sanitize(name)}_$index.png').path,
+        );
         saved++;
       }
     }
     return saved;
   }
 
-  bool _isPng(File file) {
+  /// The Dart test name behind an xcresult [testId], in the `<file> <test>`
+  /// shape the log reader reports on Android, so recordings of the same test
+  /// get the same file name on both platforms.
+  ///
+  /// Runtime runner: `Target/<file>+<test+name>` (`+` for spaces, `__PLUS__`
+  /// for a literal `+`). Static
+  /// runner: `Target/<class>/<method>`, a generated selector that is looked up
+  /// in the build-time manifest; unknown selectors fall back to the method.
+  String _dartTestName(String testId, Map<String, String> dartNamesBySelector) {
+    final parts = testId.split('/');
+    if (parts.length >= 3) {
+      final selector = '${parts[parts.length - 2]}/${parts.last}';
+      final dartName = dartNamesBySelector[selector];
+      if (dartName != null) {
+        return dartName;
+      }
+    }
+    return parts.last.replaceAll('+', ' ').replaceAll('__PLUS__', '+');
+  }
+
+  /// `<class>/<method>` selector -> Dart test name for every test in the
+  /// build-time manifest; empty when the build didn't emit one (runtime runner).
+  Map<String, String> _dartNamesBySelector() {
+    final manifest = TestManifest.loadFromBuild(_rootDirectory);
+    if (manifest == null) {
+      return const {};
+    }
+    final names = generatePerFileTestNames(manifest.tests);
+    return {
+      for (var i = 0; i < names.length; i++)
+        names[i].selector: manifest.tests[i].dartName,
+    };
+  }
+
+  /// Whether [file] has the [magic] bytes at [offset].
+  bool _hasMagic(File file, List<int> magic, {int offset = 0}) {
     final raf = file.openSync();
     try {
-      final header = raf.readSync(_pngMagic.length);
-      if (header.length < _pngMagic.length) {
+      raf.setPositionSync(offset);
+      final header = raf.readSync(magic.length);
+      if (header.length < magic.length) {
         return false;
       }
-      for (var i = 0; i < _pngMagic.length; i++) {
-        if (header[i] != _pngMagic[i]) {
+      for (var i = 0; i < magic.length; i++) {
+        if (header[i] != magic[i]) {
           return false;
         }
       }
