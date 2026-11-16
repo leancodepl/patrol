@@ -5,6 +5,7 @@ import 'package:mcp_dart/mcp_dart.dart' hide Logger;
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/commands/develop_options.dart';
 import 'package:patrol_cli/src/devices.dart';
+import 'package:patrol_cli/src/mcp/cli_origin.dart';
 import 'package:patrol_cli/src/mcp/mcp_tools.dart';
 import 'package:patrol_cli/src/mcp/patrol_session.dart';
 import 'package:patrol_cli/src/mcp/project_resolver.dart';
@@ -85,6 +86,35 @@ void main() {
 
   String text(CallToolResult result) =>
       (result.content.single as TextContent).text;
+
+  test('the status schema names every field a status can carry', () {
+    const status = PatrolStatus(
+      isDevelopRunning: true,
+      projectRoot: '/project',
+      testState: TestState.finishedFailed,
+      versionWarning: 'version',
+      output: 'output',
+      currentTestFile: 'a_test.dart',
+      warning: 'warning',
+      deviceSelectionNote: 'note',
+      deviceName: 'device',
+      deviceId: 'id',
+      devicePlatform: 'android',
+      quietFor: Duration(seconds: 1),
+      lastTestEntry: 'a',
+      stallNote: 'stall',
+      error: 'error',
+      cli: CliOrigin(version: '1.0.0', source: CliSource.global),
+      cliPinWarning: 'pin',
+      logFile: '/project/patrol.log',
+      terminalWarning: 'terminal',
+    );
+
+    expect(
+      sessionStatusSchema.properties!.keys,
+      containsAll(status.toMap().keys),
+    );
+  });
 
   test('devices answers on a server that has no project', () async {
     final result = await toolsWith(

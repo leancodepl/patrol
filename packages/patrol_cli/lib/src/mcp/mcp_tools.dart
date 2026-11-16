@@ -79,6 +79,11 @@ const sessionStatusSchema = JsonObject(
           'serving it; runs use the serving one. Report it when results '
           'differ from what the project sees elsewhere.',
     ),
+    'logFile': JsonString(
+      description:
+          'The file holding the whole log of the session, build output '
+          'included. Follow it with tail -F to show a run live.',
+    ),
     'output': JsonString(),
     'summary': JsonString(),
   },
