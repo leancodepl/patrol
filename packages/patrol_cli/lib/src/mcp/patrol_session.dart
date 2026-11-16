@@ -967,9 +967,8 @@ final class PatrolSession {
       _logger.detail('Error disposing scope: $err');
     }
     await live.stdin.close();
-    // Let go of the session, or `device` would keep naming the dead session's
-    // device and screenshot/native-tree would act on it instead of reporting
-    // that there is no session.
+    // `device`, screenshot and native-tree read the live session, so a session
+    // that has ended is let go.
     if (identical(_liveSession, live)) {
       _liveSession = null;
     }
