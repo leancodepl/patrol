@@ -1,4 +1,4 @@
-## 4.10.0-dev.1
+## Unreleased
 
 - Fix `patrol develop --use-prebuilt-apks` failing with `flutter build bundle failed with code 64` on
   projects with a flavor, by no longer passing `--flavor` to `flutter build bundle`, which defines no

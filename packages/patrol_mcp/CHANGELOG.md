@@ -1,4 +1,4 @@
-## 0.3.0-dev.2
+## Unreleased
 
 - Requires `patrol_cli` 4.10.0-dev.1 or newer, and with it Flutter 3.47.0 or newer for web develop.
 - Support web develop sessions: the `devices` tool now lists browsers (e.g. `chrome`) and `run`
