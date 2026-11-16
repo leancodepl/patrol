@@ -54,6 +54,11 @@ const sessionStatusSchema = JsonObject(
           'Present when the quiet has lasted long enough to be worth '
           'reporting. A run that goes quiet may be stuck; quit stops it.',
     ),
+    'terminalWarning': JsonString(
+      description:
+          'Present when --show-terminal could not open a Terminal window for '
+          'the session log, with the reason.',
+    ),
     'output': JsonString(),
     'summary': JsonString(),
   },
