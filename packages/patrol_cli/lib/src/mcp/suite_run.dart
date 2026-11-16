@@ -237,6 +237,7 @@ final class SuiteRun {
   final _finished = Completer<void>();
   final _output = <String>[];
 
+  var _testsReported = 0;
   var _passed = 0;
   var _skipped = 0;
   final _failures = <_Failure>[];
@@ -342,6 +343,7 @@ final class SuiteRun {
   void _handleEntry(Entry entry) {
     switch (entry) {
       case TestEntry(status: TestEntryStatus.start):
+        _testsReported++;
         _currentTest = entry.name;
         _openFailure = null;
       case TestEntry(status: TestEntryStatus.success):
@@ -366,6 +368,8 @@ final class SuiteRun {
     _readResults();
     final end = _finishedAt ?? _now();
     final failedWithoutTest = _state == SuiteState.failed && _failures.isEmpty;
+    final passedWithoutTest =
+        _state == SuiteState.passed && _testsReported == 0;
     return {
       'suiteState': _state.name,
       'summary': _state.summary,
@@ -389,6 +393,11 @@ final class SuiteRun {
             'or a toolchain that never connected. The output ends where it '
             'stopped.',
       if (failedWithoutTest) 'output': _output.join('\n'),
+      if (passedWithoutTest)
+        'warning':
+            'patrol test passed without reporting a single test, so the '
+            'counts say nothing: no test matched, or the platform reports no '
+            'per-test results, as macOS does.',
       if (droppedFlags.isNotEmpty)
         'droppedFlags':
             'Left out of this run because patrol test does not take them: '

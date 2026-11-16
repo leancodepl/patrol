@@ -186,7 +186,24 @@ void main() {
         expect(status['failed'], 0);
         expect(status, isNot(contains('currentTest')));
         expect(status, isNot(contains('output')));
+        expect(status, isNot(contains('warning')));
       });
+
+      test(
+        'warns that a run which passed without reporting a test has no counts',
+        () async {
+          final run = await start('exit 0');
+          await run.done;
+          final status = run.toMap();
+
+          expect(status['suiteState'], 'passed');
+          expect(status['passed'], 0);
+          expect(
+            status['warning'],
+            contains('without reporting a single test'),
+          );
+        },
+      );
 
       test('reports progress while the run is going', () async {
         final run = await start('sleep 30');
