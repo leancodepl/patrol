@@ -401,8 +401,8 @@ class McpCommand extends PatrolCommand {
     PatrolSession session,
     StdioServerTransport transport,
   ) async {
-    // MCP clients disconnect by closing stdin (EOF), not always via SIGTERM, so
-    // wake on EOF too -- otherwise we'd block on _ExitSignal forever and orphan.
+    // A client disconnects by closing stdin as often as by a signal, and either
+    // one ends the server.
     final closed = Completer<void>();
     server.server.onclose = () {
       if (!closed.isCompleted) {
