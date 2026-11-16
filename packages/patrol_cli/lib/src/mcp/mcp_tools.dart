@@ -59,7 +59,8 @@ const sessionStatusSchema = JsonObject(
     ),
     'terminalWarning': JsonString(
       description:
-          'Why the Terminal window following the session log did not open.',
+          'Present when --show-terminal could not open a Terminal window for '
+          'the session log, with the reason.',
     ),
     'output': JsonString(),
     'summary': JsonString(),
