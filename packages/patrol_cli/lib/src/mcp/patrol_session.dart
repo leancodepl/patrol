@@ -476,8 +476,8 @@ final class PatrolSession {
     final stdinController = StreamController<List<int>>.broadcast();
     _stdinController = stdinController;
 
-    // Use DevelopSessionFactory to wire up all CLI components in one call,
-    // with a custom onExit that signals a completer instead of exit(0).
+    // DevelopSessionFactory wires up the CLI components. Its onExit completes
+    // a completer, because the server outlives every session it runs.
     final exitCompleter = Completer<void>();
     final developService = _createDevelopService(
       projectRoot: resolvedCwd,
