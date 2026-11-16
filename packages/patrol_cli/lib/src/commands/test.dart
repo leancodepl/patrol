@@ -345,6 +345,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       testServerPort: super.testServerPort,
       fullIsolation: boolArg('full-isolation'),
       clearIOSPermissions: boolArg('clear-permissions'),
+      screenshotOnFailure: config.screenshotOnFailure,
       emitTestManifest: emitTestManifest,
     );
 
@@ -438,7 +439,6 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       testDirectory: testDirectory,
       screenshotsOutputDir:
           stringArg('screenshots-output-dir') ?? '$testDirectory/screenshots',
-      screenshotOnFailure: config.screenshotOnFailure,
     );
 
     // Converted after the run, once the runner has written the raw JS coverage.
@@ -535,7 +535,6 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     required bool clearTestSteps,
     required String testDirectory,
     required String screenshotsOutputDir,
-    required bool screenshotOnFailure,
   }) async {
     Future<void> Function() action;
     Future<void> Function()? finalizer;
@@ -574,7 +573,6 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
           hideTestSteps: hideTestSteps,
           clearTestSteps: clearTestSteps,
           videoConfig: videoConfig,
-          collectScreenshots: screenshotOnFailure,
           screenshotsOutputDir: screenshotsOutputDir,
         );
         final bundleId = ios.bundleId;

@@ -405,7 +405,6 @@ class IOSTestBackend {
     void Function(Entry entry)? onLogEntry,
     void Function(String url)? onVmServiceUrl,
     VideoRecordingConfig? videoConfig,
-    bool collectScreenshots = false,
     String? screenshotsOutputDir,
   }) async {
     final onlyTesting = onlyTests.isNotEmpty
@@ -532,10 +531,9 @@ class IOSTestBackend {
       // Extract native screenshots (failure and on-demand) from the .xcresult.
       // Runs whether tests passed or failed - before the exit-code check below
       // that throws on failure - so failing runs still yield their screenshots.
+      // Not gated on `screenshot_on_failure`: on-demand captures need it too.
       // Skipped in develop, which reuses the bundle across hot restarts.
-      if (collectScreenshots &&
-          !interruptible &&
-          screenshotsOutputDir != null) {
+      if (!interruptible && screenshotsOutputDir != null) {
         await extractScreenshots(
           xcresultPath: reportPath,
           outputDir: screenshotsOutputDir,
@@ -833,6 +831,13 @@ class IOSTestBackend {
     required String outputDir,
   }) async {
     try {
+      final destination = _rootDirectory.childDirectory(outputDir);
+      // Start clean, even with no bundle to read: a previous run's screenshots
+      // must not pass for this run's.
+      if (destination.existsSync()) {
+        destination.deleteSync(recursive: true);
+      }
+
       final xcresult = _fs.directory(xcresultPath);
       if (!xcresult.existsSync()) {
         _logger.detail(
@@ -840,12 +845,6 @@ class IOSTestBackend {
           'skipping screenshot extraction.',
         );
         return;
-      }
-
-      final destination = _rootDirectory.childDirectory(outputDir);
-      // Start clean so this run's artifacts don't mix with a previous run's.
-      if (destination.existsSync()) {
-        destination.deleteSync(recursive: true);
       }
 
       final exportDir = _fs.systemTempDirectory.createTempSync(
@@ -951,9 +950,9 @@ class IOSTestBackend {
         );
         final testDir = destination.childDirectory(dirName)
           ..createSync(recursive: true);
-        testDir
-            .childFile('${_sanitize(name)}_$index.png')
-            .writeAsBytesSync(source.readAsBytesSync());
+        source.copySync(
+          testDir.childFile('${_sanitize(name)}_$index.png').path,
+        );
         saved++;
       }
     }

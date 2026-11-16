@@ -443,6 +443,7 @@ void main() {
               attachment('c', 'UI Snapshot', failure: true),
               attachment('d', 'UI Snapshot'),
               attachment('e', 'patrol_broken'),
+              attachment('f', 'Screenshot', failure: true),
             ],
           },
         ],
@@ -455,6 +456,8 @@ void main() {
           'd': _pngBytes,
           // Patrol-named but not a PNG - dropped.
           'e': _bplistBytes,
+          // Not patrol-named, but a PNG XCTest attached to the failure - kept.
+          'f': _pngBytes,
         },
       );
 
@@ -467,7 +470,11 @@ void main() {
           .childDirectory('screenshots')
           .childDirectory('RunnerUITests_RunnerUITests_test_login');
       final saved = testDir.listSync().map((e) => e.basename).toList()..sort();
-      expect(saved, ['patrol_before_tap_1.png', 'patrol_failure_0.png']);
+      expect(saved, [
+        'Screenshot_2.png',
+        'patrol_before_tap_1.png',
+        'patrol_failure_0.png',
+      ]);
     });
 
     test('keeps test ids that sanitize to the same name apart', () async {
@@ -512,8 +519,13 @@ void main() {
     });
 
     test(
-      'does not throw and writes nothing when the bundle is missing',
+      'clears stale screenshots and writes nothing when the bundle is missing',
       () async {
+        // Left over from a previous run; must not pass for this run's.
+        fs.file('screenshots/old_test/patrol_failure_0.png')
+          ..createSync(recursive: true)
+          ..writeAsBytesSync(_pngBytes);
+
         await iosTestBackend.extractScreenshots(
           xcresultPath: 'build/missing.xcresult',
           outputDir: 'screenshots',

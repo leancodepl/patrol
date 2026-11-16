@@ -58,6 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface PatrolScreenshotBuffer : NSObject
 @property(class, nonatomic, readonly, strong) PatrolScreenshotBuffer *sharedBuffer;
 - (void)drainAttachingTo:(XCTestCase *)testCase;
+- (void)discardPending;
 + (void)attachCurrentScreenNamed:(NSString *)name to:(XCTestCase *)testCase;
 @end
 

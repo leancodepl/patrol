@@ -7,6 +7,11 @@
 //  5. Copy the contents from RunnerUITests.m back here
 //  6. Go back to using a macro in RunnerUITests.m
 
+// Set by patrol_cli from `screenshot_on_failure`; off when built without it.
+#ifndef PATROL_SCREENSHOT_ON_FAILURE
+#define PATROL_SCREENSHOT_ON_FAILURE 0
+#endif
+
 // For every Flutter dart test, dynamically generate an Objective-C method mirroring the test results
 // so it is reported as a native XCTest run result.
 #define PATROL_INTEGRATION_TEST_IOS_RUNNER(__test_class)                                                            \
@@ -316,6 +321,8 @@
                                                                                                                     \
       IMP implementation = imp_implementationWithBlock(^(id _self) {                                                \
         NSLog(@"RunnerUITests running Dart test: %@", dartTestName);                                                \
+        /* A capture that landed after the previous test's drain isn't ours. */                                     \
+        [[PatrolScreenshotBuffer sharedBuffer] discardPending];                                                     \
                                                                                                                     \
         if (CLEAR_PERMISSIONS && i > 0) {                                                                           \
           [self resetPermissions];                                                                                  \
@@ -335,7 +342,9 @@
         [__test_class launchPatrolAppWithServer:server];                                                            \
         BOOL appReady = [__test_class waitForPatrolAppReadyWithServer:server];                                      \
         if (!appReady) {                                                                                            \
-          [PatrolScreenshotBuffer attachCurrentScreenNamed:@"patrol_failure" to:_self];                             \
+          if (PATROL_SCREENSHOT_ON_FAILURE) {                                                                       \
+            [PatrolScreenshotBuffer attachCurrentScreenNamed:@"patrol_failure" to:_self];                           \
+          }                                                                                                         \
           XCTFail(@"Patrol app did not become ready on port %ld", (long)server.boundAppPort);                       \
           return;                                                                                                   \
         }                                                                                                           \
@@ -365,6 +374,10 @@
           XCTSkip(@"%@", details);                                                                                  \
         }                                                                                                           \
         [[PatrolScreenshotBuffer sharedBuffer] drainAttachingTo:_self];                                             \
+        /* The app died mid-test, so the Dart failure hook never captured. */                                       \
+        if (!response && PATROL_SCREENSHOT_ON_FAILURE) {                                                            \
+          [PatrolScreenshotBuffer attachCurrentScreenNamed:@"patrol_failure" to:_self];                             \
+        }                                                                                                           \
         XCTAssertTrue(passed, @"%@", details);                                                                      \
       });                                                                                                           \
       SEL selector = NSSelectorFromString(selectorName);                                                            \
@@ -549,6 +562,8 @@
                                                                                                                        \
   -(void)patrolExecuteDartTest : (NSString *)dartTestName skip : (BOOL)skip {                                          \
     NSLog(@"RunnerUITests running Dart test: %@", dartTestName);                                                       \
+    /* A capture that landed after the previous test's drain isn't ours. */                                            \
+    [[PatrolScreenshotBuffer sharedBuffer] discardPending];                                                            \
     if (CLEAR_PERMISSIONS && _patrolStaticTestIndex > 0) {                                                             \
       [[self class] resetPermissions];                                                                                 \
       NSLog(@"App permissions cleared");                                                                               \
@@ -568,7 +583,9 @@
     NSDate *_patrolReadyDeadline = [NSDate dateWithTimeIntervalSinceNow:180.0];                                        \
     while (!_patrolStaticServer.appReady) {                                                                            \
       if ([[NSDate date] compare:_patrolReadyDeadline] == NSOrderedDescending) {                                       \
-        [PatrolScreenshotBuffer attachCurrentScreenNamed:@"patrol_failure" to:self];                                   \
+        if (PATROL_SCREENSHOT_ON_FAILURE) {                                                                            \
+          [PatrolScreenshotBuffer attachCurrentScreenNamed:@"patrol_failure" to:self];                                 \
+        }                                                                                                              \
         XCTFail(@"App did not report PatrolAppService readiness on port %ld", (long)_patrolStaticServer.boundAppPort); \
         return;                                                                                                        \
       }                                                                                                                \
@@ -595,6 +612,10 @@
       XCTSkip(@"%@", details);                                                                                         \
     }                                                                                                                  \
     [[PatrolScreenshotBuffer sharedBuffer] drainAttachingTo:self];                                                     \
+    /* The app died mid-test, so the Dart failure hook never captured. */                                              \
+    if (!response && PATROL_SCREENSHOT_ON_FAILURE) {                                                                   \
+      [PatrolScreenshotBuffer attachCurrentScreenNamed:@"patrol_failure" to:self];                                     \
+    }                                                                                                                  \
     XCTAssertTrue(passed, @"%@", details);                                                                             \
   }
 

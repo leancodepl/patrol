@@ -200,6 +200,7 @@ class BuildIOSCommand extends PatrolCommand {
       testServerPort: super.testServerPort,
       fullIsolation: boolArg('full-isolation'),
       clearIOSPermissions: boolArg('clear-permissions'),
+      screenshotOnFailure: config.screenshotOnFailure,
       emitTestManifest:
           optionalBoolArg('emit-test-manifest') ?? config.emitTestManifest,
     );

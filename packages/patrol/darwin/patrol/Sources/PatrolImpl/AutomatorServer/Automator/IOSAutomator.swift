@@ -281,6 +281,10 @@
 
     // MARK: Screenshots
     func takeNativeScreenshot(name: String) throws {
+      // `patrol develop` never drains the buffer, so captures would pile up.
+      if ProcessInfo.processInfo.environment["PATROL_DEVELOP"] == "1" {
+        return
+      }
       runAction("taking native screenshot \(name)") {
         let screenshot = XCUIScreen.main.screenshot()
         // Prefixed so the CLI can tell Patrol screenshots apart from XCTest's
