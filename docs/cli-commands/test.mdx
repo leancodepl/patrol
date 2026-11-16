@@ -276,11 +276,16 @@ collects them:
 
 #### On iOS
 
+iOS screenshot support is currently unreleased. It needs both packages: `patrol`
+captures the screenshots and `patrol_cli` extracts them.
+
 The same API works on iOS: enable `screenshot_on_failure: true` and/or call
 `await $.takeNativeScreenshot('tag')`. With `screenshot_on_failure`, the screen is
-captured at the failure moment (via the Dart failure hook, before teardown);
-`takeNativeScreenshot('tag')` captures whenever the call executes, so you can grab
-before/after states on purpose. Either way the image is captured natively and
+captured at the failure moment (via the Dart failure hook, before teardown); if
+the app never becomes ready or dies mid-test, the native runner captures it
+instead. `takeNativeScreenshot('tag')` captures whenever the call executes, so you
+can grab before/after states on purpose, with or without `screenshot_on_failure`.
+Either way the image is captured natively and
 attached to the test's `.xcresult` bundle, which `xcodebuild` writes on the host —
 so it works on simulators and physical devices alike, with no on-device pull.
 Requires Xcode 16 or newer.
@@ -294,8 +299,9 @@ On `patrol test`, Patrol extracts the images from the `.xcresult` into
   back with the session results.
 - **Firebase Test Lab**: FTL uploads the `.xcresult` to the results bucket, nested
   under `<device>/TestLogs/*.xcresult`. Because the tests run via `gcloud` (not
-  `patrol test`), pull the bundle after the run and export the Patrol attachments
-  — their names start with `patrol_`:
+  `patrol test`), pull the bundle after the run and export its attachments.
+  `patrol test` keeps the PNGs named `patrol_…` (attached by Patrol) and any PNG
+  XCTest associated with a failure:
 
   ```bash
   # after `gcloud firebase test ios run` finishes, from the results bucket:
@@ -303,7 +309,8 @@ On `patrol test`, Patrol extracts the images from the `.xcresult` into
   xcrun xcresulttool export attachments \
     --path "$(find ./ftl_logs -name '*.xcresult' -type d | head -1)" \
     --output-path ./ios_screenshots
-  # keep the PNGs whose manifest.json `suggestedHumanReadableName` starts with `patrol_`
+  # keep the PNGs whose manifest.json entry has a `suggestedHumanReadableName`
+  # starting with `patrol_`, or `isAssociatedWithFailure: true`
   ```
 
   Patrol's own

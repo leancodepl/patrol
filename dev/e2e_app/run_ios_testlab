@@ -24,8 +24,9 @@ else
 fi
 
 RESULTS_BUCKET="patrol_runs"
-# A fixed results dir so we can pull the .xcresult back afterwards.
-RESULTS_DIR="${RESULTS_DIR:-ios_run_$(date -u +%Y%m%d_%H%M%S)}"
+# A known results dir so we can pull the .xcresult back afterwards; unique per
+# job, since parallel jobs must not share one.
+RESULTS_DIR="${RESULTS_DIR:-ios_run_$(date -u +%Y%m%d_%H%M%S)_${GITHUB_RUN_ID:-local}_${RANDOM}}"
 
 # Don't let a failing test (gcloud exits non-zero) abort the screenshot pull.
 set +e
@@ -43,10 +44,10 @@ set -e
 # attached to the test's .xcresult, which FTL uploads under
 # <device>/TestLogs/*.xcresult in the results bucket (there is no
 # --directories-to-pull for iOS like on Android). We download the result bundle
-# and export the Patrol screenshots (named `patrol_*`) as PNGs, plus the screen
-# recording (.mp4) for each failing test. Best-effort: never fails the run.
-# The filters mirror `IOSTestBackend.extractAttachments` in patrol_cli
-# (`patrol_` prefix / failure flag for PNGs, `.mp4` for recordings) — keep the
+# and export the screenshots, plus the screen recording (.mp4) for each failing
+# test. Best-effort: never fails the run. Opt-in with PULL_IOS_ARTIFACTS=1.
+# The filters are the ones in `IOSTestBackend.extractAttachments` in patrol_cli
+# (PNGs named `patrol_*` or associated with a failure, `.mp4` recordings) — keep the
 # two in sync.
 SCREENSHOTS_DIR="${IOS_SCREENSHOTS_DIR:-ios_screenshots}"
 VIDEOS_DIR="${IOS_VIDEOS_DIR:-ios_videos}"
@@ -79,6 +80,19 @@ def slug(s):
     return re.sub(r"[^A-Za-z0-9._-]+", "_", s)[:80]
 
 
+def is_png(path):
+    with open(path, "rb") as f:
+        return f.read(8) == b"\x89PNG\r\n\x1a\n"
+
+
+def free_path(directory, stem, ext):
+    # Next free index: a test can show up twice (a retry, or a second bundle).
+    i = 0
+    while os.path.exists(os.path.join(directory, f"{stem}_{i}{ext}")):
+        i += 1
+    return os.path.join(directory, f"{stem}_{i}{ext}")
+
+
 if os.path.exists(manifest):
     for test in json.load(open(manifest)):
         ident = test.get("testIdentifier", "unknown")
@@ -91,20 +105,16 @@ if os.path.exists(manifest):
             or a.get("suggestedHumanReadableName", "").startswith("patrol_failure")
             for a in atts
         )
-        vid_i = 0
-        shot_i = 0
         for a in atts:
             name = a.get("suggestedHumanReadableName", "")
             src = os.path.join(attach_dir, a["exportedFileName"])
-            if name.startswith("patrol_"):
-                # Index + .png so repeated same-tag captures don't overwrite
-                # and *.png collectors still list them.
-                dst = f"{tid}__{slug(name)}_{shot_i}.png"
-                shutil.copy(src, os.path.join(shots_dir, dst))
-                shot_i += 1
+            if not os.path.isfile(src):
+                continue
+            wanted = name.startswith("patrol_") or a.get("isAssociatedWithFailure")
+            if wanted and is_png(src):
+                shutil.copy(src, free_path(shots_dir, f"{tid}__{slug(name)}", ".png"))
             elif failed and a["exportedFileName"].lower().endswith(".mp4"):
-                shutil.copy(src, os.path.join(videos_dir, f"{tid}__{vid_i}.mp4"))
-                vid_i += 1
+                shutil.copy(src, free_path(videos_dir, f"{tid}_", ".mp4"))
 PY
 		fi
 		rm -rf "$attach_dir"
@@ -127,6 +137,9 @@ PY
 	fi
 }
 
-pull_artifacts || echo "Artifact pull failed; continuing."
+# Only where a workflow uploads the result; the pull downloads the whole bundle.
+if [ "${PULL_IOS_ARTIFACTS:-}" = "1" ]; then
+	pull_artifacts || echo "Artifact pull failed; continuing."
+fi
 
 exit "$TESTS_EXIT_CODE"

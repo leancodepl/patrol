@@ -406,7 +406,6 @@ class IOSTestBackend {
     void Function(Entry entry)? onLogEntry,
     void Function(String url)? onVmServiceUrl,
     VideoRecordingConfig? videoConfig,
-    bool collectScreenshots = false,
     String? screenshotsOutputDir,
   }) async {
     final onlyTesting = onlyTests.isNotEmpty
@@ -555,15 +554,14 @@ class IOSTestBackend {
       // Extract native screenshots (failure and on-demand) and per-test screen
       // recordings from the .xcresult. Runs whether tests passed or failed -
       // before the exit-code check below that throws on failure - so failing
-      // runs still yield their artifacts. Skipped in develop, which reuses the
-      // bundle across hot restarts.
+      // runs still yield their artifacts. Screenshots aren't gated on
+      // `screenshot_on_failure`: on-demand captures need extracting too.
+      // Skipped in develop, which reuses the bundle across hot restarts.
       var savedVideos = const <String>[];
-      final wantScreenshots =
-          collectScreenshots && screenshotsOutputDir != null;
-      if (!interruptible && (wantScreenshots || recordVideo)) {
+      if (!interruptible && (screenshotsOutputDir != null || recordVideo)) {
         savedVideos = await extractAttachments(
           xcresultPath: reportPath,
-          screenshotsOutputDir: wantScreenshots ? screenshotsOutputDir : null,
+          screenshotsOutputDir: screenshotsOutputDir,
           videoConfig: recordVideo ? videoConfig : null,
           deviceId: device.id,
         );
@@ -987,6 +985,15 @@ class IOSTestBackend {
     String deviceId = '',
   }) async {
     try {
+      final screenshotsDir = screenshotsOutputDir == null
+          ? null
+          : _rootDirectory.childDirectory(screenshotsOutputDir);
+      // Start clean, even with no bundle to read: a previous run's screenshots
+      // must not pass for this run's.
+      if (screenshotsDir != null && screenshotsDir.existsSync()) {
+        screenshotsDir.deleteSync(recursive: true);
+      }
+
       final xcresult = _fs.directory(xcresultPath);
       if (!xcresult.existsSync()) {
         _logger.detail(
@@ -1026,22 +1033,14 @@ class IOSTestBackend {
             ? jsonDecode(manifestFile.readAsStringSync())
             : null;
 
-        if (screenshotsOutputDir != null) {
-          final destination = _rootDirectory.childDirectory(
-            screenshotsOutputDir,
-          );
-          // Start clean so this run's screenshots don't mix with a previous
-          // run's.
-          if (destination.existsSync()) {
-            destination.deleteSync(recursive: true);
-          }
+        if (screenshotsDir != null) {
           final saved = _copyScreenshotsFromExport(
             manifest: manifest,
             exportDir: exportDir,
-            destination: destination,
+            destination: screenshotsDir,
           );
           if (saved > 0) {
-            _logger.info('Screenshots saved to ${destination.path}');
+            _logger.info('Screenshots saved to ${screenshotsDir.path}');
           } else {
             _logger.detail('No screenshots were captured during the run.');
           }

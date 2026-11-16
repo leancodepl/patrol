@@ -26,6 +26,13 @@
       pending.append((name: name, screenshot: screenshot))
     }
 
+    /// Drops screenshots nobody attached, so they can't end up on another test.
+    @objc public func discardPending() {
+      lock.lock()
+      defer { lock.unlock() }
+      pending.removeAll()
+    }
+
     /// Attaches every parked screenshot to [testCase] and clears the buffer.
     @objc public func drainAttaching(to testCase: XCTestCase) {
       lock.lock()
@@ -34,7 +41,7 @@
       lock.unlock()
 
       for item in items {
-        let attachment = XCTAttachment(screenshot: item.screenshot)
+        let attachment = XCTAttachment(screenshot: item.screenshot, quality: .original)
         attachment.name = item.name
         attachment.lifetime = .keepAlways
         testCase.add(attachment)
@@ -48,7 +55,7 @@
     // Explicit selector: Swift would export `attachCurrentScreenWithNamed:to:`.
     @objc(attachCurrentScreenNamed:to:)
     public static func attachCurrentScreen(named name: String, to testCase: XCTestCase) {
-      let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+      let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot(), quality: .original)
       attachment.name = name
       attachment.lifetime = .keepAlways
       testCase.add(attachment)

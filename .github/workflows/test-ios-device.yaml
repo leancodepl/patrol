@@ -103,6 +103,7 @@ jobs:
         env:
           IOS_DEVICE_MODEL: ${{ matrix.device_model }}
           IOS_DEVICE_VERSION: ${{ matrix.os_version }}
+          PULL_IOS_ARTIFACTS: 1
         run: |
           set +e
           output="$(./run_ios_testlab 2>&1)"

@@ -282,8 +282,8 @@ class PlatformAutomator {
     );
   }
 
-  /// Captures a native screenshot (for a device farm to collect). Android, iOS
-  /// and web only; a no-op elsewhere.
+  /// Captures a native screenshot (for a device farm to collect). Supported on
+  /// Android, iOS and web; a no-op elsewhere.
   ///
   /// On web, the screenshot is taken by Playwright and saved to the per-test
   /// output directory (under `PATROL_TEST_RESULTS_DIR`).
