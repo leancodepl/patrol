@@ -249,7 +249,7 @@ void main() {
         await processStdout.close();
       },
     );
-    test('attach passes deviceId correctly', () async {
+    test('attach passes deviceId correctly', () {
       stubProcess();
 
       flutterTool.attach(
@@ -266,7 +266,7 @@ void main() {
 
     // `flutter attach` exits with a usage error on an option it does not
     // define. Check `flutter attach --help` before extending this set.
-    test('attach passes only options flutter attach defines', () async {
+    test('attach passes only options flutter attach defines', () {
       stubProcess();
 
       flutterTool.attach(
