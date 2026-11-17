@@ -65,8 +65,9 @@ emulator.wtf already collects, and `patrol coverage pull` turns them into a
     as described in the [BrowserStack guide][bs coverage].
   </Step>
   <Step>
-    Run with coverage and keep package data between tests. Clearing it is
-    incompatible with coverage, as on [BrowserStack][bs coverage]:
+    Run with coverage. This recipe keeps package data between tests; clearing
+    it works with coverage on Android 12+ on [BrowserStack][bs coverage], but
+    hasn't been verified on emulator.wtf:
 
     ```bash
     ew-cli \
