@@ -612,6 +612,9 @@ class DevelopService {
     }
 
     try {
+      if (device.targetPlatform == TargetPlatform.android) {
+        await _androidTestBackend.startAdbServer();
+      }
       final future = action();
 
       // If the backend settles before attach returns, the app shut down early.

@@ -1149,6 +1149,11 @@ class AndroidTestBackend {
     }
   }
 
+  /// Starts the adb server from a short-lived `adb start-server`. A server that
+  /// a long-running adb client starts stays that client's child, so quitting
+  /// a session would kill it together with the session's process tree.
+  Future<void> startAdbServer() => _adb.init();
+
   /// Stops [appId] and its instrumentation on [device].
   ///
   /// In develop mode the instrumentation stays alive so Hot Restart has
