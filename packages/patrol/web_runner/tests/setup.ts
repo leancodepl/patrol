@@ -1,13 +1,41 @@
 import { chromium, type FullConfig } from "@playwright/test"
 import { initialise } from "./initialise"
+import { prepareMobileEmulation } from "./mobileEmulation"
 import { DartTestEntry, PatrolTestEntry } from "./types"
 
 async function setup(config: FullConfig) {
-  const { baseURL, channel, launchOptions, locale, ignoreHTTPSErrors } = config.projects[0].use
+  const {
+    baseURL,
+    channel,
+    launchOptions,
+    locale,
+    ignoreHTTPSErrors,
+    userAgent,
+    viewport,
+    deviceScaleFactor,
+    isMobile,
+    hasTouch,
+    contextOptions,
+  } = config.projects[0].use
 
   const browser = await chromium.launch({ ...launchOptions, channel })
 
-  const page = await browser.newPage({ locale, ignoreHTTPSErrors })
+  // Discover tests in the same emulated browser the tests run in, so a test
+  // whose `skip` depends on the platform or screen is collected the same way.
+  const context = await browser.newContext({
+    ...contextOptions,
+    locale,
+    ignoreHTTPSErrors,
+    userAgent,
+    viewport,
+    deviceScaleFactor,
+    isMobile,
+    hasTouch,
+  })
+
+  await prepareMobileEmulation(context, { userAgent, isMobile, baseURL })
+
+  const page = await context.newPage()
 
   if (!baseURL) {
     throw new Error("baseURL is not set")
