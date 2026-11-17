@@ -1,3 +1,11 @@
+## Unreleased
+
+- Add `--web-connect-ws-endpoint`, `--web-connect-headers` and `--web-connect-expose-network` to
+  `patrol test` to run web tests on a remote Playwright browser, such as `npx playwright run-server`
+  or a hosted grid, and skip installing a local browser when one is used. Requires `patrol` with the
+  matching web runner change. See the
+  [docs](https://patrol.leancode.co/documentation/web#running-tests-on-a-remote-browser). (#TBD)
+
 ## 4.10.0
 
 - Read coverage from runs with the test orchestrator's `clearPackageData:true` in

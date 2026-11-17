@@ -531,6 +531,9 @@ class WebAppOptions {
     this.trace,
     this.storageState,
     this.acceptDownloads,
+    this.connectWsEndpoint,
+    this.connectHeaders,
+    this.connectExposeNetwork,
     this.coverageDir,
   });
 
@@ -572,6 +575,18 @@ class WebAppOptions {
   final String? trace;
   final String? storageState;
   final bool? acceptDownloads;
+
+  /// WebSocket URL of a remote Playwright browser server. When set, the web
+  /// runner connects to it instead of launching a local browser.
+  final String? connectWsEndpoint;
+
+  /// Additional HTTP headers sent when connecting to [connectWsEndpoint].
+  /// JSON object.
+  final String? connectHeaders;
+
+  /// Network the remote browser reaches through this machine, in
+  /// Playwright's `exposeNetwork` format.
+  final String? connectExposeNetwork;
 
   /// Timeout in seconds for the web server to start.
   /// Defaults to 120 seconds (2 minutes) if not specified.
@@ -619,6 +634,9 @@ class WebAppOptions {
       'PATROL_WEB_TRACE': trace,
       'PATROL_WEB_STORAGE_STATE': storageState,
       'PATROL_WEB_ACCEPT_DOWNLOADS': acceptDownloads,
+      'PATROL_WEB_CONNECT_WS_ENDPOINT': connectWsEndpoint,
+      'PATROL_WEB_CONNECT_HEADERS': connectHeaders,
+      'PATROL_WEB_CONNECT_EXPOSE_NETWORK': connectExposeNetwork,
       'PATROL_WEB_COVERAGE_DIR': coverageDir,
     };
 

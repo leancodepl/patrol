@@ -433,8 +433,22 @@ class WebTestBackend {
 
       final webRunnerPath = await _getWebRunnerPath();
 
-      // Install Node.js dependencies if needed
-      await _ensureNodeDependencies(webRunnerPath);
+      final remoteEndpoint = remoteBrowserEndpoint(
+        options,
+        Platform.environment,
+      );
+      if (remoteEndpoint != null) {
+        _logger.info(
+          'Using the remote browser at ${describeEndpoint(remoteEndpoint)}',
+        );
+      }
+
+      // Install Node.js dependencies if needed. A remote browser server
+      // brings its own browser, so there is none to install locally.
+      await _ensureNodeDependencies(
+        webRunnerPath,
+        installBrowser: remoteEndpoint == null,
+      );
 
       final testResultsDir =
           options.resultsDir ?? '${Directory.current.path}/test-results';
@@ -525,7 +539,7 @@ class WebTestBackend {
 
     final webRunnerPath = await _getWebRunnerPath();
 
-    await _ensureNodeDependencies(webRunnerPath);
+    await _ensureNodeDependencies(webRunnerPath, installBrowser: true);
 
     final testResultsDir =
         options.resultsDir ?? '${Directory.current.path}/test-results';
@@ -685,7 +699,37 @@ class WebTestBackend {
     }
   }
 
-  Future<void> _ensureNodeDependencies(String webRunnerPath) async {
+  /// The WebSocket URL of the remote Playwright browser server to connect
+  /// to, from `--web-connect-ws-endpoint` or the
+  /// `PATROL_WEB_CONNECT_WS_ENDPOINT` environment variable, or null when the
+  /// web runner launches a local browser. The flag wins, like in
+  /// [_runPlaywrightTests], where it overrides the inherited environment.
+  @visibleForTesting
+  static String? remoteBrowserEndpoint(
+    WebAppOptions options,
+    Map<String, String> environment,
+  ) {
+    final endpoint =
+        options.connectWsEndpoint ??
+        environment['PATROL_WEB_CONNECT_WS_ENDPOINT'];
+    return (endpoint == null || endpoint.isEmpty) ? null : endpoint;
+  }
+
+  /// Describes [endpoint] for logs without its user info, path or query,
+  /// which often carry credentials for hosted browser grids.
+  @visibleForTesting
+  static String describeEndpoint(String endpoint) {
+    final uri = Uri.tryParse(endpoint);
+    if (uri == null || uri.host.isEmpty) {
+      return 'the configured endpoint';
+    }
+    return '${uri.scheme}://${uri.host}${uri.hasPort ? ':${uri.port}' : ''}';
+  }
+
+  Future<void> _ensureNodeDependencies(
+    String webRunnerPath, {
+    required bool installBrowser,
+  }) async {
     _logger.info('Installing Node.js dependencies...');
 
     final nodeResult = await _processManager.run(
@@ -705,9 +749,13 @@ class WebTestBackend {
       );
     }
 
-    _logger
-      ..info('Node.js dependencies installed successfully.')
-      ..info('Installing Playwright dependencies...');
+    _logger.info('Node.js dependencies installed successfully.');
+
+    if (!installBrowser) {
+      return;
+    }
+
+    _logger.info('Installing Playwright dependencies...');
     final result = await _processManager.run(
       ['npx', 'playwright', 'install', 'chromium'],
       workingDirectory: webRunnerPath,

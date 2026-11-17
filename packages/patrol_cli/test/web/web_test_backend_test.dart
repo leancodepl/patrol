@@ -2,6 +2,9 @@ import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:patrol_cli/src/crossplatform/app_options.dart';
+import 'package:patrol_cli/src/ios/ios_test_backend.dart';
+import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:patrol_cli/src/web/web_test_backend.dart';
 import 'package:test/test.dart';
 
@@ -37,6 +40,100 @@ void main() {
           '[CHROME]: DevTools listening on '
           'ws://127.0.0.1:38861/devtools/browser/431953d3-ef67-428f-9321';
       expect(WebTestBackend.extractWebServerUrl(line), isNull);
+    });
+  });
+
+  group('remoteBrowserEndpoint', () {
+    const flutterOpts = FlutterAppOptions(
+      command: FlutterCommand('flutter'),
+      target: 'patrol_test/example_test.dart',
+      buildMode: BuildMode.debug,
+      flavor: null,
+      buildName: null,
+      buildNumber: null,
+      dartDefines: {},
+      dartDefineFromFilePaths: [],
+    );
+
+    test('is null when no endpoint is configured', () {
+      expect(
+        WebTestBackend.remoteBrowserEndpoint(
+          const WebAppOptions(flutter: flutterOpts),
+          {},
+        ),
+        isNull,
+      );
+    });
+
+    test('reads the --web-connect-ws-endpoint option', () {
+      expect(
+        WebTestBackend.remoteBrowserEndpoint(
+          const WebAppOptions(
+            flutter: flutterOpts,
+            connectWsEndpoint: 'ws://127.0.0.1:3000/',
+          ),
+          {},
+        ),
+        'ws://127.0.0.1:3000/',
+      );
+    });
+
+    test('reads PATROL_WEB_CONNECT_WS_ENDPOINT from the environment', () {
+      expect(
+        WebTestBackend.remoteBrowserEndpoint(
+          const WebAppOptions(flutter: flutterOpts),
+          {'PATROL_WEB_CONNECT_WS_ENDPOINT': 'ws://grid:3000/'},
+        ),
+        'ws://grid:3000/',
+      );
+    });
+
+    test('prefers the option over the environment', () {
+      expect(
+        WebTestBackend.remoteBrowserEndpoint(
+          const WebAppOptions(
+            flutter: flutterOpts,
+            connectWsEndpoint: 'ws://127.0.0.1:3000/',
+          ),
+          {'PATROL_WEB_CONNECT_WS_ENDPOINT': 'ws://grid:3000/'},
+        ),
+        'ws://127.0.0.1:3000/',
+      );
+    });
+
+    test('treats an empty value as not configured', () {
+      expect(
+        WebTestBackend.remoteBrowserEndpoint(
+          const WebAppOptions(flutter: flutterOpts),
+          {'PATROL_WEB_CONNECT_WS_ENDPOINT': ''},
+        ),
+        isNull,
+      );
+    });
+  });
+
+  group('describeEndpoint', () {
+    test('keeps the scheme, host and port', () {
+      expect(
+        WebTestBackend.describeEndpoint('ws://127.0.0.1:3000/'),
+        'ws://127.0.0.1:3000',
+      );
+    });
+
+    test('drops user info, path and query, which may hold credentials', () {
+      expect(
+        WebTestBackend.describeEndpoint(
+          'wss://user:secret@grid.example.com/playwright?caps=%7B%22key%22%3A%22secret%22%7D',
+        ),
+        'wss://grid.example.com',
+      );
+    });
+
+    test('does not echo a value it cannot parse', () {
+      expect(
+        WebTestBackend.describeEndpoint('not a url with secret'),
+        'the configured endpoint',
+      );
     });
   });
 
