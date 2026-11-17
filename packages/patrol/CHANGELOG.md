@@ -1,5 +1,6 @@
 ## Unreleased
 
+- `web_runner` launches the browser engine set by `patrol test --web-browser` (Chromium by default).
 - Remove the placeholder `GoogleService-Info.plist` and `google-services.json` from the example app, so security scanners no longer flag the published package. (#3360)
 - Add web platform screenshot support via `$.takeNativeScreenshot('tag')`. (#3047)
 - Support Android code coverage with the test orchestrator's `clearPackageData:true` on Android
