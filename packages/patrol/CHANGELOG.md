@@ -1,10 +1,10 @@
-## Unreleased
+## 5.0.0-dev.1
 
-- **Breaking:** Require Flutter 3.44 and Dart 3.12 or newer. See `migration5.md`.
+- **Breaking:** Require Flutter 3.44 and Dart 3.12 or newer. See `migration5.md`. (#3377)
 - **Breaking:** Raise the minimum Android version to API 24 (Android 7.0) and the minimum macOS
-  version to 10.15, the same as Flutter 3.44. iOS stays at 13.0. See `migration5.md`.
+  version to 10.15, the same as Flutter 3.44. iOS stays at 13.0. See `migration5.md`. (#3378)
 - Depend on Flutter's `FlutterFramework` Swift package when the app builds with Swift Package Manager,
-  as Flutter 3.41+ expects from plugins.
+  as Flutter 3.41+ expects from plugins. (#3377)
 - Add web platform screenshot support via `$.takeNativeScreenshot('tag')`. (#3047)
 - Add `includeInvisibleNodes` to `$.platform.android.getNativeViews()` to keep nodes some WebViews report as invisible, and `AndroidNativeView.isVisibleToUser` to tell them apart. (#3287)
 
