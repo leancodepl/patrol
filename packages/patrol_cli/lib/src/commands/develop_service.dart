@@ -640,6 +640,11 @@ class DevelopService {
         }
       }
 
+      // Set once the user quits. Stopping the instrumentation ends the build,
+      // so after a quit the build ending is how the session ends, not a
+      // failure, and the session lasts until the quit cleanup is done.
+      Completer<void>? quit;
+
       unawaited(
         future.then(
           (_) {
@@ -647,9 +652,11 @@ class DevelopService {
             failPendingVmServiceUrl();
           },
           onError: (Object err, StackTrace st) {
-            reportTestsCompleted(
-              TestCompletionResult(success: false, error: err),
-            );
+            if (quit == null) {
+              reportTestsCompleted(
+                TestCompletionResult(success: false, error: err),
+              );
+            }
             failPendingVmServiceUrl();
           },
         ),
@@ -669,10 +676,15 @@ class DevelopService {
           // Stop the device side first, so the Gradle process waiting on
           // `am instrument` can end before the backend is torn down.
           onQuit: () async {
+            final done = quit = Completer<void>();
             try {
               await stopOnDevice?.call();
             } finally {
-              await onQuitCleanup();
+              try {
+                await onQuitCleanup();
+              } finally {
+                done.complete();
+              }
             }
           },
         );
@@ -715,11 +727,19 @@ class DevelopService {
 
       try {
         await future;
-        reportTestsCompleted(const TestCompletionResult(success: true));
       } catch (err) {
-        reportTestsCompleted(TestCompletionResult(success: false, error: err));
-        rethrow;
+        if (quit == null) {
+          reportTestsCompleted(
+            TestCompletionResult(success: false, error: err),
+          );
+          rethrow;
+        }
       }
+      if (quit case final quit?) {
+        await quit.future;
+        return;
+      }
+      reportTestsCompleted(const TestCompletionResult(success: true));
     } catch (err, st) {
       _logger
         ..err('$err')
