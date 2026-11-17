@@ -228,6 +228,16 @@ packages:
       verify(() => logger.info(exception.usage)).called(1);
     });
 
+    test('warns that develop ignores --tags', () async {
+      await commandRunner.run(['develop', '--tags', 'smoke']);
+      verify(
+        () => logger.warn(
+          '--tags has no effect in patrol develop and will be removed in a '
+          'future release.',
+        ),
+      ).called(1);
+    });
+
     test('prints usage when no command is passed', () async {
       final result = await commandRunner.run([]);
       expect(result, equals(0));

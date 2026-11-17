@@ -36,6 +36,7 @@ class DevelopCommand extends PatrolCommand {
     required Logger logger,
     required Stream<List<int>> stdin,
   }) : _analytics = analytics,
+       _logger = logger,
        _developService = DevelopService(
          deviceFinder: deviceFinder,
          testFinderFactory: testFinderFactory,
@@ -55,6 +56,7 @@ class DevelopCommand extends PatrolCommand {
   }
 
   final Analytics _analytics;
+  final Logger _logger;
   final DevelopService _developService;
 
   @override
@@ -68,6 +70,13 @@ class DevelopCommand extends PatrolCommand {
     unawaited(
       _analytics.sendCommand(FlutterVersion.fromCLI(flutterCommand), name),
     );
+
+    if (argResults!.wasParsed('tags')) {
+      _logger.warn(
+        '--tags has no effect in patrol develop and will be removed in a '
+        'future release.',
+      );
+    }
 
     final targets = stringsArg('target');
     if (targets.isEmpty) {
