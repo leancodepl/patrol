@@ -228,13 +228,11 @@ packages:
       verify(() => logger.info(exception.usage)).called(1);
     });
 
-    test('warns that develop ignores --tags', () async {
-      await commandRunner.run(['develop', '--tags', 'smoke']);
+    test('rejects --tags in develop', () async {
+      final result = await commandRunner.run(['develop', '--tags', 'smoke']);
+      expect(result, equals(1));
       verify(
-        () => logger.warn(
-          '--tags has no effect in patrol develop and will be removed in a '
-          'future release.',
-        ),
+        () => logger.err('Could not find an option named "--tags".'),
       ).called(1);
     });
 
