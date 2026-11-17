@@ -954,6 +954,24 @@ void main() {
         );
       });
 
+      test('passes a device together with the options overriding it', () {
+        options = const WebAppOptions(
+          flutter: flutterOpts,
+          device: 'iPhone 15',
+          viewport: '{"width":375,"height":667}',
+          hasTouch: false,
+        );
+
+        expect(
+          options.toEnvironmentVariables(),
+          equals({
+            'PATROL_WEB_DEVICE': 'iPhone 15',
+            'PATROL_WEB_VIEWPORT': '{"width":375,"height":667}',
+            'PATROL_WEB_HAS_TOUCH': 'false',
+          }),
+        );
+      });
+
       test('stringifies every supported option', () {
         options = const WebAppOptions(
           flutter: flutterOpts,
@@ -969,6 +987,10 @@ void main() {
           permissions: '["geolocation"]',
           userAgent: 'test-agent',
           viewport: '{"width":800,"height":600}',
+          device: 'Pixel 7',
+          deviceScaleFactor: '2.5',
+          isMobile: true,
+          hasTouch: false,
           globalTimeout: 60000,
           shard: '1/2',
           headless: false,
@@ -1009,6 +1031,10 @@ void main() {
             'PATROL_WEB_PERMISSIONS': '["geolocation"]',
             'PATROL_WEB_USER_AGENT': 'test-agent',
             'PATROL_WEB_VIEWPORT': '{"width":800,"height":600}',
+            'PATROL_WEB_DEVICE': 'Pixel 7',
+            'PATROL_WEB_DEVICE_SCALE_FACTOR': '2.5',
+            'PATROL_WEB_IS_MOBILE': 'true',
+            'PATROL_WEB_HAS_TOUCH': 'false',
             'PATROL_WEB_GLOBAL_TIMEOUT': '60000',
             'PATROL_WEB_SHARD': '1/2',
             'PATROL_WEB_HEADLESS': 'false',

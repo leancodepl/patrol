@@ -1,3 +1,10 @@
+## Unreleased
+
+- Add `--web-device` to `patrol test` to emulate a phone or tablet from Playwright's device list on web, and
+  `--web-device-scale-factor`, `--web-is-mobile` and `--web-has-touch` to set or override single values. Needs a
+  `patrol` release that includes the matching web runner change. See the
+  [docs](https://patrol.leancode.co/documentation/web#emulating-mobile-devices). (#TBD)
+
 ## 4.10.0
 
 - Read coverage from runs with the test orchestrator's `clearPackageData:true` in

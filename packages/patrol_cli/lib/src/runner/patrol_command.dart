@@ -383,6 +383,34 @@ abstract class PatrolCommand extends Command<int> {
         valueHelp: '\'{"width": 1920, "height": 1080}\'',
       )
       ..addOption(
+        'web-device',
+        help:
+            'Emulate a device from the Playwright device list: sets the user '
+            'agent, viewport, device scale factor, mobile mode and touch '
+            'support. Other --web-* emulation options override the values it '
+            'sets. The browser stays the one Patrol runs.',
+        valueHelp: '"Pixel 7" | "iPhone 15"',
+      )
+      ..addOption(
+        'web-device-scale-factor',
+        help:
+            'Device scale factor for browser emulation '
+            '(window.devicePixelRatio).',
+        valueHelp: 'number',
+      )
+      ..addFlag(
+        'web-is-mobile',
+        help:
+            'Whether to emulate a mobile browser, which takes the meta '
+            'viewport tag into account. Not supported in Firefox.',
+        defaultsTo: null,
+      )
+      ..addFlag(
+        'web-has-touch',
+        help: 'Whether to emulate a touch screen.',
+        defaultsTo: null,
+      )
+      ..addOption(
         'web-global-timeout',
         help: 'Maximum total time in milliseconds for the entire test run.',
         valueHelp: 'number',
