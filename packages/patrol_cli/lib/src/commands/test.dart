@@ -246,6 +246,21 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       return 1;
     }
 
+    final webBrowser = stringArg('web-browser') ?? 'chromium';
+    if (isWeb && webBrowser != 'chromium') {
+      final chromiumOnlyFlags = [
+        if (coverageEnabled) '--coverage',
+        if (stringArg('web-channel') != null) '--web-channel',
+      ];
+      if (chromiumOnlyFlags.isNotEmpty) {
+        _logger.err(
+          '${chromiumOnlyFlags.join(' and ')} only work with '
+          '--web-browser chromium, not $webBrowser.',
+        );
+        return 1;
+      }
+    }
+
     final coverageWorkspace = boolArg('coverage-workspace');
     final ignoreGlobs = stringsArg('coverage-ignore').map(Glob.new).toSet();
     final coveragePackagesRegExps = stringsArg('coverage-package');
