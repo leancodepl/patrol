@@ -190,6 +190,49 @@ void main() {
       });
     });
 
+    group('patrol_cli 5 / patrol 5 split', () {
+      test('5.x pairs with 5.x, including dev releases', () {
+        expect(
+          areVersionsCompatible(
+            Version.parse('5.0.0-dev.1'),
+            Version.parse('5.0.0-dev.1'),
+          ),
+          isTrue,
+        );
+        expect(
+          areVersionsCompatible(Version.parse('5.0.0'), Version.parse('5.0.0')),
+          isTrue,
+        );
+      });
+
+      test('5.x does not pair with 4.x', () {
+        expect(
+          areVersionsCompatible(
+            Version.parse('5.0.0-dev.1'),
+            Version.parse('4.11.0'),
+          ),
+          isFalse,
+        );
+        expect(
+          areVersionsCompatible(
+            Version.parse('4.9.0'),
+            Version.parse('5.0.0-dev.1'),
+          ),
+          isFalse,
+        );
+      });
+
+      test('the last 4.x releases still pair', () {
+        expect(
+          areVersionsCompatible(
+            Version.parse('4.9.0'),
+            Version.parse('4.11.0'),
+          ),
+          isTrue,
+        );
+      });
+    });
+
     test('current patrol_cli is compatible with listed patrol versions', () {
       final currentCliVersion = Version.parse(constants.version);
 
