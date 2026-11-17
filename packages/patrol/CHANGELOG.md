@@ -1,6 +1,8 @@
 ## Unreleased
 
 - **Breaking:** Require Flutter 3.44 and Dart 3.12 or newer. See `migration5.md`.
+- Depend on Flutter's `FlutterFramework` Swift package when the app builds with Swift Package Manager,
+  as Flutter 3.41+ expects from plugins.
 - Add web platform screenshot support via `$.takeNativeScreenshot('tag')`. (#3047)
 - Add `includeInvisibleNodes` to `$.platform.android.getNativeViews()` to keep nodes some WebViews report as invisible, and `AndroidNativeView.isVisibleToUser` to tell them apart. (#3287)
 

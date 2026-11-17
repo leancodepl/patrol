@@ -33,8 +33,7 @@ let package = Package(
     .library(name: "patrol", targets: ["patrol"])
   ],
   dependencies: [
-    // TODO: Add this when Patrol targets Flutter 3.41.0 or higher
-    // .package(name: "FlutterFramework", path: "../FlutterFramework"),
+    .package(name: "FlutterFramework", path: "../FlutterFramework"),
     .package(url: "https://github.com/robbiehanson/CocoaAsyncSocket", from: "7.6.4")
   ],
   targets: [
@@ -53,8 +52,7 @@ let package = Package(
     .target(
       name: "PatrolImpl",
       dependencies: [
-        // TODO: Add this when Patrol targets Flutter 3.41.0 or higher
-        // .product(name: "FlutterFramework", package: "FlutterFramework")
+        .product(name: "FlutterFramework", package: "FlutterFramework"),
         .product(name: "CocoaAsyncSocket", package: "CocoaAsyncSocket"),
         "HTTPParserC",
       ],
