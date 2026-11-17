@@ -27,7 +27,7 @@ let package = Package(
   defaultLocalization: "en",
   platforms: [
     .iOS("13.0"),
-    .macOS("10.14"),
+    .macOS("10.15"),
   ],
   products: [
     .library(name: "patrol", targets: ["patrol"])

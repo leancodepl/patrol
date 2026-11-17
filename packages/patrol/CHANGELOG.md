@@ -1,6 +1,8 @@
 ## Unreleased
 
 - **Breaking:** Require Flutter 3.44 and Dart 3.12 or newer. See `migration5.md`.
+- **Breaking:** Raise the minimum Android version to API 24 (Android 7.0) and the minimum macOS
+  version to 10.15, the same as Flutter 3.44. iOS stays at 13.0. See `migration5.md`.
 - Depend on Flutter's `FlutterFramework` Swift package when the app builds with Swift Package Manager,
   as Flutter 3.41+ expects from plugins.
 - Add web platform screenshot support via `$.takeNativeScreenshot('tag')`. (#3047)
