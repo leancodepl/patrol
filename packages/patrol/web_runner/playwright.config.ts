@@ -28,7 +28,10 @@ const permissions = envJson<PlaywrightTestOptions["permissions"]>("PATROL_WEB_PE
 const userAgent = envString("PATROL_WEB_USER_AGENT")
 const viewport = envJson<PlaywrightTestOptions["viewport"]>("PATROL_WEB_VIEWPORT")
 const shard = envParsed("PATROL_WEB_SHARD", parseShard)
-const headless = envBool("PATROL_WEB_HEADLESS") ?? false
+const connectOptions = remoteConnectOptions()
+// A remote browser server usually has no display (e.g. a container), so it
+// runs headless unless asked otherwise.
+const headless = envBool("PATROL_WEB_HEADLESS") ?? connectOptions !== undefined
 const channel = envString("PATROL_WEB_CHANNEL")
 const bypassCSP = envBool("PATROL_WEB_BYPASS_CSP")
 const ignoreHTTPSErrors = envBool("PATROL_WEB_IGNORE_HTTPS_ERRORS")
@@ -50,6 +53,16 @@ const launchOptions: LaunchOptions = {
   proxy: envJson<LaunchOptions["proxy"]>("PATROL_WEB_PROXY"),
   timeout: envInt("PATROL_WEB_BROWSER_TIMEOUT"),
   tracesDir: envString("PATROL_WEB_TRACES_DIR"),
+}
+
+// A remote server receives the launch options as JSON and fails on a boolean
+// ignoreDefaultArgs ("ignoreDefaultArgs.indexOf is not a function"), while a
+// local launch converts it first. Fail early with a clear message instead.
+if (connectOptions && launchOptions.ignoreDefaultArgs === true) {
+  throw new Error(
+    "--web-ignore-default-args true isn't supported with a remote browser (PATROL_WEB_CONNECT_WS_ENDPOINT); " +
+      "pass a JSON list of the arguments to skip instead",
+  )
 }
 
 export default defineConfig({
@@ -75,6 +88,7 @@ export default defineConfig({
     storageState,
     acceptDownloads,
     launchOptions,
+    connectOptions,
   },
   globalSetup: require.resolve("./tests/setup"),
   outputDir,
@@ -154,6 +168,50 @@ function parseIgnoreDefaultArgs(value: string): LaunchOptions["ignoreDefaultArgs
   } catch {}
 
   throw new Error("PATROL_WEB_IGNORE_DEFAULT_ARGS must be 'true', 'false' or a JSON array of strings")
+}
+
+type ConnectOptions = NonNullable<PlaywrightWorkerOptions["connectOptions"]>
+
+function remoteConnectOptions(): ConnectOptions | undefined {
+  const wsEndpoint = envString("PATROL_WEB_CONNECT_WS_ENDPOINT")
+  if (!wsEndpoint) {
+    return undefined
+  }
+
+  return {
+    wsEndpoint,
+    headers: envParsed("PATROL_WEB_CONNECT_HEADERS", parseConnectHeaders),
+    // Patrol serves the app on localhost, which a remote browser can only
+    // reach through this machine. An empty value turns the tunnel off, so it
+    // is read as is rather than through envString.
+    exposeNetwork: process.env.PATROL_WEB_CONNECT_EXPOSE_NETWORK ?? "<loopback>",
+    // Without a timeout, Playwright waits for an unreachable server forever.
+    timeout: envInt("PATROL_WEB_BROWSER_TIMEOUT"),
+  }
+}
+
+function parseConnectHeaders(value: string): Record<string, string> {
+  const error = new Error(
+    'PATROL_WEB_CONNECT_HEADERS must be a JSON object with string values, e.g. {"Authorization": "Bearer <token>"}',
+  )
+
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(value)
+  } catch {
+    throw error
+  }
+
+  if (
+    typeof parsed !== "object" ||
+    parsed === null ||
+    Array.isArray(parsed) ||
+    !Object.values(parsed).every(header => typeof header === "string")
+  ) {
+    throw error
+  }
+
+  return parsed as Record<string, string>
 }
 
 function parseShard(shardValue: string) {
