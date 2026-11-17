@@ -251,11 +251,13 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       final chromiumOnlyFlags = [
         if (coverageEnabled) '--coverage',
         if (stringArg('web-channel') != null) '--web-channel',
+        if (optionalBoolArg('web-chromium-sandbox') != null)
+          '--web-chromium-sandbox',
       ];
       if (chromiumOnlyFlags.isNotEmpty) {
         _logger.err(
-          '${chromiumOnlyFlags.join(' and ')} only work with '
-          '--web-browser chromium, not $webBrowser.',
+          'These options only work with --web-browser chromium, '
+          'not $webBrowser: ${chromiumOnlyFlags.join(', ')}.',
         );
         return 1;
       }

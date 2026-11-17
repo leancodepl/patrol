@@ -6,6 +6,9 @@ async function setup(config: FullConfig) {
   const { baseURL, browserName, channel, launchOptions, locale, ignoreHTTPSErrors } = config.projects[0].use
 
   const browserType = { chromium, firefox, webkit }[browserName ?? "chromium"]
+  if (!browserType) {
+    throw new Error(`Unknown PATROL_WEB_BROWSER "${browserName}", expected chromium, firefox or webkit`)
+  }
   const browser = await browserType.launch({ ...launchOptions, channel })
 
   const page = await browser.newPage({ locale, ignoreHTTPSErrors })
