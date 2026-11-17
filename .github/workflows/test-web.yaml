@@ -69,6 +69,21 @@ jobs:
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
           exit $TESTS_EXIT_CODE
 
+      - name: Run web device emulation tests
+        run: |
+          patrol test --target patrol_test/web_device_emulation/ -d chrome --verbose --web-headless \
+            --web-device "Pixel 7" \
+            --dart-define=EMULATED_PLATFORM=android \
+            --dart-define=EMULATED_DEVICE_PIXEL_RATIO=2.625 \
+            --dart-define=EMULATED_SIZE=412x839 \
+            --dart-define=EMULATED_SCREEN=412x915
+          patrol test --target patrol_test/web_device_emulation/ -d chrome --verbose --web-headless \
+            --web-device "iPhone 15" \
+            --dart-define=EMULATED_PLATFORM=iOS \
+            --dart-define=EMULATED_DEVICE_PIXEL_RATIO=3 \
+            --dart-define=EMULATED_SIZE=393x659 \
+            --dart-define=EMULATED_SCREEN=393x852
+
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v4
