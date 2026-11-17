@@ -1,3 +1,12 @@
+## Unreleased
+
+- Support device emulation in web tests, set by `patrol test --web-device` and the related options in `patrol_cli`:
+  the web runner applies a Playwright device (user agent, viewport, screen, device pixel ratio, mobile mode, touch) to
+  the tests and to test discovery. When the user agent is a phone's, `navigator.platform` now matches it, so
+  `defaultTargetPlatform` is Android or iOS on any host; this also applies to a phone user agent set with
+  `--web-user-agent`. In mobile mode the app's page gets Flutter's viewport meta tag before it loads, which avoids a
+  "ViewInsets cannot be negative" assertion while a debug build starts. (#TBD)
+
 ## 4.12.0
 
 - Add Android code coverage for runs with the test orchestrator's `clearPackageData:true` on
