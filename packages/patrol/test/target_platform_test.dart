@@ -13,17 +13,19 @@ void main() {
       expect(parsePatrolTargetPlatform('web'), PatrolTargetPlatform.web);
     });
 
-    test('explains an old patrol_cli that reports no platform', () {
-      expect(
-        () => parsePatrolTargetPlatform(''),
-        throwsA(
-          isA<StateError>().having(
-            (e) => e.message,
-            'message',
-            contains('Update patrol_cli'),
+    test('rejects a name patrol_cli does not pass', () {
+      for (final name in ['', 'linux']) {
+        expect(
+          () => parsePatrolTargetPlatform(name),
+          throwsA(
+            isA<StateError>().having(
+              (e) => e.message,
+              'message',
+              contains('unknown target platform "$name"'),
+            ),
           ),
-        ),
-      );
+        );
+      }
     });
   });
 }

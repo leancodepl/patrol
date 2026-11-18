@@ -1,5 +1,8 @@
 ## Unreleased
 
+- **Breaking:** Require Flutter 3.44 and Dart 3.12 or newer. See `migration5.md`.
+- Depend on Flutter's `FlutterFramework` Swift package when the app builds with Swift Package Manager,
+  as Flutter 3.41+ expects from plugins.
 - Remove the placeholder `GoogleService-Info.plist` and `google-services.json` from the example app, so security scanners no longer flag the published package. (#3360)
 - Add web platform screenshot support via `$.takeNativeScreenshot('tag')`. (#3047)
 - Support Android code coverage with the test orchestrator's `clearPackageData:true` on Android
