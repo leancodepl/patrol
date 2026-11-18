@@ -80,6 +80,12 @@ def slug(s):
     return re.sub(r"[^A-Za-z0-9._-]+", "_", s)[:80]
 
 
+# xcresulttool suggests `<name>_<n>_<UUID>.<ext>`; this is the part it adds.
+EXPORT_NAME_SUFFIX = re.compile(
+    r"_\d+_[0-9A-Fa-f]{8}(-[0-9A-Fa-f]{4}){3}-[0-9A-Fa-f]{12}(\.\w+)?$"
+)
+
+
 def is_png(path):
     with open(path, "rb") as f:
         return f.read(8) == b"\x89PNG\r\n\x1a\n"
@@ -106,7 +112,7 @@ if os.path.exists(manifest):
             for a in atts
         )
         for a in atts:
-            name = a.get("suggestedHumanReadableName", "")
+            name = EXPORT_NAME_SUFFIX.sub("", a.get("suggestedHumanReadableName", ""))
             src = os.path.join(attach_dir, a["exportedFileName"])
             if not os.path.isfile(src):
                 continue

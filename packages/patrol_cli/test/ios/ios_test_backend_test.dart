@@ -477,6 +477,49 @@ void main() {
       ]);
     });
 
+    test('names files after the attachment, not the export name', () async {
+      fs.directory('build/out.xcresult').createSync(recursive: true);
+      // What xcresulttool really suggests: `<name>_<n>_<UUID>.png`.
+      stubExport(
+        manifest: [
+          {
+            'testIdentifier': 'RunnerUITests/test_login',
+            'attachments': [
+              attachment(
+                'a',
+                'patrol_failure_0_8CCF158A-7BCA-4026-A773-B6FAF3C1196C.png',
+              ),
+              attachment(
+                'b',
+                'patrol_after_tap_0_E378A313-39AF-41D9-BF18-EFDC09DF1501.png',
+              ),
+              attachment(
+                'c',
+                'Screenshot_0_A1008077-3494-4600-88B0-79BE4561876A.png',
+                failure: true,
+              ),
+            ],
+          },
+        ],
+        files: {'a': _pngBytes, 'b': _pngBytes, 'c': _pngBytes},
+      );
+
+      await iosTestBackend.extractScreenshots(
+        xcresultPath: 'build/out.xcresult',
+        outputDir: 'screenshots',
+      );
+
+      final testDir = rootDirectory
+          .childDirectory('screenshots')
+          .childDirectory('RunnerUITests_test_login');
+      final saved = testDir.listSync().map((e) => e.basename).toList()..sort();
+      expect(saved, [
+        'Screenshot_2.png',
+        'patrol_after_tap_1.png',
+        'patrol_failure_0.png',
+      ]);
+    });
+
     test('keeps test ids that sanitize to the same name apart', () async {
       fs.directory('build/out.xcresult').createSync(recursive: true);
       stubExport(
