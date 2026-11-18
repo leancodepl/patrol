@@ -14,7 +14,7 @@ class PatrolPubspecConfig with Equatable {
     this.testDirectory = 'patrol_test',
     this.testFileSuffix = '_test.dart',
     this.screenshotOnFailure = false,
-    this.emitTestManifest = false,
+    this.emitTestManifest,
   });
 
   PatrolPubspecConfig.empty({required String flutterPackageName})
@@ -35,10 +35,9 @@ class PatrolPubspecConfig with Equatable {
   /// Whether patrol captures a native screenshot when a test fails (Android).
   bool screenshotOnFailure;
 
-  /// Whether build-time test discovery + static native test codegen is enabled
-  /// for this project (the persistent equivalent of the `--emit-test-manifest`
-  /// CLI flag). See `patrol.emit_test_manifest` in pubspec.yaml.
-  bool emitTestManifest;
+  /// `patrol.emit_test_manifest` from pubspec.yaml: whether build-time test
+  /// discovery is on. `null` when unset, so the command's default applies.
+  bool? emitTestManifest;
 
   @override
   List<Object?> get props => [

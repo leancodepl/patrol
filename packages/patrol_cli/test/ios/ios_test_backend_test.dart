@@ -12,6 +12,8 @@ import 'package:platform/testing.dart';
 import 'package:process/process.dart';
 import 'package:test/test.dart';
 
+const legacyRunnerLine = 'PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerUITests)';
+
 void main() {
   group('BuildMode', () {
     test('infers build options in debug mode when flavor is null', () {
@@ -303,62 +305,171 @@ void main() {
         emitTestManifest: emitTestManifest,
       );
 
-      test('explains the missing include when discovery is disabled', () async {
-        writeRunner(static: true);
+      const legacyRunner =
+          'PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerUITests)\n';
+      const migratedRunner =
+          'PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerUITests)\n'
+          '#if __has_include("PatrolGeneratedTests.inc")\n'
+          '#include "PatrolGeneratedTests.inc"\n'
+          '#endif\n';
+
+      File runner() => fs.file('ios/RunnerUITests/RunnerUITests.m');
+      File inc() => fs.file('ios/RunnerUITests/PatrolGeneratedTests.inc');
+
+      // The fake process manager throws once the build gets past the setup
+      // checks, so a non-ToolExit error means the checks passed.
+      Future<void> buildPastSetup({required bool emitTestManifest}) =>
+          expectLater(
+            iosTestBackend.build(options(emitTestManifest: emitTestManifest)),
+            throwsA(isNot(isA<ToolExit>())),
+          );
+
+      test(
+        'adds the include to a pre-5.0 runner when discovery is on',
+        () async {
+          writeRunner(static: false);
+
+          await buildPastSetup(emitTestManifest: true);
+
+          expect(runner().readAsStringSync(), migratedRunner);
+        },
+      );
+
+      test('leaves a pre-5.0 runner alone when discovery is off', () async {
+        writeRunner(static: false);
+
+        await buildPastSetup(emitTestManifest: false);
+
+        expect(runner().readAsStringSync(), legacyRunner);
+        expect(inc().readAsStringSync(), isNot(contains('@interface')));
+      });
+
+      test('replaces a stale generated include with an empty one', () async {
+        writeRunner(static: false);
+        inc()
+          ..createSync(recursive: true)
+          ..writeAsStringSync(
+            '@interface PatrolGeneratedTests_old : X\n@end\n',
+          );
+
+        await buildPastSetup(emitTestManifest: false);
+
+        expect(inc().readAsStringSync(), isNot(contains('@interface')));
+      });
+
+      for (final emitTestManifest in [true, false]) {
+        test(
+          'accepts a 4.x STATIC_BASE runner (discovery: $emitTestManifest)',
+          () async {
+            writeRunner(static: true);
+            final before = runner().readAsStringSync();
+
+            await buildPastSetup(emitTestManifest: emitTestManifest);
+
+            expect(runner().readAsStringSync(), before);
+          },
+        );
+
+        test(
+          'explains the removed STATIC_BEGIN/END form (discovery: $emitTestManifest)',
+          () async {
+            runner()
+              ..createSync(recursive: true)
+              ..writeAsStringSync(
+                'PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN(RunnerUITests)\n'
+                '#include "PatrolGeneratedTests.inc"\n'
+                'PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_END\n',
+              );
+
+            await expectLater(
+              iosTestBackend.build(options(emitTestManifest: emitTestManifest)),
+              throwsA(
+                isA<ToolExit>().having(
+                  (e) => e.message,
+                  'message',
+                  contains('removed in Patrol 5.0'),
+                ),
+              ),
+            );
+          },
+        );
+      }
+
+      test("explains a runner it can't migrate when discovery is on", () async {
+        runner()
+          ..createSync(recursive: true)
+          ..writeAsStringSync('@implementation RunnerUITests\n@end\n');
 
         await expectLater(
-          iosTestBackend.build(options(emitTestManifest: false)),
+          iosTestBackend.build(options(emitTestManifest: true)),
           throwsA(
             isA<ToolExit>().having(
               (e) => e.message,
               'message',
-              contains('build-time discovery is disabled'),
+              contains('--no-emit-test-manifest'),
             ),
           ),
         );
       });
+    });
 
-      test(
-        'explains the missing static macro when discovery is enabled',
-        () async {
-          writeRunner(static: false);
+    group('addGeneratedTestsInclude', () {
+      test('adds the guarded include right after the macro', () {
+        expect(
+          IOSTestBackend.addGeneratedTestsInclude(
+            '@import patrol;\n\n$legacyRunnerLine\n// trailing\n',
+          ),
+          '@import patrol;\n\n$legacyRunnerLine\n'
+          '#if __has_include("PatrolGeneratedTests.inc")\n'
+          '#include "PatrolGeneratedTests.inc"\n'
+          '#endif\n'
+          '// trailing\n',
+        );
+      });
 
-          await expectLater(
-            iosTestBackend.build(options(emitTestManifest: true)),
-            throwsA(
-              isA<ToolExit>().having(
-                (e) => e.message,
-                'message',
-                contains('PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE'),
-              ),
-            ),
-          );
-        },
-      );
+      test('handles a file without a trailing newline', () {
+        final migrated = IOSTestBackend.addGeneratedTestsInclude(
+          legacyRunnerLine,
+        );
+        expect(migrated, endsWith('#endif'));
+        expect(IOSTestBackend.includesGeneratedTests(migrated!), isTrue);
+      });
 
-      test(
-        'explains the 4.7.0 STATIC_BEGIN/END form when discovery is enabled',
-        () async {
-          fs.file('ios/RunnerUITests/RunnerUITests.m')
-            ..createSync(recursive: true)
-            ..writeAsStringSync(
-              'PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN(RunnerUITests)\n'
-              '#include "PatrolGeneratedTests.inc"\n'
-              'PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_END\n',
-            );
+      test('returns null without a single runner macro line', () {
+        expect(IOSTestBackend.addGeneratedTestsInclude('@end\n'), isNull);
+        expect(
+          IOSTestBackend.addGeneratedTestsInclude(
+            '$legacyRunnerLine\n$legacyRunnerLine\n',
+          ),
+          isNull,
+        );
+      });
+    });
 
-          await expectLater(
-            iosTestBackend.build(options(emitTestManifest: true)),
-            throwsA(
-              isA<ToolExit>().having(
-                (e) => e.message,
-                'message',
-                contains('cannot be compiled inside another class'),
-              ),
-            ),
-          );
-        },
-      );
+    group('includesGeneratedTests', () {
+      test('finds #include and #import', () {
+        expect(
+          IOSTestBackend.includesGeneratedTests(
+            '#include "PatrolGeneratedTests.inc"\n',
+          ),
+          isTrue,
+        );
+        expect(
+          IOSTestBackend.includesGeneratedTests(
+            '#import "PatrolGeneratedTests.inc"\n',
+          ),
+          isTrue,
+        );
+      });
+
+      test('ignores a commented-out include', () {
+        expect(
+          IOSTestBackend.includesGeneratedTests(
+            '// #include "PatrolGeneratedTests.inc"\n',
+          ),
+          isFalse,
+        );
+      });
     });
   });
 }
@@ -368,6 +479,9 @@ class FakeProcessManager extends Fake implements ProcessManager {}
 class FakeLogger extends Fake implements Logger {
   @override
   void detail(String? message, {String? Function(String?)? style}) {}
+
+  @override
+  void info(String? message, {String? Function(String?)? style}) {}
 
   @override
   ProgressTask task(String message) => FakeProgressTask();

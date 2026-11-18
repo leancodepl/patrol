@@ -1,5 +1,9 @@
 ## Unreleased
 
+- **Breaking:** `PATROL_INTEGRATION_TEST_IOS_RUNNER` now runs both build-time and runtime test
+  discovery: followed by `#include "PatrolGeneratedTests.inc"`, it runs the generated tests when the
+  file declares any, and discovers tests at runtime otherwise. `..._STATIC_BASE` is a deprecated
+  alias, and the 4.7.0 `..._STATIC_BEGIN`/`_END` macros are removed. See `migration5.md`.
 - Add `$.entrypointArgs` with the Dart entrypoint arguments the native side of the app passes to
   the test bundle (`dartEntrypointArgs` on Android, `entrypointArgs` on iOS and macOS). Needs a
   `patrol_cli` release that includes this change. (#3366)

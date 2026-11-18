@@ -8,6 +8,7 @@ import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
+import 'package:patrol_cli/src/crossplatform/test_discovery_mode.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
@@ -192,8 +193,12 @@ class BuildIOSCommand extends PatrolCommand {
       testServerPort: super.testServerPort,
       fullIsolation: boolArg('full-isolation'),
       clearIOSPermissions: boolArg('clear-permissions'),
-      emitTestManifest:
-          optionalBoolArg('emit-test-manifest') ?? config.emitTestManifest,
+      emitTestManifest: resolveEmitTestManifest(
+        flag: optionalBoolArg('emit-test-manifest'),
+        pubspecValue: config.emitTestManifest,
+        testDirectory: config.testDirectory,
+        logger: _logger,
+      ),
     );
 
     if (!iosOpts.simulator && iosOpts.fullIsolation) {

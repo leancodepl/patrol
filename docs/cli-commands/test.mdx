@@ -239,10 +239,10 @@ the run (override with `--screenshots-output-dir`). On device farms the farm
 collects them:
 
 - **BrowserStack App Automate**: enable the Espresso `debugscreenshots: true`
-  capability; images appear in the Screenshots tab. Also enable build-time test
-  discovery (`emit_test_manifest`) so each test reports a URL-safe name —
+  capability; images appear in the Screenshots tab. Keep build-time test
+  discovery on (the default) so each test reports a URL-safe name:
   BrowserStack can't render screenshot URLs with spaces/commas, which the
-  default `runDartTest[...]` names contain.
+  runtime-discovery `runDartTest[...]` names contain.
 - **Firebase Test Lab**: pass `--directories-to-pull=/sdcard/Download/screenshots`.
 
 <Info>
@@ -251,7 +251,7 @@ collects them:
 </Info>
 
 <Warning>
-    **Default-path naming limitation.** On the default (runtime-discovery) path
+    **Runtime discovery naming limitation.** With runtime discovery
     each test reports `runDartTest[<dart test name>]`, so the screenshot folder
     is named from the raw Dart test name. That name may contain spaces/commas
     (BrowserStack can't render such URLs) or characters like `:` and `/` that
@@ -259,8 +259,8 @@ collects them:
     matches the name the farm reports — so the screenshot isn't associated with
     the test. Locally (`patrol test`) this is harmless: the files are still
     pulled to `<test-directory>/screenshots`. For reliable **farm** screenshots,
-    use `emit_test_manifest`: its generated per-test names are identifiers, so
-    they are both filesystem- and URL-safe.
+    keep build-time discovery on: its generated per-test names are identifiers,
+    so they are both filesystem- and URL-safe.
 </Warning>
 
 #### On web
@@ -304,10 +304,11 @@ features such as reporting. To see the full list of supported arguments, run `pa
 
 ### Running without rebuilding
 
-When [build-time test discovery][discovery] is enabled
-(`patrol.emit_test_manifest: true`), already-built tests can be re-run without
-rebuilding using a separate command — see
-[`patrol test-without-building`](/cli-commands/test-without-building).
+With [build-time test discovery][discovery] (the default), already-built tests
+can be re-run without rebuilding using a separate command, see
+[`patrol test-without-building`](/cli-commands/test-without-building). Pass
+`--no-emit-test-manifest` (or set `patrol.emit_test_manifest: false`) to use
+runtime discovery instead.
 
 [discovery]: /documentation/ci/build-time-test-discovery
 

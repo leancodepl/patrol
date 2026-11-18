@@ -24,8 +24,8 @@ import 'package:patrol_cli/src/web/web_test_backend.dart';
 /// here and aren't accepted.
 ///
 /// Requires build-time test discovery: the tests are selected natively, which is
-/// only possible because `patrol build --emit-test-manifest` generated a real
-/// native test per Dart test.
+/// only possible because `patrol build` generated a real native test per Dart
+/// test.
 ///
 /// On web there is no device and no native runner: `--input` points at a
 /// directory from `patrol build web`, which this command serves and drives with

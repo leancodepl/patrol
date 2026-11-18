@@ -1,11 +1,10 @@
-name: test build-time discovery
+name: test discovery modes
 
-# The regular e2e workflows all run with runtime discovery, so nothing exercised
-# `--emit-test-manifest`: the host `flutter test` discovery run, the generated
-# native classes, and the per-file class/method names they produce. This workflow
-# runs the same e2e app with build-time discovery on both platforms, and asserts
-# the generated names, because a silent fallback to runtime discovery would
-# otherwise still make the suite pass.
+# Build-time discovery is the default, so the regular e2e workflows run it, but
+# none of them checks the generated per-file class/method names (a silent
+# fallback to runtime discovery would still pass) or exercises the opt-out. This
+# workflow asserts the generated names, then runs the same tests again with
+# `--no-emit-test-manifest`, so runtime discovery keeps its coverage.
 
 on:
   workflow_dispatch:
@@ -87,11 +86,25 @@ jobs:
           # Both runs happen here: the emulator only exists for the duration of
           # this step.
           script: |
-            patrol test $TARGETS --emit-test-manifest --verbose
+            patrol test $TARGETS --verbose
             patrol test-without-building --only patrol_test/at_finder_test.dart --verbose
+            patrol test $TARGETS --no-emit-test-manifest --verbose
+
+      # The last run used runtime discovery, so it must have removed the classes
+      # the build-time runs generated (they would run every test twice).
+      - name: Verify the runtime discovery run left no generated classes
+        if: always()
+        working-directory: dev/e2e_app
+        run: |
+          generated_dir=android/app/src/androidTest/java/pl/leancode/patrol/e2e_app
+          ls "$generated_dir"
+          ! ls "$generated_dir"/PatrolGeneratedTests*.java 2>/dev/null
+
+      - name: Generate the classes again
+        working-directory: dev/e2e_app
+        run: patrol build android $TARGETS --verbose
 
       - name: Verify the generated classes
-        if: always()
         working-directory: dev/e2e_app
         run: |
           generated_dir=android/app/src/androidTest/java/pl/leancode/patrol/e2e_app
@@ -150,19 +163,17 @@ jobs:
         working-directory: packages/patrol_cli
         run: dart pub global activate --source path . && patrol
 
-      # The committed runner uses the runtime macro, which is what every other
-      # workflow needs; build-time discovery requires the static one.
-      - name: Switch RunnerUITests.m to the static runner
+      # A project set up before Patrol 5.0 has the runner macro without the
+      # #include of the generated tests; `patrol test` must add it on its own.
+      - name: Restore a pre-5.0 RunnerUITests.m
         run: |
           cat > ios/RunnerUITests/RunnerUITests.m <<'EOF'
           @import XCTest;
           @import patrol;
           @import ObjectiveC.runtime;
 
-          PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE(RunnerUITests)
-          #include "PatrolGeneratedTests.inc"
+          PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerUITests)
           EOF
-          cat ios/RunnerUITests/RunnerUITests.m
 
       - name: Start iOS simulator
         uses: futureware-tech/simulator-action@v2
@@ -176,11 +187,14 @@ jobs:
       - name: Run tests with build-time discovery
         run: |
           sleep 10 # See https://github.com/leancodepl/patrol/issues/1282
-          patrol test $TARGETS --emit-test-manifest --ios 26.2 --verbose
+          patrol test $TARGETS --ios 26.2 --verbose
 
       - name: Verify the generated classes
         if: always()
         run: |
+          cat ios/RunnerUITests/RunnerUITests.m
+          grep -q '#include "PatrolGeneratedTests.inc"' ios/RunnerUITests/RunnerUITests.m
+
           inc=ios/RunnerUITests/PatrolGeneratedTests.inc
           cat "$inc"
 
@@ -201,3 +215,16 @@ jobs:
 
       - name: Run a whole file without rebuilding
         run: patrol test-without-building --only patrol_test/at_finder_test.dart --verbose
+
+      - name: Run tests with runtime discovery
+        run: patrol test $TARGETS --no-emit-test-manifest --ios 26.2 --verbose
+
+      - name: Verify runtime discovery ran the tests
+        run: |
+          ! grep -q '@interface' ios/RunnerUITests/PatrolGeneratedTests.inc
+          xcresult="$(ls -td build/*.xcresult | head -1)"
+          xcrun xcresulttool get test-results tests --path "$xcresult" --compact > tests.json
+          cat tests.json
+          # Runtime discovery reports every test under the runner class.
+          grep -q '"RunnerUITests"' tests.json
+          ! grep -q '"PatrolGeneratedTests_at_finder_test"' tests.json

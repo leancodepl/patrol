@@ -61,13 +61,12 @@ class AndroidTestBackend {
       Process process;
       int exitCode;
 
-      // Build-time test discovery + static JUnit codegen (experimental,
-      // opt-in). Runs a host `flutter test` in discovery mode to obtain a
-      // manifest of the Dart test tree, then generates a static JUnit class so
-      // each Dart test becomes a real, individually-selectable native @Test
-      // (and shows up under its own name in reports, not under the parameterized
-      // `runDartTest[...]` wrapper). Failures are non-fatal: the build falls
-      // back to the runtime-discovery host class.
+      // Build-time test discovery + static JUnit codegen. Runs a host
+      // `flutter test` in discovery mode to obtain a manifest of the Dart test
+      // tree, then generates a static JUnit class so each Dart test becomes a
+      // real, individually-selectable native @Test (and shows up under its own
+      // name in reports, not under the parameterized `runDartTest[...]`
+      // wrapper).
       // Always start from a clean slate: remove any previously generated class
       // so a stale one can't linger after a failed discovery or an opt-out
       // (which would double-run tests alongside the runtime host class).
@@ -88,8 +87,8 @@ class AndroidTestBackend {
             );
         if (manifestPath == null) {
           throwToolExit(
-            'Build-time test discovery failed; fix the errors above or disable '
-            'emit_test_manifest.',
+            'Build-time test discovery failed; fix the errors above, or pass '
+            '--no-emit-test-manifest to use runtime discovery.',
           );
         }
         final result = codegen.generate(
@@ -760,7 +759,7 @@ class AndroidTestBackend {
 
   /// Runs already-built tests without rebuilding, via `adb shell am instrument`
   /// (the true no-rebuild path, no Gradle up-to-date check). Requires a prior
-  /// `patrol build android --emit-test-manifest`, whose generated JUnit classes
+  /// `patrol build android` with build-time discovery, whose generated JUnit classes
   /// make each Dart test an individually-addressable `<class>#<method>`.
   ///
   /// [onlyTests] are Dart test names (as shown by discovery); empty runs the
@@ -788,9 +787,8 @@ class AndroidTestBackend {
     ).findGeneratedClassNames(_rootDirectory.childDirectory('android'));
     if (generatedClassNames.isEmpty) {
       throwToolExit(
-        'No generated test class found. Run `patrol build android '
-        '--emit-test-manifest` (or set patrol.emit_test_manifest in pubspec) '
-        'before `patrol test-without-building`.',
+        'No generated test class found. Run `patrol build android` without '
+        '--no-emit-test-manifest before `patrol test-without-building`.',
       );
     }
 
@@ -898,8 +896,8 @@ class AndroidTestBackend {
     final manifest = TestManifest.loadFromBuild(_rootDirectory);
     if (manifest == null) {
       throwToolExit(
-        'No build-time test manifest found. Run `patrol build android '
-        '--emit-test-manifest` before `patrol test-without-building`.',
+        'No build-time test manifest found. Run `patrol build android` '
+        'without --no-emit-test-manifest before `patrol test-without-building`.',
       );
     }
     final tests = manifest.tests;
@@ -941,8 +939,8 @@ class AndroidTestBackend {
 
     if (!apkDir.existsSync()) {
       throwToolExit(
-        'No built APKs found under ${apkDir.path}. Run `patrol build android '
-        '--emit-test-manifest` before `patrol test-without-building`.',
+        'No built APKs found under ${apkDir.path}. Run `patrol build android` '
+        'before `patrol test-without-building`.',
       );
     }
 
@@ -981,8 +979,8 @@ class AndroidTestBackend {
     if (appApk == null || testApk == null) {
       throwToolExit(
         'Could not locate the built app and androidTest APKs under '
-        '${apkDir.path}. Run `patrol build android --emit-test-manifest` '
-        'before `patrol test-without-building`.',
+        '${apkDir.path}. Run `patrol build android` before '
+        '`patrol test-without-building`.',
       );
     }
 

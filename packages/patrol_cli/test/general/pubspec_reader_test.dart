@@ -57,14 +57,14 @@ patrol:
         expect(reader.read().ios.flavor, equals('dev'));
       });
 
-      test('emit_test_manifest defaults to false', () {
+      test('emit_test_manifest is null when unset', () {
         fs.file('pubspec.yaml').writeAsStringSync('''
 $_pubspecBase
 patrol:
   app_name: Example
 ''');
 
-        expect(reader.read().emitTestManifest, isFalse);
+        expect(reader.read().emitTestManifest, isNull);
       });
 
       test('reads emit_test_manifest', () {

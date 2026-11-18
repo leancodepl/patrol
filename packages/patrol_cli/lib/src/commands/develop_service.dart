@@ -12,6 +12,7 @@ import 'package:patrol_cli/src/commands/develop_options.dart';
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
+import 'package:patrol_cli/src/crossplatform/test_discovery_mode.dart';
 import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
@@ -316,10 +317,15 @@ class DevelopService {
       buildNumber: options.buildNumber,
     );
 
-    // Develop bundles a single target, so the generated native tests cover
-    // only that one until the next `patrol build`.
-    final emitTestManifest =
-        options.emitTestManifest ?? config.emitTestManifest;
+    // A hot-restart session runs through runtime discovery, so develop only
+    // generates native tests when asked to. They then cover just its target.
+    final emitTestManifest = resolveEmitTestManifest(
+      flag: options.emitTestManifest,
+      pubspecValue: config.emitTestManifest,
+      testDirectory: config.testDirectory,
+      logger: _logger,
+      defaultValue: false,
+    );
 
     final androidOpts = AndroidAppOptions(
       flutter: flutterOpts,

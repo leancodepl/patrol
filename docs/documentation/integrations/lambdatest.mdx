@@ -68,8 +68,10 @@ whole suite runs as a single `testInvocations()` session.
 
 ### Enable build-time test discovery
 
-Follow [build-time test discovery](/documentation/ci/build-time-test-discovery):
-set `emit_test_manifest: true` and switch `RunnerUITests.m` to the static runner.
+[Build-time test discovery](/documentation/ci/build-time-test-discovery) is on
+by default. Make sure `RunnerUITests.m` includes the generated tests (Patrol adds
+the `#include` on the first build) and that `emit_test_manifest` isn't set to
+`false`.
 
 ### Build and upload
 

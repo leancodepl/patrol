@@ -167,6 +167,20 @@ void main() {
         expect(opts.bundleId, isNull);
         expect(opts.simulator, equals(false));
         expect(opts.fullIsolation, equals(false));
+        expect(opts.emitTestManifest, isTrue);
+      });
+
+      test('uses runtime discovery with --no-emit-test-manifest', () async {
+        final result = await runCommand(['--no-emit-test-manifest']);
+
+        expect(result, equals(0));
+
+        final captured = verify(
+          () => mockIosTestBackend.build(captureAny()),
+        ).captured;
+        final opts = captured.first as IOSAppOptions;
+
+        expect(opts.emitTestManifest, isFalse);
       });
 
       test('builds iOS app with release build mode', () async {
