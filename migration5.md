@@ -1,8 +1,8 @@
 # Migrating to Patrol 5.0
 
 Working notes for the Patrol 5.0 migration guide. Every change on `release/5.0`
-that needs action from users adds a section here. Before the release, this file
-becomes the migration guide in the docs.
+that needs action from users adds a section here, or a line to the Inbox at the
+end. Before the release, this file becomes the migration guide in the docs.
 
 Each section says which packages it affects, what changed and what to do.
 
@@ -54,3 +54,10 @@ already meets them, unless it sets lower values explicitly.
 - **macOS:** set the deployment target to 10.15 or higher: `platform :osx,
   '10.15'` in `macos/Podfile`, and **macOS Deployment Target** of both `Runner`
   and `RunnerUITests` in Xcode.
+
+## Inbox
+
+Short notes on changes that don't have a section yet, one line each: the PR or
+branch, the packages, what changed and what users have to do (`TODO` when that
+isn't known yet). A line leaves the Inbox when it becomes a section above. Empty
+the Inbox before 5.0.0 is released.
