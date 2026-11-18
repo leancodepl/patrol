@@ -34,7 +34,7 @@ let package = Package(
   ],
   dependencies: [
     .package(name: "FlutterFramework", path: "../FlutterFramework"),
-    .package(url: "https://github.com/robbiehanson/CocoaAsyncSocket", from: "7.6.4")
+    .package(url: "https://github.com/robbiehanson/CocoaAsyncSocket", from: "7.6.4"),
   ],
   targets: [
     .target(
