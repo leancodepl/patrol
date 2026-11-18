@@ -47,8 +47,8 @@ set -e
 # and export the screenshots, plus the screen recording (.mp4) for each failing
 # test. Best-effort: never fails the run. Opt-in with PULL_IOS_ARTIFACTS=1.
 # The filters are the ones in `IOSTestBackend.extractAttachments` in patrol_cli
-# (PNGs named `patrol_*` or associated with a failure, `.mp4` recordings) — keep the
-# two in sync.
+# (PNGs named `patrol_*` or associated with a failure; XCTest's screen
+# recordings, here only those of failing tests) — keep the two in sync.
 SCREENSHOTS_DIR="${IOS_SCREENSHOTS_DIR:-ios_screenshots}"
 VIDEOS_DIR="${IOS_VIDEOS_DIR:-ios_videos}"
 pull_artifacts() {
@@ -85,6 +85,16 @@ def is_png(path):
         return f.read(8) == b"\x89PNG\r\n\x1a\n"
 
 
+def is_recording(name, path):
+    lower = path.lower()
+    if not (name.startswith("Screen Recording") or lower.endswith((".mp4", ".mov"))):
+        return False
+    # `ftyp` at byte 4: a real .mp4/.mov, not the text stub of a killed session.
+    with open(path, "rb") as f:
+        f.seek(4)
+        return f.read(4) == b"ftyp"
+
+
 def free_path(directory, stem, ext):
     # Next free index: a test can show up twice (a retry, or a second bundle).
     i = 0
@@ -113,7 +123,7 @@ if os.path.exists(manifest):
             wanted = name.startswith("patrol_") or a.get("isAssociatedWithFailure")
             if wanted and is_png(src):
                 shutil.copy(src, free_path(shots_dir, f"{tid}__{slug(name)}", ".png"))
-            elif failed and a["exportedFileName"].lower().endswith(".mp4"):
+            elif failed and is_recording(name, src):
                 shutil.copy(src, free_path(videos_dir, f"{tid}_", ".mp4"))
 PY
 		fi

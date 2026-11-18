@@ -212,6 +212,8 @@ platform.
   bundle after the run, so they show up when the run finishes, not while it's
   going. Requires Xcode 16 or newer (`xcrun xcresulttool export attachments`).
   `patrol develop` records with `xcrun simctl` instead, on simulators only.
+  Recording physical iOS devices is currently unreleased; released `patrol_cli`
+  versions record iOS simulators only.
 
 On a device farm like Firebase Test Lab, `--record-video` doesn't apply (the
 tests run via `gcloud`, not `patrol test`), but the iOS `.xcresult` still holds

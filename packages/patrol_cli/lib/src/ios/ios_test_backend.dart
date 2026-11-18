@@ -1020,11 +1020,18 @@ class IOSTestBackend {
 
         if (result.exitCode != 0) {
           // Older xcresulttool (pre-Xcode 16) lacks `export attachments`.
-          _logger.warn(
-            'Could not export screenshots/recordings from the .xcresult bundle '
-            '(xcresulttool exit code ${result.exitCode}). This requires '
-            'Xcode 16 or newer.',
-          );
+          const message =
+              'Could not export screenshots/recordings from the .xcresult '
+              'bundle. This requires Xcode 16 or newer';
+          final details =
+              '$message (xcresulttool exit code ${result.exitCode}).';
+          // Screenshots are extracted on every run, so only warn when the user
+          // asked for something: a video.
+          if (videoConfig != null) {
+            _logger.warn(details);
+          } else {
+            _logger.detail(details);
+          }
           return const [];
         }
 
