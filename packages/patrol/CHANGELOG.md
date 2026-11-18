@@ -1,8 +1,10 @@
 ## 5.0.0-dev.1
 
 - **Breaking:** Require Flutter 3.44 and Dart 3.12 or newer. See `migration5.md`. (#3377)
-- **Breaking:** Raise the minimum Android version to API 24 (Android 7.0) and the minimum macOS
-  version to 10.15, the same as Flutter 3.44. iOS stays at 13.0. See `migration5.md`. (#3378)
+- **Breaking:** Bump `minSdk` to 24 (Android 7.0), Flutter 3.44's minimum. See `migration5.md`.
+  (#3378)
+- **Breaking:** Bump the minimum macOS deployment target to 10.15, Flutter 3.44's minimum. See
+  `migration5.md`. (#3378)
 - Depend on Flutter's `FlutterFramework` Swift package when the app builds with Swift Package Manager,
   as Flutter 3.41+ expects from plugins. (#3377)
 - Remove the placeholder `GoogleService-Info.plist` and `google-services.json` from the example app, so security scanners no longer flag the published package. (#3360)
