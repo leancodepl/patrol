@@ -18,12 +18,10 @@ const _kDefaultWebServerTimeoutSeconds = 120;
 
 class WebTestBackend {
   WebTestBackend({
-    required ProcessManager processManager,
+    required this._processManager,
     required DisposeScope parentDisposeScope,
-    required Logger logger,
-  }) : _processManager = processManager,
-       _logger = logger,
-       _disposeScope = DisposeScope() {
+    required this._logger,
+  }) : _disposeScope = DisposeScope() {
     _disposeScope.disposedBy(parentDisposeScope);
   }
 

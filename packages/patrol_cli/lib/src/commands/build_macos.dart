@@ -16,22 +16,15 @@ import 'package:patrol_cli/src/test_finder.dart';
 
 class BuildMacOSCommand extends PatrolCommand {
   BuildMacOSCommand({
-    required TestFinderFactory testFinderFactory,
-    required TestBundler testBundler,
-    required DartDefinesReader dartDefinesReader,
-    required PubspecReader pubspecReader,
-    required MacOSTestBackend macosTestBackend,
-    required Analytics analytics,
-    required Logger logger,
-    required CompatibilityChecker compatibilityChecker,
-  }) : _testFinderFactory = testFinderFactory,
-       _testBundler = testBundler,
-       _dartDefinesReader = dartDefinesReader,
-       _pubspecReader = pubspecReader,
-       _macosTestBackend = macosTestBackend,
-       _analytics = analytics,
-       _logger = logger,
-       _compatibilityChecker = compatibilityChecker {
+    required this._testFinderFactory,
+    required this._testBundler,
+    required this._dartDefinesReader,
+    required this._pubspecReader,
+    required this._macosTestBackend,
+    required this._analytics,
+    required this._logger,
+    required this._compatibilityChecker,
+  }) {
     usesTargetOption();
     usesBuildModeOption();
     usesFlavorOption();

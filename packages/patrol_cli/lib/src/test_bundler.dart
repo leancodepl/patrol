@@ -3,10 +3,9 @@ import 'package:meta/meta.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 
 class TestBundler {
-  TestBundler({required Directory projectRoot, required Logger logger})
+  TestBundler({required Directory projectRoot, required this._logger})
     : _projectRoot = projectRoot,
-      _fs = projectRoot.fileSystem,
-      _logger = logger;
+      _fs = projectRoot.fileSystem;
 
   static const _devtoolsRootDirectories = {
     'lib',

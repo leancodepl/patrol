@@ -13,25 +13,21 @@ import 'package:process/process.dart';
 
 class FlutterTool {
   FlutterTool({
-    required Stream<List<int>> stdin,
-    required ProcessManager processManager,
-    required Platform platform,
+    required this._stdin,
+    required this._processManager,
+    required this._platform,
     required DisposeScope parentDisposeScope,
-    required Logger logger,
+    required this._logger,
     this.onQuit,
     Future<void> Function()? onExit,
-  }) : _stdin = stdin,
-       _processManager = processManager,
-       _platform = platform,
-       _disposeScope = DisposeScope(),
-       _logger = logger,
+  }) : _disposeScope = DisposeScope(),
        _onExit = onExit ?? (() async => exit(0)) {
     _disposeScope.disposedBy(parentDisposeScope);
   }
 
   final Stream<List<int>> _stdin;
   final ProcessManager _processManager;
-  final Platform _platform;
+  final NativePlatform _platform;
   final DisposeScope _disposeScope;
   final Logger _logger;
   final Future<void> Function()? onQuit;
@@ -442,11 +438,11 @@ class FlutterTool {
   Future<void> _openDevtoolsPage(String url) async {
     io.Process? process;
     switch (_platform.operatingSystem) {
-      case Platform.macOS:
+      case NativePlatform.macOS:
         process = await _processManager.start(['open', url]);
-      case Platform.windows:
+      case NativePlatform.windows:
         process = await _processManager.start(['cmd', '/c', 'start', '', url]);
-      case Platform.linux:
+      case NativePlatform.linux:
         process = await _processManager.start(['xdg-open', url]);
     }
 

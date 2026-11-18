@@ -9,12 +9,10 @@ import 'package:pub_updater/pub_updater.dart';
 
 class UpdateCommand extends PatrolCommand {
   UpdateCommand({
-    required PubUpdater pubUpdater,
-    required Analytics analytics,
-    required Logger logger,
-  }) : _pubUpdater = pubUpdater,
-       _analytics = analytics,
-       _logger = logger {
+    required this._pubUpdater,
+    required this._analytics,
+    required this._logger,
+  }) {
     argParser.addFlag(
       'pub-upgrade',
       defaultsTo: true,

@@ -11,18 +11,13 @@ import 'package:process/process.dart';
 /// Manages video recording for individual test cases on iOS devices and simulators.
 class IOSVideoRecordingManager extends VideoRecordingManager {
   IOSVideoRecordingManager({
-    required ProcessManager processManager,
-    required Directory rootDirectory,
-    required Logger logger,
-    required VideoRecordingConfig config,
-    required Device device,
-    required DisposeScope scope,
-  }) : _processManager = processManager,
-       _rootDirectory = rootDirectory,
-       _logger = logger,
-       _config = config,
-       _device = device,
-       _scope = scope;
+    required this._processManager,
+    required this._rootDirectory,
+    required this._logger,
+    required this._config,
+    required this._device,
+    required this._scope,
+  });
 
   final ProcessManager _processManager;
   final Directory _rootDirectory;
