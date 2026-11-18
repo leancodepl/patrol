@@ -487,7 +487,7 @@ class PatrolTester {
           // EditableText by walking up the tree until we find an ancestor
           // that has an EditableText descendant (e.g. the TextField).
           // We target the EditableText directly because it is hit-testable.
-          Finder effectiveFinder = finder;
+          var effectiveFinder = finder;
           final earlyMatches = finder.evaluate();
           if (earlyMatches.isNotEmpty &&
               finder.hitTestable(at: alignment).evaluate().isEmpty) {
