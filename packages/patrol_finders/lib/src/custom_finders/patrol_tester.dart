@@ -493,8 +493,9 @@ class PatrolTester {
               finder.hitTestable(at: alignment).evaluate().isEmpty) {
             Finder? editableFinder;
             earlyMatches.first.visitAncestorElements((ancestor) {
-              final parentFinder =
-                  find.byElementPredicate((e) => e == ancestor);
+              final parentFinder = find.byElementPredicate(
+                (e) => e == ancestor,
+              );
               final editable = find.descendant(
                 of: parentFinder,
                 matching: find.byType(EditableText),
