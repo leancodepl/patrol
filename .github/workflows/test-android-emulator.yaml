@@ -28,8 +28,37 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  pick_flutter:
+    name: Pick Flutter version
+    runs-on: ubuntu-latest
+    outputs:
+      flutter_versions: ${{ steps.pick.outputs.flutter_versions }}
+    steps:
+      # pull_request_target always runs this file from master, so a PR into
+      # release/5.0 would get master's Flutter, which its patrol may not
+      # support. This job only reads patrol's pubspec.yaml; nothing from the
+      # PR runs here.
+      - name: Clone patrol's pubspec.yaml
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          allow-unsafe-pr-checkout: true
+          persist-credentials: false
+          sparse-checkout: packages/patrol/pubspec.yaml
+          sparse-checkout-cone-mode: false
+
+      - name: Pick the newer of master's pin and patrol's minimum
+        id: pick
+        run: |
+          pinned=3.38
+          minimum=$(sed -nE "s/^  flutter: '>=([0-9]+[.][0-9]+)[.].*/\1/p" packages/patrol/pubspec.yaml)
+          version=$(printf '%s\n%s\n' "$pinned" "${minimum:-$pinned}" | sort -V | tail -n 1)
+          echo "patrol needs Flutter >=${minimum:-?}, using $version.x"
+          echo "flutter_versions=[\"$version.x\"]" >> "$GITHUB_OUTPUT"
+
   run_tests:
     name: Flutter ${{ matrix.flutter-version }} on API ${{ matrix.api-level }}
+    needs: pick_flutter
     runs-on: ubuntu-latest
     timeout-minutes: 55
     outputs:
@@ -40,7 +69,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.38.x"]
+        flutter-version: ${{ fromJSON(needs.pick_flutter.outputs.flutter_versions) }}
         flutter-channel: ["stable"]
         api-level: [36, 35, 34, 33, 32]
 
