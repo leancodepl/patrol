@@ -964,6 +964,12 @@ class IOSTestBackend {
   /// automatic attachments during extraction.
   static const _patrolAttachmentPrefix = 'patrol_';
 
+  /// `xcresulttool` suggests `<name>_<n>_<UUID>.<ext>` for an attachment named
+  /// `<name>`; this matches the part it adds.
+  static final _exportNameSuffix = RegExp(
+    r'_\d+_[0-9A-Fa-f]{8}(-[0-9A-Fa-f]{4}){3}-[0-9A-Fa-f]{12}(\.\w+)?$',
+  );
+
   /// Name XCTest gives its automatic per-test screen recording attachment.
   static const _screenRecordingPrefix = 'Screen Recording';
 
@@ -1185,8 +1191,9 @@ class IOSTestBackend {
         if (fileName == null) {
           continue;
         }
-        final name =
+        final suggestedName =
             attachment['suggestedHumanReadableName'] as String? ?? 'screenshot';
+        final name = suggestedName.replaceFirst(_exportNameSuffix, '');
         final isFailure =
             attachment['isAssociatedWithFailure'] as bool? ?? false;
         final isPatrol = name.startsWith(_patrolAttachmentPrefix);
