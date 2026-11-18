@@ -26,10 +26,9 @@ import 'package:patrol_cli/src/runner/patrol_command.dart';
 /// (`--input`, a file or a directory searched recursively), e.g. the outputs of
 /// emulator.wtf or Firebase Test Lab.
 ///
-/// Refuses BrowserStack builds that ran with `clearPackageData:true`: coverage
-/// and `clearPackageData` are mutually exclusive there (see
-/// [buildUsedClearPackageData]), and a first-test-only result is worse than an
-/// error.
+/// With `clearPackageData:true` each test appends its own run to the session's
+/// file (Android 12+), and the runs are merged here. A BrowserStack session
+/// that kept only the first test's run (older Android) is an error.
 class CoveragePullCommand extends PatrolCommand {
   CoveragePullCommand({required this._logger, required this._fs}) {
     argParser
@@ -145,6 +144,7 @@ class CoveragePullCommand extends PatrolCommand {
         (
           label: _fs.path.relative(file.path, from: _fs.path.dirname(path)),
           bytes: file.readAsBytesSync(),
+          clearPackageData: false,
         ),
     ];
   }
@@ -179,15 +179,12 @@ class CoveragePullCommand extends PatrolCommand {
       return null;
     }
 
-    if (buildUsedClearPackageData(build) ?? false) {
-      _logger.err(
-        'Build $buildId ran with clearPackageData:true, which is incompatible '
-        'with coverage on BrowserStack: pm clear between tests revokes the '
-        "app's permission to write the coverage file, so only the first test's "
-        'coverage would be reported. Re-run the coverage build with '
-        'clearPackageData:false (keep it true for regular runs).',
+    final clearPackageData = buildUsedClearPackageData(build) ?? false;
+    if (clearPackageData) {
+      _logger.info(
+        'Build $buildId ran with clearPackageData:true: expecting one Dart '
+        'coverage run per test (needs Android 12+ devices).',
       );
-      return null;
     }
 
     // Without --session-id, pull and merge every session (shard) in the build.
@@ -215,7 +212,11 @@ class CoveragePullCommand extends PatrolCommand {
         return null;
       }
       _logger.info('Session $sid: downloaded ${bytes.length} bytes');
-      sources.add((label: 'Session $sid', bytes: bytes));
+      sources.add((
+        label: 'Session $sid',
+        bytes: bytes,
+        clearPackageData: clearPackageData,
+      ));
     }
     return sources;
   }
@@ -226,6 +227,7 @@ class CoveragePullCommand extends PatrolCommand {
     var jacocoSessions = 0;
     var execBlocks = 0;
     var dartChunks = 0;
+    var dartRuns = 0;
 
     for (final source in sources) {
       final BsCoverageSplitResult split;
@@ -235,16 +237,29 @@ class CoveragePullCommand extends PatrolCommand {
         _logger.err('${source.label}: failed to parse coverage: ${e.message}');
         return 1;
       }
+      if (source.clearPackageData &&
+          split.dartChunks > 0 &&
+          split.taggedDartRuns == 0) {
+        _logger.err(
+          '${source.label}: ran with clearPackageData:true but holds no '
+          "per-test Dart coverage runs, so only the first test's coverage was "
+          'kept (device below Android 12, or a coverageFile the shell user '
+          "can't write). Re-run on Android 12+ or with clearPackageData:false.",
+        );
+        return 1;
+      }
       mergedJacoco.add(split.jacocoBytes);
       mergedLcov.write(split.dartLcov);
       jacocoSessions += split.jacocoSessions;
       execBlocks += split.executionDataBlocks;
       dartChunks += split.dartChunks;
+      dartRuns += split.dartRuns;
     }
 
     _logger.info(
       'Parsed: $jacocoSessions JaCoCo session(s), $execBlocks class probe(s), '
-      '$dartChunks Dart chunk(s) from ${sources.length} coverage file(s).',
+      '$dartChunks Dart chunk(s) in $dartRuns run(s) from ${sources.length} '
+      'coverage file(s).',
     );
     if (dartChunks == 0) {
       _logger.warn(
@@ -331,4 +346,10 @@ class _BsHttpException implements Exception {
   final String message;
 }
 
-typedef _CoverageSource = ({String label, Uint8List bytes});
+/// [clearPackageData]: the source ran with `clearPackageData:true`, so every
+/// test should have appended its own run-tagged Dart coverage.
+typedef _CoverageSource = ({
+  String label,
+  Uint8List bytes,
+  bool clearPackageData,
+});

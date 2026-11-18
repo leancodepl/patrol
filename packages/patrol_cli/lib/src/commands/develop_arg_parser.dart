@@ -15,7 +15,6 @@ void configureDevelopArgParser(PatrolCommand command) {
     ..usesDartDefineFromFileOption()
     ..usesLabelOption()
     ..usesPortOptions()
-    ..usesTagsOption()
     ..usesHideTestSteps()
     ..usesClearTestSteps()
     ..usesCheckCompatibilityOption()

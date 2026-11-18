@@ -10,6 +10,8 @@ class BsCoverageSplitResult {
     required this.jacocoSessions,
     required this.executionDataBlocks,
     required this.dartChunks,
+    required this.dartRuns,
+    required this.taggedDartRuns,
   });
 
   /// A valid JaCoCo binary file containing only the standard `SessionInfo` +
@@ -27,19 +29,29 @@ class BsCoverageSplitResult {
 
   /// Number of Dart coverage chunks decoded.
   final int dartChunks;
+
+  /// Number of separate Dart coverage dumps (one per test process under
+  /// `clearPackageData:true`, else usually one).
+  final int dartRuns;
+
+  /// How many of [dartRuns] carry a run id. Only shell-appended runs do, so
+  /// zero under `clearPackageData:true` means only the first test's coverage
+  /// made it into the file.
+  final int taggedDartRuns;
 }
 
 /// JaCoCo .exec splitter. Reads the binary block stream and partitions it into
 /// "standard" blocks (kept verbatim) and patrol-appended Dart chunks (decoded
-/// back to LCOV).
+/// back to LCOV). Accepts concatenated dumps (a header per appended run), as
+/// written per test under `clearPackageData:true`.
 ///
 /// Throws a [FormatException] on a malformed stream or a truncated/partial set
 /// of Dart chunks, rather than silently writing an incomplete LCOV.
 BsCoverageSplitResult splitJacocoExec(Uint8List bytes) {
   final reader = _CompactReader(bytes);
   final out = BytesBuilder();
-  final dartChunks = <int, String>{};
-  final declaredTotals = <int>{};
+  // Keyed by run id: under clearPackageData every test appends its own run.
+  final runs = <String, _DartRun>{};
   var totalDartChunks = 0;
   var sessions = 0;
   var execData = 0;
@@ -66,27 +78,34 @@ BsCoverageSplitResult splitJacocoExec(Uint8List bytes) {
     final blockStart = reader.offset;
     final type = reader.readUint8();
     switch (type) {
+      case _blockHeader:
+        reader
+          ..readUint16()
+          ..readUint16();
+        out.add(bytes.sublist(blockStart, reader.offset));
       case _blockSessionInfo:
         final id = reader.readUtf();
         final start = reader.readInt64();
         final dump = reader.readInt64();
         if (id.startsWith(_patrolPrefix)) {
-          // id format: PATROL_DART_COV:<seq>:<total>:<base64>
-          final rest = id.substring(_patrolPrefix.length);
-          final firstColon = rest.indexOf(':');
-          final secondColon = rest.indexOf(':', firstColon + 1);
-          if (firstColon < 0 || secondColon < 0) {
+          // id format: PATROL_DART_COV:[<runId>:]<seq>:<total>:<base64>
+          // (base64 has no ':', older builds omit runId).
+          final parts = id.substring(_patrolPrefix.length).split(':');
+          if (parts.length != 3 && parts.length != 4) {
             continue;
           }
-          final seq = int.parse(rest.substring(0, firstColon));
-          final total = int.parse(rest.substring(firstColon + 1, secondColon));
-          final payload = rest.substring(secondColon + 1);
-          final decoded = utf8.decode(base64.decode(payload));
-          if (dartChunks.containsKey(seq)) {
-            throw FormatException('duplicate Dart coverage chunk seq $seq');
+          final runId = parts.length == 4 ? parts.removeAt(0) : '';
+          final seq = int.parse(parts[0]);
+          final total = int.parse(parts[1]);
+          final decoded = utf8.decode(base64.decode(parts[2]));
+          final run = runs.putIfAbsent(runId, _DartRun.new);
+          if (run.chunks.containsKey(seq)) {
+            throw FormatException(
+              'duplicate Dart coverage chunk seq $seq${_runLabel(runId)}',
+            );
           }
-          declaredTotals.add(total);
-          dartChunks[seq] = decoded;
+          run.totals.add(total);
+          run.chunks[seq] = decoded;
           totalDartChunks++;
         } else {
           out.add(bytes.sublist(blockStart, reader.offset));
@@ -109,33 +128,32 @@ BsCoverageSplitResult splitJacocoExec(Uint8List bytes) {
   }
 
   // Reject a partial/truncated payload rather than silently writing an
-  // incomplete LCOV. Every chunk advertises the same <total>, and seqs must
-  // cover 1..total exactly once.
-  if (dartChunks.isNotEmpty) {
-    if (declaredTotals.length != 1) {
-      throw FormatException(
-        'inconsistent Dart coverage chunk totals: $declaredTotals',
-      );
-    }
-    final total = declaredTotals.single;
-    if (dartChunks.length != total) {
-      final missing = <int>[];
-      for (var i = 1; i <= total; i++) {
-        if (!dartChunks.containsKey(i)) {
-          missing.add(i);
-        }
-      }
-      throw FormatException(
-        'incomplete Dart coverage: got ${dartChunks.length} of $total '
-        'chunk(s), missing seq(s) $missing (response truncated?)',
-      );
-    }
-  }
-
-  final orderedSeqs = dartChunks.keys.toList()..sort();
+  // incomplete LCOV. Within a run every chunk advertises the same <total>, and
+  // seqs must cover 1..total exactly once.
   final lcov = StringBuffer();
-  for (final s in orderedSeqs) {
-    lcov.write(dartChunks[s]);
+  for (final MapEntry(key: runId, value: run) in runs.entries) {
+    if (run.totals.length != 1) {
+      throw FormatException(
+        'inconsistent Dart coverage chunk totals${_runLabel(runId)}: '
+        '${run.totals}',
+      );
+    }
+    final total = run.totals.single;
+    if (run.chunks.length != total) {
+      final missing = <int>[
+        for (var i = 1; i <= total; i++)
+          if (!run.chunks.containsKey(i)) i,
+      ];
+      throw FormatException(
+        'incomplete Dart coverage${_runLabel(runId)}: got '
+        '${run.chunks.length} of $total chunk(s), missing seq(s) $missing '
+        '(response truncated?)',
+      );
+    }
+    final orderedSeqs = run.chunks.keys.toList()..sort();
+    for (final s in orderedSeqs) {
+      lcov.write(run.chunks[s]);
+    }
   }
 
   return BsCoverageSplitResult(
@@ -144,8 +162,17 @@ BsCoverageSplitResult splitJacocoExec(Uint8List bytes) {
     jacocoSessions: sessions,
     executionDataBlocks: execData,
     dartChunks: totalDartChunks,
+    dartRuns: runs.length,
+    taggedDartRuns: runs.keys.where((runId) => runId.isNotEmpty).length,
   );
 }
+
+class _DartRun {
+  final chunks = <int, String>{};
+  final totals = <int>{};
+}
+
+String _runLabel(String runId) => runId.isEmpty ? '' : ' in run $runId';
 
 /// Merges duplicate `SF:` (source file) records in a concatenated LCOV blob
 /// into one record per file, taking the union of hit lines (max hit count per
