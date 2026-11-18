@@ -20,6 +20,9 @@ void main() {
       expect(result.jacocoSessions, 1);
       expect(result.executionDataBlocks, 1);
       expect(result.dartChunks, 2);
+      // A direct-mode dump is one untagged run.
+      expect(result.dartRuns, 1);
+      expect(result.taggedDartRuns, 0);
       expect(
         result.dartLcov,
         'TN:a\nSF:package:app/a.dart\nDA:1,1\nend_of_record\n',
@@ -44,6 +47,66 @@ void main() {
 
       expect(result.dartChunks, 3);
       expect(result.dartLcov, 'first\nsecond\nthird\n');
+    });
+
+    test('splits concatenated per-test dumps, one run each', () {
+      // What clearPackageData:true leaves: each test appends header + data.
+      final w = JacocoExecWriter()
+        ..header()
+        ..sessionInfo('test-1')
+        ..executionData(1, 'A', 3)
+        ..dartChunk(1, 2, 'SF:a\n', runId: '100-1')
+        ..dartChunk(2, 2, 'end_of_record\n', runId: '100-1')
+        ..header()
+        ..sessionInfo('test-2')
+        ..executionData(1, 'A', 3)
+        ..dartChunk(1, 1, 'SF:b\nend_of_record\n', runId: '200-2');
+
+      final result = splitJacocoExec(w.toBytes());
+
+      expect(result.jacocoSessions, 2);
+      expect(result.executionDataBlocks, 2);
+      expect(result.dartChunks, 3);
+      expect(result.dartRuns, 2);
+      expect(result.taggedDartRuns, 2);
+      expect(result.dartLcov, 'SF:a\nend_of_record\nSF:b\nend_of_record\n');
+
+      final reparsed = splitJacocoExec(result.jacocoBytes);
+      expect(reparsed.jacocoSessions, 2);
+      expect(reparsed.dartChunks, 0);
+    });
+
+    test('reads legacy chunks next to run-tagged ones', () {
+      // A direct-mode dump (no runId) followed by shell-appended runs.
+      final w = JacocoExecWriter()
+        ..header()
+        ..dartChunk(1, 1, 'SF:a\nend_of_record\n')
+        ..header()
+        ..dartChunk(1, 1, 'SF:b\nend_of_record\n', runId: '200-2');
+
+      final result = splitJacocoExec(w.toBytes());
+
+      expect(result.dartRuns, 2);
+      expect(result.taggedDartRuns, 1);
+      expect(result.dartLcov, 'SF:a\nend_of_record\nSF:b\nend_of_record\n');
+    });
+
+    test('rejects a run missing a chunk even when others are complete', () {
+      final w = JacocoExecWriter()
+        ..header()
+        ..dartChunk(1, 1, 'ok\n', runId: '100-1')
+        ..dartChunk(1, 2, 'half\n', runId: '200-2');
+
+      expect(
+        () => splitJacocoExec(w.toBytes()),
+        throwsA(
+          isA<FormatException>().having(
+            (e) => e.message,
+            'message',
+            allOf(contains('incomplete'), contains('200-2')),
+          ),
+        ),
+      );
     });
 
     test('produces empty LCOV when there are no patrol chunks', () {
