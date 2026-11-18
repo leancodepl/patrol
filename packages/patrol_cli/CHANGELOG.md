@@ -37,6 +37,9 @@
 - `patrol test-without-building --input <dir>` runs that directory. Patrol serves the app itself,
   with the MIME types and cross-origin headers `flutter run` sends, and accepts the `--web-*` options
   that shape a run, so the same artifact can be sharded across machines.
+- Remove the `adb` port forwards `flutter attach` creates for its VM service when a `patrol develop`
+  session ends. The tool removes them only on its own exit, which a session that kills it never
+  reaches, so every session left one to three forwards behind. (#3367)
 
 ## 4.9.0
 

@@ -21,9 +21,10 @@ void main() {
   late FlutterTool flutterTool;
   late MockProcessManager processManager;
   late Platform platform;
+  late DisposeScope disposeScope;
 
   setUp(() {
-    final disposeScope = DisposeScope();
+    disposeScope = DisposeScope();
     final stdin = StreamController<List<int>>();
     processManager = MockProcessManager();
     platform = FakePlatform();
@@ -162,7 +163,7 @@ void main() {
         await processStdout.close();
       },
     );
-    test('attach passes deviceId correctly', () {
+    test('attach passes deviceId correctly', () async {
       final process = MockProcess();
       when(
         () => process.stdout,
@@ -172,21 +173,28 @@ void main() {
       ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
       when(() => processManager.start(any())).thenAnswer((_) async => process);
 
-      flutterTool.attach(
-        flutterCommand: flutterCommand,
-        deviceId: 'testDeviceId',
-        target: 'target',
-        appId: 'appId',
-        dartDefines: {},
-        openBrowser: false,
+      when(
+        () => processManager.run(any()),
+      ).thenAnswer((_) async => ProcessResult(0, 0, '', ''));
+
+      unawaited(
+        flutterTool.attach(
+          flutterCommand: flutterCommand,
+          deviceId: 'testDeviceId',
+          target: 'target',
+          appId: 'appId',
+          dartDefines: {},
+          openBrowser: false,
+        ),
       );
+      await Future<void>.delayed(const Duration(milliseconds: 20));
 
       verify(() => processManager.start(any(that: contains('testDeviceId'))));
     });
 
     // `flutter attach` exits with a usage error on an option it does not
     // define. Check `flutter attach --help` before extending this set.
-    test('attach passes only options flutter attach defines', () {
+    test('attach passes only options flutter attach defines', () async {
       final process = MockProcess();
       when(
         () => process.stdout,
@@ -196,15 +204,22 @@ void main() {
       ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
       when(() => processManager.start(any())).thenAnswer((_) async => process);
 
-      flutterTool.attach(
-        flutterCommand: flutterCommand,
-        deviceId: 'testDeviceId',
-        target: 'target',
-        appId: 'appId',
-        debugUrl: 'http://127.0.0.1:1234/abc=/',
-        dartDefines: {'key': 'value'},
-        openBrowser: false,
+      when(
+        () => processManager.run(any()),
+      ).thenAnswer((_) async => ProcessResult(0, 0, '', ''));
+
+      unawaited(
+        flutterTool.attach(
+          flutterCommand: flutterCommand,
+          deviceId: 'testDeviceId',
+          target: 'target',
+          appId: 'appId',
+          debugUrl: 'http://127.0.0.1:1234/abc=/',
+          dartDefines: {'key': 'value'},
+          openBrowser: false,
+        ),
       );
+      await Future<void>.delayed(const Duration(milliseconds: 20));
 
       final args =
           (verify(() => processManager.start(captureAny())).captured.single
@@ -346,6 +361,93 @@ void main() {
       final result = getDevtoolsUrl(line);
       final pathPart = Uri.parse(result).path;
       expect(pathPart, isNot(contains('//')));
+    });
+  });
+
+  group('adb forwards left by attach', () {
+    ProcessResult listing(String stdout) => ProcessResult(0, 0, stdout, '');
+
+    /// A `flutter attach` that stays up until the scope is disposed.
+    void stubAttachProcess() {
+      final process = MockProcess();
+      when(() => process.pid).thenReturn(424242);
+      when(process.kill).thenReturn(true);
+      when(
+        () => process.stdout,
+      ).thenAnswer((_) => const Stream<List<int>>.empty());
+      when(
+        () => process.stderr,
+      ).thenAnswer((_) => const Stream<List<int>>.empty());
+      when(() => process.exitCode).thenAnswer((_) => Completer<int>().future);
+      when(() => processManager.start(any())).thenAnswer((_) async => process);
+    }
+
+    test('removes the ones attach added, and only those', () async {
+      stubAttachProcess();
+      var listings = 0;
+      when(() => processManager.run(['adb', 'forward', '--list'])).thenAnswer(
+        (_) async => listing(
+          listings++ == 0
+              ? 'emulator-5554 tcp:8081 tcp:8081\n'
+              : 'emulator-5554 tcp:8081 tcp:8081\n'
+                    'emulator-5554 tcp:62910 tcp:33925\n'
+                    'emulator-5554 tcp:9000 tcp:9000\n'
+                    'other-device tcp:1 tcp:2\n',
+        ),
+      );
+      when(
+        () => processManager.run(any(that: contains('--remove'))),
+      ).thenAnswer((_) async => listing(''));
+
+      unawaited(
+        flutterTool.attach(
+          flutterCommand: flutterCommand,
+          deviceId: 'emulator-5554',
+          target: 'target',
+          appId: 'appId',
+          dartDefines: {},
+          openBrowser: false,
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+      await disposeScope.dispose();
+
+      verify(
+        () => processManager.run([
+          'adb',
+          '-s',
+          'emulator-5554',
+          'forward',
+          '--remove',
+          'tcp:62910',
+        ]),
+      ).called(1);
+      // Patrol's own forward maps a port to itself; another device's is not
+      // ours to touch.
+      verifyNever(() => processManager.run(any(that: contains('tcp:9000'))));
+      verifyNever(() => processManager.run(any(that: contains('tcp:1'))));
+    });
+
+    test('is a no-op when adb is not there', () async {
+      stubAttachProcess();
+      when(
+        () => processManager.run(['adb', 'forward', '--list']),
+      ).thenThrow(const ProcessException('adb', ['forward', '--list']));
+
+      unawaited(
+        flutterTool.attach(
+          flutterCommand: flutterCommand,
+          deviceId: 'emulator-5554',
+          target: 'target',
+          appId: 'appId',
+          dartDefines: {},
+          openBrowser: false,
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+      await disposeScope.dispose();
+
+      verifyNever(() => processManager.run(any(that: contains('--remove'))));
     });
   });
 }
