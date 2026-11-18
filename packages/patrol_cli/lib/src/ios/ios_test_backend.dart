@@ -1178,7 +1178,7 @@ class IOSTestBackend {
     var saved = 0;
     // Distinct test ids can sanitize to the same name; keep their files apart.
     final dirNameByTestId = <String, String>{};
-    final nextIndexByDir = <String, int>{};
+    final nextIndexByFile = <String, int>{};
     for (final testEntry in manifest.whereType<Map<String, dynamic>>()) {
       final testId = testEntry['testIdentifier'] as String? ?? 'unknown';
       final attachments = testEntry['attachments'];
@@ -1210,16 +1210,16 @@ class IOSTestBackend {
           testId,
           () => _uniqueName(_sanitize(testId), dirNameByTestId.values),
         );
-        final index = nextIndexByDir.update(
-          dirName,
+        // Counted per name, so the number only tells repeats of a tag apart.
+        final fileStem = _sanitize(name);
+        final index = nextIndexByFile.update(
+          '$dirName/$fileStem',
           (index) => index + 1,
           ifAbsent: () => 0,
         );
         final testDir = destination.childDirectory(dirName)
           ..createSync(recursive: true);
-        source.copySync(
-          testDir.childFile('${_sanitize(name)}_$index.png').path,
-        );
+        source.copySync(testDir.childFile('${fileStem}_$index.png').path);
         saved++;
       }
     }

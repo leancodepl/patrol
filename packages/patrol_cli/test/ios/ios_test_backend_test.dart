@@ -480,8 +480,8 @@ void main() {
           .childDirectory('RunnerUITests_RunnerUITests_test_login');
       final saved = testDir.listSync().map((e) => e.basename).toList()..sort();
       expect(saved, [
-        'Screenshot_2.png',
-        'patrol_before_tap_1.png',
+        'Screenshot_0.png',
+        'patrol_before_tap_0.png',
         'patrol_failure_0.png',
       ]);
     });
@@ -507,10 +507,25 @@ void main() {
                 'Screenshot_0_A1008077-3494-4600-88B0-79BE4561876A.png',
                 failure: true,
               ),
+              // The same tag again, and a tag that sanitizes to the same name.
+              attachment(
+                'd',
+                'patrol_after_tap_1_0B0A1C52-0000-4000-8000-000000000001.png',
+              ),
+              attachment(
+                'e',
+                'patrol_after tap_0_0B0A1C52-0000-4000-8000-000000000002.png',
+              ),
             ],
           },
         ],
-        files: {'a': _pngBytes, 'b': _pngBytes, 'c': _pngBytes},
+        files: {
+          'a': _pngBytes,
+          'b': _pngBytes,
+          'c': _pngBytes,
+          'd': _pngBytes,
+          'e': _pngBytes,
+        },
       );
 
       await iosTestBackend.extractAttachments(
@@ -523,8 +538,10 @@ void main() {
           .childDirectory('RunnerUITests_test_login');
       final saved = testDir.listSync().map((e) => e.basename).toList()..sort();
       expect(saved, [
-        'Screenshot_2.png',
+        'Screenshot_0.png',
+        'patrol_after_tap_0.png',
         'patrol_after_tap_1.png',
+        'patrol_after_tap_2.png',
         'patrol_failure_0.png',
       ]);
     });
