@@ -76,6 +76,7 @@ class TestCommand extends PatrolCommand {
     usesAndroidOptions();
     usesIOSOptions();
     usesVideoRecordingOptions();
+    usesEmitTestManifestOption();
 
     usesWeb();
   }
@@ -186,6 +187,9 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     final device = devices.single;
     final isWeb = device.targetPlatform == TargetPlatform.web;
 
+    final emitTestManifest =
+        optionalBoolArg('emit-test-manifest') ?? config.emitTestManifest;
+
     // Validate that flavors are not used with web platform
     if (isWeb && stringArg('flavor') != null) {
       _logger.err(
@@ -271,6 +275,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
       'PATROL_TEST_LABEL_ENABLED': displayLabel.toString(),
       'PATROL_TEST_DIRECTORY': config.testDirectory,
+      'PATROL_SCREENSHOT_ON_FAILURE': config.screenshotOnFailure.toString(),
       if (device.targetPlatform != TargetPlatform.web) ...{
         'PATROL_TEST_SERVER_PORT': super.testServerPort.toString(),
         'PATROL_APP_SERVER_PORT': super.appServerPort.toString(),
@@ -326,6 +331,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       uninstall: uninstall,
+      emitTestManifest: emitTestManifest,
     );
 
     final iosOpts = IOSAppOptions(
@@ -339,6 +345,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       testServerPort: super.testServerPort,
       fullIsolation: boolArg('full-isolation'),
       clearIOSPermissions: boolArg('clear-permissions'),
+      emitTestManifest: emitTestManifest,
     );
 
     final macosOpts = MacOSAppOptions(
@@ -429,6 +436,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       hideTestSteps: boolArg('hide-test-steps'),
       clearTestSteps: boolArg('clear-test-steps'),
       testDirectory: testDirectory,
+      screenshotsOutputDir:
+          stringArg('screenshots-output-dir') ?? '$testDirectory/screenshots',
     );
 
     // Converted after the run, once the runner has written the raw JS coverage.
@@ -524,6 +533,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     required bool hideTestSteps,
     required bool clearTestSteps,
     required String testDirectory,
+    required String screenshotsOutputDir,
   }) async {
     Future<void> Function() action;
     Future<void> Function()? finalizer;
@@ -545,6 +555,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
           flavor: flutterOpts.flavor,
           clearTestSteps: clearTestSteps,
           videoConfig: videoConfig,
+          pullScreenshots: true,
+          screenshotsOutputDir: screenshotsOutputDir,
         );
         final package = android.packageName;
         if (package != null && uninstall) {

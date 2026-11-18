@@ -3,8 +3,11 @@ import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:meta/meta.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
+import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
+import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 import 'package:test/test.dart';
@@ -174,6 +177,66 @@ void main() {
         scheme: 'dev',
         testPlan: 'SomeTestPlan',
       );
+
+      test(
+        'finds xctestrun with absolutePath when cwd is the ios directory',
+        () async {
+          const name = 'Runner_iphoneos16.2.xctestrun';
+          fs
+              .file('build/ios_integ/Build/Products/$name')
+              .createSync(recursive: true);
+          fs.directory('ios').createSync();
+          fs.currentDirectory = 'ios';
+
+          final found = await iosTestBackend.xcTestRunPath(
+            real: true,
+            scheme: 'Runner',
+            sdkVersion: '16.2',
+          );
+
+          expect(found, '/example_app/build/ios_integ/Build/Products/$name');
+        },
+      );
+
+      test('returns a CWD-relative path when absolutePath is false', () async {
+        const name = 'Runner_iphoneos16.2.xctestrun';
+        fs
+            .file('build/ios_integ/Build/Products/$name')
+            .createSync(recursive: true);
+
+        final found = await iosTestBackend.xcTestRunPath(
+          real: true,
+          scheme: 'Runner',
+          sdkVersion: '16.2',
+          absolutePath: false,
+        );
+
+        expect(found, 'build/ios_integ/Build/Products/$name');
+      });
+    });
+
+    group('extractVmServiceUrl', () {
+      // As printed by `xcrun simctl spawn <udid> log stream --type log`.
+      test('extracts the URL from the simulator log line', () {
+        const line =
+            '2026-09-04 13:17:11.693981+0200 0x1cb243   Default     0x0      '
+            '            39258  0    Runner: (Flutter) flutter: The Dart VM '
+            'service is listening on http://127.0.0.1:54296/4crAtS2Ux7w=/';
+
+        expect(
+          IOSTestBackend.extractVmServiceUrl(line),
+          'http://127.0.0.1:54296/4crAtS2Ux7w=/',
+        );
+      });
+
+      test('ignores other log lines', () {
+        expect(
+          IOSTestBackend.extractVmServiceUrl(
+            'Runner: (Flutter) flutter: PATROL_LOG {"type":"step"}',
+          ),
+          isNull,
+        );
+      });
     });
 
     group('stripFlavorFromAppId', () {
@@ -207,6 +270,96 @@ void main() {
         );
       });
     });
+
+    group('build', () {
+      void writeRunner({required bool static}) {
+        final body = static
+            ? 'PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE(RunnerUITests)\n'
+                  '#include "PatrolGeneratedTests.inc"\n'
+            : 'PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerUITests)\n';
+        fs.file('ios/RunnerUITests/RunnerUITests.m')
+          ..createSync(recursive: true)
+          ..writeAsStringSync(body);
+      }
+
+      IOSAppOptions options({required bool emitTestManifest}) => IOSAppOptions(
+        flutter: const FlutterAppOptions(
+          command: FlutterCommand('flutter'),
+          target: 'patrol_test/test_bundle.dart',
+          flavor: null,
+          buildMode: BuildMode.release,
+          dartDefines: {},
+          dartDefineFromFilePaths: [],
+          buildName: null,
+          buildNumber: null,
+        ),
+        bundleId: 'com.company.app',
+        scheme: 'Runner',
+        configuration: 'Release',
+        simulator: false,
+        osVersion: 'latest',
+        appServerPort: 8080,
+        testServerPort: 8081,
+        emitTestManifest: emitTestManifest,
+      );
+
+      test('explains the missing include when discovery is disabled', () async {
+        writeRunner(static: true);
+
+        await expectLater(
+          iosTestBackend.build(options(emitTestManifest: false)),
+          throwsA(
+            isA<ToolExit>().having(
+              (e) => e.message,
+              'message',
+              contains('build-time discovery is disabled'),
+            ),
+          ),
+        );
+      });
+
+      test(
+        'explains the missing static macro when discovery is enabled',
+        () async {
+          writeRunner(static: false);
+
+          await expectLater(
+            iosTestBackend.build(options(emitTestManifest: true)),
+            throwsA(
+              isA<ToolExit>().having(
+                (e) => e.message,
+                'message',
+                contains('PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE'),
+              ),
+            ),
+          );
+        },
+      );
+
+      test(
+        'explains the 4.7.0 STATIC_BEGIN/END form when discovery is enabled',
+        () async {
+          fs.file('ios/RunnerUITests/RunnerUITests.m')
+            ..createSync(recursive: true)
+            ..writeAsStringSync(
+              'PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN(RunnerUITests)\n'
+              '#include "PatrolGeneratedTests.inc"\n'
+              'PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_END\n',
+            );
+
+          await expectLater(
+            iosTestBackend.build(options(emitTestManifest: true)),
+            throwsA(
+              isA<ToolExit>().having(
+                (e) => e.message,
+                'message',
+                contains('cannot be compiled inside another class'),
+              ),
+            ),
+          );
+        },
+      );
+    });
   });
 }
 
@@ -215,4 +368,9 @@ class FakeProcessManager extends Fake implements ProcessManager {}
 class FakeLogger extends Fake implements Logger {
   @override
   void detail(String? message, {String? Function(String?)? style}) {}
+
+  @override
+  ProgressTask task(String message) => FakeProgressTask();
 }
+
+class FakeProgressTask extends Fake implements ProgressTask {}

@@ -29,6 +29,8 @@
 		35DDEFCC6D9A4D498219B137 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A3D1BBE1D3670DFAB4032B8 /* Pods_Runner.framework */; };
 		6D669A27FB0F98E196B50B36 /* Pods_Runner_RunnerUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D8CD9D52060389CF0A33698 /* Pods_Runner_RunnerUITests.framework */; };
 		941724A42A7BC66700F668BB /* RunnerUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 941724A32A7BC66700F668BB /* RunnerUITests.m */; };
+		78A318202AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage in Frameworks */ = {isa = PBXBuildFile; productRef = 78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */; };
+		AB7E2F012D5B8A0000000001 /* FlutterGeneratedPluginSwiftPackage in Frameworks */ = {isa = PBXBuildFile; productRef = AB7E2F012D5B8A0000000002 /* FlutterGeneratedPluginSwiftPackage */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -88,6 +90,7 @@
 		ADB90BA38403A60461F37CAA /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 		B07092654EA389AF36CC0456 /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 		B0EEA2641BD61E07F72F3B7A /* Pods-Runner-RunnerUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner-RunnerUITests.release.xcconfig"; path = "Target Support Files/Pods-Runner-RunnerUITests/Pods-Runner-RunnerUITests.release.xcconfig"; sourceTree = "<group>"; };
+		78E0A7A72DC9AD7400C4905E /* FlutterGeneratedPluginSwiftPackage */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FlutterGeneratedPluginSwiftPackage; path = ephemeral/Packages/FlutterGeneratedPluginSwiftPackage; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,6 +98,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				78A318202AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage in Frameworks */,
 				35DDEFCC6D9A4D498219B137 /* Pods_Runner.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -103,6 +107,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AB7E2F012D5B8A0000000001 /* FlutterGeneratedPluginSwiftPackage in Frameworks */,
 				6D669A27FB0F98E196B50B36 /* Pods_Runner_RunnerUITests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -169,6 +174,7 @@
 		33CEB47122A05771004F2AC0 /* Flutter */ = {
 			isa = PBXGroup;
 			children = (
+				78E0A7A72DC9AD7400C4905E /* FlutterGeneratedPluginSwiftPackage */,
 				335BBD1A22A9A15E00E9071D /* GeneratedPluginRegistrant.swift */,
 				33CEB47222A05771004F2AC0 /* Flutter-Debug.xcconfig */,
 				33CEB47422A05771004F2AC0 /* Flutter-Release.xcconfig */,
@@ -211,17 +217,18 @@
 
 /* Begin PBXNativeTarget section */
 		33CC10EC2044A3C60003C045 /* Runner */ = {
+			packageProductDependencies = (
+				78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */,
+			);
 			isa = PBXNativeTarget;
 			buildConfigurationList = 33CC10FB2044A3C60003C045 /* Build configuration list for PBXNativeTarget "Runner" */;
 			buildPhases = (
 				6EA83E54978260DA823337B5 /* [CP] Check Pods Manifest.lock */,
-				94AA3E082A7BD03700E8815C /* macos_assemble build */,
 				33CC10E92044A3C60003C045 /* Sources */,
 				33CC10EA2044A3C60003C045 /* Frameworks */,
 				33CC10EB2044A3C60003C045 /* Resources */,
 				33CC110E2044A8840003C045 /* Bundle Framework */,
 				3399D490228B24CF009A79C7 /* Run Script */,
-				94AA3E092A7BD06200E8815C /* macos_assemble embed */,
 				D28DBAE5EB03426D2BF2F8E3 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
@@ -250,6 +257,9 @@
 				941724A82A7BC66700F668BB /* PBXTargetDependency */,
 			);
 			name = RunnerUITests;
+			packageProductDependencies = (
+				AB7E2F012D5B8A0000000002 /* FlutterGeneratedPluginSwiftPackage */,
+			);
 			productName = RunnerUITests;
 			productReference = 941724A12A7BC66700F668BB /* RunnerUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
@@ -258,6 +268,9 @@
 
 /* Begin PBXProject section */
 		33CC10E52044A3C60003C045 /* Project object */ = {
+			packageReferences = (
+				781AD8BC2B33823900A9FFBB /* XCLocalSwiftPackageReference "Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage" */,
+			);
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0920;
@@ -424,42 +437,6 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		94AA3E082A7BD03700E8815C /* macos_assemble build */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "macos_assemble build";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "echo \"Runner macos_assemble build\"\n/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/macos_assemble.sh\" build\n";
-		};
-		94AA3E092A7BD06200E8815C /* macos_assemble embed */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "macos_assemble embed";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "echo \"Runner macos_assemble embed\"\n/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/macos_assemble.sh\" embed\n";
-		};
 		D28DBAE5EB03426D2BF2F8E3 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -564,7 +541,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = PATROL_ENABLED;
@@ -590,7 +567,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				PRODUCT_BUNDLE_IDENTIFIER = pl.leancode.patrol.macos.e2eApp;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
@@ -649,7 +626,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
@@ -696,7 +673,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = PATROL_ENABLED;
@@ -722,7 +699,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				PRODUCT_BUNDLE_IDENTIFIER = pl.leancode.patrol.macos.e2eApp;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -747,7 +724,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				PRODUCT_BUNDLE_IDENTIFIER = pl.leancode.patrol.macos.e2eApp;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
@@ -791,7 +768,7 @@
 				DEVELOPMENT_TEAM = U3EG6EALX7;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -817,14 +794,14 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_ENTITLEMENTS = "RunnerUITests/Release.entitlements\n";
+				CODE_SIGN_ENTITLEMENTS = RunnerUITests/Release.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = U3EG6EALX7;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited) -D COCOAPODS - -D PATROL_ENABLED";
@@ -856,7 +833,7 @@
 				DEVELOPMENT_TEAM = U3EG6EALX7;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited) -D COCOAPODS - -D PATROL_ENABLED";
@@ -911,6 +888,22 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+/* Begin XCLocalSwiftPackageReference section */
+		781AD8BC2B33823900A9FFBB /* XCLocalSwiftPackageReference "Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage;
+		};
+/* End XCLocalSwiftPackageReference section */
+/* Begin XCSwiftPackageProductDependency section */
+		78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FlutterGeneratedPluginSwiftPackage;
+		};
+		AB7E2F012D5B8A0000000002 /* FlutterGeneratedPluginSwiftPackage */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FlutterGeneratedPluginSwiftPackage;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 33CC10E52044A3C60003C045 /* Project object */;
 }

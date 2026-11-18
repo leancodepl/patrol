@@ -166,6 +166,56 @@ jobs:
         if: success() || failure()
         run: |
           find . -iname '*.h' -o -iname '*.m' | xargs -I {} clang-format --dry-run --Werror {}
+  prepare-published-deps:
+    name: Resolve against published dependencies
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        flutter-version: ['3.38.x']
+        flutter-channel: ['stable']
+
+    defaults:
+      run:
+        working-directory: packages/patrol
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          channel: ${{ matrix.flutter-channel }}
+
+      # No `melos bootstrap` on purpose: its pubspec_overrides.yaml would hide a
+      # constraint pub.dev can't satisfy, which is what this job checks.
+      - name: flutter pub get, without the workspace overrides
+        run: |
+          rm -f pubspec_overrides.yaml
+          flutter pub get
+
+      # custom_lint is a legacy analyzer plugin and crashes the analysis server
+      # without the overrides. Its rules run in the `Flutter <version>` job.
+      - name: Drop the custom_lint analyzer plugin
+        run: |
+          python3 - <<'EOF'
+          import re
+          path = 'analysis_options.yaml'
+          text = open(path).read()
+          stripped = re.sub(r'\n  plugins:\n(?:    - .*\n)+', '\n', text)
+          assert stripped != text, 'no plugins block in analysis_options.yaml'
+          open(path, 'w').write(stripped)
+          EOF
+          cat analysis_options.yaml
+
+      # `--dry-run` runs this internally but discards the analyzer's stderr,
+      # reporting an empty issue list. Running it here keeps the real output.
+      - name: Analyze against the published dependencies
+        run: dart analyze lib pubspec.yaml
+
   prepare-flutter:
     name: Flutter ${{ matrix.flutter-version }}
     runs-on: ubuntu-latest
@@ -213,12 +263,15 @@ jobs:
         if: success() || failure()
         run: dart format --set-exit-if-changed .
 
+      # The Dart `skills` CLI installs agent skills from the archive's skills/,
+      # a symlink to the repo-root catalog; fail if pub didn't follow it.
       - name: flutter pub publish --dry-run
         if: success() || failure()
+        shell: bash
         run: |
-          rm -f pubspec_overrides.yaml
-          flutter pub get
-          flutter pub publish --dry-run
+          flutter pub publish --dry-run | tee "$RUNNER_TEMP/publish-dry-run.txt"
+          grep -q 'patrol-write-test' "$RUNNER_TEMP/publish-dry-run.txt" \
+            || { echo "::error::skills/ is missing from the patrol package archive"; exit 1; }
 
       - name: flutter pub get (example app)
         if: success() || failure()
@@ -232,3 +285,21 @@ jobs:
           git add .
           ./gen_from_schema
           git diff --exit-code || (echo "Files are not regenerated from schema. Please run ./gen_from_schema locally and push changes" && exit 1)
+
+  pana-score:
+    name: pana score
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      statuses: write
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Score with pana
+        continue-on-error: true
+        uses: leancodepl/mobile-tools/.github/actions/pana-score@e9f138c252f8e2254c88273367958fcc6bb39cad # pana-score-v1.3
+        with:
+          path: packages/patrol

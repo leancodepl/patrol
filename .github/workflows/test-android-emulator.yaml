@@ -20,6 +20,9 @@ on:
       - '!**.md'
       - '!**.mdx'
 
+permissions:
+  contents: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
@@ -56,17 +59,24 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check User Permission
-        if: steps.checkAccess.outputs.require-result == 'false'
+        if: steps.checkAccess.outputs.require-result != 'true'
+        # The repository isn't checked out yet, so dev/e2e_app doesn't exist
+        working-directory: .
         run: |
           echo "${{ github.triggering_actor }} does not have permissions on this repo."
           echo "Current permission level is ${{ steps.checkAccess.outputs.user-permission }}"
           echo "Job originally triggered by ${{ github.actor }}"
+          echo "A maintainer with write access can re-run this workflow after reviewing the PR."
           exit 1
 
+      # Fork PR code runs here with secrets, so it's gated by the permission
+      # check above: only a maintainer re-run gets past it.
       - name: Clone repository
         uses: actions/checkout@v4
         with:
           ref: ${{  github.event.pull_request.head.sha }}
+          allow-unsafe-pr-checkout: true
+          persist-credentials: false
 
       - name: Set up Java
         uses: actions/setup-java@v3

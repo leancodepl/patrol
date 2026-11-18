@@ -5,7 +5,6 @@ class WarningEntry extends Entry {
   WarningEntry({required this.message, DateTime? timestamp})
     : super(timestamp: timestamp ?? DateTime.now(), type: EntryType.warning);
 
-  @override
   factory WarningEntry.fromJson(Map<String, dynamic> json) =>
       _$WarningEntryFromJson(json);
 

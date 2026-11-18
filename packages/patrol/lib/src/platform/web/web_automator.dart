@@ -120,4 +120,13 @@ abstract interface class WebAutomator {
   /// Waits for a popup/new page to open.
   /// Returns the page ID of the newly opened page.
   Future<String> waitForPopup();
+
+  /// Captures a screenshot of the active page via Playwright.
+  ///
+  /// [tag] is added to the file name. The PNG is written to the per-test
+  /// Playwright output directory (under `PATROL_TEST_RESULTS_DIR`) and attached
+  /// to the Playwright report.
+  ///
+  /// Prefer `$.takeNativeScreenshot(tag)`, which works across platforms.
+  Future<void> takeNativeScreenshot(String tag);
 }

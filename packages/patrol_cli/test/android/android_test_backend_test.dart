@@ -1,3 +1,5 @@
+import 'dart:io' show ProcessResult;
+
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
@@ -10,11 +12,13 @@ import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:platform/platform.dart';
 import 'package:test/test.dart';
 
+import '../src/fixtures.dart';
 import '../src/mocks.dart';
 
 void main() {
   group('AndroidTestBackend', () {
     late AndroidTestBackend androidTestBackend;
+    late MockAdb adb;
     late MockProcessManager processManager;
     late MockProcess process;
     late MockLogger logger;
@@ -22,6 +26,7 @@ void main() {
     late Directory rootDirectory;
 
     setUp(() {
+      adb = MockAdb();
       processManager = MockProcessManager();
       process = MockProcess();
       logger = MockLogger();
@@ -29,7 +34,7 @@ void main() {
       rootDirectory = fs.currentDirectory;
 
       androidTestBackend = AndroidTestBackend(
-        adb: MockAdb(),
+        adb: adb,
         processManager: processManager,
         platform: FakePlatform(),
         rootDirectory: rootDirectory,
@@ -48,6 +53,86 @@ void main() {
       when(
         () => processManager.start(any(), runInShell: any(named: 'runInShell')),
       ).thenAnswer((_) async => process);
+    });
+
+    group('pullDeviceScreenshots', () {
+      test(
+        'pulls the device screenshots dir into the output dir and removes it '
+        'on success',
+        () async {
+          when(
+            () => adb.pull(
+              source: any(named: 'source'),
+              destination: any(named: 'destination'),
+              device: any(named: 'device'),
+            ),
+          ).thenAnswer((_) async => ProcessResult(0, 0, '', ''));
+          when(
+            () => adb.remove(
+              any(),
+              device: any(named: 'device'),
+              recursive: any(named: 'recursive'),
+            ),
+          ).thenAnswer((_) async => ProcessResult(0, 0, '', ''));
+
+          await androidTestBackend.pullDeviceScreenshots(
+            androidDevice,
+            'my_shots',
+          );
+
+          // Pulled straight into the requested output dir (not its parent), so
+          // a custom basename is honored.
+          final expectedDest = rootDirectory.childDirectory('my_shots').path;
+          verify(
+            () => adb.pull(
+              source: '/sdcard/Download/screenshots',
+              destination: expectedDest,
+              device: androidDeviceId,
+            ),
+          ).called(1);
+          verify(
+            () => adb.remove(
+              '/sdcard/Download/screenshots',
+              device: androidDeviceId,
+              recursive: true,
+            ),
+          ).called(1);
+        },
+      );
+
+      test(
+        'does not throw and skips removal when nothing was captured',
+        () async {
+          when(
+            () => adb.pull(
+              source: any(named: 'source'),
+              destination: any(named: 'destination'),
+              device: any(named: 'device'),
+            ),
+          ).thenAnswer((_) async => ProcessResult(0, 1, '', 'No such file'));
+
+          await androidTestBackend.pullDeviceScreenshots(
+            androidDevice,
+            'screenshots',
+          );
+
+          // No `rm` after a failed pull (nothing to clean up).
+          verify(
+            () => adb.pull(
+              source: any(named: 'source'),
+              destination: any(named: 'destination'),
+              device: any(named: 'device'),
+            ),
+          ).called(1);
+          verifyNever(
+            () => adb.remove(
+              any(),
+              device: any(named: 'device'),
+              recursive: any(named: 'recursive'),
+            ),
+          );
+        },
+      );
     });
 
     group('buildApkConfigOnly', () {
@@ -190,6 +275,57 @@ void main() {
               exceptionMessage,
             ),
           ),
+        );
+      });
+    });
+
+    group('prepareSourcesForAttach', () {
+      const flutterOptions = FlutterAppOptions(
+        command: FlutterCommand('flutter'),
+        target: 'patrol_test/test_bundle.dart',
+        buildMode: BuildMode.debug,
+        flavor: 'dev',
+        buildName: null,
+        buildNumber: null,
+        dartDefines: {'FOO': 'bar'},
+        dartDefineFromFilePaths: [],
+      );
+
+      setUp(() {
+        when(() => logger.task(any())).thenReturn(MockTask());
+      });
+
+      // `flutter build bundle` defines no --flavor option and exits with a
+      // usage error if it is passed one.
+      test('never passes --flavor to flutter build bundle', () async {
+        await androidTestBackend.prepareSourcesForAttach(flutterOptions);
+
+        verify(
+          () => processManager.start([
+            'flutter',
+            'build',
+            'bundle',
+            '--debug',
+            '-t',
+            'patrol_test/test_bundle.dart',
+            '--dart-define',
+            'FOO=bar',
+          ], runInShell: true),
+        );
+      });
+
+      test('skips the build when the registrant already exists', () async {
+        rootDirectory
+            .childDirectory('.dart_tool')
+            .childDirectory('flutter_build')
+            .childFile('dart_plugin_registrant.dart')
+            .createSync(recursive: true);
+
+        await androidTestBackend.prepareSourcesForAttach(flutterOptions);
+
+        verifyNever(
+          () =>
+              processManager.start(any(), runInShell: any(named: 'runInShell')),
         );
       });
     });

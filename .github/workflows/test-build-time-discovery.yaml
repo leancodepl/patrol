@@ -1,0 +1,203 @@
+name: test build-time discovery
+
+# The regular e2e workflows all run with runtime discovery, so nothing exercised
+# `--emit-test-manifest`: the host `flutter test` discovery run, the generated
+# native classes, and the per-file class/method names they produce. This workflow
+# runs the same e2e app with build-time discovery on both platforms, and asserts
+# the generated names, because a silent fallback to runtime discovery would
+# otherwise still make the suite pass.
+
+on:
+  workflow_dispatch:
+  # Not `pull_request_target`: this workflow needs no secrets, and that trigger
+  # would check out the base branch instead of the PR.
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - 'packages/patrol/**'
+      - 'packages/patrol_cli/**'
+      - 'packages/patrol_log/**'
+      - 'packages/patrol_finders/**'
+      - 'dev/e2e_app/**'
+      - '.github/workflows/test-build-time-discovery.yaml'
+      - '!**.md'
+      - '!**.mdx'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+env:
+  # Two files, so the run covers more than one generated class, and one of them
+  # sits in a subdirectory (its class name carries the whole path).
+  TARGETS: >-
+    --target patrol_test/at_finder_test.dart
+    --target patrol_test/internal/group_test.dart
+
+jobs:
+  android:
+    name: Android emulator
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.38.x'
+          channel: stable
+
+      - name: Preload Flutter artifacts
+        run: flutter precache --android
+
+      - name: Set up Melos and activate workspace
+        run: |
+          dart pub global activate melos
+          melos bootstrap
+
+      - name: Set up Patrol CLI
+        working-directory: packages/patrol_cli
+        run: dart pub global activate --source path . && patrol
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Run tests with build-time discovery
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: google_apis_playstore
+          arch: x86_64
+          ram-size: 3072M
+          disk-size: 6G
+          emulator-options: -no-snapshot-save -no-window -noaudio -no-boot-anim
+          working-directory: dev/e2e_app
+          # Both runs happen here: the emulator only exists for the duration of
+          # this step.
+          script: |
+            patrol test $TARGETS --emit-test-manifest --verbose
+            patrol test-without-building --only patrol_test/at_finder_test.dart --verbose
+
+      - name: Verify the generated classes
+        if: always()
+        working-directory: dev/e2e_app
+        run: |
+          generated_dir=android/app/src/androidTest/java/pl/leancode/patrol/e2e_app
+          echo "Generated files:"
+          ls "$generated_dir"
+
+          # One class per test file, the subdirectory folded into the class name.
+          test -f "$generated_dir/PatrolGeneratedTests_at_finder_test.java"
+          test -f "$generated_dir/PatrolGeneratedTests_internal_group_test.java"
+          # The marker the host test class looks for, holding no tests of its own.
+          test -f "$generated_dir/PatrolGeneratedTests.java"
+          ! grep -q '@Test' "$generated_dir/PatrolGeneratedTests.java"
+
+          # The file is in the class name, so the method carries only the test.
+          grep -q 'public void test_top_level_group_in_file_alpha_first()' \
+            "$generated_dir/PatrolGeneratedTests_internal_group_test.java"
+          # The generated classes must not stand down for the host test class.
+          grep -q 'instrumentation.setUpGenerated(' \
+            "$generated_dir/PatrolGeneratedTests_at_finder_test.java"
+
+
+  ios:
+    name: iOS simulator
+    runs-on: macos-latest
+    timeout-minutes: 40
+
+    defaults:
+      run:
+        working-directory: dev/e2e_app
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
+        with:
+          xcode-version: '26.2'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.38.x'
+          channel: stable
+
+      - name: Preload Flutter artifacts
+        run: flutter precache --ios
+
+      - name: Set up Melos and activate workspace
+        working-directory: .
+        run: |
+          dart pub global activate melos
+          melos bootstrap
+
+      - name: Set up Patrol CLI
+        working-directory: packages/patrol_cli
+        run: dart pub global activate --source path . && patrol
+
+      # The committed runner uses the runtime macro, which is what every other
+      # workflow needs; build-time discovery requires the static one.
+      - name: Switch RunnerUITests.m to the static runner
+        run: |
+          cat > ios/RunnerUITests/RunnerUITests.m <<'EOF'
+          @import XCTest;
+          @import patrol;
+          @import ObjectiveC.runtime;
+
+          PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE(RunnerUITests)
+          #include "PatrolGeneratedTests.inc"
+          EOF
+          cat ios/RunnerUITests/RunnerUITests.m
+
+      - name: Start iOS simulator
+        uses: futureware-tech/simulator-action@v2
+        with:
+          model: iPhone 17
+          os: iOS
+          os_version: '26.2'
+          erase_before_boot: true
+          shutdown_after_job: true
+
+      - name: Run tests with build-time discovery
+        run: |
+          sleep 10 # See https://github.com/leancodepl/patrol/issues/1282
+          patrol test $TARGETS --emit-test-manifest --ios 26.2 --verbose
+
+      - name: Verify the generated classes
+        if: always()
+        run: |
+          inc=ios/RunnerUITests/PatrolGeneratedTests.inc
+          cat "$inc"
+
+          # One XCTestCase subclass per test file, inheriting the shared base.
+          grep -q '@interface PatrolGeneratedTests_at_finder_test : RunnerUITests' "$inc"
+          grep -q '@interface PatrolGeneratedTests_internal_group_test : RunnerUITests' "$inc"
+          # The file is in the class name, so the method carries only the test.
+          grep -q -- '- (void)test_top_level_group_in_file_alpha_first {' "$inc"
+
+      - name: Verify the report groups tests by file
+        run: |
+          xcresult="$(ls -td build/*.xcresult | head -1)"
+          xcrun xcresulttool get test-results tests --path "$xcresult" --compact > tests.json
+          cat tests.json
+          # A Test Suite per generated class, i.e. per Dart test file.
+          grep -q '"PatrolGeneratedTests_at_finder_test"' tests.json
+          grep -q '"PatrolGeneratedTests_internal_group_test"' tests.json
+
+      - name: Run a whole file without rebuilding
+        run: patrol test-without-building --only patrol_test/at_finder_test.dart --verbose

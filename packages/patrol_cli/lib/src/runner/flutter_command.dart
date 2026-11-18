@@ -1,8 +1,10 @@
+import 'package:patrol_cli/src/base/command_line.dart';
+
 class FlutterCommand {
   const FlutterCommand(this.executable, [this.arguments = const []]);
 
   factory FlutterCommand.parse(String command) {
-    final parts = command.split(RegExp(r'\s+'));
+    final parts = splitCommandLine(command);
     if (parts.isEmpty) {
       return FlutterCommand(command);
     }

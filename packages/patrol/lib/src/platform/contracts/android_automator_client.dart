@@ -86,6 +86,12 @@ class AndroidAutomatorClient {
     return _sendRequest('swipe', request.toJson());
   }
 
+  Future<void> takeNativeScreenshot(
+    AndroidTakeNativeScreenshotRequest request,
+  ) {
+    return _sendRequest('takeNativeScreenshot', request.toJson());
+  }
+
   Future<void> enableLocation() {
     return _sendRequest('enableLocation');
   }
@@ -116,6 +122,17 @@ class AndroidAutomatorClient {
 
   Future<void> allowPermission() {
     return _sendRequest('allowPermission');
+  }
+
+  Future<AndroidSetFoldPostureResponse> setFoldPosture(
+    AndroidSetFoldPostureRequest request,
+  ) async {
+    final json = await _sendRequest('setFoldPosture', request.toJson());
+    return AndroidSetFoldPostureResponse.fromJson(json);
+  }
+
+  Future<void> resetFoldPosture() {
+    return _sendRequest('resetFoldPosture');
   }
 
   Future<Map<String, dynamic>> _sendRequest(

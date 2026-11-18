@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
@@ -20,19 +22,29 @@ abstract class NativeMobileAutomator implements MobileAutomator {
         config.connectionTimeout > config.findTimeout,
         'find timeout is longer than connection timeout',
       ),
-      _config = config {
-    _client = MobileAutomatorClient(
-      http.Client(),
-      Uri.http('${_config.host}:${_config.port}'),
-      timeout: _config.connectionTimeout,
-    );
-    _config.logger('MobileAutomatorClient created, port: ${_config.port}');
-  }
+      _config = config;
+
+  static const _displaySwitchTimeout = Duration(seconds: 10);
+  static const _displaySwitchPollInterval = Duration(milliseconds: 100);
 
   final _patrolLog = PatrolLogWriter();
   final MobileAutomatorConfig _config;
 
-  late final MobileAutomatorClient _client;
+  MobileAutomatorClient? _clientInstance;
+
+  // Created lazily so the port is read after [PatrolRuntimePorts.ensureLoaded].
+  MobileAutomatorClient get _client {
+    final existing = _clientInstance;
+    if (existing != null) {
+      return existing;
+    }
+    _config.logger('MobileAutomatorClient created, port: ${_config.port}');
+    return _clientInstance = MobileAutomatorClient(
+      http.Client(),
+      Uri.http('${_config.host}:${_config.port}'),
+      timeout: _config.connectionTimeout,
+    );
+  }
 
   @protected
   /// Wraps a request with logging and error handling for native automator calls.
@@ -85,6 +97,32 @@ abstract class NativeMobileAutomator implements MobileAutomator {
     }
   }
 
+  /// Waits until [view] resizes after a fold moves the app to the other
+  /// display.
+  @protected
+  Future<void> waitForDisplaySwitch(
+    ui.FlutterView? view,
+    ui.Size? sizeBefore,
+  ) async {
+    if (view == null) {
+      return;
+    }
+
+    final deadline = DateTime.now().add(_displaySwitchTimeout);
+    while (view.physicalSize == sizeBefore &&
+        DateTime.now().isBefore(deadline)) {
+      await Future<void>.delayed(_displaySwitchPollInterval);
+    }
+  }
+
+  /// Builds the request sent to the native automator's `configure` endpoint.
+  ///
+  /// Platform-specific automators override this to send extra, platform-only
+  /// options (e.g. Android accessibility flags).
+  @protected
+  ConfigureRequest buildConfigureRequest() =>
+      ConfigureRequest(findTimeoutMillis: _config.findTimeout.inMilliseconds);
+
   /// Configures the native automator.
   ///
   /// Must be called before using any native features.
@@ -97,11 +135,7 @@ abstract class NativeMobileAutomator implements MobileAutomator {
       try {
         await wrapRequest(
           'configure',
-          () => _client.configure(
-            ConfigureRequest(
-              findTimeoutMillis: _config.findTimeout.inMilliseconds,
-            ),
-          ),
+          () => _client.configure(buildConfigureRequest()),
           enablePatrolLog: false,
         );
         exception = null;

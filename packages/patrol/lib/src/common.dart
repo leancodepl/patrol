@@ -28,6 +28,11 @@ typedef PatrolTesterCallback = Future<void> Function(PatrolIntegrationTester $);
 
 /// A modification of [setUp] that works with Patrol's native automation.
 void patrolSetUp(dynamic Function() body) {
+  if (constants.testDiscoveryEnabled) {
+    // In discovery mode bodies never run, so the setUp would only reach for
+    // PatrolBinding.instance and crash. Skip registering it entirely.
+    return;
+  }
   setUp(() async {
     if (constants.hotRestartEnabled) {
       await body();
@@ -47,6 +52,9 @@ void patrolSetUp(dynamic Function() body) {
 
 /// A modification of [tearDown] that works with Patrol's native automation.
 void patrolTearDown(dynamic Function() body) {
+  if (constants.testDiscoveryEnabled) {
+    return;
+  }
   tearDown(() async {
     if (constants.hotRestartEnabled) {
       await body();
@@ -102,6 +110,23 @@ void patrolTest(
   LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
       LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
 }) {
+  if (constants.testDiscoveryEnabled) {
+    // Build-time discovery (host `flutter test`): only register the test so it
+    // shows up in the group tree. Do NOT initialize PatrolBinding (Live binding,
+    // incompatible with the host automated binding) and do NOT run the body
+    // (it would block on waitForExecutionRequest()).
+    testWidgets(
+      description,
+      skip: skip,
+      timeout: timeout,
+      semanticsEnabled: semanticsEnabled,
+      variant: variant,
+      tags: tags,
+      (_) async {},
+    );
+    return;
+  }
+
   final patrolLog = PatrolLogWriter(config: {'printLogs': config.printLogs});
   if (nativeAutomatorConfig != null && platformAutomatorConfig != null) {
     throw StateError(
@@ -151,6 +176,7 @@ void patrolTest(
       await platformAutomator.action.maybe(
         android: platformAutomator.android.configure,
         ios: platformAutomator.ios.configure,
+        macos: platformAutomator.macos.configure,
         web: platformAutomator.web.configure,
       );
 
@@ -168,6 +194,10 @@ void patrolTest(
       try {
         await callback(patrolTester);
       } catch (_) {
+        // Capture the failing screen before teardown pumps the next frame.
+        if (constants.screenshotOnFailureEnabled) {
+          await patrolTester.takeNativeScreenshot('failure');
+        }
         if (constants.hotRestartEnabled) {
           patrolLog.log(
             TestEntry(
@@ -177,6 +207,32 @@ void patrolTest(
           );
         }
         rethrow;
+      }
+
+      // In develop mode the exception gatherer is off, so exceptions the
+      // framework catches (e.g. from `onPressed`) are never reported. The full
+      // stack is dumped to the console by `PatrolBinding.reportExceptionNoticed`
+      // (forwarded by `patrol develop`); log a short failure entry here for the
+      // structured status, without ending the Hot Restart session.
+      void reportDevelopException() {
+        final caughtException = patrolBinding.takeException();
+        if (caughtException == null) {
+          return;
+        }
+        patrolLog.log(
+          TestEntry(
+            name: global_state.currentTestFullName,
+            status: TestEntryStatus.failure,
+            error: caughtException.toString(),
+          ),
+        );
+      }
+
+      if (constants.hotRestartEnabled) {
+        // Pump once so exceptions from in-flight gesture callbacks are recorded
+        // by the framework before we read them.
+        await widgetTester.pump();
+        reportDevelopException();
       }
 
       if (debugDefaultTargetPlatformOverride !=
@@ -199,9 +255,12 @@ void patrolTest(
           ..log(
             ConfigEntry(config: const {ConfigEntry.developCompletedKey: true}),
           );
-        // Wait indefinitely in develop mode after the last test
+        // Wait indefinitely in develop mode after the last test. The app stays
+        // interactive here, so keep reporting exceptions (e.g. from manual taps
+        // while iterating) as they happen instead of losing them.
         while (true) {
           await widgetTester.pump();
+          reportDevelopException();
           await Future<void>.delayed(const Duration(milliseconds: 10));
         }
       }
@@ -300,6 +359,44 @@ DartGroupEntry createDartTestGroup(
 
   return groupDTO;
 }
+
+/// Not allowed in a test name, which becomes a file name on the device.
+const _pathSeparator = '/';
+
+/// Returns full names of tests in [group] that contain [_pathSeparator].
+@internal
+List<String> namesWithPathSeparator(DartGroupEntry group) =>
+    _namesWithPathSeparator(group, '');
+
+/// Joins names with a space, like the native side does.
+List<String> _namesWithPathSeparator(DartGroupEntry group, String parentName) {
+  final invalidNames = <String>[];
+
+  for (final entry in group.entries) {
+    final fullName = parentName.isEmpty
+        ? entry.name
+        : '$parentName ${entry.name}';
+
+    switch (entry.type) {
+      case GroupEntryType.test:
+        if (fullName.contains(_pathSeparator)) {
+          invalidNames.add(fullName);
+        }
+      case GroupEntryType.group:
+        invalidNames.addAll(_namesWithPathSeparator(entry, fullName));
+    }
+  }
+
+  return invalidNames;
+}
+
+/// Builds the error message for [invalidNames].
+@internal
+String pathSeparatorNameError(List<String> invalidNames) =>
+    "Test names must not contain '$_pathSeparator', but these do:\n"
+    '${invalidNames.map((e) => '  \u2022 $e').join('\n')}'
+    "\n\nRemove '$_pathSeparator' from the patrolTest() description or from the "
+    'group() name it sits in.';
 
 /// Allows for retrieving the name of a GroupEntry by stripping the names of all ancestor groups.
 ///

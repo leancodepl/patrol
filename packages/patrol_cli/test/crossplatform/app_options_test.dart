@@ -9,6 +9,71 @@ import '../src/fixtures.dart';
 void main() {
   const flutterCommand = FlutterCommand('flutter');
 
+  group('FlutterAppOptions.toFlutterTestDiscoveryInvocation', () {
+    const flutterOptions = FlutterAppOptions(
+      command: flutterCommand,
+      target: 'patrol_test/test_bundle.dart',
+      buildMode: BuildMode.debug,
+      flavor: null,
+      buildName: null,
+      buildNumber: null,
+      dartDefines: {'TARGET_ENV': 'staging'},
+      dartDefineFromFilePaths: [],
+    );
+
+    test('runs only the explorer test and forwards the dart-defines', () {
+      final invocation = flutterOptions.toFlutterTestDiscoveryInvocation(
+        manifestOutputPath: '/tmp/manifest.json',
+        targetPlatform: TargetPlatform.iOS,
+      );
+
+      expect(
+        invocation,
+        equals([
+          'flutter',
+          'test',
+          'patrol_test/test_bundle.dart',
+          '--suppress-analytics',
+          // Restricting the run to the explorer keeps the user's setUp/tearDown
+          // (however they were registered) from executing during discovery.
+          '--plain-name',
+          'patrol_test_explorer',
+          '--dart-define',
+          'PATROL_TEST_DISCOVERY=true',
+          '--dart-define',
+          'PATROL_MANIFEST_OUTPUT=/tmp/manifest.json',
+          // The run happens on the host, so the bundle is told which platform
+          // it's discovering for (this backs `patrolTargetPlatform`).
+          '--dart-define',
+          'PATROL_TEST_DISCOVERY_PLATFORM=ios',
+          '--dart-define',
+          'TARGET_ENV=staging',
+        ]),
+      );
+    });
+
+    test('reports the platform each backend builds for', () {
+      String platformDefine(TargetPlatform targetPlatform) {
+        final invocation = flutterOptions.toFlutterTestDiscoveryInvocation(
+          manifestOutputPath: '/tmp/manifest.json',
+          targetPlatform: targetPlatform,
+        );
+        return invocation.firstWhere(
+          (arg) => arg.startsWith('PATROL_TEST_DISCOVERY_PLATFORM='),
+        );
+      }
+
+      expect(
+        platformDefine(TargetPlatform.android),
+        'PATROL_TEST_DISCOVERY_PLATFORM=android',
+      );
+      expect(
+        platformDefine(TargetPlatform.macOS),
+        'PATROL_TEST_DISCOVERY_PLATFORM=macos',
+      );
+    });
+  });
+
   group('AndroidAppOptions', () {
     late AndroidAppOptions options;
 
@@ -43,6 +108,7 @@ void main() {
             '-Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true',
             '-Papp-server-port=1',
             '-Ptest-server-port=2',
+            '-Ppatrol-enabled=true',
           ]),
         );
       });
@@ -77,6 +143,7 @@ void main() {
             '-Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true',
             '-Papp-server-port=1',
             '-Ptest-server-port=2',
+            '-Ppatrol-enabled=true',
           ]),
         );
       });
@@ -119,6 +186,7 @@ void main() {
             '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg==',
             '-Papp-server-port=1',
             '-Ptest-server-port=2',
+            '-Ppatrol-enabled=true',
           ]),
         );
       });
@@ -153,6 +221,7 @@ void main() {
             '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg==',
             '-Papp-server-port=1',
             '-Ptest-server-port=2',
+            '-Ppatrol-enabled=true',
           ]),
         );
       });
@@ -188,6 +257,7 @@ void main() {
             '-Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true',
             '-Papp-server-port=1',
             '-Ptest-server-port=2',
+            '-Ppatrol-enabled=true',
           ]),
         );
       });
@@ -496,6 +566,49 @@ void main() {
           ]),
         );
       });
+    });
+
+    const realDevice = Device(
+      name: 'iPhone',
+      id: iosDeviceId,
+      targetPlatform: TargetPlatform.iOS,
+      real: true,
+    );
+
+    test('one -only-testing per selector, target-prefixed', () {
+      final invocation = options.testWithoutBuildingInvocation(
+        realDevice,
+        xcTestRunPath: 'run.xctestrun',
+        resultBundlePath: '',
+        onlyTesting: [
+          'PatrolGeneratedTests_example_test',
+          'PatrolGeneratedTests_app_test/test_taps',
+        ],
+        staticRunner: true,
+      );
+
+      expect(
+        invocation,
+        containsAllInOrder(<String>[
+          '-only-testing',
+          'RunnerUITests/PatrolGeneratedTests_example_test',
+          '-only-testing',
+          'RunnerUITests/PatrolGeneratedTests_app_test/test_taps',
+        ]),
+      );
+      // The base class holds no tests, so it must not be selected.
+      expect(invocation, isNot(contains('RunnerUITests/RunnerUITests')));
+    });
+
+    test('static runner with nothing selected leaves the run unrestricted', () {
+      final invocation = options.testWithoutBuildingInvocation(
+        realDevice,
+        xcTestRunPath: 'run.xctestrun',
+        resultBundlePath: '',
+        staticRunner: true,
+      );
+
+      expect(invocation, isNot(contains('-only-testing')));
     });
   });
 

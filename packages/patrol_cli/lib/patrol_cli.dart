@@ -7,6 +7,7 @@ library;
 
 export 'package:patrol_log/patrol_log.dart'
     show ConfigEntry, Entry, TestEntry, TestEntryStatus;
+export 'src/base/command_line.dart';
 export 'src/commands/develop_options.dart';
 export 'src/commands/develop_service.dart';
 export 'src/commands/develop_session_factory.dart';

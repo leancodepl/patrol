@@ -172,6 +172,26 @@ To achieve full isolation between test runs:
 patrol test --full-isolation
 ```
 
+### iOS Simulator version
+
+On iOS Simulator, Patrol asks `xcodebuild` for the `latest` iOS version, which
+is the newest one supported by your Xcode. If the simulator you want to use runs
+an older iOS version, `xcodebuild` fails with an error like:
+
+```
+xcodebuild: error: Unable to find a device matching the provided destination specifier:
+		{ platform:iOS Simulator, id:<simulator id>, OS:latest }
+```
+
+Use `--ios` to pass the iOS version of the simulator:
+
+```bash
+patrol test --device "iPhone 16" --ios 18.3
+```
+
+`--ios` is also accepted by `patrol build ios`, `patrol develop` and
+`patrol test-without-building`. It has no effect on physical iOS devices.
+
 ### Video recording
 
 Record a video of each test case using `--record-video`:
@@ -197,6 +217,65 @@ Videos are saved as `.mp4` files in `<test-directory>/videos` (override with
     [Playwright videos docs](https://playwright.dev/docs/videos).
 </Info>
 
+### Screenshots
+
+Patrol can capture screenshots on Android and web — automatically on test
+failure (opt-in) and on demand from a test:
+
+- Enable failure screenshots by adding `screenshot_on_failure: true` to the
+  `patrol` section of your `pubspec.yaml`.
+- Capture on demand with `await $.takeNativeScreenshot('tag')` inside a test.
+
+#### On Android
+
+Requires `patrol_cli` 4.8.0 and `patrol` 4.10.0 or newer.
+
+The capture happens natively (via `androidx.test`) at the moment of failure,
+before teardown, so it shows the actual failing screen. Patrol writes the PNG on
+the device to `/sdcard/Download/screenshots/<class>/<method>/`.
+
+On `patrol test`, screenshots are pulled to `<test-directory>/screenshots` after
+the run (override with `--screenshots-output-dir`). On device farms the farm
+collects them:
+
+- **BrowserStack App Automate**: enable the Espresso `debugscreenshots: true`
+  capability; images appear in the Screenshots tab. Also enable build-time test
+  discovery (`emit_test_manifest`) so each test reports a URL-safe name —
+  BrowserStack can't render screenshot URLs with spaces/commas, which the
+  default `runDartTest[...]` names contain.
+- **Firebase Test Lab**: pass `--directories-to-pull=/sdcard/Download/screenshots`.
+
+<Info>
+    Screenshot capture is a no-op on iOS. On Android, it works in the
+    `patrol build android` APK as well as `patrol test`.
+</Info>
+
+<Warning>
+    **Default-path naming limitation.** On the default (runtime-discovery) path
+    each test reports `runDartTest[<dart test name>]`, so the screenshot folder
+    is named from the raw Dart test name. That name may contain spaces/commas
+    (BrowserStack can't render such URLs) or characters like `:` and `/` that
+    Android's `MediaStore` rewrites to `_` on API 29+, which then no longer
+    matches the name the farm reports — so the screenshot isn't associated with
+    the test. Locally (`patrol test`) this is harmless: the files are still
+    pulled to `<test-directory>/screenshots`. For reliable **farm** screenshots,
+    use `emit_test_manifest`: its generated per-test names are identifiers, so
+    they are both filesystem- and URL-safe.
+</Warning>
+
+#### On web
+
+Web screenshot support is currently unreleased. Playwright captures the active
+page and saves PNGs to `test-results/<per-test-directory>/screenshots/` by default
+(override the results root with `--web-results-dir`; the runner receives it as
+`PATROL_TEST_RESULTS_DIR`). File names contain a timestamp and the sanitized tag,
+and the images are attached to the Playwright report.
+
+`screenshot_on_failure: true` now captures on web too, at the moment of failure
+before teardown; it was previously a no-op on web. On-demand captures use
+`await $.takeNativeScreenshot('tag')`. These captures are separate from
+Playwright's `--web-screenshot=only-on-failure` setting.
+
 ### Web Platform
 
 Patrol supports running tests on Flutter web using Playwright. To run tests on web:
@@ -220,6 +299,15 @@ features such as reporting. To see the full list of supported arguments, run `pa
 - `--uninstall`: Not applicable to web platform
 - `--clear-permissions`: Not applicable to web platform
 - `--full-isolation`: Not applicable to web platform
+
+### Running without rebuilding
+
+When [build-time test discovery][discovery] is enabled
+(`patrol.emit_test_manifest: true`), already-built tests can be re-run without
+rebuilding using a separate command — see
+[`patrol test-without-building`](/cli-commands/test-without-building).
+
+[discovery]: /documentation/ci/build-time-test-discovery
 
 ### Under the hood
 

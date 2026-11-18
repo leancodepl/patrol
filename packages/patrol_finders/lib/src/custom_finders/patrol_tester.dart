@@ -127,8 +127,11 @@ const defaultScrollMaxIteration = 15;
 /// <https://dart.dev/guides/language/language-tour#callable-classes>
 class PatrolTester {
   /// Creates a new [PatrolTester] which wraps [tester].
-  PatrolTester({required this.tester, required this.config})
-    : patrolLog = PatrolLogWriter();
+  PatrolTester({
+    required this.tester,
+    required this.config,
+    PatrolLogWriter? patrolLog,
+  }) : patrolLog = patrolLog ?? PatrolLogWriter();
 
   /// Global configuration of this tester.
   final PatrolTesterConfig config;
@@ -155,18 +158,61 @@ class PatrolTester {
       !kIsWeb && defaultTargetPlatform == platform;
 
   /// Wraps a function with a log entry for the start and end of the function.
+  ///
+  /// If [description] is provided, it replaces the auto-generated step text in
+  /// the patrol log. On failure, the error is wrapped in [PatrolStepException]
+  /// with that description (e.g. `failed on: …`).
   Future<T> wrapWithPatrolLog<T>({
     required String action,
     String? value,
     Finder? finder,
+    String? description,
     required String color,
     required Future<T> Function() function,
     bool enablePatrolLog = true,
   }) async {
-    if (!(config.printLogs && enablePatrolLog)) {
+    final shouldLog = config.printLogs && enablePatrolLog;
+    if (!shouldLog && description == null) {
       return function();
     }
 
+    final text =
+        description ??
+        _defaultStepText(
+          action: action,
+          value: value,
+          finder: finder,
+          color: color,
+        );
+    if (shouldLog) {
+      patrolLog.log(StepEntry(action: text, status: StepEntryStatus.start));
+    }
+    try {
+      final result = await function();
+      if (shouldLog) {
+        patrolLog.log(StepEntry(action: text, status: StepEntryStatus.success));
+      }
+      return result;
+    } catch (err, st) {
+      if (shouldLog) {
+        patrolLog.log(StepEntry(action: text, status: StepEntryStatus.failure));
+      }
+      if (description != null) {
+        Error.throwWithStackTrace(
+          PatrolStepException(description: description, cause: err),
+          st,
+        );
+      }
+      rethrow;
+    }
+  }
+
+  String _defaultStepText({
+    required String action,
+    String? value,
+    Finder? finder,
+    required String color,
+  }) {
     final finderText =
         finder
             ?.toString(describeSelf: true)
@@ -175,16 +221,7 @@ class PatrolTester {
             .replaceAll(' (ignoring all but first)', '') ??
         '';
     final valueText = value != null ? ' "$value"' : '';
-    final text = '$color$action${AnsiCodes.reset}$valueText$finderText';
-    patrolLog.log(StepEntry(action: text, status: StepEntryStatus.start));
-    try {
-      final result = await function();
-      patrolLog.log(StepEntry(action: text, status: StepEntryStatus.success));
-      return result;
-    } catch (err) {
-      patrolLog.log(StepEntry(action: text, status: StepEntryStatus.failure));
-      rethrow;
-    }
+    return '$color$action${AnsiCodes.reset}$valueText$finderText';
   }
 
   /// Returns a [PatrolFinder] that matches [matching].
@@ -298,6 +335,9 @@ class PatrolTester {
   ///  - [PatrolFinder.waitUntilVisible], which is used to wait for the widget
   ///    to appear
   ///  - [WidgetController.tap]
+  ///
+  /// If [description] is provided, it replaces the auto-generated step text in
+  /// the patrol log and is included in the error message on failure.
   Future<void> tap(
     Finder finder, {
     SettlePolicy? settlePolicy,
@@ -305,6 +345,7 @@ class PatrolTester {
     Duration? settleTimeout,
     Alignment alignment = Alignment.center,
     bool enablePatrolLog = true,
+    String? description,
   }) {
     return TestAsyncUtils.guard(
       () => wrapWithPatrolLog(
@@ -312,6 +353,7 @@ class PatrolTester {
         finder: finder,
         color: AnsiCodes.yellow,
         enablePatrolLog: enablePatrolLog,
+        description: description,
         function: () async {
           final resolvedFinder = await waitUntilVisible(
             finder,
@@ -355,6 +397,9 @@ class PatrolTester {
   ///  - [PatrolFinder.waitUntilVisible], which is used to wait for the widget
   ///    to appear
   ///  - [WidgetController.longPress]
+  ///
+  /// If [description] is provided, it replaces the auto-generated step text in
+  /// the patrol log and is included in the error message on failure.
   Future<void> longPress(
     Finder finder, {
     SettlePolicy? settlePolicy,
@@ -362,6 +407,7 @@ class PatrolTester {
     Duration? settleTimeout,
     Alignment alignment = Alignment.center,
     bool enablePatrolLog = true,
+    String? description,
   }) {
     return TestAsyncUtils.guard(
       () => wrapWithPatrolLog(
@@ -369,6 +415,7 @@ class PatrolTester {
         finder: finder,
         color: AnsiCodes.yellow,
         enablePatrolLog: enablePatrolLog,
+        description: description,
         function: () async {
           final resolvedFinder = await waitUntilVisible(
             finder,
@@ -393,7 +440,7 @@ class PatrolTester {
   /// Example:
   /// ```dart
   /// // enters text into the first widget having Key('email')
-  /// await $(#email).enterText(user@example.com);
+  /// await $(#email).enterText('user@example.com');
   /// ```
   ///
   /// If the finder finds more than 1 widget, you can choose which one to enter
@@ -412,6 +459,9 @@ class PatrolTester {
   ///  - [PatrolFinder.waitUntilVisible], which is used to wait for the widget
   ///    to appear
   ///  - [WidgetTester.enterText]
+  ///
+  /// If [description] is provided, it replaces the auto-generated step text in
+  /// the patrol log and is included in the error message on failure.
   Future<void> enterText(
     Finder finder,
     String text, {
@@ -421,6 +471,7 @@ class PatrolTester {
     Alignment alignment = Alignment.center,
     bool enablePatrolLog = true,
     bool hideKeyboard = true,
+    String? description,
   }) {
     return TestAsyncUtils.guard(
       () => wrapWithPatrolLog(
@@ -429,6 +480,7 @@ class PatrolTester {
         finder: finder,
         color: AnsiCodes.magenta,
         enablePatrolLog: enablePatrolLog,
+        description: description,
         function: () async {
           // If the finder matches widgets that are not hit-testable (e.g. a
           // hint-text RichText inside InputDecorator), locate the sibling
@@ -557,15 +609,16 @@ class PatrolTester {
 
   /// Waits until this finder finds at least one widget.
   ///
-  /// Throws a [WaitUntilVisibleTimeoutException] if no widgets  found.
+  /// Throws a [WaitUntilExistsTimeoutException] if no widgets found.
   ///
-  /// Timeout is globally set by [PatrolTesterConfig.visibleTimeout] inside
+  /// Timeout is globally set by [PatrolTesterConfig.existsTimeout] inside
   /// [PatrolTester.config]. If you want to override this global setting, set
   /// [timeout].
   Future<PatrolFinder> waitUntilExists(
     PatrolFinder finder, {
     Duration? timeout,
     bool enablePatrolLog = true,
+    String? description,
   }) {
     return TestAsyncUtils.guard(
       () => wrapWithPatrolLog<PatrolFinder>(
@@ -573,6 +626,7 @@ class PatrolTester {
         finder: finder,
         color: AnsiCodes.cyan,
         enablePatrolLog: enablePatrolLog,
+        description: description,
         function: () async {
           final duration = timeout ?? config.existsTimeout;
           final end = tester.binding.clock.now().add(duration);
@@ -608,7 +662,7 @@ class PatrolTester {
   /// Provide [alignment] to fine tune the visibility check by calling
   /// [Finder.hitTestable] at this [alignment] of the [Widget].
   /// This might be helpful in case the tested [Widget] is or contains a [Row]
-  /// or a [Column]. The default [Alignment.center] might always be the best
+  /// or a [Column]. The default [Alignment.center] might not always be the best
   ///  choice as the following example demonstrates:
   ///
   /// ```dart
@@ -627,7 +681,7 @@ class PatrolTester {
   ///          SizedBox(height: 48),
   ///          Text('Bar'),
   ///        ],
-  ///      )
+  ///      );
   ///  }
   /// }
   /// ```
@@ -645,6 +699,7 @@ class PatrolTester {
     Duration? timeout,
     Alignment alignment = Alignment.center,
     bool enablePatrolLog = true,
+    String? description,
   }) {
     return TestAsyncUtils.guard(
       () => wrapWithPatrolLog(
@@ -652,6 +707,7 @@ class PatrolTester {
         finder: finder,
         color: AnsiCodes.cyan,
         enablePatrolLog: enablePatrolLog,
+        description: description,
         function: () async {
           final duration = timeout ?? config.visibleTimeout;
           final end = tester.binding.clock.now().add(duration);
@@ -683,7 +739,7 @@ class PatrolTester {
   /// This is a reimplementation of [WidgetController.dragUntilVisible] that
   /// differs from the original in the following ways:
   ///
-  ///  * scrolls until until [finder] finds at least one *existing* widget
+  ///  * scrolls until [finder] finds at least one *existing* widget
   ///
   ///  * waits until [view] is visible
   ///
@@ -695,8 +751,8 @@ class PatrolTester {
   ///
   ///  * can drag any widget, not only a [Scrollable]
   ///
-  ///  * performed drag is slower (it takes some time to performe dragging
-  ///    gesture, half a second by default)
+  ///  * performed drag is slower (it takes some time to perform dragging
+  ///    gesture, [PatrolTesterConfig.dragDuration] by default)
   ///
   ///  * you can configure, which version of pumping is performed between
   ///    each drag gesture ([pump], [pumpAndSettle] or [pumpAndTrySettle]),
@@ -718,6 +774,7 @@ class PatrolTester {
     Duration? dragDuration,
     SettlePolicy? settlePolicy,
     bool enablePatrolLog = true,
+    String? description,
   }) {
     return TestAsyncUtils.guard(
       () => wrapWithPatrolLog<PatrolFinder>(
@@ -725,6 +782,7 @@ class PatrolTester {
         finder: view,
         color: AnsiCodes.blue,
         enablePatrolLog: enablePatrolLog,
+        description: description,
         function: () async {
           var viewPatrolFinder = PatrolFinder(finder: view, tester: this);
           await viewPatrolFinder.waitUntilVisible(enablePatrolLog: false);
@@ -732,6 +790,7 @@ class PatrolTester {
           dragDuration ??= config.dragDuration;
           settleBetweenScrollsTimeout ??= config.settleBetweenScrollsTimeout;
 
+          final start = tester.binding.clock.now();
           var iterationsLeft = maxIteration;
           while (iterationsLeft > 0 && finder.evaluate().isEmpty) {
             await tester.timedDrag(viewPatrolFinder, moveStep, dragDuration!);
@@ -745,8 +804,7 @@ class PatrolTester {
           if (iterationsLeft <= 0) {
             throw WaitUntilExistsTimeoutException(
               finder: finder,
-              // TODO: set reasonable duration or create new exception for this case
-              duration: settleBetweenScrollsTimeout!,
+              duration: tester.binding.clock.now().difference(start),
             );
           }
 
@@ -776,7 +834,7 @@ class PatrolTester {
   ///  * can drag any widget, not only a [Scrollable]
   ///
   ///  * performed drag is slower (it takes some time to perform dragging
-  ///    gesture, half a second by default)
+  ///    gesture, [PatrolTesterConfig.dragDuration] by default)
   ///
   ///  * you can configure, which version of pumping is performed between
   ///    each drag gesture ([pump], [pumpAndSettle] or [pumpAndTrySettle])
@@ -797,6 +855,7 @@ class PatrolTester {
     SettlePolicy? settlePolicy,
     Alignment alignment = Alignment.center,
     bool enablePatrolLog = true,
+    String? description,
   }) {
     return TestAsyncUtils.guard(
       () => wrapWithPatrolLog<PatrolFinder>(
@@ -804,6 +863,7 @@ class PatrolTester {
         finder: view,
         color: AnsiCodes.blue,
         enablePatrolLog: enablePatrolLog,
+        description: description,
         function: () async {
           final viewPatrolFinder = (await waitUntilVisible(
             PatrolFinder(finder: view, tester: this),
@@ -814,6 +874,7 @@ class PatrolTester {
           settleBetweenScrollsTimeout ??= config.settleBetweenScrollsTimeout;
 
           final hitTestableFinder = finder.hitTestable(at: alignment);
+          final start = tester.binding.clock.now();
           var iterationsLeft = maxIteration;
           while (iterationsLeft > 0 && hitTestableFinder.evaluate().isEmpty) {
             await tester.timedDrag(viewPatrolFinder, moveStep, dragDuration!);
@@ -827,8 +888,7 @@ class PatrolTester {
           if (iterationsLeft <= 0) {
             throw WaitUntilVisibleTimeoutException(
               finder: hitTestableFinder,
-              // TODO: set reasonable duration or create new exception for this case
-              duration: settleBetweenScrollsTimeout!,
+              duration: tester.binding.clock.now().difference(start),
             );
           }
 
@@ -838,7 +898,7 @@ class PatrolTester {
     );
   }
 
-  /// Scrolls [view] in its scrolling direction until this finders finds
+  /// Scrolls [view] in its scrolling direction until this finder finds
   /// at least one existing widget.
   ///
   /// If [view] is null, it defaults to the first found [Scrollable].
@@ -855,6 +915,7 @@ class PatrolTester {
     Duration? dragDuration,
     SettlePolicy? settlePolicy,
     bool enablePatrolLog = true,
+    String? description,
   }) {
     assert(maxScrolls > 0, 'maxScrolls must be positive number');
     return wrapWithPatrolLog<PatrolFinder>(
@@ -862,6 +923,7 @@ class PatrolTester {
       finder: view,
       color: AnsiCodes.green,
       enablePatrolLog: enablePatrolLog,
+      description: description,
       function: () async {
         final finderView = view ?? find.byType(Scrollable);
 
@@ -908,8 +970,8 @@ class PatrolTester {
     );
   }
 
-  /// Scrolls [view] in [scrollDirection] until this finders finds
-  /// at least one existing widget.
+  /// Scrolls [view] in [scrollDirection] until this finder finds
+  /// at least one visible widget.
   ///
   /// If [view] is null, it defaults to the first found [Scrollable].
   ///
@@ -929,6 +991,7 @@ class PatrolTester {
     SettlePolicy? settlePolicy,
     Alignment alignment = Alignment.center,
     bool enablePatrolLog = true,
+    String? description,
   }) {
     assert(maxScrolls > 0, 'maxScrolls must be positive number');
     return wrapWithPatrolLog(
@@ -936,6 +999,7 @@ class PatrolTester {
       finder: view,
       color: AnsiCodes.green,
       enablePatrolLog: enablePatrolLog,
+      description: description,
       function: () async {
         final finderView = view ?? find.byType(Scrollable);
         final scrollablePatrolFinder = await PatrolFinder(

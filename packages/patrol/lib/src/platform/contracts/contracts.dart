@@ -51,6 +51,15 @@ enum SetLocationAccuracyRequestLocationAccuracy {
   final String value;
 }
 
+enum AndroidFoldPosture {
+  closed('closed'),
+  halfOpen('halfOpen'),
+  open('open');
+
+  const AndroidFoldPosture(this.value);
+  final String value;
+}
+
 enum IOSElementType {
   any('any'),
   other('other'),
@@ -290,17 +299,24 @@ class RunDartTestResponse with Equatable {
 
 @JsonSerializable()
 class ConfigureRequest with Equatable {
-  const ConfigureRequest({required this.findTimeoutMillis});
+  const ConfigureRequest({
+    required this.findTimeoutMillis,
+    this.androidDontSuppressAccessibilityServices,
+  });
 
   factory ConfigureRequest.fromJson(Map<String, dynamic> json) =>
       _$ConfigureRequestFromJson(json);
 
   final int findTimeoutMillis;
+  final bool? androidDontSuppressAccessibilityServices;
 
   Map<String, dynamic> toJson() => _$ConfigureRequestToJson(this);
 
   @override
-  List<Object?> get props => [findTimeoutMillis];
+  List<Object?> get props => [
+    findTimeoutMillis,
+    androidDontSuppressAccessibilityServices,
+  ];
 }
 
 @JsonSerializable()
@@ -524,17 +540,21 @@ class IOSSelector with Equatable {
 
 @JsonSerializable()
 class AndroidGetNativeViewsRequest with Equatable {
-  const AndroidGetNativeViewsRequest({this.selector});
+  const AndroidGetNativeViewsRequest({
+    this.selector,
+    required this.includeInvisibleNodes,
+  });
 
   factory AndroidGetNativeViewsRequest.fromJson(Map<String, dynamic> json) =>
       _$AndroidGetNativeViewsRequestFromJson(json);
 
   final AndroidSelector? selector;
+  final bool includeInvisibleNodes;
 
   Map<String, dynamic> toJson() => _$AndroidGetNativeViewsRequestToJson(this);
 
   @override
-  List<Object?> get props => [selector];
+  List<Object?> get props => [selector, includeInvisibleNodes];
 }
 
 @JsonSerializable()
@@ -576,6 +596,7 @@ class AndroidNativeView with Equatable {
     required this.isLongClickable,
     required this.isScrollable,
     required this.isSelected,
+    this.isVisibleToUser,
     required this.visibleBounds,
     required this.visibleCenter,
     required this.children,
@@ -599,6 +620,7 @@ class AndroidNativeView with Equatable {
   final bool isLongClickable;
   final bool isScrollable;
   final bool isSelected;
+  final bool? isVisibleToUser;
   final Rectangle visibleBounds;
   final Point2D visibleCenter;
   final List<AndroidNativeView> children;
@@ -622,6 +644,7 @@ class AndroidNativeView with Equatable {
     isLongClickable,
     isScrollable,
     isSelected,
+    isVisibleToUser,
     visibleBounds,
     visibleCenter,
     children,
@@ -1259,6 +1282,53 @@ class AndroidTakeCameraPhotoRequest with Equatable {
     doneButtonSelector,
     timeoutMillis,
   ];
+}
+
+@JsonSerializable()
+class AndroidTakeNativeScreenshotRequest with Equatable {
+  const AndroidTakeNativeScreenshotRequest({required this.tag});
+
+  factory AndroidTakeNativeScreenshotRequest.fromJson(
+    Map<String, dynamic> json,
+  ) => _$AndroidTakeNativeScreenshotRequestFromJson(json);
+
+  final String tag;
+
+  Map<String, dynamic> toJson() =>
+      _$AndroidTakeNativeScreenshotRequestToJson(this);
+
+  @override
+  List<Object?> get props => [tag];
+}
+
+@JsonSerializable()
+class AndroidSetFoldPostureRequest with Equatable {
+  const AndroidSetFoldPostureRequest({required this.posture});
+
+  factory AndroidSetFoldPostureRequest.fromJson(Map<String, dynamic> json) =>
+      _$AndroidSetFoldPostureRequestFromJson(json);
+
+  final AndroidFoldPosture posture;
+
+  Map<String, dynamic> toJson() => _$AndroidSetFoldPostureRequestToJson(this);
+
+  @override
+  List<Object?> get props => [posture];
+}
+
+@JsonSerializable()
+class AndroidSetFoldPostureResponse with Equatable {
+  const AndroidSetFoldPostureResponse({this.previousPosture});
+
+  factory AndroidSetFoldPostureResponse.fromJson(Map<String, dynamic> json) =>
+      _$AndroidSetFoldPostureResponseFromJson(json);
+
+  final AndroidFoldPosture? previousPosture;
+
+  Map<String, dynamic> toJson() => _$AndroidSetFoldPostureResponseToJson(this);
+
+  @override
+  List<Object?> get props => [previousPosture];
 }
 
 @JsonSerializable()

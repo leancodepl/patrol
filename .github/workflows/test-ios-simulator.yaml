@@ -93,12 +93,16 @@ jobs:
 
           # Running single test to verify workflow stability
           # Test: pull_to_refresh_test.dart
+          # Patrol records one MP4 per test case via --record-video (iOS simulator).
+          # Videos are written to dev/e2e_app/videos and uploaded as artifacts below.
           TESTS_EXIT_CODE=0
           patrol test \
           --target patrol_test/pull_to_refresh_test.dart \
           --verbose \
           --ios 26.2 \
-          --full-isolation || TESTS_EXIT_CODE=$?
+          --full-isolation \
+          --record-video \
+          --video-output-dir videos || TESTS_EXIT_CODE=$?
 
           kill -SIGINT $logpid 2>/dev/null || true
           sleep 1
@@ -167,6 +171,26 @@ jobs:
           name: Logs from ${{ matrix.device_model }}
           path: |
             ${{ github.workspace }}/dev/e2e_app/all_simulator_logs.txt
+
+      - name: Upload recorded videos to artifacts
+        id: upload_videos
+        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: Recorded videos from ${{ matrix.device_model }}
+          path: ${{ github.workspace }}/dev/e2e_app/videos/
+          if-no-files-found: warn
+
+      - name: Add recordings link to job summary
+        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) && steps.upload_videos.outputs.artifact-url }}
+        run: |
+          {
+            echo "### 📹 Test recordings (${{ matrix.device_model }})";
+            echo "";
+            echo "One MP4 per test case, recorded with \`patrol test --record-video\`.";
+            echo "";
+            echo "[⬇️ Download recorded videos](${{ steps.upload_videos.outputs.artifact-url }})";
+          } >> "$GITHUB_STEP_SUMMARY"
 
   call_send_slack_message:
     name: Notify on Slack

@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:mocktail/mocktail.dart';
@@ -9,8 +11,12 @@ import 'package:test/test.dart';
 
 import '../src/mocks.dart';
 
+class _MockIOSink extends Mock implements IOSink {}
+
 void main() {
   const flutterCommand = FlutterCommand('flutter');
+
+  setUpAll(() => registerFallbackValue(<int>[]));
 
   late FlutterTool flutterTool;
   late MockProcessManager processManager;
@@ -32,6 +38,130 @@ void main() {
   });
 
   group('FlutterTool', () {
+    test(
+      'hotRestart requested before attach completes is queued, then sent',
+      () async {
+        final process = MockProcess();
+        final processStdin = _MockIOSink();
+        final processStdout = StreamController<List<int>>();
+        when(() => process.stdout).thenAnswer((_) => processStdout.stream);
+        when(
+          () => process.stderr,
+        ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
+        when(() => process.stdin).thenReturn(processStdin);
+        when(() => processStdin.add(any())).thenReturn(null);
+        when(
+          () => processManager.start(any()),
+        ).thenAnswer((_) async => process);
+
+        final attach = flutterTool.attach(
+          flutterCommand: flutterCommand,
+          deviceId: 'testDeviceId',
+          target: 'target',
+          appId: 'appId',
+          dartDefines: {},
+          openBrowser: false,
+        );
+        await Future<void>.delayed(const Duration(milliseconds: 10));
+
+        // Not attached yet: previously this was silently dropped.
+        flutterTool.hotRestart();
+        verifyNever(() => processStdin.add(any()));
+
+        processStdout.add(utf8.encode('Flutter run key commands.\n'));
+        await attach;
+
+        verify(() => processStdin.add('R'.codeUnits)).called(1);
+        await processStdout.close();
+      },
+    );
+
+    test(
+      'hotRestart onCompleted fires when the restart completes, not sooner',
+      () async {
+        final process = MockProcess();
+        final processStdin = _MockIOSink();
+        final processStdout = StreamController<List<int>>();
+        when(() => process.stdout).thenAnswer((_) => processStdout.stream);
+        when(
+          () => process.stderr,
+        ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
+        when(() => process.stdin).thenReturn(processStdin);
+        when(() => processStdin.add(any())).thenReturn(null);
+        when(
+          () => processManager.start(any()),
+        ).thenAnswer((_) async => process);
+
+        final attach = flutterTool.attach(
+          flutterCommand: flutterCommand,
+          deviceId: 'testDeviceId',
+          target: 'target',
+          appId: 'appId',
+          dartDefines: {},
+          openBrowser: false,
+        );
+        processStdout.add(utf8.encode('Flutter run key commands.\n'));
+        await attach;
+
+        var completed = false;
+        flutterTool.hotRestart(onCompleted: () => completed = true);
+        verify(() => processStdin.add('R'.codeUnits)).called(1);
+        expect(completed, isFalse);
+
+        processStdout.add(utf8.encode('Restarted application in 1,234ms.\n'));
+        await Future<void>.delayed(const Duration(milliseconds: 10));
+        expect(completed, isTrue);
+        await processStdout.close();
+      },
+    );
+    test(
+      'hotRestart onFailed fires when Flutter rejects the restart',
+      () async {
+        final process = MockProcess();
+        final processStdin = _MockIOSink();
+        final processStdout = StreamController<List<int>>();
+        when(() => process.stdout).thenAnswer((_) => processStdout.stream);
+        when(
+          () => process.stderr,
+        ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
+        when(() => process.stdin).thenReturn(processStdin);
+        when(() => processStdin.add(any())).thenReturn(null);
+        when(
+          () => processManager.start(any()),
+        ).thenAnswer((_) async => process);
+
+        final attach = flutterTool.attach(
+          flutterCommand: flutterCommand,
+          deviceId: 'testDeviceId',
+          target: 'target',
+          appId: 'appId',
+          dartDefines: {},
+          openBrowser: false,
+        );
+        processStdout.add(utf8.encode('Flutter run key commands.\n'));
+        await attach;
+
+        var completed = false;
+        var failed = false;
+        flutterTool.hotRestart(
+          onCompleted: () => completed = true,
+          onFailed: () => failed = true,
+        );
+
+        processStdout.add(
+          utf8.encode('Try again after fixing the above error(s).\n'),
+        );
+        await Future<void>.delayed(const Duration(milliseconds: 10));
+        expect(failed, isTrue);
+        expect(completed, isFalse);
+
+        // A later successful restart must not fire the stale callback again.
+        processStdout.add(utf8.encode('Restarted application in 1,234ms.\n'));
+        await Future<void>.delayed(const Duration(milliseconds: 10));
+        expect(completed, isFalse);
+        await processStdout.close();
+      },
+    );
     test('attach passes deviceId correctly', () {
       final process = MockProcess();
       when(
@@ -54,7 +184,9 @@ void main() {
       verify(() => processManager.start(any(that: contains('testDeviceId'))));
     });
 
-    test('attach passes --flavor when a flavor is provided', () {
+    // `flutter attach` exits with a usage error on an option it does not
+    // define. Check `flutter attach --help` before extending this set.
+    test('attach passes only options flutter attach defines', () {
       final process = MockProcess();
       when(
         () => process.stdout,
@@ -69,41 +201,81 @@ void main() {
         deviceId: 'testDeviceId',
         target: 'target',
         appId: 'appId',
-        dartDefines: {},
-        openBrowser: false,
-        flavor: 'dev',
-      );
-
-      verify(
-        () => processManager.start(
-          any(that: containsAllInOrder(['attach', '--flavor', 'dev'])),
-        ),
-      );
-    });
-
-    test('attach omits --flavor when no flavor is provided', () {
-      final process = MockProcess();
-      when(
-        () => process.stdout,
-      ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
-      when(
-        () => process.stderr,
-      ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
-      when(() => processManager.start(any())).thenAnswer((_) async => process);
-
-      flutterTool.attach(
-        flutterCommand: flutterCommand,
-        deviceId: 'testDeviceId',
-        target: 'target',
-        appId: 'appId',
-        dartDefines: {},
+        debugUrl: 'http://127.0.0.1:1234/abc=/',
+        dartDefines: {'key': 'value'},
         openBrowser: false,
       );
 
-      verify(
-        () => processManager.start(any(that: isNot(contains('--flavor')))),
-      );
+      final args =
+          (verify(() => processManager.start(captureAny())).captured.single
+                  as List<Object>)
+              .map((arg) => arg.toString());
+
+      expect(args.where((arg) => arg.startsWith('--')).toSet(), {
+        '--no-version-check',
+        '--suppress-analytics',
+        '--debug',
+        '--device-id',
+        '--debug-url',
+        '--app-id',
+        '--target',
+        '--dart-define',
+      });
     });
+
+    // A flavored iOS project cannot run `flutter logs`, so the caller hands
+    // attach the Dart VM service URL taken from Patrol's own log stream.
+    test(
+      'attachForHotRestart uses a provided debug URL instead of flutter logs',
+      () async {
+        const url = 'http://127.0.0.1:54296/4crAtS2Ux7w=/';
+        final process = MockProcess();
+        when(() => process.stdout).thenAnswer(
+          (_) => Stream<List<int>>.fromIterable([
+            utf8.encode('Flutter run key commands.\n'),
+          ]),
+        );
+        when(
+          () => process.stderr,
+        ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
+        // Awaiting attach to completion disposes its scope, which kills the
+        // process.
+        when(process.kill).thenReturn(true);
+        when(
+          () => processManager.start(any()),
+        ).thenAnswer((_) async => process);
+
+        // Keep the test independent of the host: attachForHotRestart consults
+        // the real stdin for a terminal to switch into raw mode.
+        final stdin = MockStdin();
+        when(() => stdin.hasTerminal).thenReturn(false);
+
+        await IOOverrides.runZoned(
+          () => flutterTool.attachForHotRestart(
+            flutterCommand: flutterCommand,
+            deviceId: 'testDeviceId',
+            target: 'target',
+            appId: 'appId',
+            dartDefines: {},
+            openDevtools: false,
+            attachUsingUrl: true,
+            debugUrl: Future.value(url),
+            forwardFlutterLogs: false,
+          ),
+          stdin: () => stdin,
+        );
+
+        final commands = verify(
+          () => processManager.start(captureAny()),
+        ).captured.cast<List<Object>>();
+
+        expect(commands, hasLength(1));
+
+        final args = commands.single.map((arg) => arg.toString()).toList();
+        expect(args, containsAllInOrder(['attach', '--debug-url', url]));
+        expect(args, isNot(contains('logs')));
+      },
+    );
   });
 
   group('getObservationUrl', () {

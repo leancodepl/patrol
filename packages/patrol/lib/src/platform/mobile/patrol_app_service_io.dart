@@ -8,6 +8,7 @@ import 'package:patrol/patrol.dart';
 import 'package:patrol/src/common.dart';
 import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:patrol/src/platform/contracts/patrol_app_service_server.dart';
+import 'package:patrol/src/platform/mobile/patrol_runtime_ports.dart';
 import 'package:patrol_log/patrol_log.dart';
 import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as shelf_io;
@@ -54,28 +55,54 @@ Future<void> runAppService(PatrolAppService service) async {
 /// the generated code can access it.
 class PatrolAppService extends PatrolAppServiceServer {
   /// Creates a new [PatrolAppService].
-  PatrolAppService({required this.topLevelDartTestGroup})
-    : port = const int.fromEnvironment(
-        'PATROL_APP_SERVER_PORT',
-        defaultValue: 8082,
-      );
+  PatrolAppService({
+    required this.topLevelDartTestGroup,
+    this.reuseAcrossTests = _reuseAcrossTestsDefault,
+  });
 
   /// Port the server will use to listen for incoming HTTP traffic.
-  final int port;
+  int get port => _resolveAppServerPort();
+
+  static int _resolveAppServerPort() {
+    final injectedPort = PatrolRuntimePorts.appServerPort();
+    if (injectedPort != null) {
+      return injectedPort;
+    }
+    return const int.fromEnvironment(
+      'PATROL_APP_SERVER_PORT',
+      defaultValue: 8082,
+    );
+  }
 
   /// The ambient test group that wraps all the other groups and tests in the
   /// bundled Dart test file.
   final DartGroupEntry topLevelDartTestGroup;
 
+  /// Whether one process serves more than one Dart test against this single
+  /// [PatrolAppService] instance.
+  ///
+  /// Patrol's normal flow runs with the Android test orchestrator ON: every
+  /// test gets a fresh process (and a fresh app service), so the per-test
+  /// completers below are used exactly once. BrowserStack Dart coverage runs
+  /// with the orchestrator OFF so JaCoCo accumulates in a single process — then
+  /// the same app service serves every `runDartTest`, and the completers must be
+  /// recreated after each test (see [markDartTestAsCompleted]). Gated on the
+  /// coverage dart-define so the normal flow is byte-for-byte unchanged.
+  final bool reuseAcrossTests;
+
+  static const _reuseAcrossTestsDefault = bool.fromEnvironment(
+    'PATROL_BS_COVERAGE',
+  );
+
   /// A completer that completes with the name of the Dart test file that was
   /// requested to execute by the native side.
-  final _testExecutionRequested = Completer<String>();
+  var _testExecutionRequested = Completer<String>();
 
   /// A future that completes with the name of the Dart test file that was
   /// requested to execute by the native side.
   Future<String> get testExecutionRequested => _testExecutionRequested.future;
 
-  final _testExecutionCompleted = Completer<_TestExecutionResult>();
+  var _testExecutionCompleted = Completer<_TestExecutionResult>();
 
   /// A future that completes when the Dart test file (whose execution was
   /// requested by the native side) completes.
@@ -109,9 +136,18 @@ class PatrolAppService extends PatrolAppServiceServer {
       'that was most recently requested to run was $requestedDartTestName',
     );
 
-    _testExecutionCompleted.complete(
-      _TestExecutionResult(passed: passed, details: details),
-    );
+    final completed = _testExecutionCompleted;
+    if (reuseAcrossTests) {
+      // The orchestrator is off, so this same app service will serve the next
+      // test too. Swap in fresh completers *before* unblocking runDartTest, so
+      // the next waitForExecutionRequest/runDartTest pair gets a clean pair.
+      // The in-flight runDartTest already holds a reference to `completed`, and
+      // this runs synchronously (no await) before the suite advances to the
+      // next test's waitForExecutionRequest, so there is no race.
+      _testExecutionRequested = Completer<String>();
+      _testExecutionCompleted = Completer<_TestExecutionResult>();
+    }
+    completed.complete(_TestExecutionResult(passed: passed, details: details));
   }
 
   /// Returns when the native side requests execution of a Dart test. If the
@@ -144,9 +180,46 @@ class PatrolAppService extends PatrolAppServiceServer {
     return true;
   }
 
+  /// Finds the test the native side asked for by its flattened name (group
+  /// names joined with spaces), the same shape the native runners build from
+  /// [listDartTests]. Returns `null` when this app registered no such test.
+  DartGroupEntry? _findTest(
+    String flatName, {
+    DartGroupEntry? group,
+    String parentName = '',
+  }) {
+    for (final entry in (group ?? topLevelDartTestGroup).entries) {
+      final name = parentName.isEmpty
+          ? entry.name
+          : '$parentName ${entry.name}';
+
+      if (entry.type == GroupEntryType.test) {
+        if (name == flatName) {
+          return entry;
+        }
+      } else {
+        final found = _findTest(flatName, group: entry, parentName: name);
+        if (found != null) {
+          return found;
+        }
+      }
+    }
+
+    return null;
+  }
+
   @override
   Future<ListDartTestsResponse> listDartTests() async {
     print('PatrolAppService.listDartTests() called');
+
+    final invalidNames = namesWithPathSeparator(topLevelDartTestGroup);
+    if (invalidNames.isNotEmpty) {
+      final message = pathSeparatorNameError(invalidNames);
+      _patrolLog.log(ErrorEntry(message: message));
+
+      throw StateError(message);
+    }
+
     return ListDartTestsResponse(group: topLevelDartTestGroup);
   }
 
@@ -156,6 +229,36 @@ class PatrolAppService extends PatrolAppServiceServer {
     // patrolTest() always calls this method.
 
     print('PatrolAppService.runDartTest(${request.name}) called');
+
+    // With build-time test discovery the native side asks by a name taken from a
+    // manifest built on the host, which can disagree with what this app
+    // registered (a `skip:` that depends on the platform, for example). Such a
+    // test never runs, so nothing would ever complete the request and the native
+    // runner would wait for it forever.
+    final requestedTest = _findTest(request.name);
+    if (requestedTest == null) {
+      const hint =
+          'Use patrolTargetPlatform for anything that decides whether a test '
+          'is registered.';
+      _patrolLog.log(
+        TestEntry(name: request.name, status: TestEntryStatus.failure),
+      );
+      return RunDartTestResponse(
+        result: RunDartTestResponseResult.failure,
+        details: 'This app has no test named "${request.name}". $hint',
+      );
+    }
+    if (requestedTest.skip) {
+      print('PatrolAppService.runDartTest(${request.name}): skipped');
+      _patrolLog.log(
+        TestEntry(name: request.name, status: TestEntryStatus.skip),
+      );
+      return RunDartTestResponse(
+        result: RunDartTestResponseResult.skipped,
+        details: 'Test "${request.name}" is skipped in this app build',
+      );
+    }
+
     _testExecutionRequested.complete(request.name);
 
     final testExecutionResult = await testExecutionCompleted;

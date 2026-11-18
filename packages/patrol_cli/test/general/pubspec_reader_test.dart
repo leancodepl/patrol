@@ -57,6 +57,26 @@ patrol:
         expect(reader.read().ios.flavor, equals('dev'));
       });
 
+      test('emit_test_manifest defaults to false', () {
+        fs.file('pubspec.yaml').writeAsStringSync('''
+$_pubspecBase
+patrol:
+  app_name: Example
+''');
+
+        expect(reader.read().emitTestManifest, isFalse);
+      });
+
+      test('reads emit_test_manifest', () {
+        fs.file('pubspec.yaml').writeAsStringSync('''
+$_pubspecBase
+patrol:
+  emit_test_manifest: true
+''');
+
+        expect(reader.read().emitTestManifest, isTrue);
+      });
+
       test('reads `android` block', () {
         fs.file('pubspec.yaml').writeAsStringSync('''
 $_pubspecBase
@@ -81,6 +101,27 @@ patrol:
 
         expect(reader.read().ios.appName, equals('The Example'));
         expect(reader.read().ios.bundleId, equals('com.example.ExampleApp'));
+      });
+
+      test('defaults `screenshot_on_failure` to false when absent', () {
+        fs.file('pubspec.yaml').writeAsStringSync('''
+$_pubspecBase
+patrol:
+  app_name: Example
+''');
+
+        expect(reader.read().screenshotOnFailure, isFalse);
+      });
+
+      test('reads `screenshot_on_failure`', () {
+        fs.file('pubspec.yaml').writeAsStringSync('''
+$_pubspecBase
+patrol:
+  app_name: Example
+  screenshot_on_failure: true
+''');
+
+        expect(reader.read().screenshotOnFailure, isTrue);
       });
 
       test('overrides global values with platform-specific ones', () {

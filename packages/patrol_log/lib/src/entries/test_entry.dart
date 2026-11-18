@@ -9,7 +9,6 @@ class TestEntry extends Entry {
     this.error,
   }) : super(timestamp: timestamp ?? DateTime.now(), type: EntryType.test);
 
-  @override
   factory TestEntry.fromJson(Map<String, dynamic> json) =>
       _$TestEntryFromJson(json);
 

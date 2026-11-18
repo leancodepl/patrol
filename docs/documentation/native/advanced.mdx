@@ -52,6 +52,42 @@ defaultConfig {
 }
 ```
 
+### Third-party accessibility services (Android)
+
+Patrol drives Android through `UiAutomation`. By default it acquires it with
+`FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES`, so other `AccessibilityService`s on the
+device (screen readers like TalkBack, accessibility-audit tools, accessibility-based
+automation) **keep running during the test session**.
+
+<Info>
+    In Patrol 4.8.0 these services were suppressed for the whole session. The default
+    was restored to keeping them alive; set the flag below to `false` to opt back into
+    suppression.
+</Info>
+
+Set it in your test config:
+
+```dart
+patrolTest(
+  'my test',
+  platformAutomatorConfig: PlatformAutomatorConfig.fromOptions(
+    androidDontSuppressAccessibilityServices: false, // default: true
+  ),
+  ($) async {
+    // ...
+  },
+);
+```
+
+or, without touching test code, as a dart-define:
+
+```bash
+patrol test --dart-define=PATROL_ANDROID_DONT_SUPPRESS_ACCESSIBILITY_SERVICES=false
+```
+
+Setting it to `false` can help when a native [extension package](/documentation/native/extension-packages)
+needs the default `UiAutomation` connection.
+
 ### Embrace the native tests
 
 If you've diligently followed the steps in [native automation setup] and `patrol test` prints a **TEST

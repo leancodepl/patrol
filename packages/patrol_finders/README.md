@@ -74,7 +74,7 @@ void main() {
       await $(Scrollable).containing(ElevatedButton).containing(Text).tap();
 
       // Finds all Scrollables which have TextButton descendant which has Text
-      // descendant, and taps on the first Scrollabke
+      // descendant, and taps on the first Scrollable
       await $(Scrollable).containing($(TextButton).$(Text)).tap();
     },
   );

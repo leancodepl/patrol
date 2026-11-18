@@ -39,6 +39,9 @@ abstract class PatrolAppService<IOSClient, AndroidClient, DartServer> {
 
 class ConfigureRequest {
   late int findTimeoutMillis;
+  // Android only. true (default) keeps third-party AccessibilityServices running
+  // (FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES); false suppresses them.
+  bool? androidDontSuppressAccessibilityServices;
 }
 
 class OpenAppRequest {
@@ -105,6 +108,9 @@ class IOSSelector {
 
 class AndroidGetNativeViewsRequest {
   AndroidSelector? selector;
+  // Only used when selector is null (full tree). false (default) drops nodes
+  // whose isVisibleToUser is false, like uiautomator's dumpWindowHierarchy().
+  late bool includeInvisibleNodes;
 }
 
 class IOSGetNativeViewsRequest {
@@ -129,6 +135,7 @@ class AndroidNativeView {
   late bool isLongClickable;
   late bool isScrollable;
   late bool isSelected;
+  bool? isVisibleToUser;
   late Rectangle visibleBounds;
   late Point2D visibleCenter;
   late List<AndroidNativeView> children;
@@ -318,6 +325,21 @@ class AndroidTakeCameraPhotoRequest {
   late int? timeoutMillis;
 }
 
+class AndroidTakeNativeScreenshotRequest {
+  late String tag;
+}
+
+enum AndroidFoldPosture { closed, halfOpen, open }
+
+class AndroidSetFoldPostureRequest {
+  late AndroidFoldPosture posture;
+}
+
+class AndroidSetFoldPostureResponse {
+  // Null for other states, such as the rear display.
+  AndroidFoldPosture? previousPosture;
+}
+
 class IOSTakeCameraPhotoRequest {
   IOSSelector? shutterButtonSelector;
   IOSSelector? doneButtonSelector;
@@ -421,6 +443,9 @@ abstract class AndroidAutomator<AndroidServer, DartClient> {
   void waitUntilVisible(AndroidWaitUntilVisibleRequest request);
   void swipe(AndroidSwipeRequest request);
 
+  // screenshots
+  void takeNativeScreenshot(AndroidTakeNativeScreenshotRequest request);
+
   // services
   void enableLocation();
   void disableLocation();
@@ -437,6 +462,12 @@ abstract class AndroidAutomator<AndroidServer, DartClient> {
 
   // permissions
   void allowPermission();
+
+  // foldables
+  AndroidSetFoldPostureResponse setFoldPosture(
+    AndroidSetFoldPostureRequest request,
+  );
+  void resetFoldPosture();
 }
 
 abstract class IosAutomator<IOSServer, DartClient> {

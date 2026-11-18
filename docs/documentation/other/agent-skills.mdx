@@ -9,5 +9,20 @@ teach an AI coding agent *how* to write Patrol tests following best practices. T
 [Patrol MCP](/documentation/other/patrol-mcp): the MCP gives the agent the tools to run tests, while
 a skill teaches it how to use those tools to write tests well.
 
+The skills ship inside the `patrol` package, so you can install them from your dependency tree
+with the Dart [`skills`](https://pub.dev/packages/skills) CLI — here for Claude Code:
+
+```
+dart run skills@ get --agent claude -p patrol -s patrol-setup -s patrol-write-test
+```
+
+Add `-s patrol-test-architecture` if your tests follow LeanCode's modular architecture (Modules,
+System, ApiClients). Use `--agent cursor` for Cursor, or `--agent generic` for `.agents/skills/`
+(Antigravity, Gemini CLI and others). Rerun it after upgrading `patrol` to keep the skills in sync
+with your version.
+
+`dart run skills@` needs Dart 3.12 or newer. For older SDKs, see the
+[catalog's install instructions](https://github.com/leancodepl/patrol/tree/master/skills#installation).
+
 See the [skills catalog in the Patrol repo](https://github.com/leancodepl/patrol/tree/master/skills)
-for the available skills and per-agent install and update instructions.
+for the available skills and more install options.

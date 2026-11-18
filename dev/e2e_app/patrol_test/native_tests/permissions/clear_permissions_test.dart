@@ -31,12 +31,14 @@ void main() {
   }, tags: ['android', 'emulator', 'ios', 'simulator']);
 }
 
+// Wait for 'Granted' before the next request; permission_handler rejects a new
+// request while the previous one is still in flight.
 Future<void> _requestAndGrantCameraPermission(PatrolIntegrationTester $) async {
   expect($(K.cameraPermissionTile).$(K.statusText).text, 'Not granted');
   await $(K.requestCameraPermissionButton).tap();
   if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
     await $.native.grantPermissionWhenInUse();
-    await $.pump();
+    await $(K.cameraPermissionTile).$('Granted').waitUntilVisible();
   }
 }
 
@@ -47,7 +49,7 @@ Future<void> _requestAndGrantMicrophonePermission(
   await $(K.requestMicrophonePermissionButton).tap();
   if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
     await $.native.grantPermissionOnlyThisTime();
-    await $.pump();
+    await $(K.microphonePermissionTile).$('Granted').waitUntilVisible();
   }
 }
 
@@ -58,7 +60,7 @@ Future<void> _requestAndGrantLocationPermission(
   await $(K.requestLocationPermissionButton).tap();
   if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
     await $.native.grantPermissionOnlyThisTime();
-    await $.pump();
+    await $(K.locationPermissionTile).$('Granted').waitUntilVisible();
   }
 }
 
@@ -69,6 +71,6 @@ Future<void> _requestAndGrantGalleryPermission(
   await $(K.requestGalleryPermissionButton).tap();
   if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
     await $.native.grantPermissionWhenInUse();
-    await $.pump();
+    await $(K.galleryPermissionTile).$('Granted').waitUntilVisible();
   }
 }

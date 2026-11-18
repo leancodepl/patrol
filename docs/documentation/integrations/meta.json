@@ -2,9 +2,11 @@
   "title": "Integrations",
   "pages": [
     "firebase-test-lab",
+    "emulator-wtf",
+    "marathon",
     "allure",
     "browserstack",
+    "saucelabs",
     "lambdatest"
   ]
 }
-

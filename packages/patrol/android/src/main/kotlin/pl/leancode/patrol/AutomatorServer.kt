@@ -40,7 +40,10 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
     }
 
     override fun configure(request: ConfigureRequest) {
-        automation.configure(waitForSelectorTimeout = request.findTimeoutMillis)
+        automation.configure(
+            waitForSelectorTimeout = request.findTimeoutMillis,
+            dontSuppressAccessibilityServices = request.androidDontSuppressAccessibilityServices ?: true
+        )
     }
 
     override fun pressHome() {
@@ -151,7 +154,9 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
             )
         } else {
             // When both selectors are null, return the full native tree
-            val trees = automation.getNativeUITrees()
+            val trees = automation.getNativeUITrees(
+                includeInvisibleNodes = request.includeInvisibleNodes
+            )
             return AndroidGetNativeViewsResponse(
                 roots = trees
             )
@@ -262,6 +267,20 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
         }
     }
 
+    override fun takeNativeScreenshot(request: Contracts.AndroidTakeNativeScreenshotRequest) {
+        automation.takeNativeScreenshot(request.tag)
+    }
+
+    override fun setFoldPosture(request: Contracts.AndroidSetFoldPostureRequest): Contracts.AndroidSetFoldPostureResponse {
+        val previousPosture = automation.setFoldPosture(request.posture)
+
+        return Contracts.AndroidSetFoldPostureResponse(previousPosture)
+    }
+
+    override fun resetFoldPosture() {
+        automation.resetFoldPosture()
+    }
+
     override fun takeCameraPhoto(request: Contracts.AndroidTakeCameraPhotoRequest) {
         val isEmulator = isVirtualDevice().isVirtualDevice
 
@@ -308,13 +327,17 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
         } else {
             null
         }
-        val androidActionMenuSelector = if (apiLvl < 34) {
-            AndroidSelector(
+        // API 36 keeps the picker open and needs a "Done" tap to confirm.
+        val androidActionMenuSelector = when {
+            apiLvl >= 36 -> AndroidSelector(
+                text = automation.getGalleryDoneButtonText(),
+                instance = 0
+            )
+            apiLvl < 34 -> AndroidSelector(
                 resourceName = AutomatorConstants.GALLERY_SELECT_BUTTON_RES_ID,
                 instance = 0
             )
-        } else {
-            null
+            else -> null
         }
 
         // Remove instance before creating bySelector, as it's not supported
@@ -330,6 +353,8 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
             androidActionMenuSelector2?.toUiSelector(),
             androidActionMenuSelector2?.toBySelector(),
             androidImageSelector.instance!!.toInt(),
+            // API 36 may auto-confirm without a "Done" button, so tap it best-effort.
+            apiLvl >= 36,
             request.timeoutMillis
         )
     }
@@ -360,7 +385,7 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
         }
         val androidActionMenuSelector = run {
             val (resourceName, text) = when {
-                apiLvl >= 36 -> null to AutomatorConstants.GALLERY_DONE_BUTTON_TEXT
+                apiLvl >= 36 -> null to automation.getGalleryDoneButtonText()
                 apiLvl >= 34 -> AutomatorConstants.GALLERY_ADD_BUTTON_RES_ID to null
                 else -> AutomatorConstants.GALLERY_SELECT_BUTTON_RES_ID to null
             }

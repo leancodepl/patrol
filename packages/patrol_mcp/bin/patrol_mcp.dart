@@ -15,7 +15,7 @@ import 'package:patrol_mcp/src/patrol_session.dart';
 import 'package:patrol_mcp/src/screenshot_service.dart';
 
 /// Version of patrol_mcp. Must be kept in sync with pubspec.yaml.
-const version = '0.2.0';
+const version = '0.2.2';
 
 const double _defaultTimeoutMinutes = 5;
 
@@ -384,7 +384,10 @@ Future<int> _runStdio(McpServer server, PatrolSession patrolSession) async {
     await server.close(); // closes the transport too
   }
 
-  await shutdown().timeout(const Duration(seconds: 10), onTimeout: () => exit(0));
+  await shutdown().timeout(
+    const Duration(seconds: 10),
+    onTimeout: () => exit(0),
+  );
   logger.info('Stopped');
   return 0;
 }

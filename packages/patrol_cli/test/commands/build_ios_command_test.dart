@@ -1,6 +1,8 @@
-import 'dart:io';
+import 'dart:io' as io;
 
 import 'package:args/command_runner.dart';
+import 'package:dispose_scope/dispose_scope.dart';
+import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:path/path.dart' show join;
@@ -9,6 +11,8 @@ import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
+import 'package:platform/platform.dart';
+import 'package:process/process.dart';
 import 'package:test/test.dart';
 
 import '../src/mocks.dart';
@@ -40,7 +44,7 @@ void main() {
       PatrolPubspecConfig.empty(flutterPackageName: 'test_app'),
     );
     registerFallbackValue(MemoryFileSystem().file('test'));
-    registerFallbackValue(Directory.current);
+    registerFallbackValue(io.Directory.current);
   });
 
   group('BuildIOSCommand', () {
@@ -540,6 +544,85 @@ void main() {
 
         verify(() => mockLogger.err('Exception: $error')).called(1);
       });
+
+      group('when invoked from a directory inside the project', () {
+        late FileSystem fs;
+
+        setUp(() {
+          fs = MemoryFileSystem.test();
+          final projectRoot = fs.directory('/example_app')..createSync();
+          fs.currentDirectory = projectRoot.path;
+          fs
+              .file(
+                'build/ios_integ/Build/Products/Runner_iphoneos16.2.xctestrun',
+              )
+              .createSync(recursive: true);
+          fs
+              .file(
+                'build/ios_integ/Build/Products/Runner_iphonesimulator16.2.xctestrun',
+              )
+              .createSync(recursive: true);
+
+          command = BuildIOSCommand(
+            testFinderFactory: mockTestFinderFactory,
+            testBundler: mockTestBundler,
+            dartDefinesReader: mockDartDefinesReader,
+            pubspecReader: mockPubspecReader,
+            iosTestBackend: _NoopBuildIOSTestBackend(
+              processManager: _FakeProcessManager(),
+              platform: FakePlatform(),
+              fs: fs,
+              rootDirectory: projectRoot,
+              parentDisposeScope: DisposeScope(),
+              logger: mockLogger,
+            ),
+            analytics: mockAnalytics,
+            logger: mockLogger,
+            compatibilityChecker: mockCompatibilityChecker,
+          );
+        });
+
+        void cd(String relativePath) {
+          fs.directory(relativePath).createSync(recursive: true);
+          fs.currentDirectory = relativePath;
+        }
+
+        test('succeeds when invoked from ios/', () async {
+          cd('ios');
+
+          expect(await runCommand(), 0);
+
+          verify(
+            () => mockLogger.info(
+              '/example_app/build/ios_integ/Build/Products/Runner_iphoneos16.2.xctestrun (xctestrun file)',
+            ),
+          ).called(1);
+        });
+
+        test('succeeds when invoked from ios/Runner', () async {
+          cd('ios/Runner');
+
+          expect(await runCommand(), 0);
+
+          verify(
+            () => mockLogger.info(
+              '/example_app/build/ios_integ/Build/Products/Runner_iphoneos16.2.xctestrun (xctestrun file)',
+            ),
+          ).called(1);
+        });
+
+        test('succeeds when invoked from ios/ with --simulator', () async {
+          cd('ios');
+
+          expect(await runCommand(['--simulator']), 0);
+
+          verify(
+            () => mockLogger.info(
+              '/example_app/build/ios_integ/Build/Products/Runner_iphonesimulator16.2.xctestrun (xctestrun file)',
+            ),
+          ).called(1);
+        });
+      });
     });
 
     group('printBinaryPaths', () {
@@ -600,3 +683,24 @@ void main() {
     });
   });
 }
+
+/// Skips the real `xcodebuild`/`flutter build` so command tests can exercise
+/// xctestrun lookup (which depends on CWD vs project root).
+class _NoopBuildIOSTestBackend extends IOSTestBackend {
+  _NoopBuildIOSTestBackend({
+    required super.processManager,
+    required super.platform,
+    required super.fs,
+    required super.rootDirectory,
+    required super.parentDisposeScope,
+    required super.logger,
+  });
+
+  @override
+  Future<void> build(IOSAppOptions options) async {}
+
+  @override
+  Future<String> getSdkVersion({required bool real}) async => '16.2';
+}
+
+class _FakeProcessManager extends Fake implements ProcessManager {}

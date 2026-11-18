@@ -1,11 +1,81 @@
+## Unreleased
+
+- Fix `patrol develop --use-prebuilt-apks` failing with `flutter build bundle failed with code 64` on
+  projects with a flavor, by no longer passing `--flavor` to `flutter build bundle`, which defines no
+  such option. Only a checkout that had never generated the Dart plugin registrant was affected, which
+  is every fresh CI checkout. (#3297)
+- `patrol coverage pull` now reads coverage from runs with `clearPackageData:true` (one run per
+  test, written by `patrol` on Android 12+) and no longer refuses those BrowserStack builds. A
+  session that kept only the first test's run (older Android) still fails. (#3359)
+
+## 4.9.0
+
+- Add `patrol coverage pull`, which splits the JaCoCo `.ec` coverage of a patrol Android run into a
+  standard `jacoco.exec` and a Dart `patrol_lcov.info`, merging duplicate records across tests and
+  shards. `--input <file or directory>` reads local `.ec` files (e.g. emulator.wtf or Firebase Test
+  Lab outputs), and `--browserstack-build-id` downloads them from BrowserStack. The Dart coverage
+  comes from `patrol` 4.11.0 or newer. See the
+  [docs](https://patrol.leancode.co/cli-commands/coverage). (#3066)
+- Run a server on the host during iOS simulator runs, which the experimental
+  `$.platform.ios.setFoldPosture` uses to fold a foldable simulator such as the iPhone Duo. Requires
+  `patrol` 4.11.0 or newer. (#3336)
+- Allow `equatable` 3.x by widening the constraint to `>=2.1.0 <4.0.0`, and require `patrol_log`
+  ^0.10.2, which allows it too. Resolution stays on 2.x until `cli_completion` supports 3.x. (#3322)
+- Fix `idevicesyslog` not being scoped to the device under test, so concurrent runs on a host with
+  several real iOS devices attached all streamed the same device's log, corrupting the step
+  display, `--show-flutter-logs` output and the test summary. (#3246)
+- Fix `--flutter-command` and `PATROL_FLUTTER_COMMAND` splitting quoted text on spaces, so a quoted
+  Flutter path with spaces works. Add `splitCommandLine` to the public API. (#3315)
+- Fix `patrol test` on web timing out when the Flutter web server serves https (set up with
+  `web_dev_config.yaml`): the server URL is now detected, and the readiness check accepts a
+  self-signed certificate from that server. (#3314)
+
+## 4.8.0
+
+- Build-time test discovery (experimental) now generates one native test class per Dart test file,
+  which renames every generated native test — regenerate any saved shard lists, native test filters
+  or dashboard mappings. Requires `patrol` 4.10.0 or newer. See the
+  [docs](https://patrol.leancode.co/documentation/ci/build-time-test-discovery).
+- Add `patrol build android --develop`, which builds the APKs a develop session needs so they can
+  be handed to another machine. (#3266)
+- Add `patrol develop --use-prebuilt-apks <dir>` (Android only), which runs a develop session
+  against those APKs instead of building with Gradle. (#3266)
+- Add support for a test file path in `--only`, which runs the whole file.
+- Add native screenshots on Android, enabled with `screenshot_on_failure` in the pubspec's `patrol`
+  section and collected by `patrol test` into `<test-directory>/screenshots`. Requires `patrol`
+  4.10.0 or newer. See the [docs](https://patrol.leancode.co/cli-commands/test#screenshots). (#3222)
+- Allow the latest `package_config`, `cli_completion` and `pub_updater`. (#3225)
+- Constrain `platform` below 3.2.0, which ships a non-backwards-compatible API. (#3288)
+- Report `--only` entries that match nothing instead of dropping them silently.
+- Report a `RunnerUITests.m` that disagrees with the build-time discovery setting, instead of
+  failing the build on a missing `.inc`.
+- Fix `patrolTargetPlatform` reporting the host's platform during build-time discovery. (#3241)
+- Fix `patrol develop` ignoring build-time test discovery.
+- Fix looking for the `.xctestrun` file in the wrong place when building iOS tests from outside the
+  project root. (#3250)
+- Fix hot restart dying on flavored `patrol develop`, which regressed in 4.6.1. (#3223)
+- Fix flavored iOS `patrol develop` losing logs on devices and failing on simulators. (#2465, #3279)
+- Fix `patrol develop` crashing on hosts whose terminal modes can't be changed. (#3278)
+
+## 4.7.0
+
+- **Requires `patrol` 4.9.0 or newer.**
+- Pass `-Ppatrol-enabled=true` to Android Gradle builds so apps can detect a Patrol build.
+- Support running Patrol tests on multiple iOS simulators in parallel, by reading the native automation ports at runtime in the generated test bundle. See the [Marathon integration guide](https://patrol.leancode.co/documentation/integrations/marathon).
+- Add experimental build-time test discovery, enabled with `patrol.emit_test_manifest` in
+  pubspec.yaml (or `--emit-test-manifest`): Dart tests are discovered while building and each
+  one becomes a real, individually-selectable native test, which makes per-test sharding on
+  device farms possible. (#3197)
+- Add `patrol test-without-building`, which runs the tests from a previous `patrol build`
+  without rebuilding, optionally just one of them with `--only`. Requires build-time test
+  discovery. (#3197)
+- Add `--record-video` flag to `patrol test` and `patrol develop` to record a video per test case (Android and iOS simulators). (#2741)
+- Fix `patrol test`/`patrol develop` not reading logs from iOS simulators, by streaming the simulator's log via `simctl spawn`. (#3198)
+
 ## 4.6.1
 
 - Fix `patrol develop` printing "You must specify a --flavor option" on iOS/macOS projects with schemes, by passing the flavor to `flutter attach`.
 - Fail fast with a clear error instead of hanging on gradlew when the Android SDK can't be located (`sdk.dir` missing from `android/local.properties` after the config-only build). (#3168)
-
-## Unreleased
-
-- Add `--record-video` flag to `patrol test` and `patrol develop` to record a video per test case (Android and iOS simulators). (#2741)
 
 ## 4.6.0
 

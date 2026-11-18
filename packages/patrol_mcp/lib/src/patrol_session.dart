@@ -211,6 +211,11 @@ final class PatrolSession {
   String? _finishWarning;
 
   Completer<void>? _finishCompleter;
+
+  /// The previous session's `DevelopService.run()`; it keeps running past
+  /// quit (finalizer uninstall, entrypoint proxy cleanup) and must finish
+  /// before a new session generates its own entrypoint.
+  Future<void>? _runFuture;
   DisposeScope? _disposeScope;
   StreamController<List<int>>? _stdinController;
   DevelopService? _developService;
@@ -247,6 +252,23 @@ final class PatrolSession {
     }
 
     final logger = Logger('PatrolSession');
+
+    final previousRun = _runFuture;
+    if (previousRun != null) {
+      logger.fine('Waiting for the previous develop session to finish');
+      try {
+        await previousRun.timeout(const Duration(seconds: 30));
+      } on TimeoutException {
+        // Starting anyway would reintroduce the race this wait exists to
+        // prevent: the old DevelopService could still dispose shared session
+        // state and delete the entrypoint the new session is about to
+        // generate.
+        return 'The previous develop session is still shutting down (waited '
+            '30 s). Wait a moment and call run again; restart the MCP server '
+            'if this persists.';
+      }
+      _runFuture = null;
+    }
 
     await _startLogStreamingAndTerminal();
 
@@ -401,27 +423,36 @@ final class PatrolSession {
       // session (gradle/xcodebuild + flutter attach stay alive for hot
       // restart). Test completion is detected by callbacks, not by run()
       // returning.
-      unawaited(
-        Future.any([developService.run(options), exitCompleter.future])
-            .then((_) {
-              // Session ended (e.g. user sent quit). If tests haven't already
-              // been marked as done by callbacks, mark idle.
-              if (_testState == TestState.running) {
-                _testState = TestState.idle;
-              }
-              _completeFinish();
-              unawaited(_cleanup());
-            })
-            .catchError((Object err, StackTrace st) {
-              logger.warning('Develop session error: $err\n$st');
-              _pushOutput('ERROR: $err');
-              if (_testState == TestState.running) {
-                _testState = TestState.finishedFailed;
-              }
-              _completeFinish();
-              unawaited(_cleanup());
-            }),
-      );
+      final runFuture = developService.run(options);
+      // The chain below is this session's full teardown: _cleanup() plus
+      // run()'s own finally block (finalizer uninstall, entrypoint proxy
+      // cleanup). _start awaits it (via _runFuture) before a new session may
+      // start, so the old session can't dispose shared state or delete the
+      // new session's freshly generated entrypoint from under it.
+      final sessionDone = Future.any([runFuture, exitCompleter.future])
+          .then((_) async {
+            // Session ended (e.g. user sent quit). If tests haven't already
+            // been marked as done by callbacks, mark idle.
+            if (_testState == TestState.running) {
+              _testState = TestState.idle;
+            }
+            _completeFinish();
+            await _cleanup();
+            // On quit, exitCompleter settles this chain while run() is still
+            // in its finally block - wait for that too.
+            await runFuture;
+          })
+          .catchError((Object err, StackTrace st) async {
+            logger.warning('Develop session error: $err\n$st');
+            _pushOutput('ERROR: $err');
+            if (_testState == TestState.running) {
+              _testState = TestState.finishedFailed;
+            }
+            _completeFinish();
+            await _cleanup();
+          });
+      _runFuture = sessionDone;
+      unawaited(sessionDone);
     });
   }
 

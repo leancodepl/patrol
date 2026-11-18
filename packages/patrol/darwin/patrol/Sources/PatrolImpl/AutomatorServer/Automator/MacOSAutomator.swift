@@ -39,14 +39,10 @@
     }
 
     private func getApp(withBundleId bundleId: String) throws -> XCUIApplication {
-      let app = XCUIApplication(bundleIdentifier: bundleId)
-      // TODO: Doesn't work
-      // See https://stackoverflow.com/questions/73976961/how-to-check-if-any-app-is-installed-during-xctest
-      // guard app.exists else {
-      //   throw PatrolError.appNotInstalled(bundleId)
-      // }
-
-      return app
+      if bundleId.isEmpty {
+        return XCUIApplication()
+      }
+      return XCUIApplication(bundleIdentifier: bundleId)
     }
 
     func pressHome() throws {
@@ -88,8 +84,30 @@
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws {
-      try runAction("tap") {
-        throw PatrolError.methodNotImplemented("tap")
+      var view = createLogMessage(element: "view", from: selector)
+      view += " in app \(bundleId)"
+
+      try runAction("tapping on \(view)") {
+        let app = try self.getApp(withBundleId: bundleId)
+        // Activating the app while a menu is open closes that menu. The
+        // top-level menu-bar tap activates the app; subsequent menu-item taps
+        // must preserve the open menu hierarchy.
+        if selector.elementType != .menuItem {
+          app.activate()
+        }
+
+        Logger.shared.i("waiting for existence of \(view)")
+        guard
+          let element = self.waitForTapTarget(
+            app: app,
+            selector: selector,
+            index: selector.instance ?? 0,
+            timeout: timeout ?? self.timeout)
+        else {
+          throw PatrolError.viewNotExists(view)
+        }
+
+        element.forceClick()
       }
     }
 
@@ -148,8 +166,20 @@
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws {
-      try runAction("waitUntilVisible") {
-        throw PatrolError.methodNotImplemented("waitUntilVisible")
+      let view = createLogMessage(element: "view", from: selector)
+      try runAction(
+        "waiting until \(view) in app \(bundleId) becomes visible"
+      ) {
+        let app = try self.getApp(withBundleId: bundleId)
+        app.activate()
+
+        let query = app.descendants(matching: .any).containing(selector.toNSPredicate())
+        guard
+          let element = self.waitFor(
+            query: query, index: selector.instance ?? 0, timeout: timeout ?? self.timeout)
+        else {
+          throw PatrolError.viewNotExists(view)
+        }
       }
     }
 
@@ -352,6 +382,122 @@
       return false
     }
 
+    @discardableResult
+    private func waitFor(query: XCUIElementQuery, index: Int, timeout: TimeInterval)
+      -> XCUIElement?
+    {
+      waitFor(index: index, timeout: timeout) {
+        query
+      }
+    }
+
+    /// Resolves the tap target, re-evaluating the query each poll so newly
+    /// opened menus and alerts are picked up.
+    @discardableResult
+    private func waitForTapTarget(
+      app: XCUIApplication,
+      selector: IOSSelector,
+      index: Int,
+      timeout: TimeInterval
+    ) -> XCUIElement? {
+      waitFor(index: index, timeout: timeout) {
+        self.queryForTap(app: app, selector: selector)
+      }
+    }
+
+    @discardableResult
+    private func waitFor(
+      index: Int,
+      timeout: TimeInterval,
+      query: () -> XCUIElementQuery
+    ) -> XCUIElement? {
+      var foundElement: XCUIElement?
+      let startTime = Date()
+
+      while Date().timeIntervalSince(startTime) < timeout {
+        let elements = query().allElementsBoundByIndex.filter { $0.exists }
+        if index < elements.count {
+          foundElement = elements[index]
+          break
+        }
+        sleep(1)
+      }
+
+      return foundElement
+    }
+
+    /// Scopes menu-item lookups to the currently open menu and button lookups
+    /// to a visible alert / dialog / sheet when one is present.
+    private func queryForTap(app: XCUIApplication, selector: IOSSelector) -> XCUIElementQuery {
+      let predicate = selector.toNSPredicate()
+
+      if selector.elementType == .menuBarItem {
+        return app.menuBars.menuBarItems.matching(predicate)
+      }
+
+      if selector.elementType == .menuItem {
+        let openMenus = app.descendants(matching: .menu).allElementsBoundByIndex.filter {
+          $0.exists && $0.isHittable
+        }
+        // Prefer the deepest open menu so `tapMenu` follows the path instead of
+        // matching a duplicate label in another (closed) menu.
+        if let menu = openMenus.last {
+          return menu.menuItems.matching(predicate)
+        }
+        // No open menu yet; keep the query empty-ish so waitFor keeps polling.
+        return app.menuBars.menuItems.matching(NSPredicate(value: false))
+      }
+
+      if selector.elementType == .button, let container = visibleAlertContainer(in: app) {
+        return container.descendants(matching: .button).matching(predicate)
+      }
+
+      return app.descendants(matching: .any).matching(predicate)
+    }
+
+    private func visibleAlertContainer(in app: XCUIApplication) -> XCUIElement? {
+      let types: [XCUIElement.ElementType] = [.dialog, .sheet, .alert]
+      for type in types {
+        if let element = app.descendants(matching: type).allElementsBoundByIndex.first(where: {
+          $0.exists
+        }) {
+          return element
+        }
+      }
+      return nil
+    }
+
+    private func createLogMessage(element: String, from selector: IOSSelector) -> String {
+      var logMessage = element
+
+      if let text = selector.text {
+        logMessage += " with text '\(text)'"
+      }
+      if let startsWith = selector.textStartsWith {
+        logMessage += " starting with '\(startsWith)'"
+      }
+      if let contains = selector.textContains {
+        logMessage += " containing '\(contains)'"
+      }
+      if let instance = selector.instance {
+        logMessage += " with instance '\(instance)'"
+      }
+      if let elementType = selector.elementType {
+        logMessage += " with elementType '\(elementType)'"
+      }
+      if let identifier = selector.identifier {
+        logMessage += " with identifier '\(identifier)'"
+      }
+      if let label = selector.label {
+        logMessage += " with label '\(label)'"
+      }
+      if let title = selector.title {
+        logMessage += " with title '\(title)'"
+      }
+
+      return logMessage
+    }
+
     private func runAction<T>(_ log: String, block: @escaping () throws -> T) rethrows -> T {
       return try DispatchQueue.main.sync {
         Logger.shared.i("\(log)...")
@@ -359,6 +505,65 @@
         Logger.shared.i("done \(log)")
         Logger.shared.i("result: \(result)")
         return result
+      }
+    }
+  }
+
+  class SystemDialogMonitor: NSObject, XCTestObservation {
+    private static let observer = SystemDialogMonitor()
+
+    private static let localNetwork = "to find devices on local networks"
+
+    static func register() {
+      XCTestObservationCenter.shared.addTestObserver(observer)
+    }
+
+    func testCaseWillStart(_ testCase: XCTestCase) {
+      testCase.addUIInterruptionMonitor(withDescription: "Local Network prompt") { dialog in
+        let prompt = dialog.descendants(matching: .staticText)
+          .matching(
+            NSPredicate(
+              format: "value CONTAINS[c] %@ OR label CONTAINS[c] %@",
+              Self.localNetwork,
+              Self.localNetwork
+            )
+          )
+        let allow = (try? Localization.getLocalizedString(key: "allow")) ?? "Allow"
+        let allowPredicate = NSPredicate(
+          format: "label == %@ OR title == %@ OR value == %@",
+          allow,
+          allow,
+          allow
+        )
+        let buttons = dialog.descendants(matching: .button)
+        let accept = buttons.matching(allowPredicate).firstMatch
+
+        guard prompt.firstMatch.exists else {
+          return false
+        }
+
+        guard accept.exists else {
+          let seen = buttons.allElementsBoundByIndex.map {
+            "\($0.identifier)/\($0.label)/\($0.title)"
+          }
+          Logger.shared.i("No '\(allow)' button in the Local Network prompt, saw: \(seen)")
+          return false
+        }
+
+        Logger.shared.i("Accepting the Local Network prompt")
+        accept.click()
+        return true
+      }
+    }
+  }
+
+  extension XCUIElement {
+    fileprivate func forceClick() {
+      if self.isHittable {
+        self.click()
+      } else {
+        let coordinate = self.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+        coordinate.click()
       }
     }
   }

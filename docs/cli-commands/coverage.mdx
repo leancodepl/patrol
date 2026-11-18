@@ -1,0 +1,38 @@
+---
+title: coverage
+hideNext: true
+---
+
+### Synopsis
+
+Turn the coverage of a device-farm run into `jacoco.exec` and `patrol_lcov.info`.
+
+```
+patrol coverage pull --input <file or directory>
+patrol coverage pull --browserstack-build-id <build id>
+```
+
+To see all available options and flags, run `patrol coverage pull --help`.
+
+### Description
+
+When an app is built with `--dart-define=PATROL_BS_COVERAGE=true` and its
+instrumentation runs with coverage, Patrol embeds Dart coverage into the JaCoCo
+`.ec` files the device farm collects. `patrol coverage pull` splits them back
+into:
+
+- `<output>/jacoco.exec` – the standard JaCoCo data (Java/Kotlin), viewable in
+  Android Studio.
+- `<output>/patrol_lcov.info` – Dart line coverage in LCOV format, merged
+  across all tests and shards.
+
+Use `--input` for `.ec` files already on disk, such as the outputs of
+[emulator.wtf] or [Firebase Test Lab]. Use `--browserstack-build-id` to download
+them from BrowserStack; without `--browserstack-session-id`, every session
+(shard) in the build is merged.
+
+See the [BrowserStack], [emulator.wtf] and [Firebase Test Lab] guides for the device-side setup.
+
+[BrowserStack]: /documentation/integrations/browserstack#dart-code-coverage-android
+[emulator.wtf]: /documentation/integrations/emulator-wtf#dart-code-coverage
+[Firebase Test Lab]: /documentation/integrations/firebase-test-lab#dart-code-coverage-android

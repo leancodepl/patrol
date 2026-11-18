@@ -17,7 +17,7 @@ Future<List<Device>> listAttachedDevices({
     ...flutterCommand.arguments,
     'devices',
     '--machine',
-  ]);
+  ], runInShell: true);
   if (result.exitCode != 0) {
     throw Exception(
       'flutter devices exited with code ${result.exitCode}: ${result.stderr}',

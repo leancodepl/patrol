@@ -95,6 +95,8 @@ await $.platform.web.enterTextWeb(selector: inputSelector, text: 'Hello from Pat
 await $.platform.web.tapWeb(selector: buttonSelector, iframeSelector: iframeSelector);
 // Window operations
 await $.platform.web.resizeWindow(size: Size(800, 600));
+// Screenshots
+await $.takeNativeScreenshot('my_tag');
 ```
 
 See [Multi-page support](#multi-page-support) below for working with multiple browser pages (tabs).

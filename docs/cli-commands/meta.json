@@ -5,9 +5,11 @@
     "---CLI commands---",
     "index",
     "test",
+    "test-without-building",
     "build",
     "doctor",
     "update",
-    "devices"
+    "devices",
+    "coverage"
   ]
 }

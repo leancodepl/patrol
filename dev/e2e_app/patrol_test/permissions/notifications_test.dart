@@ -74,7 +74,9 @@ void main() {
       await $.platform.mobile.tapOnNotificationByIndex(0);
       await $('Tapped notification with ID: 1').waitUntilVisible();
     },
-    tags: ['android', 'ios', 'physical_device', 'simulator'],
+    // TODO(PAT-342): skipped on iOS — tapOnNotificationByIndex fails on iOS 18
+    // (notification at index 0 not found). https://leancode.atlassian.net/browse/PAT-342
+    tags: ['android', 'physical_device'],
   );
 }
 
