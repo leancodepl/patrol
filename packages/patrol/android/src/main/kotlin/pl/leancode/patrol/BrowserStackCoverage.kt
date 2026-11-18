@@ -1,8 +1,13 @@
 package pl.leancode.patrol
 
+import android.app.Instrumentation
 import android.content.Context
+import android.os.Build
+import android.os.ParcelFileDescriptor
+import android.os.Process
 import android.system.ErrnoException
 import android.system.Os
+import androidx.test.uiautomator.Configurator
 import java.io.DataOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -19,11 +24,14 @@ import java.io.FileOutputStream
  * 65535-byte cap on JaCoCo UTF strings, and append a series of `SessionInfo`
  * blocks to the existing `coverage.ec`. The header is left
  * untouched (JaCoCo wrote it). `<filesDir>` outlives a process restart only
- * without `clearPackageData`, which coverage runs require anyway.
+ * without `clearPackageData`; with it, each test appends its own run (see
+ * [appendViaShell]).
  *
  * Each appended block uses the id format:
- *   `PATROL_DART_COV:<sequence>:<total>:<base64_chunk>`
- * which `patrol coverage pull` reassembles on the host side.
+ *   `PATROL_DART_COV:[<runId>:]<sequence>:<total>:<base64_chunk>`
+ * which `patrol coverage pull` reassembles on the host side, per `runId`.
+ * The runId is only written in shell-append mode, so a single-run file stays
+ * readable by `patrol_cli` releases that predate it.
  */
 internal object BrowserStackCoverage {
     private const val TAG = "BrowserStackCoverage"
@@ -58,9 +66,11 @@ internal object BrowserStackCoverage {
     /**
      * Reads any LCOV files in `<filesDir>/patrol_coverage/`, encodes them, and
      * appends JaCoCo session blocks to [coverageFile]. Safe to call even when
-     * no Dart coverage was produced.
+     * no Dart coverage was produced. [runId] tags the chunks when one file
+     * holds several runs; no ':' allowed, the host splits the id on it.
      */
-    fun appendDartCoverage(context: Context, coverageFile: File) {
+    fun appendDartCoverage(context: Context, coverageFile: File, runId: String?) {
+        require(runId?.contains(':') != true) { "runId must not contain ':': $runId" }
         val t0 = android.os.SystemClock.elapsedRealtime()
         val sourceDir = dartCoverageDir(context)
         if (!sourceDir.exists() || !sourceDir.isDirectory) {
@@ -104,12 +114,13 @@ internal object BrowserStackCoverage {
         FileOutputStream(coverageFile, /* append = */ true).use { fos ->
             DataOutputStream(fos).use { out ->
                 val now = System.currentTimeMillis()
+                val runPrefix = if (runId == null) "" else "$runId:"
                 chunks.forEachIndexed { index, chunk ->
                     val b64 = android.util.Base64.encodeToString(
                         chunk,
                         android.util.Base64.NO_WRAP
                     )
-                    val id = "$ID_PREFIX${index + 1}:${chunks.size}:$b64"
+                    val id = "$ID_PREFIX$runPrefix${index + 1}:${chunks.size}:$b64"
                     out.writeByte(BLOCK_SESSIONINFO.toInt())
                     out.writeUTF(id)
                     out.writeLong(now)
@@ -121,6 +132,65 @@ internal object BrowserStackCoverage {
         }
         Logger.i("$TAG: t+${android.os.SystemClock.elapsedRealtime() - t0}ms append complete, file now ${coverageFile.length()} bytes")
     }
+
+    /** Deletes LCOV already handed off, so the next append in this process doesn't repeat it. */
+    fun clearDartCoverage(context: Context) {
+        dartCoverageDir(context).listFiles()?.forEach { it.delete() }
+    }
+
+    /** Whether [appendViaShell] can run here (`executeShellCommandRw` is API 31+). */
+    fun canAppendViaShell(): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+
+    /** A run id unique per append: wall clock plus this process's pid. */
+    fun newRunId(): String = "${System.currentTimeMillis()}-${Process.myPid()}"
+
+    /**
+     * Appends [bytes] to [path] as the `shell` user. Unlike the app, `shell`
+     * can still write a shared-storage file that `pm clear` orphaned, so every
+     * test under `clearPackageData` adds its own block instead of hitting EACCES.
+     * Throws when the append can't be confirmed, so the caller keeps its data.
+     * A short append is cut back off first, so the file stays readable.
+     */
+    fun appendViaShell(instrumentation: Instrumentation, path: String, bytes: ByteArray) {
+        // Commands are split on whitespace, and `path` lands inside sh quotes.
+        require(path.none { it.isWhitespace() || it == '\'' }) { "unsupported coverage path: $path" }
+        val automation = instrumentation.getUiAutomation(Configurator.getInstance().uiAutomationFlags)
+        File(path).parent?.let { runShell(automation, "mkdir -p $it") }
+        // An existing file always has a size, so a missing one means stat failed.
+        runShell(automation, "touch $path")
+
+        // Stream into a side file first: if this process dies mid-write, only
+        // that file is torn, never the coverage file every earlier test is in.
+        val part = "$path.patrol-part"
+        val fds = automation.executeShellCommandRw("sh -c cat>'$part'")
+        ParcelFileDescriptor.AutoCloseInputStream(fds[0]).use { stdout ->
+            ParcelFileDescriptor.AutoCloseOutputStream(fds[1]).use { it.write(bytes) }
+            // stdout hits EOF once `cat` exits, i.e. after the write landed.
+            stdout.readBytes()
+        }
+        val staged = fileSize(automation, part)
+        check(staged == bytes.size.toLong()) { "staged $staged of ${bytes.size} bytes in $part" }
+
+        val before = fileSize(automation, path) ?: error("could not stat $path")
+        runShell(automation, "sh -c cat<'$part'>>'$path'")
+        val after = fileSize(automation, path)
+        runShell(automation, "rm -f $part")
+        if (after != before + bytes.size) {
+            // A short append (e.g. ENOSPC) leaves a torn block that makes every
+            // run in the file unreadable, including earlier tests'.
+            runShell(automation, "truncate -s $before $path")
+            error("shell append to $path failed ($before -> $after), restored to ${fileSize(automation, path)}")
+        }
+        Logger.i("$TAG: shell-appended ${bytes.size} bytes to $path ($before -> $after)")
+    }
+
+    /** Size of [path] as the shell user sees it, null when stat prints none. */
+    private fun fileSize(automation: android.app.UiAutomation, path: String): Long? =
+        runShell(automation, "stat -c %s $path").trim().toLongOrNull()
+
+    private fun runShell(automation: android.app.UiAutomation, command: String): String =
+        ParcelFileDescriptor.AutoCloseInputStream(automation.executeShellCommand(command))
+            .use { it.readBytes().toString(Charsets.UTF_8) }
 
     private fun chunkBytes(bytes: ByteArray, chunkSize: Int): List<ByteArray> {
         if (bytes.isEmpty()) return emptyList()

@@ -228,6 +228,14 @@ packages:
       verify(() => logger.info(exception.usage)).called(1);
     });
 
+    test('rejects --tags in develop', () async {
+      final result = await commandRunner.run(['develop', '--tags', 'smoke']);
+      expect(result, equals(1));
+      verify(
+        () => logger.err('Could not find an option named "--tags".'),
+      ).called(1);
+    });
+
     test('prints usage when no command is passed', () async {
       final result = await commandRunner.run([]);
       expect(result, equals(0));
