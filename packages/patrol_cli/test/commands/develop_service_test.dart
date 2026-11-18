@@ -148,6 +148,7 @@ void main() {
       ).thenAnswer((_) async => [androidDevice]);
 
       when(() => androidTestBackend.build(any())).thenAnswer((_) async {});
+      when(androidTestBackend.startAdbServer).thenAnswer((_) async {});
     });
 
     DevelopService buildService({void Function(Entry entry)? onLogEntry}) =>
@@ -575,6 +576,207 @@ void main() {
         );
         verifyNever(() => androidTestBackend.build(any()));
       });
+    });
+
+    test(
+      'stops the app and its instrumentation on the device on quit',
+      () async {
+        final backendNeverExits = Completer<void>();
+        when(
+          () => androidTestBackend.execute(
+            any(),
+            any(),
+            interruptible: any(named: 'interruptible'),
+            showFlutterLogs: any(named: 'showFlutterLogs'),
+            hideTestSteps: any(named: 'hideTestSteps'),
+            flavor: any(named: 'flavor'),
+            clearTestSteps: any(named: 'clearTestSteps'),
+            onLogEntry: any(named: 'onLogEntry'),
+            videoConfig: any(named: 'videoConfig'),
+          ),
+        ).thenAnswer((_) => backendNeverExits.future);
+
+        when(
+          () => androidTestBackend.stopInstrumentation(any(), any()),
+        ).thenAnswer((_) async {});
+
+        // onQuit is what pressing "q" ends up running.
+        Future<void> Function()? onQuit;
+        final attachNeverCompletes = Completer<void>();
+        when(
+          () => flutterTool.attachForHotRestart(
+            flutterCommand: any(named: 'flutterCommand'),
+            deviceId: any(named: 'deviceId'),
+            target: any(named: 'target'),
+            appId: any(named: 'appId'),
+            dartDefines: any(named: 'dartDefines'),
+            openDevtools: any(named: 'openDevtools'),
+            attachUsingUrl: any(named: 'attachUsingUrl'),
+            forwardFlutterLogs: any(named: 'forwardFlutterLogs'),
+            onQuit: any(named: 'onQuit'),
+          ),
+        ).thenAnswer((invocation) {
+          onQuit =
+              invocation.namedArguments[const Symbol('onQuit')]
+                  as Future<void> Function()?;
+          return attachNeverCompletes.future;
+        });
+
+        unawaited(
+          buildService().run(
+            const DevelopOptions(
+              target: 'onboarding_test.dart',
+              flutterCommand: FlutterCommand('flutter'),
+              buildMode: BuildMode.debug,
+              testServerPort: 8081,
+              appServerPort: 8080,
+              generateBundle: false,
+              uninstall: false,
+              checkCompatibility: false,
+              packageName: 'com.example.app',
+            ),
+          ),
+        );
+
+        await _waitFor(() => onQuit != null);
+        await onQuit!();
+
+        verify(
+          () => androidTestBackend.stopInstrumentation(
+            'com.example.app',
+            androidDevice,
+          ),
+        ).called(1);
+      },
+    );
+
+    test('starts the adb server before anything that runs adb', () async {
+      var executed = false;
+      when(
+        () => androidTestBackend.execute(
+          any(),
+          any(),
+          interruptible: any(named: 'interruptible'),
+          showFlutterLogs: any(named: 'showFlutterLogs'),
+          hideTestSteps: any(named: 'hideTestSteps'),
+          flavor: any(named: 'flavor'),
+          clearTestSteps: any(named: 'clearTestSteps'),
+          onLogEntry: any(named: 'onLogEntry'),
+          videoConfig: any(named: 'videoConfig'),
+        ),
+      ).thenAnswer((_) {
+        executed = true;
+        return Completer<void>().future;
+      });
+      when(
+        () => flutterTool.attachForHotRestart(
+          flutterCommand: any(named: 'flutterCommand'),
+          deviceId: any(named: 'deviceId'),
+          target: any(named: 'target'),
+          appId: any(named: 'appId'),
+          dartDefines: any(named: 'dartDefines'),
+          openDevtools: any(named: 'openDevtools'),
+          attachUsingUrl: any(named: 'attachUsingUrl'),
+          forwardFlutterLogs: any(named: 'forwardFlutterLogs'),
+          onQuit: any(named: 'onQuit'),
+        ),
+      ).thenAnswer((_) => Completer<void>().future);
+
+      unawaited(
+        buildService().run(
+          const DevelopOptions(
+            target: 'onboarding_test.dart',
+            flutterCommand: FlutterCommand('flutter'),
+            buildMode: BuildMode.debug,
+            testServerPort: 8081,
+            appServerPort: 8080,
+            generateBundle: false,
+            uninstall: false,
+            checkCompatibility: false,
+            packageName: 'com.example.app',
+          ),
+        ),
+      );
+
+      await _waitFor(() => executed);
+
+      verifyInOrder([
+        androidTestBackend.startAdbServer,
+        () => androidTestBackend.execute(
+          any(),
+          any(),
+          interruptible: any(named: 'interruptible'),
+          showFlutterLogs: any(named: 'showFlutterLogs'),
+          hideTestSteps: any(named: 'hideTestSteps'),
+          flavor: any(named: 'flavor'),
+          clearTestSteps: any(named: 'clearTestSteps'),
+          onLogEntry: any(named: 'onLogEntry'),
+          videoConfig: any(named: 'videoConfig'),
+        ),
+      ]);
+    });
+
+    test('ends normally when the build fails because of a quit', () async {
+      final backend = Completer<void>();
+      when(
+        () => androidTestBackend.execute(
+          any(),
+          any(),
+          interruptible: any(named: 'interruptible'),
+          showFlutterLogs: any(named: 'showFlutterLogs'),
+          hideTestSteps: any(named: 'hideTestSteps'),
+          flavor: any(named: 'flavor'),
+          clearTestSteps: any(named: 'clearTestSteps'),
+          onLogEntry: any(named: 'onLogEntry'),
+          videoConfig: any(named: 'videoConfig'),
+        ),
+      ).thenAnswer((_) => backend.future);
+
+      // Stopping the instrumentation is what makes Gradle fail the build.
+      when(
+        () => androidTestBackend.stopInstrumentation(any(), any()),
+      ).thenAnswer((_) async {
+        backend.completeError(Exception('connectedAndroidTest failed'));
+      });
+
+      Future<void> Function()? onQuit;
+      when(
+        () => flutterTool.attachForHotRestart(
+          flutterCommand: any(named: 'flutterCommand'),
+          deviceId: any(named: 'deviceId'),
+          target: any(named: 'target'),
+          appId: any(named: 'appId'),
+          dartDefines: any(named: 'dartDefines'),
+          openDevtools: any(named: 'openDevtools'),
+          attachUsingUrl: any(named: 'attachUsingUrl'),
+          forwardFlutterLogs: any(named: 'forwardFlutterLogs'),
+          onQuit: any(named: 'onQuit'),
+        ),
+      ).thenAnswer((invocation) async {
+        onQuit =
+            invocation.namedArguments[const Symbol('onQuit')]
+                as Future<void> Function()?;
+      });
+
+      final run = buildService().run(
+        const DevelopOptions(
+          target: 'onboarding_test.dart',
+          flutterCommand: FlutterCommand('flutter'),
+          buildMode: BuildMode.debug,
+          testServerPort: 8081,
+          appServerPort: 8080,
+          generateBundle: false,
+          uninstall: false,
+          checkCompatibility: false,
+          packageName: 'com.example.app',
+        ),
+      );
+
+      await _waitFor(() => onQuit != null);
+      await onQuit!();
+
+      await expectLater(run, completes);
+      verifyNever(() => logger.err(any()));
     });
 
     group('iOS logs', () {

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io' as io;
 import 'dart:io' show exit;
 
-import 'package:dispose_scope/dispose_scope.dart';
+import 'package:dispose_scope/dispose_scope.dart' hide ProcessDisposed;
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/base/logger.dart';
@@ -106,8 +106,10 @@ class FlutterTool {
       if (previousStdinModes != null) {
         try {
           revertInteractiveMode(previousStdinModes);
-        } on io.StdinException catch (err) {
-          _logger.detail('Could not restore terminal modes: $err');
+        } catch (err) {
+          // The terminal outlives us; failing to restore it must not stop the
+          // cleanup below, nor be reported as the cleanup failing.
+          _logger.detail('Could not restore the terminal: $err');
         }
       }
       if (onQuit != null) {
@@ -197,7 +199,7 @@ class FlutterTool {
                 '${dartDefine.key}=${dartDefine.value}',
               ],
             ])
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
       _attachProcess = process;
 
       final completer = Completer<void>();
@@ -242,7 +244,6 @@ class FlutterTool {
               _logger.success(helpText.toString());
             } else if (char == 'q' || char == 'Q') {
               _logger.success('Quitting process...');
-              process.kill();
               if (!completer.isCompleted) {
                 completer.complete();
               }
@@ -345,7 +346,7 @@ class FlutterTool {
               '--device-id',
               deviceId,
             ], runInShell: true)
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
 
       final completer = Completer<void>();
       scope.addDispose(() {
@@ -433,7 +434,9 @@ class FlutterTool {
   }
 
   void revertInteractiveMode(StdinModes stdinModes) {
-    // stdin may already be closed (e.g. after Ctrl+C).
+    // Windows allows setting echoMode only while lineMode is enabled.
+    // stdin may already be closed (e.g. after Ctrl+C); the terminal is going
+    // away anyway, so a failure here is harmless.
     try {
       io.stdin.lineMode = stdinModes.lineMode;
     } on io.StdinException catch (err) {

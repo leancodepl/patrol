@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io' as io;
 import 'dart:io';
 
+import 'package:dispose_scope/dispose_scope.dart' hide ProcessDisposed;
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:meta/meta.dart';
 import 'package:package_config/package_config.dart';
@@ -733,7 +734,7 @@ class WebTestBackend {
               },
               runInShell: true,
             )
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
 
       final isShardedRun = (options.workers ?? 0) > 1;
       if (isShardedRun) {
