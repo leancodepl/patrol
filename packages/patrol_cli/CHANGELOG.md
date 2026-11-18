@@ -8,6 +8,10 @@
   test, written by `patrol` on Android 12+) and no longer refuses those BrowserStack builds. A
   session that kept only the first test's run (older Android) still fails. (#3359)
 
+- **BREAKING CHANGE**
+  - Remove `--tags` from `patrol develop`. It was accepted but never applied, so a session ran
+    every test in the file. (#3382)
+
 ## 4.9.0
 
 - Add `patrol coverage pull`, which splits the JaCoCo `.ec` coverage of a patrol Android run into a
