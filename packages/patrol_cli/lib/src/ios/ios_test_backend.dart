@@ -15,14 +15,13 @@ import 'package:patrol_cli/src/crossplatform/executed_tests_check.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart'
     show getObservationUrl;
 import 'package:patrol_cli/src/crossplatform/patrol_build_environment.dart';
-import 'package:patrol_cli/src/crossplatform/test_manifest.dart';
 import 'package:patrol_cli/src/crossplatform/test_manifest_generator.dart';
 import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_host_server.dart';
 import 'package:patrol_cli/src/ios/ios_video_recording_manager.dart';
 import 'package:patrol_cli/src/ios/simulator_hinge.dart';
-import 'package:patrol_cli/src/ios/xcode_test_codegen.dart';
+import 'package:patrol_cli/src/ios/xcode_runner_setup.dart';
 import 'package:patrol_log/patrol_log.dart';
 import 'package:patrol_log/patrol_log_reader.dart';
 import 'package:platform/platform.dart';
@@ -101,12 +100,8 @@ class IOSTestBackend {
         );
       }
 
-      // Reset on every build, so a stale .inc never runs old tests.
-      _resetGeneratedInc();
-      if (_discoveryModeFile.existsSync()) {
-        _discoveryModeFile.deleteSync();
-      }
-      _verifyRunnerSetup(emitTestManifest: options.emitTestManifest);
+      final runnerSetup = _runnerSetup
+        ..prepareBuild(emitTestManifest: options.emitTestManifest);
 
       if (options.emitTestManifest) {
         final manifestPath = await TestManifestGenerator(
@@ -120,7 +115,7 @@ class IOSTestBackend {
             '--no-emit-test-manifest to use runtime discovery.',
           );
         }
-        _generateXcodeTests(manifestPath);
+        runnerSetup.generateTests(manifestPath);
       }
 
       // flutter build ios --config-only
@@ -162,11 +157,7 @@ class IOSTestBackend {
       exitCode = await process.exitCode;
       if (exitCode == 0) {
         task.complete('Completed building $subject');
-        _discoveryModeFile
-          ..createSync(recursive: true)
-          ..writeAsStringSync(
-            options.emitTestManifest ? _buildTimeMode : _runtimeMode,
-          );
+        runnerSetup.recordBuild(emitTestManifest: options.emitTestManifest);
       } else if (exitCode == _xcodebuildInterrupted) {
         const cause = 'xcodebuild was interrupted';
         task.fail('Failed to execute tests of $subject ($cause)');
@@ -195,220 +186,26 @@ class IOSTestBackend {
     });
   }
 
+  XcodeRunnerSetup get _runnerSetup => XcodeRunnerSetup.ios(
+    fs: _fs,
+    rootDirectory: _rootDirectory,
+    logger: _logger,
+  );
+
   /// Why this project can't use build-time discovery on iOS, or null when it
   /// can: `RunnerUITests.m` has to `#include` the generated tests. Patrol never
   /// edits the file; the caller warns or fails with the lines to add.
-  String? discoverySetupProblem() {
-    final runner = _runnerFile;
-    // A missing target is reported by xcodebuild.
-    if (!runner.existsSync() ||
-        includesGeneratedTests(runner.readAsStringSync())) {
-      return null;
-    }
-    return "${runner.path} doesn't include the generated tests. Add these lines "
-        'right after PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerUITests):\n'
-        '\n'
-        '${_indented(_generatedIncInclude)}\n'
-        '\n'
-        'See $_discoveryDocsUrl';
-  }
-
-  /// Stops a build that would fail to compile or silently skip the generated
-  /// tests.
-  void _verifyRunnerSetup({required bool emitTestManifest}) {
-    final runner = _runnerFile;
-    if (!runner.existsSync()) {
-      return;
-    }
-
-    if (_removedStaticMacro.hasMatch(runner.readAsStringSync())) {
-      throwToolExit(
-        '${runner.path} uses the PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN '
-        'and _END macros, which were removed in Patrol 5.0. Replace them with:\n'
-        '\n'
-        '${_indented('PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerUITests)\n$_generatedIncInclude')}\n'
-        '\n'
-        'See $_discoveryDocsUrl',
-      );
-    }
-
-    if (emitTestManifest) {
-      final problem = discoverySetupProblem();
-      if (problem != null) {
-        throwToolExit(
-          'Build-time test discovery is on, but $problem\n'
-          'Or pass --no-emit-test-manifest to use runtime discovery.',
-        );
-      }
-    }
-  }
-
-  static const _generatedIncName = 'PatrolGeneratedTests.inc';
-
-  static const _discoveryDocsUrl =
-      'https://patrol.leancode.co/documentation/ci/build-time-test-discovery';
-
-  static const _generatedIncInclude =
-      '#if __has_include("$_generatedIncName")\n'
-      '#include "$_generatedIncName"\n'
-      '#endif';
-
-  static final _removedStaticMacro = RegExp(
-    r'^[ \t]*PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN\b',
-    multiLine: true,
-  );
-
-  static String _indented(String lines) =>
-      lines.split('\n').map((l) => '  $l').join('\n');
+  String? discoverySetupProblem() => _runnerSetup.discoverySetupProblem();
 
   /// Whether [runnerSource] pulls in `PatrolGeneratedTests.inc`.
   @visibleForTesting
-  static bool includesGeneratedTests(String runnerSource) => RegExp(
-    '^[ \\t]*#[ \\t]*(?:include|import)[ \\t]*[<"]$_generatedIncName[>"]',
-    multiLine: true,
-  ).hasMatch(runnerSource);
-
-  File get _runnerFile => _rootDirectory
-      .childDirectory('ios')
-      .childDirectory('RunnerUITests')
-      .childFile('RunnerUITests.m');
-
-  /// Maps requested [onlyTests] entries to the generated XCTest selectors below
-  /// the target, using the build-time manifest: a Dart test name becomes
-  /// `<class>/<method>`, a test file path becomes the bare `<class>` so the whole
-  /// file costs one selector. Empty in → empty out (run every generated class).
-  /// Used by `patrol test-without-building --only`. Throws when the manifest is
-  /// missing or nothing matches.
-  List<String> _resolveOnlyTesting(List<String> onlyTests) {
-    if (onlyTests.isEmpty) {
-      return const [];
-    }
-    final manifest = hasGeneratedTests
-        ? TestManifest.loadFromBuild(
-            _rootDirectory,
-            platform: TargetPlatform.iOS,
-          )
-        : null;
-    if (manifest == null) {
-      throwToolExit(
-        'The app was built with runtime test discovery, so --only has no '
-        'generated tests to select. Run `patrol build ios` without '
-        '--no-emit-test-manifest before `patrol test-without-building`.',
-      );
-    }
-    final tests = manifest.tests;
-    final selection = resolveOnlySelection(tests, onlyTests);
-    if (selection.isEmpty) {
-      throwToolExit(
-        'None of the requested --only test(s) were found in the manifest.\n'
-        'Pass an exact Dart test name or a test file path.\n'
-        'Available tests:\n${tests.map((t) => '  ${t.dartName}').join('\n')}',
-      );
-    }
-    if (selection.unmatched.isNotEmpty) {
-      _logger.warn(
-        'Ignoring --only ${selection.unmatched.join(', ')}: no such Dart test '
-        'or test file in the manifest.',
-      );
-    }
-    return [
-      ...selection.classNames,
-      ...selection.tests.map((name) => name.selector),
-    ];
-  }
-
-  /// Every generated class, as an `-only-testing` selector, so a run restricted
-  /// to Patrol's own tests stays restricted: the generated tests live in per-file
-  /// subclasses, and selecting the base class would select nothing. Empty with
-  /// runtime discovery (whose tests are all in the base class) and when the
-  /// manifest is missing, in which case the whole target runs.
-  List<String> _generatedClassSelectors() {
-    if (!hasGeneratedTests) {
-      return const [];
-    }
-    final manifest = TestManifest.loadFromBuild(
-      _rootDirectory,
-      platform: TargetPlatform.iOS,
-    );
-    if (manifest == null) {
-      return const [];
-    }
-    return generatePerFileTestNames(
-      manifest.tests,
-    ).map((name) => name.className).toSet().toList();
-  }
-
-  /// The generated static-XCTest include file, `#include`d by RunnerUITests.m.
-  File get _generatedIncFile => _rootDirectory
-      .childDirectory('ios')
-      .childDirectory('RunnerUITests')
-      .childFile(_generatedIncName);
-
-  static const _buildTimeMode = 'build-time';
-  static const _runtimeMode = 'runtime';
-
-  /// The discovery mode of the last build, stored with its artifacts, so a run
-  /// on another machine that only gets `build/` still knows it.
-  File get _discoveryModeFile => _rootDirectory
-      .childDirectory('build')
-      .childDirectory('ios_integ')
-      .childFile('patrol_test_discovery_mode');
+  static bool includesGeneratedTests(String runnerSource) =>
+      XcodeRunnerSetup.includesGeneratedTests(runnerSource);
 
   /// Whether the last build generated test classes, i.e. ran with build-time
   /// discovery.
   @visibleForTesting
-  bool get hasGeneratedTests {
-    final mode = _discoveryModeFile;
-    if (mode.existsSync()) {
-      return mode.readAsStringSync().trim() == _buildTimeMode;
-    }
-    // Built by a patrol_cli that didn't record the mode.
-    final inc = _generatedIncFile;
-    return inc.existsSync() && inc.readAsStringSync().contains('@interface ');
-  }
-
-  static const _runtimeDiscoveryInc =
-      '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
-      '// Built with runtime test discovery: no generated tests.\n';
-
-  /// Leaves a `PatrolGeneratedTests.inc` that declares no tests when the runner
-  /// includes it (an unguarded `#include` needs the file to compile), and no
-  /// file otherwise.
-  void _resetGeneratedInc() {
-    final inc = _generatedIncFile;
-    final runner = _runnerFile;
-    if (!runner.existsSync() ||
-        !includesGeneratedTests(runner.readAsStringSync())) {
-      if (inc.existsSync()) {
-        inc.deleteSync();
-      }
-      return;
-    }
-    // An unchanged file keeps its mtime, so Xcode doesn't rebuild the target.
-    if (inc.existsSync() && inc.readAsStringSync() == _runtimeDiscoveryInc) {
-      return;
-    }
-    inc
-      ..createSync(recursive: true)
-      ..writeAsStringSync(_runtimeDiscoveryInc);
-  }
-
-  /// Generates static XCTest methods from the manifest into the RunnerUITests
-  /// target. The file is `#included` by RunnerUITests.m right after the runner
-  /// macro, so it compiles as part of the test target with no project.pbxproj
-  /// changes.
-  ///
-  /// Because the tests are now real, statically-discoverable XCTest methods,
-  /// each can be selected individually with
-  /// `-only-testing RunnerUITests/RunnerUITests/test_...`, which is what makes
-  /// sharding across runners possible.
-  void _generateXcodeTests(String manifestPath) {
-    final output = _generatedIncFile;
-    final count = XcodeTestCodegen(
-      _fs,
-    ).generate(manifestPath: manifestPath, outputPath: output.path);
-    _logger.info('Generated $count static XCTest method(s) → ${output.path}');
-  }
+  bool get hasGeneratedTests => _runnerSetup.hasGeneratedTests;
 
   /// Extracts the Dart VM service URL from a device log line. Returns null
   /// unless [line] is the engine's "The Dart VM service is listening on"
@@ -444,9 +241,7 @@ class IOSTestBackend {
     // A develop session runs in the base runner class, whatever the mode.
     final onlyTesting = interruptible
         ? const <String>[]
-        : onlyTests.isNotEmpty
-        ? _resolveOnlyTesting(onlyTests)
-        : _generatedClassSelectors();
+        : _runnerSetup.onlyTestingFor(onlyTests);
     final executedTestsCheck = ExecutedTestsCheck.forRun(
       _rootDirectory,
       _logger,

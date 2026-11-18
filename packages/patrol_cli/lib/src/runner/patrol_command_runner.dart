@@ -272,6 +272,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         iosTestBackend: iosTestBackend,
         webTestBackend: webTestBackend,
         fs: _fs,
+        macosTestBackend: macosTestBackend,
         analytics: _analytics,
         logger: _logger,
       ),

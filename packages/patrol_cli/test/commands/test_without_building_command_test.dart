@@ -32,6 +32,7 @@ void main() {
         pubspecReader: MockPubspecReader(),
         androidTestBackend: MockAndroidTestBackend(),
         iosTestBackend: MockIOSTestBackend(),
+        macosTestBackend: MockMacOSTestBackend(),
         webTestBackend: mockWebTestBackend,
         fs: fs,
         analytics: MockAnalytics(),
