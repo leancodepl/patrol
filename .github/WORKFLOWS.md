@@ -59,13 +59,13 @@ Package-level `pana` scoring only runs for packages published to pub.dev (`patro
 | [patrol_log publish][patrol_log-publish] | Tag push (`patrol_log-v*`) | Publishes `patrol_log` package to pub.dev. Sends Slack notification for releases. |
 | [adb publish][adb-publish] | Tag push (`adb-v*`) | Publishes `adb` package to pub.dev. |
 
-### PR-Triggered Workflows with Permission Checks
+### PR-Triggered Workflows That Need Secrets
 
-Some workflows run on `pull_request_target` (which has access to secrets) require repository write permission:
-- [test android emulator][test-android-emulator] - Requires repository write permission
-- [test android emulator webview][test-android-emulator-webview] - Requires repository write permission
+[test android emulator][test-android-emulator] and [test android emulator webview][test-android-emulator-webview] run on `pull_request` and use repository secrets (the emulator.wtf token and the Maps API key). GitHub doesn't pass secrets to PRs from forks, so on those the test job is skipped. To run them on a fork PR's changes, a Patrol team member pushes the changes to a branch in this repository and starts the workflow with `workflow_dispatch`.
 
-These workflows verify the user has write access before running. If you don't have write access, the workflow will fail with a permission error. Contact a Patrol team member to run these workflows on your PR.
+Because these workflows run on `pull_request`, GitHub takes their definition from the PR merged into its base branch. A PR into `release/5.0` therefore uses the Flutter version pinned on `release/5.0`.
+
+[label pull request][label_pull_request] is the only workflow on `pull_request_target`, so it can label fork PRs too. It doesn't check out PR code. From December 2, 2026, GitHub blocks `pull_request_target` in public repositories unless an Actions event policy allows it, so this workflow needs such a policy.
 
 ## Semver Check Workflows
 
