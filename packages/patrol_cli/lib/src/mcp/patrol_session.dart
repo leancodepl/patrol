@@ -269,8 +269,8 @@ final class PatrolSession {
   static const _defaultTestServerPort = 8081;
 
   /// How long a hot restart waits for `flutter attach` to become ready. Long
-  /// enough for a slow iOS attach, short enough to report back instead of
-  /// hanging for the caller's whole run timeout.
+  /// enough for a slow iOS attach and shorter than the caller's run timeout, so
+  /// an attach that never finishes is reported while the caller still waits.
   final Duration _hotRestartReadyTimeout;
 
   var _isRunning = false;
@@ -802,8 +802,8 @@ final class PatrolSession {
   /// `started` is false when the run was refused (another test is loaded, or the
   /// session never became ready for a hot restart). The status then describes
   /// the session as it already was — in particular `testState` still refers to
-  /// the previous run — so callers must report a refusal as an error rather than
-  /// pass that state on as this run's outcome.
+  /// the previous run. Callers report a refusal as an error and never pass that
+  /// state on as this run's outcome.
   Future<({PatrolStatus status, bool started})> startAndWait(
     String testFile, {
     Duration? timeout,
