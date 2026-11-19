@@ -5,9 +5,10 @@ on:
   schedule:
     # run this workflow every 12 hours
     - cron: "0 */12 * * *"
-  pull_request_target:
+  pull_request:
     types: [opened, synchronize]
     paths:
+      - '.github/workflows/test-android-emulator.yaml'
       - 'packages/patrol/**'
       - 'packages/patrol_finders/**'
       - 'packages/patrol_log/**'
@@ -28,38 +29,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  pick_flutter:
-    name: Pick Flutter version
-    runs-on: ubuntu-latest
-    outputs:
-      flutter_versions: ${{ steps.pick.outputs.flutter_versions }}
-    steps:
-      # pull_request_target always runs this file from master, so a PR into
-      # release/5.0 would get master's Flutter, which its patrol may not
-      # support. This job only reads patrol's pubspec.yaml; nothing from the
-      # PR runs here.
-      - name: Clone patrol's pubspec.yaml
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          allow-unsafe-pr-checkout: true
-          persist-credentials: false
-          sparse-checkout: packages/patrol/pubspec.yaml
-          sparse-checkout-cone-mode: false
-
-      - name: Pick the newer of master's pin and patrol's minimum
-        id: pick
-        run: |
-          pinned=3.38
-          minimum=$(sed -nE "s/^  flutter: '>=([0-9]+[.][0-9]+)[.].*/\1/p" packages/patrol/pubspec.yaml)
-          version=$(printf '%s\n%s\n' "$pinned" "${minimum:-$pinned}" | sort -V | tail -n 1)
-          echo "patrol needs Flutter >=${minimum:-?}, using $version.x"
-          echo "flutter_versions=[\"$version.x\"]" >> "$GITHUB_OUTPUT"
-
   run_tests:
     name: Flutter ${{ matrix.flutter-version }} on API ${{ matrix.api-level }}
-    needs: pick_flutter
     runs-on: ubuntu-latest
+    # PRs from forks get no secrets on pull_request, and these tests need
+    # EW_API_TOKEN. A maintainer can run them with workflow_dispatch instead.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     timeout-minutes: 55
     outputs:
       SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter-version }} on API ${{ matrix.api-level }}
@@ -69,7 +44,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ${{ fromJSON(needs.pick_flutter.outputs.flutter_versions) }}
+        flutter-version: ["3.38.x"]
         flutter-channel: ["stable"]
         api-level: [36, 35, 34, 33, 32]
 
@@ -78,33 +53,9 @@ jobs:
         working-directory: dev/e2e_app
 
     steps:
-      - name: Get User Permission
-        id: checkAccess
-        uses: actions-cool/check-user-permission@v2
-        with:
-          require: write
-          username: ${{ github.triggering_actor }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Check User Permission
-        if: steps.checkAccess.outputs.require-result != 'true'
-        # The repository isn't checked out yet, so dev/e2e_app doesn't exist
-        working-directory: .
-        run: |
-          echo "${{ github.triggering_actor }} does not have permissions on this repo."
-          echo "Current permission level is ${{ steps.checkAccess.outputs.user-permission }}"
-          echo "Job originally triggered by ${{ github.actor }}"
-          echo "A maintainer with write access can re-run this workflow after reviewing the PR."
-          exit 1
-
-      # Fork PR code runs here with secrets, so it's gated by the permission
-      # check above: only a maintainer re-run gets past it.
       - name: Clone repository
         uses: actions/checkout@v4
         with:
-          ref: ${{  github.event.pull_request.head.sha }}
-          allow-unsafe-pr-checkout: true
           persist-credentials: false
 
       - name: Set up Java

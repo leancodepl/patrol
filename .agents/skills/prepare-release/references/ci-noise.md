@@ -21,7 +21,7 @@ at step level, so check the log before calling a PR blocked.
 | Gradle fails transforming a Flutter engine jar | flake; re-run |
 | `dart analyze` fails intermittently inside `flutter pub publish --dry-run`, on several unrelated branches at once | flake; re-run |
 | docs Deploy Preview fails on a GitHub API rate limit | flake; passes later |
-| a PR that changes CI workflows, the Dart SDK floor or the Flutter pin fails its e2e jobs | `pull_request_target` workflows run from master, not the PR (e.g. #3323 on Flutter 3.38 vs its 3.44). Verify after merge or via `workflow_dispatch` on the branch |
+| a PR that changes CI workflows, the Dart SDK floor or the Flutter pin fails its e2e jobs | workflows run from the PR merged into its base, so a base branch without the matching CI change (e.g. `release/5.0` behind master) brings its old pins. Merge the base up to date, or verify via `workflow_dispatch` on the branch |
 
 ## Local-only differences
 
