@@ -143,16 +143,8 @@ class Automator private constructor() {
     }
 
     // Applied for both values every configure(): the Configurator persists across a test
-    // bundle, so a later opt-out must flip the flag back. Requires API 24+.
+    // bundle, so a later opt-out must flip the flag back.
     private fun applyDontSuppressAccessibilityServices(dontSuppress: Boolean) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            if (!this::uiAutomation.isInitialized) {
-                uiAutomation = instrumentation.uiAutomation
-            }
-            if (dontSuppress) Logger.i("dontSuppressAccessibilityServices requires API 24+, ignoring")
-            return
-        }
-
         val flags = if (dontSuppress) UiAutomation.FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES else 0
         configurator.uiAutomationFlags = flags
         uiAutomation = instrumentation.getUiAutomation(flags)

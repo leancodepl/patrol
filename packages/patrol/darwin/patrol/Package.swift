@@ -27,14 +27,14 @@ let package = Package(
   defaultLocalization: "en",
   platforms: [
     .iOS("13.0"),
-    .macOS("10.14"),
+    .macOS("10.15"),
   ],
   products: [
     .library(name: "patrol", targets: ["patrol"])
   ],
   dependencies: [
     .package(name: "FlutterFramework", path: "../FlutterFramework"),
-    .package(url: "https://github.com/robbiehanson/CocoaAsyncSocket", from: "7.6.4")
+    .package(url: "https://github.com/robbiehanson/CocoaAsyncSocket", from: "7.6.4"),
   ],
   targets: [
     .target(

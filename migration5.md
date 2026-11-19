@@ -1,8 +1,8 @@
 # Migrating to Patrol 5.0
 
 Working notes for the Patrol 5.0 migration guide. Every change on `release/5.0`
-that needs action from users adds a section here. Before the release, this file
-becomes the migration guide in the docs.
+that needs action from users adds a section here, or a line to the Inbox at the
+end. Before the release, this file becomes the migration guide in the docs.
 
 Each section says which packages it affects, what changed and what to do.
 
@@ -32,3 +32,32 @@ versions. `patrol` follows, so both packages have the same minimum.
 If you can't upgrade Flutter yet, stay on Patrol 4.x: keep `patrol: ^4.11.0` in
 your `pubspec.yaml`. `dart pub global activate patrol_cli` on an older Flutter
 picks the newest `patrol_cli` 4.x on its own.
+
+## Android API 24 and macOS 10.15 are the minimum platform versions
+
+**Packages:** `patrol`
+
+| Platform | Before | 5.0 |
+|---|---|---|
+| Android | API 21 (Android 5.0) | API 24 (Android 7.0) |
+| iOS | 13.0 | 13.0 (no change) |
+| macOS | 10.14 | 10.15 |
+
+These are the minimums of Flutter 3.44, so an app that builds with Flutter 3.44
+already meets them, unless it sets lower values explicitly.
+
+**What to do:**
+
+- **Android:** in `android/app/build.gradle(.kts)`, set `minSdk` to 24 or
+  higher, or use `flutter.minSdkVersion`. A lower value fails the build with
+  `uses-sdk:minSdkVersion 21 cannot be smaller than version 24 declared in library [:patrol]`.
+- **macOS:** set the deployment target to 10.15 or higher: `platform :osx,
+  '10.15'` in `macos/Podfile`, and **macOS Deployment Target** of both `Runner`
+  and `RunnerUITests` in Xcode.
+
+## Inbox
+
+Short notes on changes that don't have a section yet, one line each: the PR or
+branch, the packages, what changed and what users have to do (`TODO` when that
+isn't known yet). A line leaves the Inbox when it becomes a section above. Empty
+the Inbox before 5.0.0 is released.
