@@ -27,6 +27,7 @@ import androidx.test.uiautomator.BySelector
 import androidx.test.uiautomator.Configurator
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject
+import androidx.test.uiautomator.StaleObjectException
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.UiObjectNotFoundException
 import androidx.test.uiautomator.UiSelector
@@ -45,6 +46,8 @@ import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 import pl.leancode.patrol.R.string as s
+
+private const val STALE_VIEW_READ_ATTEMPTS = 3
 
 private fun fromUiObject2(obj: UiObject2): AndroidNativeView {
     val bounds = obj.visibleBounds
@@ -373,8 +376,16 @@ class Automator private constructor() {
     fun getNativeViews(selector: BySelector): List<AndroidNativeView> {
         Logger.d("getNativeViewsV2()")
 
-        val uiObjects2 = uiDevice.findObjects(selector)
-        return uiObjects2.map { fromUiObject2(it) }
+        var attempt = 1
+        while (true) {
+            try {
+                return uiDevice.findObjects(selector).map { fromUiObject2(it) }
+            } catch (e: StaleObjectException) {
+                if (attempt >= STALE_VIEW_READ_ATTEMPTS) throw e
+                Logger.d("getNativeViewsV2(): a view went away while being read, attempt $attempt")
+                attempt++
+            }
+        }
     }
 
     fun getNativeUITrees(includeInvisibleNodes: Boolean): List<AndroidNativeView> {
