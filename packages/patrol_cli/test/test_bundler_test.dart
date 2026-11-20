@@ -372,6 +372,72 @@ group('example.example_test', example__example_test.main);''');
       expect(proxyFile.existsSync(), isTrue);
     });
 
+    test('generates test bundle main that takes entrypoint args', () {
+      // given
+      final tests = [fs.path.join('patrol_test', 'example_test.dart')];
+
+      // when
+      testBundler.createTestBundle(testDirectory, tests, null, null);
+      final contents = testBundler
+          .getBundledTestFile(testDirectory)
+          .readAsStringSync();
+
+      // then
+      expect(
+        contents,
+        contains('Future<void> main([List<String> args = const []]) async {'),
+      );
+      expect(contents, contains('..entrypointArgs = args;'));
+    });
+
+    test('generates develop test bundle main that takes entrypoint args', () {
+      // given
+      final testFile = fs.path.join('patrol_test', 'example_test.dart');
+
+      // when
+      testBundler.createDevelopTestBundle(testDirectory, testFile);
+      final contents = testBundler
+          .getBundledTestFile(testDirectory)
+          .readAsStringSync();
+
+      // then
+      expect(
+        contents,
+        contains('Future<void> main([List<String> args = const []]) async {'),
+      );
+      expect(contents, contains('..entrypointArgs = args'));
+    });
+
+    test('creates proxy entrypoint that forwards entrypoint args', () {
+      // given
+      fs.directory('integration_test').createSync();
+
+      // when
+      testBundler.ensureEntrypoint(testDirectory);
+      final contents = testBundler
+          .getEntrypointFile(testDirectory)
+          .readAsStringSync();
+
+      // then
+      expect(
+        contents,
+        contains('Future<void> main([List<String> args = const []]) async {'),
+      );
+      expect(
+        contents,
+        contains('final dynamic Function(List<String>) main => main(args),'),
+      );
+      expect(contents, contains('final dynamic Function() main => main(),'));
+      expect(
+        contents,
+        contains(
+          'if (entrypoint is! dynamic Function(List<String>) && '
+          'args.isNotEmpty) {',
+        ),
+      );
+      expect(contents, contains(r'read them with \$.entrypointArgs.'));
+    });
+
     test('does not create proxy for recognized test directory', () {
       // given
       const recognizedDir = 'integration_test';

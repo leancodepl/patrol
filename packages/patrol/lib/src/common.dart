@@ -187,6 +187,7 @@ void patrolTest(
         tester: widgetTester,
         config: config,
         platformAutomator: platformAutomator,
+        entrypointArgs: patrolBinding.entrypointArgs,
       );
       var callbackToRun = callback;
       var phaseIndex = 0;
