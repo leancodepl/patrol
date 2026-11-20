@@ -29,7 +29,7 @@ reproduce failing first is a fix you can't prove works.
    | Native automation (permissions, notifications), `PatrolBinding`, platform channels | `patrol` (+ its `android/` Kotlin & `darwin/` Swift) |
    | DevTools extension | `patrol_devtools_extension` |
    | Test run logs / reporting | `patrol_log` |
-   | MCP server | `patrol_mcp` |
+   | MCP server (`patrol mcp`) | `patrol_cli` (`lib/src/mcp/`) |
    | Native method contracts (generated) | edit `schema.dart`, run `./gen_from_schema` — see CONTRIBUTING |
 
 ## 2. Reproduce locally
