@@ -13,4 +13,11 @@ class PatrolRuntimePorts {
 
   /// Always null on web.
   static int? hostServerPort() => null;
+
+  /// Always null on web, which has no app service server.
+  static int? get boundAppServerPort => null;
+
+  /// Host of the native automation server.
+  static String nativeServerHost() =>
+      const String.fromEnvironment('PATROL_HOST', defaultValue: 'localhost');
 }

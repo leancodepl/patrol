@@ -1,5 +1,23 @@
 ## Unreleased
 
+- Add `PatrolAppLaunch.attach()`, which starts a phase in the running app. The
+  test continues when the app restarts its Flutter engine without a process
+  death, e.g. when Android recreates the activity for a deep link. A test that
+  does not expect such a restart now fails with a clear message instead of
+  hanging.
+- On Android, `PatrolAppService` now listens on a free port and reports it to
+  the native runner, so `--app-server-port` no longer has an effect there.
+- Report the default route name the native side started the engine with, e.g.
+  the link a `PatrolAppLaunch.deepLink` phase opens, instead of the `/`
+  flutter_test puts in its place. (#3282)
+- Add `phases()` so a Patrol test can continue after the app is killed and
+  relaunched (normal start or a deep link). Requires the self-instrumenting
+  Android `:patrolTest` layout; unsupported in `patrol develop` and on macOS.
+  See [Phased tests](https://patrol.leancode.co/documentation/phased-tests).
+  (#1374)
+- Add the optional self-instrumenting Android `:patrolTest` layout, which runs
+  JUnit outside the app process. The in-app `androidTest` layout remains
+  supported.
 - Remove the placeholder `GoogleService-Info.plist` and `google-services.json` from the example app, so security scanners no longer flag the published package. (#3360)
 - Add web platform screenshot support via `$.takeNativeScreenshot('tag')`. (#3047)
 - Support Android code coverage with the test orchestrator's `clearPackageData:true` on Android

@@ -20,7 +20,8 @@ enum GroupEntryType {
 enum RunDartTestResponseResult {
   success('success'),
   skipped('skipped'),
-  failure('failure');
+  failure('failure'),
+  continuation('continuation');
 
   const RunDartTestResponseResult(this.value);
   final String value;
@@ -268,33 +269,71 @@ class ListDartTestsResponse with Equatable {
 
 @JsonSerializable()
 class RunDartTestRequest with Equatable {
-  const RunDartTestRequest({required this.name});
+  const RunDartTestRequest({
+    required this.name,
+    this.phaseIndex,
+    this.engineRestarted,
+  });
 
   factory RunDartTestRequest.fromJson(Map<String, dynamic> json) =>
       _$RunDartTestRequestFromJson(json);
 
   final String name;
+  final int? phaseIndex;
+  final bool? engineRestarted;
 
   Map<String, dynamic> toJson() => _$RunDartTestRequestToJson(this);
 
   @override
-  List<Object?> get props => [name];
+  List<Object?> get props => [name, phaseIndex, engineRestarted];
 }
 
 @JsonSerializable()
 class RunDartTestResponse with Equatable {
-  const RunDartTestResponse({required this.result, this.details});
+  const RunDartTestResponse({
+    required this.result,
+    this.details,
+    this.nextPhaseIndex,
+    this.nextPhaseLaunchUrl,
+    this.nextPhaseKeepsProcess,
+  });
 
   factory RunDartTestResponse.fromJson(Map<String, dynamic> json) =>
       _$RunDartTestResponseFromJson(json);
 
   final RunDartTestResponseResult result;
   final String? details;
+  final int? nextPhaseIndex;
+  final String? nextPhaseLaunchUrl;
+  final bool? nextPhaseKeepsProcess;
 
   Map<String, dynamic> toJson() => _$RunDartTestResponseToJson(this);
 
   @override
-  List<Object?> get props => [result, details];
+  List<Object?> get props => [
+    result,
+    details,
+    nextPhaseIndex,
+    nextPhaseLaunchUrl,
+    nextPhaseKeepsProcess,
+  ];
+}
+
+@JsonSerializable()
+class MarkPatrolAppServiceReadyRequest with Equatable {
+  const MarkPatrolAppServiceReadyRequest({this.port});
+
+  factory MarkPatrolAppServiceReadyRequest.fromJson(
+    Map<String, dynamic> json,
+  ) => _$MarkPatrolAppServiceReadyRequestFromJson(json);
+
+  final int? port;
+
+  Map<String, dynamic> toJson() =>
+      _$MarkPatrolAppServiceReadyRequestToJson(this);
+
+  @override
+  List<Object?> get props => [port];
 }
 
 @JsonSerializable()

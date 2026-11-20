@@ -2,10 +2,12 @@
 // ignore_for_file: avoid_print
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:http_multi_server/http_multi_server.dart';
 import 'package:patrol/patrol.dart';
 import 'package:patrol/src/common.dart';
+import 'package:patrol/src/phases.dart';
 import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:patrol/src/platform/contracts/patrol_app_service_server.dart';
 import 'package:patrol/src/platform/mobile/patrol_runtime_ports.dart';
@@ -16,10 +18,15 @@ import 'package:shelf/shelf_io.dart' as shelf_io;
 const _idleTimeout = Duration(hours: 2);
 
 class _TestExecutionResult {
-  const _TestExecutionResult({required this.passed, required this.details});
+  const _TestExecutionResult({
+    required this.passed,
+    required this.details,
+    required this.continuation,
+  });
 
   final bool passed;
   final String? details;
+  final PatrolPhaseContinuation? continuation;
 }
 
 /// Initializes the app service.
@@ -35,8 +42,15 @@ Future<void> runAppService(PatrolAppService service) async {
       .addMiddleware(shelf.logRequests())
       .addHandler(service.handle);
 
-  final server = await HttpMultiServer.loopback(service.port);
+  // On Android the engine takes a free port and reports it to the native
+  // runner. A fixed port would not work when the app replaces its Flutter
+  // engine: the new engine starts in the same process before the old one is
+  // destroyed, so the old server still holds the port.
+  final server = await HttpMultiServer.loopback(
+    Platform.isAndroid ? 0 : service.port,
+  );
   server.idleTimeout = _idleTimeout;
+  PatrolRuntimePorts.boundAppServerPort = server.port;
 
   shelf_io.serveRequests(server, pipeline);
 
@@ -94,15 +108,17 @@ class PatrolAppService extends PatrolAppServiceServer {
     'PATROL_BS_COVERAGE',
   );
 
-  /// A completer that completes with the name of the Dart test file that was
-  /// requested to execute by the native side.
-  var _testExecutionRequested = Completer<String>();
+  /// A completer that completes with the Dart test request made by the native
+  /// side.
+  var _testExecutionRequested = Completer<RunDartTestRequest>();
 
-  /// A future that completes with the name of the Dart test file that was
-  /// requested to execute by the native side.
-  Future<String> get testExecutionRequested => _testExecutionRequested.future;
+  /// A future that completes with the Dart test request made by the native
+  /// side.
+  Future<RunDartTestRequest> get testExecutionRequested =>
+      _testExecutionRequested.future;
 
   var _testExecutionCompleted = Completer<_TestExecutionResult>();
+  PatrolPhaseContinuation? _continuation;
 
   /// A future that completes when the Dart test file (whose execution was
   /// requested by the native side) completes.
@@ -113,6 +129,38 @@ class PatrolAppService extends PatrolAppServiceServer {
   }
 
   final _patrolLog = PatrolLogWriter();
+
+  /// Sets the native work that should follow the currently running Dart phase.
+  void setContinuation(PatrolPhaseContinuation continuation) {
+    _continuation = continuation;
+  }
+
+  /// Reports the end of the currently running Dart phase.
+  ///
+  /// If the next phase attaches to the running app, this answers the native
+  /// side's request now and returns its request for the next phase, which runs
+  /// in this engine. Otherwise the native side has to relaunch the app, so
+  /// this returns `null` and the answer is sent when the test body completes.
+  Future<RunDartTestRequest?> finishPhase(
+    PatrolPhaseContinuation continuation,
+  ) async {
+    if (!continuation.keepsProcess) {
+      setContinuation(continuation);
+      return null;
+    }
+
+    // The next phase is requested through this service again.
+    _completeExecution(
+      _TestExecutionResult(
+        passed: true,
+        details: null,
+        continuation: continuation,
+      ),
+      expectAnotherRequest: true,
+    );
+
+    return testExecutionRequested;
+  }
 
   /// Marks [dartFileName] as completed with the given [passed] status.
   ///
@@ -129,25 +177,42 @@ class PatrolAppService extends PatrolAppServiceServer {
       'Tried to mark a test as completed, but no tests were requested to run',
     );
 
-    final requestedDartTestName = await testExecutionRequested;
+    final request = await testExecutionRequested;
     assert(
-      requestedDartTestName == dartFileName,
+      request.name == dartFileName,
       'Tried to mark test $dartFileName as completed, but the test '
-      'that was most recently requested to run was $requestedDartTestName',
+      'that was most recently requested to run was ${request.name}',
     );
 
+    // With the orchestrator off, this same app service serves the next test
+    // too.
+    _completeExecution(
+      _TestExecutionResult(
+        passed: passed,
+        details: details,
+        continuation: passed ? _continuation : null,
+      ),
+      expectAnotherRequest: reuseAcrossTests,
+    );
+  }
+
+  /// Answers the in-flight [runDartTest] with [result].
+  ///
+  /// If [expectAnotherRequest] is true, fresh completers are swapped in
+  /// *before* runDartTest is unblocked, so that the next request gets a clean
+  /// pair. The in-flight runDartTest already holds a reference to the old
+  /// completer, and this runs synchronously, so there is no race.
+  void _completeExecution(
+    _TestExecutionResult result, {
+    required bool expectAnotherRequest,
+  }) {
     final completed = _testExecutionCompleted;
-    if (reuseAcrossTests) {
-      // The orchestrator is off, so this same app service will serve the next
-      // test too. Swap in fresh completers *before* unblocking runDartTest, so
-      // the next waitForExecutionRequest/runDartTest pair gets a clean pair.
-      // The in-flight runDartTest already holds a reference to `completed`, and
-      // this runs synchronously (no await) before the suite advances to the
-      // next test's waitForExecutionRequest, so there is no race.
-      _testExecutionRequested = Completer<String>();
+    if (expectAnotherRequest) {
+      _testExecutionRequested = Completer<RunDartTestRequest>();
       _testExecutionCompleted = Completer<_TestExecutionResult>();
+      _continuation = null;
     }
-    completed.complete(_TestExecutionResult(passed: passed, details: details));
+    completed.complete(result);
   }
 
   /// Returns when the native side requests execution of a Dart test. If the
@@ -162,14 +227,14 @@ class PatrolAppService extends PatrolAppServiceServer {
   Future<bool> waitForExecutionRequest(String dartTest) async {
     print('PatrolAppService: registered "$dartTest"');
 
-    final requestedDartTest = await testExecutionRequested;
-    if (requestedDartTest != dartTest) {
+    final request = await testExecutionRequested;
+    if (request.name != dartTest) {
       // If the requested Dart test is not the one we're waiting for now, it
       // means that dartTest was already executed. Return false so that callers
       // can skip the already executed test.
 
       print(
-        'PatrolAppService: registered test "$dartTest" was not matched by requested test "$requestedDartTest"',
+        'PatrolAppService: registered test "$dartTest" was not matched by requested test "${request.name}"',
       );
 
       return false;
@@ -259,7 +324,7 @@ class PatrolAppService extends PatrolAppServiceServer {
       );
     }
 
-    _testExecutionRequested.complete(request.name);
+    _testExecutionRequested.complete(request);
 
     final testExecutionResult = await testExecutionCompleted;
 
@@ -270,17 +335,23 @@ class PatrolAppService extends PatrolAppServiceServer {
       testExecutionResult.details
           ?.split('\n')
           .forEach((e) => _patrolLog.log(ErrorEntry(message: e)));
-    } else {
+    } else if (testExecutionResult.continuation == null) {
       _patrolLog.log(
         TestEntry(name: request.name, status: TestEntryStatus.success),
       );
     }
 
+    final continuation = testExecutionResult.continuation;
     return RunDartTestResponse(
-      result: testExecutionResult.passed
-          ? RunDartTestResponseResult.success
-          : RunDartTestResponseResult.failure,
+      result: !testExecutionResult.passed
+          ? RunDartTestResponseResult.failure
+          : continuation != null
+          ? RunDartTestResponseResult.continuation
+          : RunDartTestResponseResult.success,
       details: testExecutionResult.details,
+      nextPhaseIndex: continuation?.nextPhaseIndex,
+      nextPhaseLaunchUrl: continuation?.launchUrl,
+      nextPhaseKeepsProcess: continuation?.keepsProcess,
     );
   }
 }

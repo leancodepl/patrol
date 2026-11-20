@@ -42,15 +42,26 @@ Map<String, dynamic> _$ListDartTestsResponseToJson(
 ) => <String, dynamic>{'group': instance.group.toJson()};
 
 RunDartTestRequest _$RunDartTestRequestFromJson(Map<String, dynamic> json) =>
-    RunDartTestRequest(name: json['name'] as String);
+    RunDartTestRequest(
+      name: json['name'] as String,
+      phaseIndex: (json['phaseIndex'] as num?)?.toInt(),
+      engineRestarted: json['engineRestarted'] as bool?,
+    );
 
 Map<String, dynamic> _$RunDartTestRequestToJson(RunDartTestRequest instance) =>
-    <String, dynamic>{'name': instance.name};
+    <String, dynamic>{
+      'name': instance.name,
+      'phaseIndex': instance.phaseIndex,
+      'engineRestarted': instance.engineRestarted,
+    };
 
 RunDartTestResponse _$RunDartTestResponseFromJson(Map<String, dynamic> json) =>
     RunDartTestResponse(
       result: $enumDecode(_$RunDartTestResponseResultEnumMap, json['result']),
       details: json['details'] as String?,
+      nextPhaseIndex: (json['nextPhaseIndex'] as num?)?.toInt(),
+      nextPhaseLaunchUrl: json['nextPhaseLaunchUrl'] as String?,
+      nextPhaseKeepsProcess: json['nextPhaseKeepsProcess'] as bool?,
     );
 
 Map<String, dynamic> _$RunDartTestResponseToJson(
@@ -58,13 +69,25 @@ Map<String, dynamic> _$RunDartTestResponseToJson(
 ) => <String, dynamic>{
   'result': _$RunDartTestResponseResultEnumMap[instance.result]!,
   'details': instance.details,
+  'nextPhaseIndex': instance.nextPhaseIndex,
+  'nextPhaseLaunchUrl': instance.nextPhaseLaunchUrl,
+  'nextPhaseKeepsProcess': instance.nextPhaseKeepsProcess,
 };
 
 const _$RunDartTestResponseResultEnumMap = {
   RunDartTestResponseResult.success: 'success',
   RunDartTestResponseResult.skipped: 'skipped',
   RunDartTestResponseResult.failure: 'failure',
+  RunDartTestResponseResult.continuation: 'continuation',
 };
+
+MarkPatrolAppServiceReadyRequest _$MarkPatrolAppServiceReadyRequestFromJson(
+  Map<String, dynamic> json,
+) => MarkPatrolAppServiceReadyRequest(port: (json['port'] as num?)?.toInt());
+
+Map<String, dynamic> _$MarkPatrolAppServiceReadyRequestToJson(
+  MarkPatrolAppServiceReadyRequest instance,
+) => <String, dynamic>{'port': instance.port};
 
 ConfigureRequest _$ConfigureRequestFromJson(Map<String, dynamic> json) =>
     ConfigureRequest(

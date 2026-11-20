@@ -14,6 +14,7 @@ public enum RunDartTestResponseResult: String, Codable {
   case success = "success"
   case skipped = "skipped"
   case failure = "failure"
+  case continuation = "continuation"
 }
 
 public enum KeyboardBehavior: String, Codable {
@@ -209,11 +210,20 @@ public struct ListDartTestsResponse: Codable {
 
 public struct RunDartTestRequest: Codable {
   public var name: String
+  public var phaseIndex: Int?
+  public var engineRestarted: Bool?
 }
 
 public struct RunDartTestResponse: Codable {
   public var result: RunDartTestResponseResult
   public var details: String?
+  public var nextPhaseIndex: Int?
+  public var nextPhaseLaunchUrl: String?
+  public var nextPhaseKeepsProcess: Bool?
+}
+
+public struct MarkPatrolAppServiceReadyRequest: Codable {
+  public var port: Int?
 }
 
 public struct ConfigureRequest: Codable {

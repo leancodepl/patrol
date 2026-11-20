@@ -1,0 +1,154 @@
+---
+title: Phased tests
+---
+
+A Patrol test is normally one Dart callback in one app process. **Phased tests**
+split that callback into consecutive phases. When a phase finishes, the native
+runner **kills the app and starts a new process** for the next phase.
+
+Use this when you need to keep testing after a real process death: in-memory
+state is gone, `main()` runs again, and persisted files or plugins survive if
+the OS did not wipe them.
+
+## Basic usage
+
+Pass `phases([...])` as the test body instead of a single `($) async { ... }`
+callback:
+
+```dart title="patrol_test/restart_app_test.dart"
+import 'dart:io';
+
+import 'package:patrol/patrol.dart';
+
+void main() {
+  patrolTest(
+    'restarts the app between phases',
+    phases([
+      PatrolPhase(($) async {
+        await $.pumpWidgetAndSettle(const MyApp());
+        // First process: write whatever you need to survive the kill.
+      }),
+      PatrolPhase(($) async {
+        await $.pumpWidgetAndSettle(const MyApp());
+        // Second process: the previous Dart isolate is gone.
+      }),
+    ]),
+  );
+}
+```
+
+The test **passes only if Dart reports success after the last phase**.
+
+Each phase is a fresh Flutter app. Pump your root widget again at the start of
+every phase (the same `createApp` / `$.pumpWidgetAndSettle` you already use).
+
+A working example lives in
+[`restart_app_test.dart`](https://github.com/leancodepl/patrol/blob/master/dev/e2e_app/patrol_test/restart_app_test.dart)
+in the Patrol repository: phase 1 writes the current PID to a file, phase 2
+asserts a different PID.
+
+## How to launch the next process
+
+By default the next phase starts the same way as a normal Patrol launch (the
+app's launcher activity / default URL).
+
+To open the next process through a deep link, set `launch` on **that** phase:
+
+```dart
+patrolTest(
+  'cold-starts from a deep link after a kill',
+  phases([
+    PatrolPhase(($) async {
+      await $.pumpWidgetAndSettle(const MyApp());
+      // ...
+    }),
+    PatrolPhase(
+      ($) async {
+        await $.pumpWidgetAndSettle(const MyApp());
+        // Assert the route that the URL opened.
+      },
+      launch: PatrolAppLaunch.deepLink('https://example.com/path'),
+    ),
+  ]),
+);
+```
+
+`PatrolAppLaunch.normal()` is the default.
+
+`launch` is **ignored on the first phase**. That process is already started by
+the native runner before Dart runs. Put a deep link on phase 2 or later.
+
+## Continuing in the running app
+
+`PatrolAppLaunch.attach()` starts a phase **without killing the app**. Use it
+when the previous phase can make the app restart its Flutter engine while the
+process keeps running. On Android this happens when the activity is destroyed
+and created again, for example by a deep link that the app opens in a cleared
+task. The Dart test runs in the engine, so it cannot continue past that point
+on its own.
+
+```dart
+patrolTest(
+  'opens a link while the app is running',
+  phases([
+    PatrolPhase(($) async {
+      await $.pumpWidgetAndSettle(const MyApp());
+      // ...
+      await $.platform.mobile.openUrl('https://example.com/path');
+    }),
+    PatrolPhase(
+      ($) async {
+        await $.pumpWidgetAndSettle(const MyApp());
+        // Assert the screen that the link opened.
+      },
+      launch: const PatrolAppLaunch.attach(),
+    ),
+  ]),
+);
+```
+
+The phase before an `attach()` phase ends in one of two ways:
+
+- **The engine restarts.** The phase ends there, even in the middle of its
+  callback, and the code after that point does not run. The next phase runs in
+  the new engine.
+- **The engine keeps running.** The phase runs to its end and the next phase
+  follows in the same engine. This is always the case on iOS.
+
+On Android, Patrol waits up to 2 seconds for a new engine before it starts the
+`attach()` phase in the old one. If the app restarts its engine later, the
+`attach()` phase can start in the old engine, stop when that engine is
+destroyed, and run again from its start in the new one.
+
+Write the two phases so that they work in both cases:
+
+- Make the action that can restart the engine the last step of its phase.
+- Begin the `attach()` phase by waiting for the screen that the restart shows,
+  before any action that changes the app.
+- Do not pass Dart objects from one phase to the next. Use files or other
+  persisted state.
+- The process is the same, so native in-memory state survives.
+
+If the engine restarts in a test that has no `attach()` phase at that point,
+the test fails with a message that says so.
+
+A working example lives in
+[`engine_restart_test.dart`](https://github.com/leancodepl/patrol/blob/master/dev/e2e_app/patrol_test/engine_restart_test.dart).
+
+## Requirements and limits
+
+<Warning>
+  **Android** phased tests need the self-instrumenting [`:patrolTest`] layout.
+  The older in-app `androidTest` runner lives inside the app it would kill, so
+  Patrol throws if a test asks to relaunch the app.
+</Warning>
+
+- **Android and iOS only.** macOS fails if a test returns a continuation.
+- **`patrol test` / `patrol build`, not `patrol develop`.** Hot Restart cannot
+  survive killing the app. Phased tests throw in develop mode.
+- **Web is not supported.**
+- A phased list must contain **at least one** phase. One phase is valid; it
+  behaves like a normal test (no kill).
+
+[native automation]: /documentation/native/usage
+[`:patrolTest`]: /documentation#android-setup

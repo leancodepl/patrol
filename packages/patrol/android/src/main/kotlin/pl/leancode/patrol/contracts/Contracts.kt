@@ -15,6 +15,7 @@ class Contracts {
     success,
     skipped,
     failure,
+    continuation,
   }
 
   enum class KeyboardBehavior {
@@ -209,15 +210,44 @@ class Contracts {
   )
 
   data class RunDartTestRequest (
-    val name: String
-  )
+    val name: String,
+    val phaseIndex: Long? = null,
+    val engineRestarted: Boolean? = null
+  ){
+    fun hasPhaseIndex(): Boolean {
+      return phaseIndex != null
+    }
+    fun hasEngineRestarted(): Boolean {
+      return engineRestarted != null
+    }
+  }
 
   data class RunDartTestResponse (
     val result: RunDartTestResponseResult,
-    val details: String? = null
+    val details: String? = null,
+    val nextPhaseIndex: Long? = null,
+    val nextPhaseLaunchUrl: String? = null,
+    val nextPhaseKeepsProcess: Boolean? = null
   ){
     fun hasDetails(): Boolean {
       return details != null
+    }
+    fun hasNextPhaseIndex(): Boolean {
+      return nextPhaseIndex != null
+    }
+    fun hasNextPhaseLaunchUrl(): Boolean {
+      return nextPhaseLaunchUrl != null
+    }
+    fun hasNextPhaseKeepsProcess(): Boolean {
+      return nextPhaseKeepsProcess != null
+    }
+  }
+
+  data class MarkPatrolAppServiceReadyRequest (
+    val port: Long? = null
+  ){
+    fun hasPort(): Boolean {
+      return port != null
     }
   }
 

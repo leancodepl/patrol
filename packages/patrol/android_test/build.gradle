@@ -1,0 +1,109 @@
+group "pl.leancode.patrol"
+version "1.0-SNAPSHOT"
+
+buildscript {
+    ext.kotlin_version = "2.1.0"
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+
+    dependencies {
+        classpath "com.android.tools.build:gradle:8.2.2"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jlleitschuh.gradle:ktlint-gradle:11.5.0"
+    }
+}
+
+apply plugin: "com.android.library"
+
+def agpMajor = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')[0] as int
+def usesBuiltInKotlin = project.findProperty("android.builtInKotlin") == "true"
+if (agpMajor < 9 || !usesBuiltInKotlin) {
+    apply plugin: "kotlin-android"
+}
+
+apply plugin: "org.jlleitschuh.gradle.ktlint"
+
+ktlint {
+    filter {
+        exclude("**/contracts/**")
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+android {
+    namespace "pl.leancode.patrol"
+    compileSdk 35
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    sourceSets {
+        main.java.srcDirs = ["../android/src/main/kotlin"]
+        main.res.srcDirs = ["../android/src/main/res"]
+    }
+
+    defaultConfig {
+        minSdk 21
+        buildConfigField("String", "PATROL_APP_PORT", project.hasProperty('app-server-port') ? '"' + project.getProperty('app-server-port') + '"' : '""')
+        buildConfigField("String", "PATROL_TEST_PORT", project.hasProperty('test-server-port') ? '"' + project.getProperty('test-server-port') + '"' : '""')
+    }
+
+    buildFeatures {
+        buildConfig true
+    }
+
+    dependencies {
+        api "junit:junit:4.13.2"
+        api "androidx.test:runner:1.5.1"
+        api "androidx.test.espresso:espresso-core:3.5.0"
+        api "androidx.test.uiautomator:uiautomator:2.3.0"
+
+        implementation platform("org.http4k:http4k-bom:5.47.0.0")
+        implementation platform("io.ktor:ktor-bom:3.2.2")
+        implementation "org.http4k:http4k-core"
+        implementation "com.squareup.okhttp:okhttp:2.7.5"
+        implementation "org.http4k:http4k-server-ktorcio"
+        implementation "com.google.code.gson:gson:2.10.1"
+        implementation "io.ktor:ktor-client-core"
+        implementation "io.ktor:ktor-client-cio"
+        implementation "io.ktor:ktor-client-content-negotiation"
+        implementation "io.ktor:ktor-serialization-gson"
+
+        testImplementation "org.jetbrains.kotlin:kotlin-test"
+    }
+}
+
+plugins.withId("org.jetbrains.kotlin.android") {
+    kotlin {
+        sourceSets {
+            main.kotlin.setSrcDirs(["../android/src/main/kotlin"])
+        }
+        compilerOptions {
+            jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_1_8
+        }
+    }
+}
+
+// The harness shares its sources with the `patrol` plugin, but is a plain Android
+// library with no Flutter on its classpath. PatrolPlugin is the Flutter plugin
+// entrypoint and has to stay where the Flutter tool looks for it, so skip it here.
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    exclude("**/PatrolPlugin.kt")
+}
+
+tasks.withType(Test).configureEach {
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}

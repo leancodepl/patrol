@@ -131,7 +131,7 @@
                          status = @"CRASHED";                                                                 \
                        } else {                                                                               \
                          response = r;                                                                        \
-                         status = response.passed ? @"PASSED" : @"FAILED";                                    \
+                         status = response.result.uppercaseString;                                            \
                        }                                                                                      \
                        NSLog(@"runDartTest(\"%@\"): call finished, test result: %@", dartTestName, status);   \
                      }];                                                                                      \
@@ -140,9 +140,13 @@
         while (!response && !error) {                                                                         \
           [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                  \
         }                                                                                                     \
-        BOOL passed = response ? response.passed : NO;                                                        \
+        if ([response.result isEqualToString:@"continuation"]) {                                              \
+          XCTFail(@"Phased Patrol tests are not supported on macOS");                                         \
+          return;                                                                                             \
+        }                                                                                                     \
+        BOOL passed = response != nil && [response.result isEqualToString:@"success"];                        \
         NSString *details = response ? response.details : @"(no details - app likely crashed)";               \
-        if (response && response.skipped) {                                                                   \
+        if (response && [response.result isEqualToString:@"skipped"]) {                                       \
           XCTSkip(@"%@", details);                                                                            \
         }                                                                                                     \
         XCTAssertTrue(passed, @"%@", details);                                                                \
