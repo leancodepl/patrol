@@ -275,6 +275,9 @@ const _testBundledDevices = {
   ),
 };
 
+/// The port the native automator listens on unless a run says otherwise.
+const defaultTestServerPort = 8081;
+
 enum TargetPlatform { iOS, android, macOS, web }
 
 extension TargetPlatformX on TargetPlatform {

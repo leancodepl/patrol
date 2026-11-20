@@ -18,6 +18,7 @@ class FlutterTool {
     required Platform platform,
     required DisposeScope parentDisposeScope,
     required Logger logger,
+    this.projectRoot,
     this.onQuit,
     Future<void> Function()? onExit,
   }) : _stdin = stdin,
@@ -28,6 +29,11 @@ class FlutterTool {
        _onExit = onExit ?? (() async => exit(0)) {
     _disposeScope.disposedBy(parentDisposeScope);
   }
+
+  /// The project `flutter attach` and `flutter logs` run in. Without it they
+  /// read the process's working directory, which one process serving several
+  /// projects cannot keep pointing at the right one.
+  final String? projectRoot;
 
   final Stream<List<int>> _stdin;
   final ProcessManager _processManager;
@@ -206,7 +212,7 @@ class FlutterTool {
                 '--dart-define',
                 '${dartDefine.key}=${dartDefine.value}',
               ],
-            ])
+            ], workingDirectory: projectRoot)
             ..disposedByTree(scope);
       _attachProcess = process;
 
@@ -349,14 +355,18 @@ class FlutterTool {
     await _disposeScope.run((scope) async {
       _logger.detail('Logs: waiting for them...');
       final process =
-          await _processManager.start([
-              ...[flutterCommand.executable, ...flutterCommand.arguments],
-              '--no-version-check',
-              '--suppress-analytics',
-              'logs',
-              '--device-id',
-              deviceId,
-            ], runInShell: true)
+          await _processManager.start(
+              [
+                ...[flutterCommand.executable, ...flutterCommand.arguments],
+                '--no-version-check',
+                '--suppress-analytics',
+                'logs',
+                '--device-id',
+                deviceId,
+              ],
+              runInShell: true,
+              workingDirectory: projectRoot,
+            )
             ..disposedByTree(scope);
 
       final completer = Completer<void>();

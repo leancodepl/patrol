@@ -3,14 +3,16 @@ import 'dart:io';
 
 import 'package:mcp_dart/mcp_dart.dart';
 import 'package:patrol_cli/src/devices.dart';
+import 'package:process/process.dart';
 
 abstract final class NativeTreeService {
   static const _host = 'localhost';
 
   static Future<CallToolResult> handleGetNativeTreeRequest(
     Device? device,
-    int? testServerPort,
-  ) async {
+    int? testServerPort, {
+    ProcessManager processManager = const LocalProcessManager(),
+  }) async {
     try {
       if (device == null) {
         return const CallToolResult(
@@ -25,7 +27,10 @@ abstract final class NativeTreeService {
         );
       }
 
-      final tree = await _fetchNativeTree(testServerPort ?? 8081);
+      final tree = await _fetchNativeTree(
+        testServerPort ?? defaultTestServerPort,
+        processManager,
+      );
 
       if (_isTreeEmpty(tree)) {
         return const CallToolResult(
@@ -57,9 +62,12 @@ abstract final class NativeTreeService {
     }
   }
 
-  static Future<List<String>> _getIosInstalledApps() async {
+  static Future<List<String>> _getIosInstalledApps(
+    ProcessManager processManager,
+  ) async {
     try {
-      final listApps = await Process.run('xcrun', [
+      final listApps = await processManager.run([
+        'xcrun',
         'simctl',
         'listapps',
         'booted',
@@ -195,10 +203,13 @@ abstract final class NativeTreeService {
     return trimmed;
   }
 
-  static Future<Map<String, dynamic>> _fetchNativeTree(int port) async {
+  static Future<Map<String, dynamic>> _fetchNativeTree(
+    int port,
+    ProcessManager processManager,
+  ) async {
     final client = HttpClient();
     try {
-      final iosApps = await _getIosInstalledApps();
+      final iosApps = await _getIosInstalledApps(processManager);
 
       final uri = Uri.http('$_host:$port', '/getNativeViews');
       final request = await client.postUrl(uri)

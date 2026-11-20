@@ -1,8 +1,11 @@
 import 'dart:io' as io;
 
+import 'package:mocktail/mocktail.dart';
 import 'package:path/path.dart' as p;
 import 'package:patrol_cli/src/mcp/flutter_command_resolver.dart';
 import 'package:test/test.dart';
+
+import '../src/mocks.dart';
 
 void main() {
   group('FlutterCommandResolver', () {
@@ -142,22 +145,21 @@ void main() {
       expect(r.reason, contains('flutter'));
     });
 
-    test(
-      'uses default PATH resolution to detect fvm when flutter is missing',
-      () {
-        // Exercises the real _exeOnPath: fvm is on PATH, flutter is not, so the
-        // safety net falls back to `fvm flutter`. isFvmInstalled/isFlutterInstalled
-        // are NOT mocked here.
-        final binDir = io.Platform.isWindows ? r'C:\bin' : '/bin';
-        final fvmBin = io.Platform.isWindows ? 'fvm.bat' : 'fvm';
-        final r = FlutterCommandResolver(
-          environment: {'PATH': binDir},
-          pathExists: (path) => path == p.join(binDir, fvmBin),
-        ).resolve(projectRoot: root);
+    test('asks the process manager which executables exist', () {
+      // The resolver used to walk PATH itself; `canRun` knows how executables
+      // are named on each platform.
+      final processManager = MockProcessManager();
+      when(() => processManager.canRun('fvm')).thenReturn(true);
+      when(() => processManager.canRun('flutter')).thenReturn(false);
 
-        expect(r.command!.executable, 'fvm');
-        expect(r.command!.arguments, ['flutter']);
-      },
-    );
+      final r = FlutterCommandResolver(
+        environment: const {},
+        pathExists: (path) => false,
+        processManager: processManager,
+      ).resolve(projectRoot: root);
+
+      expect(r.command!.executable, 'fvm');
+      expect(r.command!.arguments, ['flutter']);
+    });
   });
 }

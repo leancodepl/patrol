@@ -6,24 +6,32 @@ Device _device(TargetPlatform platform) =>
     Device(name: 'id', id: 'id', targetPlatform: platform, real: false);
 
 void main() {
-  test('androidScreenshotArgs captures via adb exec-out screencap', () {
-    final args = androidScreenshotArgs(_device(TargetPlatform.android));
-    expect(args, ['-s', 'id', 'exec-out', 'screencap', '-p']);
-  });
+  group('ScreenshotPlatform.argsFor', () {
+    test('captures via adb exec-out screencap', () {
+      expect(
+        ScreenshotPlatform.android.argsFor(_device(TargetPlatform.android)),
+        ['-s', 'id', 'exec-out', 'screencap', '-p'],
+      );
+    });
 
-  test('iosScreenshotArgs writes to the given outputPath, not /dev/stdout', () {
-    final args = iosScreenshotArgs(
-      _device(TargetPlatform.iOS),
-      '/tmp/shot.png',
-    );
-    expect(args, [
-      'simctl',
-      'io',
-      'id',
-      'screenshot',
-      '--type=png',
-      '/tmp/shot.png',
-    ]);
+    test('writes an iOS capture to the given path', () {
+      expect(
+        ScreenshotPlatform.ios.argsFor(
+          _device(TargetPlatform.iOS),
+          outputPath: '/tmp/shot.png',
+        ),
+        ['simctl', 'io', 'id', 'screenshot', '--type=png', '/tmp/shot.png'],
+      );
+    });
+
+    test('refuses an iOS capture with no path to write to', () {
+      // `simctl io screenshot` renames a temp file into the destination
+      // directory, which fails on /dev/stdout with a permission error.
+      expect(
+        () => ScreenshotPlatform.ios.argsFor(_device(TargetPlatform.iOS)),
+        throwsArgumentError,
+      );
+    });
   });
 
   group('ScreenshotPlatform.fromDevice', () {

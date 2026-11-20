@@ -1,38 +1,149 @@
 ---
 title: Patrol MCP
-description: AI-powered test automation with Patrol MCP server
+description: AI-powered test automation with the patrol mcp server
 ---
 
 ## Overview
 
-Patrol MCP is an MCP (Model Context Protocol) server that lets AI assistants
-run and manage Patrol tests in Flutter projects. It wraps `patrol develop`
-and exposes it as a set of MCP tools.
+`patrol mcp` is an MCP ([Model Context Protocol](https://modelcontextprotocol.io)) server that lets
+AI agents run and manage Patrol tests in Flutter projects. It wraps `patrol develop`, so a test runs
+once and every later run is a hot restart on the same app.
 
-- [patrol_mcp on pub.dev](https://pub.dev/packages/patrol_mcp)
-- [Setup guide & IDE configuration (README)](https://github.com/leancodepl/patrol/blob/master/packages/patrol_mcp/README.md)
+It ships with [`patrol_cli`](https://pub.dev/packages/patrol_cli) — there is no separate package to
+install, and the agent's tools always match the CLI that runs the tests.
 
+An agent gets:
 
-## Version Compatibility
+- `run` — runs a test file and waits for it to finish, hot-restarting an already loaded one.
+- `devices` — lists attached Android and iOS devices to pass as `run`'s `device`.
+- `status` — the session's state and its recent output.
+- `screenshot` — a screenshot from the session's device.
+- `native-tree` — the native UI tree from the session's device.
+- `quit` — stops the session.
 
-`patrol_mcp` must stay compatible with the `patrol` in your project. Its only
-constraint is on `patrol_cli`; the resolver then picks a `patrol_cli` (and its
-`patrol_log`) that also fits your `patrol`:
+## Setup
 
-| patrol_mcp  | patrol_cli |
-|-------------|------------|
-| 0.2.1+      | ^4.8.0     |
-| 0.1.4–0.2.0 | ^4.3.0     |
-| 0.1.3       | 4.3.1      |
-| 0.1.0–0.1.2 | ^4.3.0     |
+The server is the `mcp` subcommand of the CLI, so how you launch it follows how you have `patrol_cli`.
 
-`patrol_cli` 4.8.0 also requires `patrol` 4.9.0 or newer.
+### Globally activated CLI
 
-A version conflict means your `patrol` — or a `patrol_cli` you pin directly —
-falls outside that range.
+```sh
+dart pub global activate patrol_cli
+```
 
-## Getting Started
+```json
+{
+  "mcpServers": {
+    "patrol": {
+      "command": "patrol",
+      "args": ["mcp"]
+    }
+  }
+}
+```
 
-See the [full setup guide on GitHub](https://github.com/leancodepl/patrol/blob/master/packages/patrol_mcp/README.md)
-for installation steps, IDE-specific MCP configuration (Claude Code, Cursor,
-Copilot, Gemini CLI), environment variables, and troubleshooting.
+One server serves every project you open, and no repository needs a change.
+
+### CLI as a project dev dependency
+
+```json
+{
+  "mcpServers": {
+    "patrol": {
+      "command": "dart",
+      "args": ["run", "patrol_cli:main", "mcp"]
+    }
+  }
+}
+```
+
+Editors differ only in where that block goes:
+
+| Editor | Config file | Notes |
+| --- | --- | --- |
+| Claude Code | `.mcp.json` (project root) | Auto-discovered; you'll be prompted to approve on first use. |
+| Cursor | `.cursor/mcp.json` | Enable MCP under **Settings → Features → MCP**. |
+| Gemini CLI | `.gemini/settings.json` | `mcpServers` lives alongside other keys in this file. |
+| Google Antigravity | Global — open via MCP store → **Manage MCP Servers → View raw config** | Per-workspace config isn't supported. |
+| GitHub Copilot (CLI) | `.mcp.json` (project root), or `~/.copilot/mcp-config.json` (global) | Then run `/mcp` to confirm `patrol` is listed. |
+
+The VS Code Copilot extension uses `.vscode/mcp.json` with a `servers` key and an explicit
+`"type": "stdio"`:
+
+```json
+{
+  "servers": {
+    "patrol": {
+      "type": "stdio",
+      "command": "patrol",
+      "args": ["mcp"]
+    }
+  }
+}
+```
+
+See [VS Code's MCP docs](https://code.visualstudio.com/docs/copilot/chat/mcp-servers) for starting
+the server.
+
+## Which project a run happens in
+
+`run` takes a `testFile` relative to the project, and every `run` and `status` result carries the
+`projectRoot` it happened in. The server finds that project from the first of these that leads to a
+`pubspec.yaml`:
+
+1. `projectRoot` on the `run` call.
+2. `--project-root` on the command line, or the `PROJECT_ROOT` environment variable.
+3. The workspace roots your editor advertises over MCP.
+4. `CLAUDE_PROJECT_DIR`.
+5. The working directory the server was started in.
+
+Within each of those, the project owning `testFile` wins over the nearest `pubspec.yaml` above it, so
+an app in a subdirectory (or a package in a pub workspace) is reached from the repository root.
+
+A session holds its project while it lives — the app, the device and the ports belong to it — so a
+`run` naming another project is refused until the loaded session is quit.
+
+## Options
+
+| Option | What it does |
+| --- | --- |
+| `--project-root` | The project to work in, when the editor's signals don't point at it. |
+| `--log-file` | Where the session writes its log. |
+| `--show-terminal` | Opens a macOS Terminal with the live log. |
+| after `--` | Flags for `patrol develop`, e.g. `patrol mcp -- --flavor dev --verbose`. |
+
+`PROJECT_ROOT`, `SHOW_TERMINAL` and `PATROL_FLAGS` work as well, and the CLI's own environment
+variables apply — `PATROL_FLUTTER_COMMAND` overrides which Flutter the develop session uses.
+
+Under FVM, the develop session uses the pinned Flutter automatically. The globally activated CLI runs
+under the Dart that activated it, which is independent of the project's pin.
+
+## Version compatibility
+
+The server drives your project's `patrol` through this CLI, so the two have to match. See the
+[compatibility table](/documentation/compatibility-table) for the pairs.
+
+A `run` against a `patrol` this CLI cannot drive stops with the mismatch reported as
+`versionWarning`, which every `run` and `status` result carries. Pass `--no-check-compatibility` in
+the develop args to run anyway.
+
+## Coming from the `patrol_mcp` package
+
+`patrol mcp` supersedes the separate [`patrol_mcp`](https://pub.dev/packages/patrol_mcp) package.
+To migrate, drop `patrol_mcp` from your `pubspec.yaml` and point your editor's MCP config at
+`patrol mcp` (or `dart run patrol_cli:main mcp`) as above. `PATROL_FLAGS` becomes the arguments after
+`--`, which is what lets a value contain spaces.
+
+## Agent skills
+
+Patrol also ships [agent skills](/documentation/other/agent-skills) that complement this server: the
+MCP gives the agent the tools, while a skill teaches it how to use them to write tests well.
+
+## Troubleshooting
+
+- Open your editor at the project root, or pass `--project-root`. When no signal leads to a project,
+  the tool call lists the ones it tried.
+- Run `dart pub get` in the Flutter project.
+- Confirm the MCP server is enabled in your editor's settings.
+- The chosen Flutter command, and everything else the session logs, goes to the server's stderr —
+  your editor's MCP log.

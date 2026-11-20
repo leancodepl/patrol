@@ -289,7 +289,13 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
 
     addCommand(DoctorCommand(logger: _logger, platform: _platform));
 
-    addCommand(McpCommand(logger: _logger));
+    addCommand(
+      McpCommand(
+        deviceFinder: deviceFinder,
+        processManager: _processManager,
+        logger: _logger,
+      ),
+    );
 
     addCommand(
       UpdateCommand(
@@ -356,11 +362,11 @@ To install a specific version of Patrol CLI, run:
   /// Whether this invocation is `patrol mcp`.
   ///
   /// Has to be decided before [parse], because [_handleFirstRun] runs first and
-  /// its greeting plus doctor report would land in the JSON-RPC channel. A plain
-  /// `contains` rather than "first non-flag argument": an option value can look
-  /// like a command name (`--flutter-command 'fvm flutter' mcp`), and
-  /// guessing wrong towards "not the server" corrupts the channel, while
-  /// guessing wrong the other way only sends this run's logs to stderr.
+  /// its greeting plus doctor report would land in the JSON-RPC channel. An
+  /// option value can look like a command name
+  /// (`--flutter-command 'fvm flutter' mcp`); reading one as the server only
+  /// sends that run's logs to stderr, while missing the real one corrupts the
+  /// channel.
   static bool _isMcpServer(Iterable<String> args) =>
       args.contains(McpCommand.commandName);
 
@@ -710,9 +716,11 @@ To install a specific version of Patrol CLI, run:
 }
 
 // from: https://github.com/flutter/flutter/blob/285b9b11ec0d888078317445e56d6c1da397f5cd/packages/flutter_tools/lib/src/base/os.dart#L613
-Directory? findRootDirectory(FileSystem fileSystem) {
+///
+/// Walks up from [start], or from the working directory when it is not given.
+Directory? findRootDirectory(FileSystem fileSystem, {Directory? start}) {
   const kProjectRootSentinel = 'pubspec.yaml';
-  final directory = fileSystem.currentDirectory.path;
+  final directory = (start ?? fileSystem.currentDirectory).path;
   var currentDirectory = fileSystem.directory(directory).absolute;
   while (true) {
     if (currentDirectory.childFile(kProjectRootSentinel).existsSync()) {

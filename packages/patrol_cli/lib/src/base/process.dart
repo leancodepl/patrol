@@ -1,6 +1,12 @@
 import 'dart:async';
 import 'dart:convert' show Encoding, LineSplitter, Utf8Decoder;
-import 'dart:io' show Process, ProcessResult, ProcessStartMode, systemEncoding;
+import 'dart:io'
+    show
+        Process,
+        ProcessResult,
+        ProcessSignal,
+        ProcessStartMode,
+        systemEncoding;
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:patrol_cli/src/base/logger.dart';
@@ -96,6 +102,20 @@ extension ProcessListeners on Process {
         );
   }
 }
+
+/// Watches the signals that ask this process to stop, and calls [onSignal] for
+/// each.
+///
+/// SIGTERM cannot be watched on Windows: it throws an async `SignalException`
+/// that no surrounding try/catch sees. There, a stop arrives as SIGINT or as
+/// stdin closing.
+List<StreamSubscription<ProcessSignal>> watchStopSignals(
+  void Function(ProcessSignal) onSignal, {
+  Platform platform = const LocalPlatform(),
+}) => [
+  ProcessSignal.sigint.watch().listen(onSignal),
+  if (!platform.isWindows) ProcessSignal.sigterm.watch().listen(onSignal),
+];
 
 /// Import `dispose_scope` with `hide ProcessDisposed`, so that a `Process`
 /// cannot be registered with the single-process `disposedBy` by accident.
