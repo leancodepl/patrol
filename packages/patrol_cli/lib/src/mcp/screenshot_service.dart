@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io' show HttpClient, WebSocket;
 import 'dart:typed_data';
 
 import 'package:file/file.dart';
@@ -52,11 +53,17 @@ enum ScreenshotPlatform {
       };
 }
 
+/// Captures the page a Chrome instance shows, as PNG bytes, through its
+/// remote debugging port.
+typedef WebPageCapture = Future<Uint8List> Function(String debuggerPort);
+
 abstract final class ScreenshotService {
   static const _maxHeight = 800;
 
   static Future<CallToolResult> handleScreenshotRequest(
     Device? device, {
+    String? webDebuggerPort,
+    WebPageCapture captureWebPage = captureChromePage,
     ProcessManager processManager = const LocalProcessManager(),
     FileSystem fileSystem = const LocalFileSystem(),
   }) async {
@@ -71,6 +78,31 @@ abstract final class ScreenshotService {
             ),
           ],
           isError: true,
+        );
+      }
+
+      if (device.targetPlatform == TargetPlatform.web) {
+        if (webDebuggerPort == null) {
+          return const CallToolResult(
+            content: [
+              TextContent(
+                text:
+                    'The web session has no Chrome debugger port yet. '
+                    'Wait for the run to start the browser and try again.',
+              ),
+            ],
+            isError: true,
+          );
+        }
+        final page = await captureWebPage(webDebuggerPort);
+        _validatePng(page);
+        return CallToolResult(
+          content: [
+            ImageContent(
+              data: base64Encode(_resizeImage(page)),
+              mimeType: 'image/png',
+            ),
+          ],
         );
       }
 
@@ -204,5 +236,53 @@ abstract final class ScreenshotService {
     } on Exception {
       return bytes;
     }
+  }
+}
+
+/// Captures the first page Chrome lists on [debuggerPort] with the DevTools
+/// Protocol's `Page.captureScreenshot`. Every step is bounded: a browser that
+/// stopped answering fails the call.
+Future<Uint8List> captureChromePage(String debuggerPort) async {
+  const step = Duration(seconds: 5);
+  final httpClient = HttpClient();
+  try {
+    final request = await httpClient
+        .getUrl(Uri.parse('http://127.0.0.1:$debuggerPort/json'))
+        .timeout(step);
+    final response = await request.close().timeout(step);
+    final body = await response.transform(utf8.decoder).join().timeout(step);
+    final page = (jsonDecode(body) as List)
+        .whereType<Map<String, dynamic>>()
+        .firstWhere(
+          (target) => target['type'] == 'page',
+          orElse: () => throw Exception('Chrome lists no page to capture'),
+        );
+    final socketUrl = page['webSocketDebuggerUrl'] as String?;
+    if (socketUrl == null) {
+      throw Exception('Chrome gives no debugger URL for the page');
+    }
+
+    final socket = await WebSocket.connect(socketUrl).timeout(step);
+    try {
+      socket.add(jsonEncode({'id': 1, 'method': 'Page.captureScreenshot'}));
+      await for (final message in socket.timeout(step * 2)) {
+        final reply = jsonDecode(message as String) as Map<String, dynamic>;
+        if (reply['id'] != 1) {
+          continue;
+        }
+        final data = (reply['result'] as Map<String, dynamic>?)?['data'];
+        if (data is! String) {
+          throw Exception(
+            'Page.captureScreenshot failed: ${reply['error'] ?? 'no data'}',
+          );
+        }
+        return base64Decode(data);
+      }
+      throw Exception('Chrome closed the connection before answering');
+    } finally {
+      await socket.close();
+    }
+  } finally {
+    httpClient.close(force: true);
   }
 }
