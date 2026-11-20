@@ -41,11 +41,12 @@
 - Add `patrol mcp` (experimental), an MCP server shipped with the CLI that lets AI agents run tests
   in `patrol develop` sessions and read their results. It runs a test on Android or iOS, hot
   restarts it on the next `run`, and takes screenshots and native trees. One server serves every
-  project it is asked about, git worktrees included. Its results report a run that has gone quiet
-  and a `patrol` version this CLI cannot drive. It replaces the `patrol_mcp` package, so its
-  dependencies no longer land in the app's pubspec (#3166). Run it as `patrol mcp` from a globally
-  activated CLI or as `dart run patrol_cli:main mcp` from a dev dependency, with develop flags after
-  `--`; `PATROL_FLAGS` is split as a shell would (#3026). See the
+  project it is asked about, git worktrees included. Its results report why a test failed, the
+  session's log file with the build's errors, a run that has gone quiet, a `patrol` version this CLI
+  cannot drive and a project that pins another `patrol_cli`. It replaces the `patrol_mcp` package,
+  so its dependencies no longer land in the app's pubspec (#3166). Run it as `patrol mcp` from a
+  globally activated CLI or as `dart run patrol_cli:main mcp` from a dev dependency, with develop
+  flags after `--`; `PATROL_FLAGS` is split as a shell would (#3026). See the
   [docs](https://patrol.leancode.co/documentation/other/patrol-mcp), migrating off `patrol_mcp`
   included. (#3368)
 - Look for a `patrol test`/`patrol develop` target in the project when the path names nothing from

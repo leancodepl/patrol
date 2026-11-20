@@ -104,7 +104,10 @@ class PubspecReader {
 
   /// Gets the patrol package version from pubspec.lock
   /// This reads the actual resolved version that's being used in the project.
-  String? getPatrolVersion() {
+  String? getPatrolVersion() => getLockedVersion('patrol');
+
+  /// The version of [package] that pubspec.lock resolves, if it lists one.
+  String? getLockedVersion(String package) {
     final filePath = _fs.path.join(_projectRoot.path, 'pubspec.lock');
     final file = _fs.file(filePath);
 
@@ -128,12 +131,12 @@ class PubspecReader {
         return null;
       }
 
-      final patrol = packages['patrol'] as Map?;
-      if (patrol == null) {
+      final entry = packages[package] as Map?;
+      if (entry == null) {
         return null;
       }
 
-      final version = patrol['version'];
+      final version = entry['version'];
       if (version == null) {
         return null;
       }
