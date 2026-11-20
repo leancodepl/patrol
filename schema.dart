@@ -340,6 +340,10 @@ class AndroidSetFoldPostureResponse {
   AndroidFoldPosture? previousPosture;
 }
 
+class IOSTakeNativeScreenshotRequest {
+  late String tag;
+}
+
 class IOSTakeCameraPhotoRequest {
   IOSSelector? shutterButtonSelector;
   IOSSelector? doneButtonSelector;
@@ -481,6 +485,9 @@ abstract class IosAutomator<IOSServer, DartClient> {
   void tapAt(IOSTapAtRequest request);
   void waitUntilVisible(IOSWaitUntilVisibleRequest request);
   void swipe(IOSSwipeRequest request);
+
+  // screenshots
+  void takeNativeScreenshot(IOSTakeNativeScreenshotRequest request);
 
   // notifications
   void closeHeadsUpNotification();

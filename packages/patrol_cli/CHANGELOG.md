@@ -7,6 +7,9 @@
 - `patrol coverage pull` now reads coverage from runs with `clearPackageData:true` (one run per
   test, written by `patrol` on Android 12+) and no longer refuses those BrowserStack builds. A
   session that kept only the first test's run (older Android) still fails. (#3359)
+- Add native screenshots on iOS, collected by `patrol test` from the `.xcresult` into
+  `<test-directory>/screenshots`. Requires Xcode 16 or newer. See the
+  [docs](https://patrol.leancode.co/cli-commands/test#on-ios). (#3271)
 
 ## 4.9.0
 
