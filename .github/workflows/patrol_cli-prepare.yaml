@@ -50,6 +50,12 @@ jobs:
       - name: Run executable (smoke test)
         run: patrol
 
+      - name: MCP server smoke test
+        run: dart run tool/smoke_test.dart
+
+      - name: MCP server smoke test (forced first run)
+        run: dart run tool/smoke_test.dart --force-first-run
+
       - name: dart test
         run: dart test
 

@@ -1,6 +1,6 @@
 ---
 name: prepare-release
-description: Plan, prepare and publish releases of the Patrol packages (patrol, patrol_cli, patrol_finders, patrol_log, patrol_mcp, adb). Use when asked what is unreleased or ready to release, which PRs are close to merging before a release, to prepare a release ("prepare patrol 4.11.0", "release patrol_log"), or to tag and publish a merged release PR. Status is read-only; preparing ends at open release PRs, one per package; a tag is pushed only after its PR merges and the user says so.
+description: Plan, prepare and publish releases of the Patrol packages (patrol, patrol_cli, patrol_finders, patrol_log, adb). Use when asked what is unreleased or ready to release, which PRs are close to merging before a release, to prepare a release ("prepare patrol 4.11.0", "release patrol_log"), or to tag and publish a merged release PR. Status is read-only; preparing ends at open release PRs, one per package; a tag is pushed only after its PR merges and the user says so.
 ---
 
 # Releasing Patrol packages
@@ -130,8 +130,7 @@ For each PR:
    semver check fail when a pubspec version is below dart-apitool's
    recommendation.
 2. **Versions** — bump every version file of the package (`packages.md` lists
-   the extra ones: `constants.dart` for patrol_cli, `bin/patrol_mcp.dart` for
-   patrol_mcp).
+   the extra one: `constants.dart` for patrol_cli).
 3. **Changelogs** — rename `## Unreleased` to `## X.Y.Z` (don't add a new empty
    `## Unreleased`). Then edit the entries:
    - every entry ends with the PR number, `(#1234)`;

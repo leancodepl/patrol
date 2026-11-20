@@ -1,8 +1,9 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
-import 'package:patrol_cli/patrol_cli.dart' show FlutterCommand, TargetPlatform;
-import 'package:patrol_mcp/src/device_lister.dart';
+import 'package:patrol_cli/src/devices.dart';
+import 'package:patrol_cli/src/mcp/device_lister.dart';
+import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:test/test.dart';
 
 void main() {

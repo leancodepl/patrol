@@ -78,6 +78,14 @@ class FlutterTool {
     callback?.call();
   }
 
+  final _hotRestartReady = Completer<void>();
+
+  /// Completes once `flutter attach` will act on a hot restart.
+  ///
+  /// A restart requested earlier is held until then, so a caller that reports
+  /// on the restart waits for this before claiming it was sent.
+  Future<void> get hotRestartReady => _hotRestartReady.future;
+
   /// Forwards logs and hot restarts the app when "r" is pressed.
   Future<void> attachForHotRestart({
     required FlutterCommand flutterCommand,
@@ -278,6 +286,9 @@ class FlutterTool {
                 'q Quit (terminate the process and application on the device)',
               );
               _hotRestartActive = true;
+              if (!_hotRestartReady.isCompleted) {
+                _hotRestartReady.complete();
+              }
               if (_pendingHotRestart) {
                 _pendingHotRestart = false;
                 _logger.success('Hot Restart: sending the queued restart');
