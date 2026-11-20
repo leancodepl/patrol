@@ -1,71 +1,26 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io' as io;
 
 import 'package:mcp_dart/mcp_dart.dart' hide Logger;
 import 'package:meta/meta.dart';
 import 'package:patrol_cli/src/base/command_line.dart';
 import 'package:patrol_cli/src/base/constants.dart' as constants;
-import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/devices.dart';
-import 'package:patrol_cli/src/mcp/device_selection.dart';
-import 'package:patrol_cli/src/mcp/flutter_command_resolver.dart';
-import 'package:patrol_cli/src/mcp/native_tree_service.dart';
+import 'package:patrol_cli/src/mcp/mcp_tools.dart';
 import 'package:patrol_cli/src/mcp/patrol_session.dart';
 import 'package:patrol_cli/src/mcp/project_resolver.dart';
-import 'package:patrol_cli/src/mcp/screenshot_service.dart';
-import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:process/process.dart';
-
-const _defaultTimeoutMinutes = 5.0;
 
 /// How long the client has to answer `roots/list`.
 const _rootsTimeout = Duration(seconds: 5);
 
-/// Output schema for `run` and `status` -- a serialized [PatrolStatus].
-/// Keys mirror `PatrolStatus.toMap`.
-const _sessionStatusSchema = JsonObject(
-  properties: {
-    'isDevelopRunning': JsonBoolean(),
-    'projectRoot': JsonString(
-      description:
-          'Absolute path of the project this result came from. Check it before '
-          'trusting a result if you work across checkouts.',
-    ),
-    'versionWarning': JsonString(
-      description:
-          "Present when the project's `patrol` version is not one this CLI can "
-          'drive. Runs may fail for that reason alone; report it rather than '
-          'debugging the test.',
-    ),
-    'testState': JsonString(
-      enumValues: ['idle', 'running', 'finishedPassed', 'finishedFailed'],
-    ),
-    'currentTestFile': JsonString(),
-    'warning': JsonString(),
-    'deviceSelectionNote': JsonString(),
-    'deviceName': JsonString(),
-    'deviceId': JsonString(),
-    'devicePlatform': JsonString(),
-    'output': JsonString(),
-    'summary': JsonString(),
-  },
-  required: [
-    'isDevelopRunning',
-    'projectRoot',
-    'testState',
-    'output',
-    'summary',
-  ],
-);
-
 const _instructions =
     'Patrol MCP lets AI agents run and control Patrol develop sessions.\n\n'
     'Usage workflow:\n'
-    '1. Use run with testFile (for example: {"testFile":"patrol_test/your_test.dart"}) '
+    '1. Use run with testFile (for example: {"testFile":"patrol_test/login_test.dart"}) '
     'to start a test run.\n'
     '2. Use screenshot to capture the current app screen.\n'
     '3. Use native-tree to fetch the current native UI tree '
@@ -81,24 +36,6 @@ const _instructions =
     '- every result carries projectRoot, the project the run happened in. testFile is '
     'relative to it or to the workspace the client opened. To work in another checkout, '
     'quit the session and pass projectRoot to run.';
-
-class _RunArgs {
-  _RunArgs.fromJson(Map<String, dynamic> json)
-    : testFile = json['testFile'] as String,
-      timeout = _parseTimeout(json['timeoutMinutes'] as num?),
-      device = (json['device'] as String?)?.trim().nullIfEmpty,
-      projectRoot = (json['projectRoot'] as String?)?.trim().nullIfEmpty;
-
-  final String testFile;
-  final Duration timeout;
-  final String? device;
-  final String? projectRoot;
-
-  static Duration _parseTimeout(num? timeoutMinutes) {
-    final minutes = timeoutMinutes?.toDouble() ?? _defaultTimeoutMinutes;
-    return Duration(milliseconds: (minutes * 60 * 1000).round());
-  }
-}
 
 /// Runs the MCP server that lets AI agents drive `patrol develop` sessions.
 ///
@@ -241,6 +178,11 @@ class McpCommand extends PatrolCommand {
   }
 
   McpServer _buildServer(PatrolSession session) {
+    final tools = McpTools(
+      session: session,
+      deviceFinder: _deviceFinder,
+      processManager: _processManager,
+    );
     return McpServer(
         const Implementation(name: 'patrol_mcp', version: constants.version),
         options: const McpServerOptions(
@@ -283,14 +225,9 @@ class McpCommand extends PatrolCommand {
           },
           required: ['testFile'],
         ),
-        outputSchema: _sessionStatusSchema,
+        outputSchema: sessionStatusSchema,
         annotations: const ToolAnnotations(title: 'Run Patrol Tests'),
-        callback: (args, extra) => _withProject(
-          session,
-          () => _run(session, args, extra),
-          testFile: (args['testFile'] as String?)?.trim().nullIfEmpty,
-          requestedRoot: (args['projectRoot'] as String?)?.trim().nullIfEmpty,
-        ),
+        callback: tools.run,
       )
       ..registerTool(
         'devices',
@@ -298,50 +235,25 @@ class McpCommand extends PatrolCommand {
             'List attached devices patrol can run on (Android, iOS). Use '
             'to resolve a device name/id to pass as `device` to run.',
         annotations: const ToolAnnotations(title: 'List Devices'),
-        callback: (args, extra) => _withProject(
-          session,
-          () => _devices(session),
-          projectRequired: false,
-        ),
+        callback: (args, extra) => tools.devices(),
       )
       ..registerTool(
         'quit',
         description: 'Quit the active patrol session gracefully',
         annotations: const ToolAnnotations(title: 'Quit Patrol'),
-        callback: (args, extra) =>
-            _withProject(session, projectRequired: false, () async {
-              if (!session.isRunning) {
-                return const CallToolResult(
-                  content: [
-                    TextContent(
-                      text:
-                          'No active patrol session to quit. '
-                          'Start one with the run tool first.',
-                    ),
-                  ],
-                  isError: true,
-                );
-              }
-              return CallToolResult(
-                content: [TextContent(text: await session.quit())],
-              );
-            }),
+        callback: (args, extra) => tools.quit(),
       )
       ..registerTool(
         'status',
         description:
             'Get the current status of the patrol session and recent output',
-        outputSchema: _sessionStatusSchema,
+        outputSchema: sessionStatusSchema,
         annotations: const ToolAnnotations(
           title: 'Get Status',
           readOnlyHint: true,
           idempotentHint: true,
         ),
-        callback: (args, extra) => _withProject(
-          session,
-          () async => _statusResult(session.getStatus()),
-          projectRequired: false,
-        ),
+        callback: (args, extra) => tools.status(),
       )
       ..registerTool(
         'screenshot',
@@ -352,14 +264,7 @@ class McpCommand extends PatrolCommand {
           title: 'Capture Screenshot',
           readOnlyHint: true,
         ),
-        callback: (args, extra) => _withProject(
-          session,
-          () => ScreenshotService.handleScreenshotRequest(
-            session.device,
-            processManager: _processManager,
-          ),
-          projectRequired: false,
-        ),
+        callback: (args, extra) => tools.screenshot(),
       )
       ..registerTool(
         'native-tree',
@@ -370,132 +275,8 @@ class McpCommand extends PatrolCommand {
           title: 'Get Native UI Tree',
           readOnlyHint: true,
         ),
-        callback: (args, extra) =>
-            _withProject(session, projectRequired: false, () async {
-              await session.ensureNativeAutomatorReachable();
-              return NativeTreeService.handleGetNativeTreeRequest(
-                session.device,
-                session.testServerPort,
-                processManager: _processManager,
-              );
-            }),
+        callback: (args, extra) => tools.nativeTree(),
       );
-  }
-
-  /// Resolves the project before a tool touches the session, and reports a
-  /// resolution failure as the tool's error with the signals that were tried.
-  ///
-  /// [testFile] and [requestedRoot] are what the call itself said about the
-  /// project. A server started outside any Dart package has nothing else to go
-  /// on, so resolving without them would fail here before the call's own signals
-  /// were ever read.
-  Future<CallToolResult> _withProject(
-    PatrolSession session,
-    Future<CallToolResult> Function() body, {
-    String? testFile,
-    String? requestedRoot,
-    bool projectRequired = true,
-  }) async {
-    try {
-      await session.ensureProjectResolved(
-        testFile: testFile,
-        requestedRoot: requestedRoot,
-      );
-    } on ProjectResolutionException catch (err) {
-      if (projectRequired) {
-        return CallToolResult(
-          content: [TextContent(text: '$err')],
-          isError: true,
-        );
-      }
-      // Only a run needs a project. A tool that reports on the session, or lists
-      // what is attached, still has an answer — and refusing it would leave an
-      // agent nothing to call on a server that has not been told where to work.
-      session.noteProjectUnresolved('$err');
-    }
-    return body();
-  }
-
-  Future<CallToolResult> _run(
-    PatrolSession session,
-    Map<String, dynamic> args,
-    RequestHandlerExtra extra,
-  ) async {
-    final testFile = args['testFile'];
-    if (testFile is! String || testFile.trim().isEmpty) {
-      return const CallToolResult(
-        content: [
-          TextContent(
-            text:
-                'The "testFile" argument is required, e.g. '
-                '{"testFile":"integration_test/app_test.dart"}.',
-          ),
-        ],
-        isError: true,
-      );
-    }
-
-    final runArgs = _RunArgs.fromJson(args);
-
-    // If the client cancels the run (MCP notifications/cancelled), tear the
-    // develop session down so it isn't left orphaned.
-    final abortSub = extra.signal.onAbort.listen((_) {
-      unawaited(session.dispose());
-    });
-    try {
-      final result = await session.startAndWait(
-        runArgs.testFile,
-        timeout: runArgs.timeout,
-        device: runArgs.device,
-        projectRoot: runArgs.projectRoot,
-      );
-      return _statusResult(result.status, isError: !result.started);
-    } finally {
-      await abortSub.cancel();
-    }
-  }
-
-  Future<CallToolResult> _devices(PatrolSession session) async {
-    // Resolve Flutter the same way `run` does (FVM autodetect,
-    // `PATROL_FLUTTER_COMMAND` escape hatch) so device enumeration works in FVM
-    // projects without a global `flutter` on PATH.
-    final flutterCommand = FlutterCommandResolver()
-        .resolve(projectRoot: session.flutterProjectPath)
-        .command;
-    try {
-      final attached = await _deviceFinder.getAttachedDevices(
-        flutterCommand: flutterCommand ?? const FlutterCommand('flutter'),
-      );
-      final payload = {
-        'devices': [
-          for (final d in supportedDevices(attached))
-            {
-              'id': d.id,
-              'name': d.name,
-              'platform': d.targetPlatform.name,
-              'isEmulator': !d.real,
-            },
-        ],
-      };
-      return CallToolResult(
-        content: [TextContent(text: jsonEncode(payload))],
-        structuredContent: payload,
-      );
-    } catch (err) {
-      return CallToolResult(
-        content: [TextContent(text: 'Failed to list attached devices: $err')],
-        isError: true,
-      );
-    }
-  }
-
-  CallToolResult _statusResult(PatrolStatus status, {bool isError = false}) {
-    final map = status.toMap();
-    return CallToolResult(
-      content: [TextContent(text: jsonEncode(map))],
-      structuredContent: map,
-      isError: isError,
-    );
   }
 
   Future<int> _serve(

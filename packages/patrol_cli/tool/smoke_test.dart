@@ -253,6 +253,26 @@ Future<void> _checkProjectFromCall({required String serverDart}) async {
   process.stdin.writeln(
     jsonEncode({'jsonrpc': '2.0', 'method': 'notifications/initialized'}),
   );
+  // No project has resolved yet: the tools that need none must still answer.
+  final devices = await call('tools/call', {
+    'name': 'devices',
+    'arguments': <String, dynamic>{},
+  });
+  final devicesText =
+      (((devices['result'] as Map<String, dynamic>?)?['content'] as List?)
+                  ?.first
+              as Map?)?['text']
+          as String?;
+  if (devicesText == null ||
+      devicesText.contains('Project root not resolved')) {
+    _fail(
+      process,
+      'devices did not answer on a server with no project: '
+      '${devices['error'] ?? devicesText}',
+      stderrBuffer,
+    );
+  }
+
   final response = await call('tools/call', {
     'name': 'run',
     'arguments': {
@@ -290,7 +310,10 @@ Future<void> _checkProjectFromCall({required String serverDart}) async {
   );
   outside.deleteSync(recursive: true);
   project.deleteSync(recursive: true);
-  stdout.writeln('[smoke] project OK — a run reaches the project it names');
+  stdout.writeln(
+    '[smoke] project OK — devices answers before a project resolves, and a '
+    'run reaches the project it names',
+  );
 }
 
 /// Asks the server for its tools and asserts the surface agents rely on: every

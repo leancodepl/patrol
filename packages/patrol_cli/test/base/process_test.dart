@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart' hide ProcessDisposed;
 import 'package:patrol_cli/src/base/process.dart';
+import 'package:platform/platform.dart' show FakePlatform;
 import 'package:test/test.dart';
 
 /// Starts a process that stays alive until killed and keeps a child of its own -
@@ -104,6 +105,38 @@ void main() {
           reason: 'child $child is still running',
         );
       }
+    });
+  });
+
+  group('watchStopSignals', () {
+    // SIGTERM cannot be watched on Windows: it throws an async SignalException
+    // that no try/catch sees, so a server watching it there would crash.
+    test('watches SIGINT and SIGTERM elsewhere', () {
+      final subscriptions = watchStopSignals(
+        (_) {},
+        platform: FakePlatform(operatingSystem: 'linux'),
+      );
+      addTearDown(() {
+        for (final subscription in subscriptions) {
+          subscription.cancel();
+        }
+      });
+
+      expect(subscriptions, hasLength(2));
+    });
+
+    test('watches only SIGINT on Windows', () {
+      final subscriptions = watchStopSignals(
+        (_) {},
+        platform: FakePlatform(operatingSystem: 'windows'),
+      );
+      addTearDown(() {
+        for (final subscription in subscriptions) {
+          subscription.cancel();
+        }
+      });
+
+      expect(subscriptions, hasLength(1));
     });
   });
 }

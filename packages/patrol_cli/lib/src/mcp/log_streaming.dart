@@ -23,18 +23,22 @@ final class LogStreaming {
   }
 
   Future<void> stopLogging() async {
-    if (_logSink == null) {
+    final sink = _logSink;
+    if (sink == null) {
       return;
     }
+    // Detached before the first await: a session's cleanup and the next
+    // session's start can both stop the shared sink, and a second close while
+    // the first flush is pending throws.
+    _logSink = null;
+    _logFile = null;
 
     // Flush any pending writes before closing
     try {
-      await _logSink!.flush();
+      await sink.flush();
     } catch (_) {} // Ignore flush errors
 
-    await _logSink!.close();
-    _logSink = null;
-    _logFile = null;
+    await sink.close();
   }
 
   void writeLog(String message) {

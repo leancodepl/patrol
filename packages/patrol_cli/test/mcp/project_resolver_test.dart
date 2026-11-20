@@ -112,6 +112,41 @@ void main() {
       expect(resolved.testFile, p.join('patrol_test', 'login_test.dart'));
     });
 
+    test('an absolute test file wins over a configured project', () async {
+      // A worktree of the same repository is a different project, and an editor
+      // config pinning `PROJECT_ROOT=.` points at the tree the server started
+      // in, not the one the test lives in.
+      final main = project('main');
+      final worktree = project('main-flow');
+      testFile(worktree, 'patrol_test/login_test.dart');
+
+      final resolved = await resolver(
+        projectRootOverride: '.',
+        cwd: main,
+      ).resolve(testFile: p.join(worktree, 'patrol_test', 'login_test.dart'));
+
+      expect(resolved.root, worktree);
+      expect(resolved.testFile, p.join('patrol_test', 'login_test.dart'));
+    });
+
+    test('an absolute test file moves a cached project', () async {
+      final main = project('main');
+      final worktree = project('main-flow');
+      testFile(worktree, 'patrol_test/login_test.dart');
+      final subject = resolver(projectRootOverride: main, cwd: main);
+
+      expect(await subject.resolve().root, main);
+
+      expect(
+        await subject
+            .resolve(
+              testFile: p.join(worktree, 'patrol_test', 'login_test.dart'),
+            )
+            .root,
+        worktree,
+      );
+    });
+
     test('a root asked for without remembering leaves the cache', () async {
       final anchored = project('anchored');
       final asked = project('asked');
