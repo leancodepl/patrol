@@ -44,20 +44,19 @@ set -e
 # attached to the test's .xcresult, which FTL uploads under
 # <device>/TestLogs/*.xcresult in the results bucket (there is no
 # --directories-to-pull for iOS like on Android). We download the result bundle
-# and export the screenshots, plus the screen recording (.mp4) for each failing
-# test. Best-effort: never fails the run. Opt-in with PULL_IOS_ARTIFACTS=1.
+# and export the screenshots. Best-effort: never fails the run. Opt-in with
+# PULL_IOS_ARTIFACTS=1. (The bundle FTL returns holds no screen recordings.)
 # The screenshot filter is the one in `IOSTestBackend._copyScreenshotsFromExport`
 # in patrol_cli (PNGs named `patrol_*` or associated with a failure) — keep the
 # two in sync.
 SCREENSHOTS_DIR="${IOS_SCREENSHOTS_DIR:-ios_screenshots}"
-VIDEOS_DIR="${IOS_VIDEOS_DIR:-ios_videos}"
 pull_artifacts() {
 	command -v xcrun >/dev/null 2>&1 || { echo "xcrun not found; skipping artifact pull"; return 0; }
 
 	local pull_dir attach_dir
 	pull_dir="$(mktemp -d)"
-	rm -rf "$SCREENSHOTS_DIR" "$VIDEOS_DIR"
-	mkdir -p "$SCREENSHOTS_DIR" "$VIDEOS_DIR"
+	rm -rf "$SCREENSHOTS_DIR"
+	mkdir -p "$SCREENSHOTS_DIR"
 
 	# Copy the whole results dir; the .xcresult prefix can't be cp'd directly
 	# ("no objects matched"), but its parent recurses fine.
@@ -70,9 +69,9 @@ pull_artifacts() {
 	while IFS= read -r xcresult; do
 		attach_dir="$(mktemp -d)"
 		if xcrun xcresulttool export attachments --path "$xcresult" --output-path "$attach_dir" >/dev/null 2>&1; then
-			python3 - "$attach_dir" "$SCREENSHOTS_DIR" "$VIDEOS_DIR" <<'PY'
+			python3 - "$attach_dir" "$SCREENSHOTS_DIR" <<'PY'
 import hashlib, json, os, re, shutil, sys
-attach_dir, shots_dir, videos_dir = sys.argv[1], sys.argv[2], sys.argv[3]
+attach_dir, shots_dir = sys.argv[1], sys.argv[2]
 manifest = os.path.join(attach_dir, "manifest.json")
 
 
@@ -104,14 +103,7 @@ if os.path.exists(manifest):
         ident = test.get("testIdentifier", "unknown")
         # Digest of the full id: same-named tests in two classes stay apart.
         tid = f"{slug(ident)}-{hashlib.sha1(ident.encode()).hexdigest()[:8]}"
-        atts = test.get("attachments", [])
-        # A screen recording is only interesting for a test that failed.
-        failed = any(
-            a.get("isAssociatedWithFailure")
-            or a.get("suggestedHumanReadableName", "").startswith("patrol_failure")
-            for a in atts
-        )
-        for a in atts:
+        for a in test.get("attachments", []):
             name = EXPORT_NAME_SUFFIX.sub("", a.get("suggestedHumanReadableName", ""))
             src = os.path.join(attach_dir, a["exportedFileName"])
             if not os.path.isfile(src):
@@ -119,8 +111,6 @@ if os.path.exists(manifest):
             wanted = name.startswith("patrol_") or a.get("isAssociatedWithFailure")
             if wanted and is_png(src):
                 shutil.copy(src, free_path(shots_dir, f"{tid}__{slug(name)}", ".png"))
-            elif failed and a["exportedFileName"].lower().endswith(".mp4"):
-                shutil.copy(src, free_path(videos_dir, f"{tid}_", ".mp4"))
 PY
 		fi
 		rm -rf "$attach_dir"
@@ -134,12 +124,6 @@ PY
 	else
 		echo "No Patrol screenshots found in the result bundle."
 		rmdir "$SCREENSHOTS_DIR" 2>/dev/null || true
-	fi
-	if [ -n "$(ls -A "$VIDEOS_DIR" 2>/dev/null)" ]; then
-		echo "Failure recordings saved to $VIDEOS_DIR:"
-		ls -1 "$VIDEOS_DIR"
-	else
-		rmdir "$VIDEOS_DIR" 2>/dev/null || true
 	fi
 }
 
