@@ -6,6 +6,7 @@ import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:patrol/src/platform/contracts/mobile_automator_client.dart';
 import 'package:patrol/src/platform/mobile/mobile_automator.dart';
 import 'package:patrol/src/platform/mobile/mobile_automator_config.dart';
+import 'package:patrol/src/platform/mobile/patrol_runtime_ports.dart';
 import 'package:patrol_log/patrol_log.dart';
 
 /// Provides functionality to interact with the OS that the app under test is
@@ -507,7 +508,11 @@ abstract class NativeMobileAutomator implements MobileAutomator {
   Future<void> markPatrolAppServiceReady() async {
     await wrapRequest(
       'markPatrolAppServiceReady',
-      _client.markPatrolAppServiceReady,
+      () => _client.markPatrolAppServiceReady(
+        MarkPatrolAppServiceReadyRequest(
+          port: PatrolRuntimePorts.boundAppServerPort,
+        ),
+      ),
       enablePatrolLog: false,
     );
   }

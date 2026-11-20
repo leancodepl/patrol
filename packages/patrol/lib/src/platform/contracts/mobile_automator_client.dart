@@ -156,8 +156,10 @@ class MobileAutomatorClient {
     return _sendRequest('stopMockLocation');
   }
 
-  Future<void> markPatrolAppServiceReady() {
-    return _sendRequest('markPatrolAppServiceReady');
+  Future<void> markPatrolAppServiceReady(
+    MarkPatrolAppServiceReadyRequest request,
+  ) {
+    return _sendRequest('markPatrolAppServiceReady', request.toJson());
   }
 
   Future<IsVirtualDeviceResponse> isVirtualDevice() async {

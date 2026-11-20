@@ -148,6 +148,10 @@ class PatrolAppService {
   /// bundled Dart test file.
   final DartGroupEntry topLevelDartTestGroup;
 
+  /// Whether one app service serves more than one Dart test. Always false on
+  /// web; present for API parity.
+  final reuseAcrossTests = false;
+
   final _testExecutionRequested = Completer<RunDartTestRequest>();
 
   /// A future that completes with the Dart test request.
@@ -169,6 +173,17 @@ class PatrolAppService {
   /// Sets the native work that should follow the currently running Dart phase.
   void setContinuation(PatrolPhaseContinuation continuation) {
     _continuation = continuation;
+  }
+
+  /// Reports the end of the currently running Dart phase.
+  ///
+  /// Web does not support phased tests, so this always returns `null` and
+  /// [runDartTest] reports the continuation as a failure.
+  Future<RunDartTestRequest?> finishPhase(
+    PatrolPhaseContinuation continuation,
+  ) async {
+    setContinuation(continuation);
+    return null;
   }
 
   /// Marks [dartFileName] as completed with the given [passed] status.
@@ -239,8 +254,6 @@ class PatrolAppService {
     _patrolLog.log(
       TestEntry(name: request.name, status: TestEntryStatus.success),
     );
-    return const RunDartTestResponse(
-      result: RunDartTestResponseResult.success,
-    );
+    return const RunDartTestResponse(result: RunDartTestResponseResult.success);
   }
 }

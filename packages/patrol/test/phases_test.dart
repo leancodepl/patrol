@@ -34,6 +34,29 @@ void main() {
       );
     });
 
+    test('an attach phase keeps the process and can follow a restart', () {
+      final definition = patrolPhasesOf(
+        phases([
+          PatrolPhase((_) => Future.value()),
+          PatrolPhase(
+            (_) => Future.value(),
+            launch: const PatrolAppLaunch.attach(),
+          ),
+          PatrolPhase((_) => Future.value()),
+        ]),
+      )!;
+
+      final attach = definition.continuationAfter(0)!;
+      expect(attach.keepsProcess, isTrue);
+      expect(attach.launchUrl, isNull);
+      expect(definition.continuationAfter(1)!.keepsProcess, isFalse);
+
+      expect(definition.canAttachAt(0), isFalse);
+      expect(definition.canAttachAt(1), isTrue);
+      expect(definition.canAttachAt(2), isFalse);
+      expect(definition.canAttachAt(3), isFalse);
+    });
+
     test('rejects an empty phase list', () {
       expect(() => phases([]), throwsArgumentError);
     });
@@ -44,8 +67,19 @@ void main() {
       result: RunDartTestResponseResult.continuation,
       nextPhaseIndex: 2,
       nextPhaseLaunchUrl: 'patrol://settings',
+      nextPhaseKeepsProcess: true,
     );
 
     expect(RunDartTestResponse.fromJson(response.toJson()), response);
+  });
+
+  test('restart request survives JSON serialization', () {
+    const request = RunDartTestRequest(
+      name: 'test',
+      phaseIndex: 1,
+      engineRestarted: true,
+    );
+
+    expect(RunDartTestRequest.fromJson(request.toJson()), request);
   });
 }

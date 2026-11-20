@@ -6,17 +6,21 @@ import Foundation
   @objc public dynamic let details: String?
   @objc public dynamic let nextPhaseIndex: NSNumber?
   @objc public dynamic let nextPhaseLaunchUrl: String?
+  /// Whether the next phase attaches to the running app instead of relaunching it.
+  @objc public dynamic let nextPhaseKeepsProcess: Bool
 
   @objc public init(
     result: String,
     details: String?,
     nextPhaseIndex: NSNumber?,
-    nextPhaseLaunchUrl: String?
+    nextPhaseLaunchUrl: String?,
+    nextPhaseKeepsProcess: Bool
   ) {
     self.result = result
     self.details = details
     self.nextPhaseIndex = nextPhaseIndex
     self.nextPhaseLaunchUrl = nextPhaseLaunchUrl
+    self.nextPhaseKeepsProcess = nextPhaseKeepsProcess
   }
 }
 
@@ -105,7 +109,8 @@ import Foundation
           result: result.result.rawValue,
           details: result.details,
           nextPhaseIndex: result.nextPhaseIndex.map(NSNumber.init(value:)),
-          nextPhaseLaunchUrl: result.nextPhaseLaunchUrl
+          nextPhaseLaunchUrl: result.nextPhaseLaunchUrl,
+          nextPhaseKeepsProcess: result.nextPhaseKeepsProcess ?? false
         )
         completion(testResponse, nil)
       case .failure(let error):
