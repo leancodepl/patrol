@@ -6,6 +6,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/commands/develop_options.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/mcp/cli_origin.dart';
+import 'package:patrol_cli/src/mcp/mcp_analytics.dart';
 import 'package:patrol_cli/src/mcp/mcp_tools.dart';
 import 'package:patrol_cli/src/mcp/patrol_session.dart';
 import 'package:patrol_cli/src/mcp/project_resolver.dart';
@@ -52,6 +53,7 @@ void main() {
     FakeDevelop fake, {
     bool projectResolvable = true,
     AttachedDevicesReader? listAttachedDevices,
+    McpAnalytics? analytics,
   }) {
     final session = PatrolSession(
       listAttachedDevices:
@@ -73,6 +75,7 @@ void main() {
       session: session,
       deviceFinder: deviceFinder,
       processManager: MockProcessManager(),
+      analytics: analytics,
     );
   }
 
@@ -114,6 +117,36 @@ void main() {
       sessionStatusSchema.properties!.keys,
       containsAll(status.toMap().keys),
     );
+  });
+
+  test('reports each tool call to analytics', () async {
+    final events = <Map<String, Object?>>[];
+    final processManager = MockProcessManager();
+    when(
+      () => processManager.run(any(), runInShell: any(named: 'runInShell')),
+    ).thenThrow(Exception('no flutter here'));
+    final tools = toolsWith(
+      FakeDevelop(),
+      projectResolvable: false,
+      analytics: McpAnalytics(
+        send: (_, _, {eventData = const {}}) async {
+          events.add(eventData);
+          return true;
+        },
+        cliSource: CliSource.project,
+        processManager: processManager,
+      ),
+    );
+
+    await tools.devices();
+    await tools.run({'testFile': 'app_test.dart'}, extra());
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+
+    expect(events.map((e) => (e['tool'], e['outcome'])), [
+      ('devices', 'ok'),
+      ('run', 'refused'),
+    ]);
+    expect(events.first['cli_source'], 'project');
   });
 
   test('devices answers on a server that has no project', () async {

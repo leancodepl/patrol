@@ -163,6 +163,17 @@ from the device -- and `lastTestEntry`, the last test it saw. Once the quiet pas
 result also carries a `stallNote` naming it, and a `run` that reaches its timeout says how long the
 quiet lasted. `quit` stops such a run; the next `run` starts a fresh session.
 
+## Analytics
+
+`patrol mcp` reports each tool call to the same anonymous usage analytics as the CLI: the tool, how
+the call ended (`passed`, `failed`, `refused`, `timed_out` for a run, `ok` or `error` for the
+others), how long it took, the device platform, and whether the CLI is a global install, a
+project's dev dependency or a path. No paths, test names, errors or output are sent.
+
+It follows the CLI's consent. The server never asks itself: nothing is sent until the CLI has run
+once in a terminal and shown its analytics notice, and `PATROL_ANALYTICS_ENABLED=false` turns it
+off.
+
 ## Troubleshooting
 
 - Open your editor at the project root, or pass `--project-root`. When no signal leads to a project,

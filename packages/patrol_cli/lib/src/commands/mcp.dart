@@ -3,11 +3,13 @@ import 'dart:io' as io;
 
 import 'package:mcp_dart/mcp_dart.dart' hide Logger;
 import 'package:meta/meta.dart';
+import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/base/command_line.dart';
 import 'package:patrol_cli/src/base/constants.dart' as constants;
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/devices.dart';
+import 'package:patrol_cli/src/mcp/mcp_analytics.dart';
 import 'package:patrol_cli/src/mcp/mcp_tools.dart';
 import 'package:patrol_cli/src/mcp/patrol_session.dart';
 import 'package:patrol_cli/src/mcp/project_resolver.dart';
@@ -48,9 +50,11 @@ class McpCommand extends PatrolCommand {
   McpCommand({
     required DeviceFinder deviceFinder,
     required ProcessManager processManager,
+    required Analytics analytics,
     required Logger logger,
   }) : _deviceFinder = deviceFinder,
        _processManager = processManager,
+       _analytics = analytics,
        _logger = logger,
        _protocolStdout = io.stdout {
     argParser
@@ -79,6 +83,7 @@ class McpCommand extends PatrolCommand {
 
   final DeviceFinder _deviceFinder;
   final ProcessManager _processManager;
+  final Analytics _analytics;
   final Logger _logger;
 
   /// The real stdout, captured at construction — that is, before [run] installs
@@ -185,6 +190,11 @@ class McpCommand extends PatrolCommand {
       session: session,
       deviceFinder: _deviceFinder,
       processManager: _processManager,
+      analytics: McpAnalytics(
+        send: _analytics.sendCommand,
+        cliSource: session.cliOrigin.source,
+        processManager: _processManager,
+      ),
     );
     return McpServer(
         const Implementation(name: 'patrol_mcp', version: constants.version),
