@@ -158,8 +158,12 @@ class DevelopService {
     }
   }
 
-  /// Completes once the session will act on a hot restart.
-  Future<void> get hotRestartReady => _flutterTool.hotRestartReady;
+  /// Completes once the session will act on a hot restart. `flutter attach`
+  /// fails this with a [ToolExit] naming why it exited without attaching.
+  Future<void> get hotRestartReady => Future.any([
+    _flutterTool.hotRestartReady,
+    _flutterTool.attachFailed.then<void>((reason) => throw ToolExit(reason)),
+  ]);
 
   /// Runs the full develop flow: discover device, read config, bundle test,
   /// build, execute, and attach for hot restart.
@@ -747,6 +751,8 @@ class DevelopService {
         return;
       }
       reportTestsCompleted(const TestCompletionResult(success: true));
+    } on ToolExit {
+      rethrow;
     } catch (err, st) {
       _logger
         ..err('$err')

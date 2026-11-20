@@ -51,6 +51,7 @@
 - Look for a `patrol test`/`patrol develop` target in the project when the path names nothing from
   the directory the command was run in. A relative target still belongs to that directory first,
   which is how `-t ../patrol_test/app_test.dart` works from a subdirectory. (#3369)
+- Report a dead `flutter attach` or `flutter logs` in `patrol develop`. (#3234)
 
 ## 4.9.0
 
