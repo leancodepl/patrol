@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io' show File, FileMode;
 
 import 'package:glob/glob.dart';
 import 'package:patrol_cli/src/analytics/analytics.dart';
@@ -21,6 +23,7 @@ import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
 import 'package:patrol_cli/src/web/web_test_backend.dart';
+import 'package:patrol_log/patrol_log.dart';
 
 class TestCommand extends PatrolCommand {
   TestCommand({
@@ -79,6 +82,15 @@ class TestCommand extends PatrolCommand {
     usesEmitTestManifestOption();
 
     usesWeb();
+
+    argParser.addOption(
+      'results-file',
+      hide: true,
+      help:
+          'Appends every test and error entry of the run to this file, one '
+          'JSON object per line, as the run reports it.',
+      valueHelp: 'path',
+    );
   }
 
   final DeviceFinder _deviceFinder;
@@ -545,6 +557,19 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       bitRate: int.tryParse(stringArg('video-bit-rate') ?? ''),
     );
 
+    final results = switch (stringArg('results-file')) {
+      final path? => File(path).openSync(mode: FileMode.append),
+      null => null,
+    };
+    void Function(Entry)? onLogEntry;
+    if (results != null) {
+      onLogEntry = (entry) {
+        if (entry is TestEntry || entry is ErrorEntry) {
+          results.writeStringSync('${jsonEncode(entry.toJson())}\n');
+        }
+      };
+    }
+
     switch (device.targetPlatform) {
       case TargetPlatform.android:
         action = () => _androidTestBackend.execute(
@@ -554,6 +579,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
           hideTestSteps: hideTestSteps,
           flavor: flutterOpts.flavor,
           clearTestSteps: clearTestSteps,
+          onLogEntry: onLogEntry,
           videoConfig: videoConfig,
           pullScreenshots: true,
           screenshotsOutputDir: screenshotsOutputDir,
@@ -571,6 +597,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
           showFlutterLogs: showFlutterLogs,
           hideTestSteps: hideTestSteps,
           clearTestSteps: clearTestSteps,
+          onLogEntry: onLogEntry,
           videoConfig: videoConfig,
         );
         final bundleId = ios.bundleId;
@@ -588,6 +615,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
           showFlutterLogs: showFlutterLogs,
           hideTestSteps: hideTestSteps,
           clearTestSteps: clearTestSteps,
+          onLogEntry: onLogEntry,
         );
     }
 
@@ -601,6 +629,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
         ..err(defaultFailureMessage);
       allPassed = false;
     } finally {
+      results?.closeSync();
       try {
         await finalizer?.call();
       } catch (err) {

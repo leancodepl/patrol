@@ -66,6 +66,24 @@ void main() {
       );
     });
 
+    test('a suite reports its state, or why it did not run', () {
+      CallToolResult suite(String state, {bool isError = false}) =>
+          CallToolResult(
+            content: const [],
+            structuredContent: {'suiteState': state},
+            isError: isError,
+          );
+
+      expect(McpAnalytics.outcomeOf('test', suite('passed')), 'passed');
+      expect(McpAnalytics.outcomeOf('test', suite('failed')), 'failed');
+      expect(McpAnalytics.outcomeOf('test', suite('cancelled')), 'cancelled');
+      expect(McpAnalytics.outcomeOf('test', suite('running')), 'timed_out');
+      expect(
+        McpAnalytics.outcomeOf('test', suite('passed', isError: true)),
+        'refused',
+      );
+    });
+
     test('any other tool reports whether it answered', () {
       expect(McpAnalytics.outcomeOf('devices', status('idle')), 'ok');
       expect(

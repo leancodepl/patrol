@@ -27,7 +27,9 @@ const _instructions =
     '2. Use screenshot to capture the current app screen.\n'
     '3. Use native-tree to fetch the current native UI tree '
     '(requires an active session/device).\n'
-    '4. Use quit to gracefully stop the active session when done.\n\n'
+    '4. Use quit to gracefully stop the active session when done.\n'
+    '5. Use test to run the whole suite, or a chosen set of test files, with '
+    '`patrol test` once a change is done.\n\n'
     'Behavior notes:\n'
     '- run waits for test completion.\n'
     '- If no session is running, run starts a new session.\n'
@@ -35,6 +37,10 @@ const _instructions =
     '- run auto-selects a device; to target a specific one, call devices and pass its id as run\'s "device".\n'
     '- status is optional and mainly useful for debugging session state and recent output.\n'
     '- native-tree is intended for native interactions and cross-app/native context inspection.\n'
+    '- test refuses while a develop session runs, and run refuses while a '
+    'suite runs: both hold the device. quit stops either.\n'
+    '- test waits up to waitMinutes, then returns the progress so far; call '
+    'status with waitMinutes to keep waiting.\n'
     '- run and status carry logFile, the whole log of the session; follow it '
     'with tail -F in a terminal the user can see to show a run live.\n'
     '- every result carries projectRoot, the project the run happened in. testFile is '
@@ -243,6 +249,50 @@ class McpCommand extends PatrolCommand {
         callback: tools.run,
       )
       ..registerTool(
+        'test',
+        description:
+            'Run the whole suite, or the given test files, with `patrol test` '
+            '(no hot restart: every file is built into one app and run in '
+            'order, and the app is uninstalled at the end). Waits up to '
+            'waitMinutes and returns the counts and every failure with its '
+            'error; a suite still running then is reported as running.',
+        inputSchema: const ToolInputSchema(
+          properties: {
+            'targets': JsonArray(
+              items: JsonString(),
+              description:
+                  'Test files or directories relative to the project root, '
+                  "e.g. ['patrol_test/login_test.dart']. Omit to run every "
+                  'test.',
+            ),
+            'tags': JsonString(
+              description: "Run only tests with these tags, e.g. 'smoke'.",
+            ),
+            'excludeTags': JsonString(
+              description: "Skip tests with these tags, e.g. 'slow'.",
+            ),
+            'waitMinutes': JsonNumber(
+              description:
+                  'How long to wait for the suite before returning its '
+                  'progress (default: 5). The suite keeps running.',
+            ),
+            'projectRoot': JsonString(
+              description:
+                  'Optional project to run in, as for run. Omit to use the '
+                  'project the server resolved.',
+            ),
+            'device': JsonString(
+              description:
+                  'Optional device id or name, as for run. Omit to '
+                  'auto-select.',
+            ),
+          },
+        ),
+        outputSchema: suiteStatusSchema,
+        annotations: const ToolAnnotations(title: 'Run Patrol Suite'),
+        callback: tools.test,
+      )
+      ..registerTool(
         'devices',
         description:
             'List attached devices patrol can run on (Android, iOS). Use '
@@ -252,21 +302,33 @@ class McpCommand extends PatrolCommand {
       )
       ..registerTool(
         'quit',
-        description: 'Quit the active patrol session gracefully',
+        description:
+            'Quit the active patrol session gracefully, or stop a running '
+            'suite',
         annotations: const ToolAnnotations(title: 'Quit Patrol'),
         callback: (args, extra) => tools.quit(),
       )
       ..registerTool(
         'status',
         description:
-            'Get the current status of the patrol session and recent output',
+            'Get the current status of the patrol session and recent output, '
+            'and of the last suite run',
+        inputSchema: const ToolInputSchema(
+          properties: {
+            'waitMinutes': JsonNumber(
+              description:
+                  'Wait up to this long for a running suite to finish before '
+                  'answering. Omit to answer at once.',
+            ),
+          },
+        ),
         outputSchema: sessionStatusSchema,
         annotations: const ToolAnnotations(
           title: 'Get Status',
           readOnlyHint: true,
           idempotentHint: true,
         ),
-        callback: (args, extra) => tools.status(),
+        callback: (args, extra) => tools.status(args),
       )
       ..registerTool(
         'screenshot',

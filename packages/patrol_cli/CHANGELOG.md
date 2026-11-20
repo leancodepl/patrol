@@ -40,13 +40,14 @@
 - Fix `patrol develop` leaving Gradle and logcat processes behind after quitting with `q`. (#3249)
 - Add `patrol mcp` (experimental), an MCP server shipped with the CLI that lets AI agents run tests
   in `patrol develop` sessions and read their results. It runs a test on Android or iOS, hot
-  restarts it on the next `run`, and takes screenshots and native trees. One server serves every
-  project it is asked about, git worktrees included. Its results report why a test failed, the
-  session's log file with the build's errors, a run that has gone quiet, a `patrol` version this CLI
-  cannot drive and a project that pins another `patrol_cli`. It replaces the `patrol_mcp` package,
-  so its dependencies no longer land in the app's pubspec (#3166). Run it as `patrol mcp` from a
-  globally activated CLI or as `dart run patrol_cli:main mcp` from a dev dependency, with develop
-  flags after `--`; `PATROL_FLAGS` is split as a shell would (#3026). See the
+  restarts it on the next `run`, runs the whole suite with `patrol test` through its `test` tool,
+  and takes screenshots and native trees. One server serves every project it is asked about, git
+  worktrees included. Its results report why a test failed, the session's log file with the build's
+  errors, a run that has gone quiet, a `patrol` version this CLI cannot drive and a project that
+  pins another `patrol_cli`. It replaces the `patrol_mcp` package, so its dependencies no longer
+  land in the app's pubspec (#3166). Run it as `patrol mcp` from a globally activated CLI or as
+  `dart run patrol_cli:main mcp` from a dev dependency, with develop flags after `--`;
+  `PATROL_FLAGS` is split as a shell would (#3026). See the
   [docs](https://patrol.leancode.co/documentation/other/patrol-mcp), migrating off `patrol_mcp`
   included. (#3368)
 - Report `patrol mcp` tool calls to the CLI's anonymous analytics, under the same consent and
