@@ -9,6 +9,8 @@
 - Add native screenshots on iOS: `screenshot_on_failure: true` and `$.takeNativeScreenshot('tag')`
   now work on simulators and physical devices. See the
   [docs](https://patrol.leancode.co/cli-commands/test#on-ios). (#3271)
+- Fix `RunnerUITests` failing to compile and link with native screenshots on iOS under Swift
+  Package Manager. (#3289)
 - Add `includeInvisibleNodes` to `$.platform.android.getNativeViews()` to keep nodes some WebViews report as invisible, and `AndroidNativeView.isVisibleToUser` to tell them apart. (#3287)
 - Add R8 consumer rules to the Android plugin, so release-mode tests with minification enabled no
   longer need app-side keep rules for Patrol and the test runners, including `AndroidJUnit4` for the
