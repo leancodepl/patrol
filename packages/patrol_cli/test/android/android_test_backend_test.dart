@@ -135,6 +135,124 @@ void main() {
       );
     });
 
+    group('installTestUtilApks', () {
+      late List<List<String>> runs;
+
+      void stubAdb({String sdk = '34'}) {
+        runs = [];
+        when(
+          () => processManager.run(any(), runInShell: any(named: 'runInShell')),
+        ).thenAnswer((invocation) async {
+          final cmd = (invocation.positionalArguments.first as List)
+              .cast<String>();
+          runs.add(cmd);
+          return ProcessResult(
+            0,
+            0,
+            cmd.contains('getprop') ? '$sdk\n' : '',
+            '',
+          );
+        });
+      }
+
+      void createTestUtilApks(List<String> names) {
+        final dir = androidTestBackend.androidTestUtilDirectory
+          ..createSync(recursive: true);
+        for (final name in names) {
+          dir.childFile(name).createSync();
+        }
+      }
+
+      List<List<String>> installs() =>
+          runs.where((cmd) => cmd.contains('install')).toList();
+
+      test(
+        'installs every exported APK with -g and --force-queryable',
+        () async {
+          stubAdb();
+          createTestUtilApks([
+            'test-services-1.5.0.apk',
+            'orchestrator-1.5.1.apk',
+          ]);
+
+          await androidTestBackend.installTestUtilApks(androidDevice);
+
+          final dir = androidTestBackend.androidTestUtilDirectory;
+          expect(installs(), [
+            [
+              'adb',
+              '-s',
+              androidDeviceId,
+              'install',
+              '-r',
+              '-t',
+              '-g',
+              '--force-queryable',
+              dir.childFile('orchestrator-1.5.1.apk').path,
+            ],
+            [
+              'adb',
+              '-s',
+              androidDeviceId,
+              'install',
+              '-r',
+              '-t',
+              '-g',
+              '--force-queryable',
+              dir.childFile('test-services-1.5.0.apk').path,
+            ],
+          ]);
+        },
+      );
+
+      test('omits --force-queryable below API 30', () async {
+        stubAdb(sdk: '29');
+        createTestUtilApks(['orchestrator-1.5.1.apk']);
+
+        await androidTestBackend.installTestUtilApks(androidDevice);
+
+        expect(installs().single, isNot(contains('--force-queryable')));
+        expect(installs().single, contains('-g'));
+      });
+
+      test('installs nothing when the build exported no APKs', () async {
+        stubAdb();
+        createTestUtilApks([]);
+
+        await androidTestBackend.installTestUtilApks(androidDevice);
+
+        expect(runs, isEmpty);
+      });
+
+      test(
+        'warns when the app declares androidTestUtil but nothing was exported',
+        () async {
+          stubAdb();
+          rootDirectory
+              .childDirectory('android')
+              .childDirectory('app')
+              .childFile('build.gradle.kts')
+            ..createSync(recursive: true)
+            ..writeAsStringSync(
+              'dependencies { androidTestUtil("androidx.test:orchestrator") }',
+            );
+
+          await androidTestBackend.installTestUtilApks(androidDevice);
+
+          expect(runs, isEmpty);
+          verify(() => logger.warn(any())).called(1);
+        },
+      );
+
+      test('stays silent when the app does not use androidTestUtil', () async {
+        stubAdb();
+
+        await androidTestBackend.installTestUtilApks(androidDevice);
+
+        verifyNever(() => logger.warn(any()));
+      });
+    });
+
     group('buildApkConfigOnly', () {
       test('includes build flags when provided', () async {
         const flutterOptions = FlutterAppOptions(

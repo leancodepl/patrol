@@ -149,6 +149,48 @@ void main() {
       });
     });
 
+    test('appends the androidTestUtil export when requested', () {
+      const flutterOpts = FlutterAppOptions(
+        command: flutterCommand,
+        target: '/app/patrol_test/app_test.dart',
+        buildMode: BuildMode.debug,
+        flavor: null,
+        buildName: null,
+        buildNumber: null,
+        dartDefines: {},
+        dartDefineFromFilePaths: [],
+      );
+      options = const AndroidAppOptions(
+        flutter: flutterOpts,
+        appServerPort: 1,
+        testServerPort: 2,
+        uninstall: true,
+      );
+
+      final invocation = options.toGradleAssembleTestInvocation(
+        isWindows: false,
+        testUtilExport: (
+          initScript: '/app/build/patrol/export.gradle',
+          outputDir: '/app/build/patrol/android_test_util',
+        ),
+      );
+      expect(
+        invocation,
+        equals([
+          './gradlew',
+          ':app:assembleDebugAndroidTest',
+          '-Ptarget=/app/patrol_test/app_test.dart',
+          '-Papp-server-port=1',
+          '-Ptest-server-port=2',
+          '-Ppatrol-enabled=true',
+          ':app:patrolExportAndroidTestUtil',
+          '--init-script',
+          '/app/build/patrol/export.gradle',
+          '-Ppatrol-test-util-dir=/app/build/patrol/android_test_util',
+        ]),
+      );
+    });
+
     group('correctly encodes customized invocation', () {
       const dartDefines = {
         'EMAIL': 'user@example.com',

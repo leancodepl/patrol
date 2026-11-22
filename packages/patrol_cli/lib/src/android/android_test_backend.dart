@@ -79,6 +79,10 @@ class AndroidTestBackend {
       final codegen = AndroidTestCodegen(_rootDirectory.fileSystem);
       final androidDir = _rootDirectory.childDirectory('android');
       codegen.deleteGenerated(androidDir);
+      final testUtilDir = androidTestUtilDirectory;
+      if (testUtilDir.existsSync()) {
+        testUtilDir.deleteSync(recursive: true);
+      }
 
       if (options.emitTestManifest) {
         final manifestPath =
@@ -149,6 +153,12 @@ class AndroidTestBackend {
           await _processManager.start(
               options.toGradleAssembleTestInvocation(
                 isWindows: _platform.isWindows,
+                testUtilExport: options.emitTestManifest
+                    ? (
+                        initScript: _writeTestUtilExportInitScript(),
+                        outputDir: testUtilDir.absolute.path,
+                      )
+                    : null,
               ),
               runInShell: true,
               workingDirectory: _rootDirectory.childDirectory('android').path,
@@ -175,6 +185,37 @@ class AndroidTestBackend {
       }
     });
   }
+
+  /// Where `patrol build android` puts the `androidTestUtil` APKs, so that
+  /// `patrol test-without-building` can install them without Gradle.
+  Directory get androidTestUtilDirectory => _rootDirectory
+      .childDirectory('build')
+      .childDirectory('patrol')
+      .childDirectory('android_test_util');
+
+  String _writeTestUtilExportInitScript() {
+    final file = _rootDirectory
+        .childDirectory('build')
+        .childDirectory('patrol')
+        .childFile('export_android_test_util.gradle');
+    file.parent.createSync(recursive: true);
+    file.writeAsStringSync(_testUtilExportInitScript);
+    return file.absolute.path;
+  }
+
+  static const _testUtilExportInitScript =
+      '''
+allprojects { project ->
+    project.plugins.withId('com.android.application') {
+        def outDir = project.findProperty('${AndroidAppOptions.androidTestUtilDirProperty}')
+        if (outDir == null) return
+        project.tasks.register('${AndroidAppOptions.exportAndroidTestUtilTask}', Sync) {
+            from(project.configurations.named('androidTestUtil'))
+            into(outDir)
+        }
+    }
+}
+''';
 
   /// Verifies that Gradle will be able to locate the Android SDK before it is
   /// invoked.
@@ -805,6 +846,7 @@ class AndroidTestBackend {
     // not install them. Install both now so a clean device works with the
     // documented `patrol build` -> `patrol test-without-building` flow.
     await _installApks(options, device, flavor: flavor);
+    await installTestUtilApks(device);
 
     // Resolve the real instrumentation component from the device so custom
     // testApplicationId / custom runners are honored; falls back to the default.
@@ -997,14 +1039,85 @@ class AndroidTestBackend {
     await _adbInstall(testApk.path, device);
   }
 
+  /// Installs the `androidTestUtil` APKs (orchestrator, test-services) that
+  /// `patrol build android` exported, which Gradle would otherwise install as
+  /// part of `connectedAndroidTest`.
+  @visibleForTesting
+  Future<void> installTestUtilApks(Device device) async {
+    final dir = androidTestUtilDirectory;
+    if (!dir.existsSync()) {
+      if (_declaresAndroidTestUtil()) {
+        _logger.warn(
+          'The androidTestUtil APKs (e.g. orchestrator, test-services) were not '
+          'exported by the last build, so they will not be installed. Rebuild '
+          'with `patrol build android` to include them.',
+        );
+      }
+      return;
+    }
+    final apks =
+        dir
+            .listSync()
+            .whereType<File>()
+            .where((f) => f.path.endsWith('.apk'))
+            .toList()
+          ..sort((a, b) => a.path.compareTo(b.path));
+    if (apks.isEmpty) {
+      return;
+    }
+
+    final sdkLevel = await _deviceSdkLevel(device);
+    for (final apk in apks) {
+      _logger.detail('Installing androidTestUtil APK: ${apk.path}');
+      await _adbInstall(
+        apk.path,
+        device,
+        extraFlags: [
+          '-g',
+          if (sdkLevel != null && sdkLevel >= 30) '--force-queryable',
+        ],
+      );
+    }
+  }
+
+  bool _declaresAndroidTestUtil() {
+    final appDir = _rootDirectory
+        .childDirectory('android')
+        .childDirectory('app');
+    return [
+      appDir.childFile('build.gradle'),
+      appDir.childFile('build.gradle.kts'),
+    ].any(
+      (f) => f.existsSync() && f.readAsStringSync().contains('androidTestUtil'),
+    );
+  }
+
+  Future<int?> _deviceSdkLevel(Device device) async {
+    final result = await _processManager.run([
+      'adb',
+      ...['-s', device.id],
+      'shell',
+      ...['getprop', 'ro.build.version.sdk'],
+    ], runInShell: true);
+    if (result.exitCode != 0) {
+      return null;
+    }
+    return int.tryParse(result.stdOut.trim());
+  }
+
   /// Runs `adb install -r -t <path>` on [device]. `Adb.install` does not pass
   /// the reinstall/allow-test-package flags, so shell out directly.
-  Future<void> _adbInstall(String path, Device device) async {
+  Future<void> _adbInstall(
+    String path,
+    Device device, {
+    List<String> extraFlags = const [],
+  }) async {
     final result = await _processManager.run([
       'adb',
       ...['-s', device.id],
       'install',
       ...['-r', '-t'],
+      ...extraFlags,
       path,
     ], runInShell: true);
     if (result.exitCode != 0) {
