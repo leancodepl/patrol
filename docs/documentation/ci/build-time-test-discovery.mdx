@@ -217,10 +217,29 @@ agree. Inside a test body nothing changes — there you're on the device, and an
 platform check works.
 
 <Info>
-  If the two do disagree anyway, the app answers the native runner with a skip
-  (or a failure naming the test it doesn't have) instead of leaving it waiting for
-  a result that will never arrive.
+  If the two do disagree anyway, the run fails. A test that only the device has
+  never gets a native test, so every test fails with a list of the tests
+  discovery missed. A test that only the manifest has fails with the name the
+  app doesn't know.
 </Info>
+
+## Runs in which tests didn't run fail
+
+With build-time discovery Patrol knows which tests a run should execute, so a
+run that executes fewer of them fails instead of passing with `Total: 0`:
+
+- **No Patrol test class on Android.** Without `MainActivityTest.java` in
+  `android/app/src/androidTest` (see [setup](/documentation#setup)), the build
+  stops with an error instead of running no tests.
+- **Fewer tests ran than discovered.** After a run that passed, Patrol compares
+  the tests that ran with the discovered ones (only the ones `--only` selects
+  for `patrol test-without-building`). If any didn't run, for example because
+  the app couldn't be installed, the run fails and lists them.
+- **A test only the device registers.** See
+  [Platform-dependent tests](#platform-dependent-tests).
+
+Runtime discovery (tests in `integration_test/`, or `--no-emit-test-manifest`)
+doesn't run these checks.
 
 ## Running tests without rebuilding
 

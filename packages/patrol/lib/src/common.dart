@@ -424,6 +424,43 @@ String pathSeparatorNameError(List<String> invalidNames) =>
     "\n\nRemove '$_pathSeparator' from the patrolTest() description or from the "
     'group() name it sits in.';
 
+/// Full names of the tests in [group] that the build-time manifest
+/// ([manifestTests]) doesn't list, so no native test runs them.
+@internal
+List<String> testsMissingFromManifest(
+  DartGroupEntry group,
+  List<String> manifestTests,
+) {
+  final listed = manifestTests.toSet();
+  return _testNames(group, '').where((n) => !listed.contains(n)).toList();
+}
+
+List<String> _testNames(DartGroupEntry group, String parentName) {
+  return [
+    for (final entry in group.entries)
+      ...switch (entry.type) {
+        GroupEntryType.test => [_joinName(parentName, entry.name)],
+        GroupEntryType.group => _testNames(
+          entry,
+          _joinName(parentName, entry.name),
+        ),
+      },
+  ];
+}
+
+String _joinName(String parentName, String name) =>
+    parentName.isEmpty ? name : '$parentName $name';
+
+/// Builds the error message for [missingTests].
+@internal
+String missingFromManifestError(List<String> missingTests) =>
+    'Build-time test discovery did not find these tests, so they never run:\n'
+    '${missingTests.map((e) => '  \u2022 $e').join('\n')}'
+    '\n\nDiscovery runs on the host, so a test registered only on some '
+    'platforms (for example behind Platform.isAndroid) is missing. Use '
+    'patrolTargetPlatform for anything that decides whether a test is '
+    'registered.';
+
 /// Allows for retrieving the name of a GroupEntry by stripping the names of all ancestor groups.
 ///
 /// Example:

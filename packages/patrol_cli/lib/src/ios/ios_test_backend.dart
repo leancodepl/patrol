@@ -11,6 +11,7 @@ import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
+import 'package:patrol_cli/src/crossplatform/executed_tests_check.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart'
     show getObservationUrl;
 import 'package:patrol_cli/src/crossplatform/patrol_build_environment.dart';
@@ -439,6 +440,13 @@ class IOSTestBackend {
         : onlyTests.isNotEmpty
         ? _resolveOnlyTesting(onlyTests)
         : _generatedClassSelectors();
+    final executedTestsCheck = ExecutedTestsCheck.forRun(
+      _rootDirectory,
+      _logger,
+      emitTestManifest: options.emitTestManifest && hasGeneratedTests,
+      interruptible: interruptible,
+      onlyTests: onlyTests,
+    );
     await _disposeScope.run((scope) async {
       // Create video recording manager if enabled
       IOSVideoRecordingManager? videoRecordingManager;
@@ -500,6 +508,8 @@ class IOSTestBackend {
         cancelOnError: cancelOnError,
       );
 
+      final checkedOnLogEntry =
+          executedTestsCheck?.wrapOnLogEntry(onLogEntry) ?? onLogEntry;
       final patrolLogReader =
           PatrolLogReader(
               listenStdOut: listenPatrolLogs,
@@ -510,8 +520,8 @@ class IOSTestBackend {
               hideTestSteps: hideTestSteps,
               clearTestSteps: clearTestSteps,
               onLogEntry:
-                  videoRecordingManager?.wrapOnLogEntry(onLogEntry) ??
-                  onLogEntry,
+                  videoRecordingManager?.wrapOnLogEntry(checkedOnLogEntry) ??
+                  checkedOnLogEntry,
             )
             ..listen()
             ..startTimer();
@@ -546,7 +556,12 @@ class IOSTestBackend {
               workingDirectory: _rootDirectory.childDirectory('ios').path,
             )
             ..disposedByTree(_disposeScope);
-      process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
+      process
+          .listenStdOut((l) {
+            executedTestsCheck?.onRunnerOutput(l);
+            _logger.detail('\t$l');
+          })
+          .disposedBy(scope);
       process.listenStdErr((l) => _logger.detail('\t$l')).disposedBy(scope);
 
       final exitCode = await process.exitCode;
@@ -566,6 +581,7 @@ class IOSTestBackend {
       }
 
       if (exitCode == 0) {
+        executedTestsCheck?.verifyTask(task, subject);
         task.complete('Completed executing $subject');
       } else if (exitCode != 0 && interruptible) {
         task.complete('App shut down on request');
