@@ -215,6 +215,33 @@ void main() {
         expect(installs().single, contains('-g'));
       });
 
+      test('lets test-services manage external storage on API 30+', () async {
+        stubAdb();
+        createTestUtilApks(['test-services-1.5.0.apk']);
+
+        await androidTestBackend.installTestUtilApks(androidDevice);
+
+        expect(
+          runs.where((cmd) => cmd.contains('appops')).single,
+          containsAllInOrder([
+            'appops',
+            'set',
+            'androidx.test.services',
+            'MANAGE_EXTERNAL_STORAGE',
+            'allow',
+          ]),
+        );
+      });
+
+      test('skips appops below API 30', () async {
+        stubAdb(sdk: '29');
+        createTestUtilApks(['test-services-1.5.0.apk']);
+
+        await androidTestBackend.installTestUtilApks(androidDevice);
+
+        expect(runs.where((cmd) => cmd.contains('appops')), isEmpty);
+      });
+
       test('installs nothing when the build exported no APKs', () async {
         stubAdb();
         createTestUtilApks([]);

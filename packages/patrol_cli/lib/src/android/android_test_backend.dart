@@ -1078,6 +1078,20 @@ allprojects { project ->
         ],
       );
     }
+
+    final installsTestServices = apks.any(
+      (apk) => apk.basename.startsWith('test-services'),
+    );
+    if (installsTestServices && sdkLevel != null && sdkLevel >= 30) {
+      // Without it TestStorage writes fail with "Operation not permitted".
+      await _processManager.run([
+        'adb',
+        ...['-s', device.id],
+        'shell',
+        ...['appops', 'set', 'androidx.test.services'],
+        ...['MANAGE_EXTERNAL_STORAGE', 'allow'],
+      ], runInShell: true);
+    }
   }
 
   bool _declaresAndroidTestUtil() {
