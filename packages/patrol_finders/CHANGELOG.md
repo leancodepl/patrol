@@ -1,6 +1,6 @@
-## Unreleased
+## 3.7.1
 
-- Report the elapsed duration when drag helpers exhaust their iterations. (#2103)
+- Fix the duration in the timeout exception that `dragUntilExists()` and `dragUntilVisible()` throw after running out of iterations: it now reports the time spent dragging instead of `settleBetweenScrollsTimeout`. (#3300)
 
 ## 3.7.0
 
