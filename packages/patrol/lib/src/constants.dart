@@ -22,7 +22,7 @@ const testDiscoveryEnabled = bool.fromEnvironment('PATROL_TEST_DISCOVERY');
 
 /// The platform the tests are being discovered for, as reported by `patrol_cli`
 /// during build-time test discovery: `android`, `ios`, `macos` or `web`. Empty
-/// outside discovery, and when the CLI is too old to report it.
+/// outside discovery.
 @internal
 const testDiscoveryPlatform = String.fromEnvironment(
   'PATROL_TEST_DISCOVERY_PLATFORM',

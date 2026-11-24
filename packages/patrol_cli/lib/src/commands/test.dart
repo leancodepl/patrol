@@ -24,34 +24,21 @@ import 'package:patrol_cli/src/web/web_test_backend.dart';
 
 class TestCommand extends PatrolCommand {
   TestCommand({
-    required DeviceFinder deviceFinder,
-    required TestFinderFactory testFinderFactory,
-    required TestBundler testBundler,
-    required DartDefinesReader dartDefinesReader,
-    required CompatibilityChecker compatibilityChecker,
-    required PubspecReader pubspecReader,
-    required AndroidTestBackend androidTestBackend,
-    required IOSTestBackend iosTestBackend,
+    required this._deviceFinder,
+    required this._testFinderFactory,
+    required this._testBundler,
+    required this._dartDefinesReader,
+    required this._compatibilityChecker,
+    required this._pubspecReader,
+    required this._androidTestBackend,
+    required this._iosTestBackend,
     required MacOSTestBackend macOSTestBackend,
-    required WebTestBackend webTestBackend,
-    required CoverageTool coverageTool,
-    required WebCoverageTool webCoverageTool,
-    required Analytics analytics,
-    required Logger logger,
-  }) : _deviceFinder = deviceFinder,
-       _testBundler = testBundler,
-       _testFinderFactory = testFinderFactory,
-       _dartDefinesReader = dartDefinesReader,
-       _compatibilityChecker = compatibilityChecker,
-       _pubspecReader = pubspecReader,
-       _androidTestBackend = androidTestBackend,
-       _iosTestBackend = iosTestBackend,
-       _macosTestBackend = macOSTestBackend,
-       _webTestBackend = webTestBackend,
-       _coverageTool = coverageTool,
-       _webCoverageTool = webCoverageTool,
-       _analytics = analytics,
-       _logger = logger {
+    required this._webTestBackend,
+    required this._coverageTool,
+    required this._webCoverageTool,
+    required this._analytics,
+    required this._logger,
+  }) : _macosTestBackend = macOSTestBackend {
     usesTargetOption();
     usesDeviceOption();
     usesBuildModeOption();

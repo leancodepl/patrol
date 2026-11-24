@@ -7,7 +7,7 @@ import 'package:patrol_cli/src/base/extensions/command_runner.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/compatibility_checker/version_compatibility.dart';
 import 'package:patrol_cli/src/runner/patrol_command_runner.dart';
-import 'package:platform/platform.dart';
+import 'package:platform/testing.dart';
 import 'package:pub_updater/pub_updater.dart';
 import 'package:test/test.dart';
 import '../ios/ios_test_backend_test.dart';
@@ -51,7 +51,7 @@ void main() {
       when(() => logger.info(any())).thenReturn(null);
 
       commandRunner = PatrolCommandRunner(
-        platform: FakePlatform(environment: {}),
+        platform: TestNativePlatform(environment: {}),
         processManager: FakeProcessManager(),
         pubUpdater: pubUpdater,
         fs: fs,
@@ -226,6 +226,14 @@ packages:
       expect(result, equals(1));
       verify(() => logger.err(exception.message)).called(1);
       verify(() => logger.info(exception.usage)).called(1);
+    });
+
+    test('rejects --tags in develop', () async {
+      final result = await commandRunner.run(['develop', '--tags', 'smoke']);
+      expect(result, equals(1));
+      verify(
+        () => logger.err('Could not find an option named "--tags".'),
+      ).called(1);
     });
 
     test('prints usage when no command is passed', () async {

@@ -2,17 +2,17 @@ import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:patrol_cli/src/base/extensions/platform.dart';
 import 'package:patrol_cli/src/coverage/coverage_common.dart';
-import 'package:platform/platform.dart';
+import 'package:platform/testing.dart';
 import 'package:test/test.dart';
 
 import '../src/common.dart';
 
 void main() {
-  _test(initFakePlatform(Platform.macOS));
-  _test(initFakePlatform(Platform.windows));
+  _test(initFakePlatform(NativePlatform.macOS));
+  _test(initFakePlatform(NativePlatform.windows));
 }
 
-void _test(Platform platform) {
+void _test(NativePlatform platform) {
   group('findPackageConfigFile on ${platform.operatingSystem}', () {
     late FileSystem fs;
 
