@@ -3,12 +3,19 @@ name: patrol_mcp prepare
 on:
   workflow_dispatch:
   pull_request:
-    paths:
-      - 'packages/patrol_mcp/**'
 
 jobs:
+  changes:
+    uses: ./.github/workflows/_relevant.yaml
+    with:
+      filters: |
+        relevant:
+          - 'packages/patrol_mcp/**'
+
   smoke_test:
     name: Smoke (${{ matrix.resolution }} patrol_cli) on ${{ matrix.os }}
+    needs: changes
+    if: ${{ needs.changes.outputs.relevant == 'true' }}
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -48,6 +55,8 @@ jobs:
 
   pana-score:
     name: pana score
+    needs: changes
+    if: ${{ needs.changes.outputs.relevant == 'true' }}
     runs-on: ubuntu-latest
 
     permissions:
@@ -63,3 +72,17 @@ jobs:
         uses: leancodepl/mobile-tools/.github/actions/pana-score@e9f138c252f8e2254c88273367958fcc6bb39cad # pana-score-v1.3
         with:
           path: packages/patrol_mcp
+
+  patrol_mcp-prepare-gate:
+    name: patrol_mcp prepare gate
+    needs: [changes, smoke_test]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify required jobs passed
+        run: |
+          if [ "${{ contains(needs.*.result, 'failure') }}" = "true" ] || [ "${{ contains(needs.*.result, 'cancelled') }}" = "true" ]; then
+            echo "A required job did not pass: ${{ join(needs.*.result, ' ') }}"
+            exit 1
+          fi
+          echo "All required jobs passed or were skipped: ${{ join(needs.*.result, ' ') }}"

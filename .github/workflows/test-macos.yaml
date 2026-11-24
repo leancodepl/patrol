@@ -5,26 +5,26 @@ on:
   schedule:
     - cron: '0 0 * * *'
   pull_request:
-    paths:
-      - 'packages/patrol/**'
-      - 'packages/patrol_finders/**'
-      - 'packages/patrol_log/**'
-      - 'packages/patrol_cli/**'
-      - 'packages/adb/**'
-      - 'packages/patrol_gen/**'
-      - 'dev/e2e_app/**'
-      - 'schema.dart'
-      - 'gen_from_schema'
-      - '!**.md'
-      - '!**.mdx'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
 jobs:
+  changes:
+    uses: ./.github/workflows/_relevant.yaml
+    with:
+      quantifier: every
+      filters: |
+        relevant:
+          - '{packages/patrol/**,packages/patrol_finders/**,packages/patrol_log/**,packages/patrol_cli/**,packages/adb/**,packages/patrol_gen/**,dev/e2e_app/**,schema.dart,gen_from_schema}'
+          - '!**/*.md'
+          - '!**/*.mdx'
+
   run_tests:
     name: Flutter ${{ matrix.flutter-version }} on ${{ matrix.device_model }}
+    needs: changes
+    if: ${{ needs.changes.outputs.relevant == 'true' }}
     runs-on: macos-latest
     timeout-minutes: 25
     outputs:
@@ -168,3 +168,17 @@ jobs:
       ERROR_STATUS: ${{ needs.run_tests.outputs.ERROR_STATUS }}
       SLACK_MESSAGE_TITLE: ${{ needs.run_tests.outputs.SLACK_MESSAGE_TITLE }}
     secrets: inherit
+
+  test-macos-gate:
+    name: test macos gate
+    needs: [changes, run_tests]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify required jobs passed
+        run: |
+          if [ "${{ contains(needs.*.result, 'failure') }}" = "true" ] || [ "${{ contains(needs.*.result, 'cancelled') }}" = "true" ]; then
+            echo "A required job did not pass: ${{ join(needs.*.result, ' ') }}"
+            exit 1
+          fi
+          echo "All required jobs passed or were skipped: ${{ join(needs.*.result, ' ') }}"
