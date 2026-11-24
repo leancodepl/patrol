@@ -654,6 +654,28 @@ class WebTestBackend {
   static String? extractWebServerUrl(String line) =>
       RegExp(r'https?://[^/\s]+:\d+').firstMatch(line)?.group(0);
 
+  /// Returns what to do when `npx playwright install chromium` failed because
+  /// the bundled Playwright has no Chromium build for this OS, or null when
+  /// [output] shows a different failure.
+  @visibleForTesting
+  static String? playwrightUnsupportedPlatformHint(String output) {
+    final platform = RegExp(
+      r'does not support chromium on (\S+)',
+    ).firstMatch(output)?.group(1);
+    if (platform == null) {
+      return null;
+    }
+
+    final arch = RegExp(r'^ubuntu[\d.]+-(x64|arm64)$').firstMatch(platform);
+    final override = arch == null
+        ? ''
+        : ', or set PLAYWRIGHT_HOST_PLATFORM_OVERRIDE=ubuntu24.04-${arch.group(1)} '
+              'to use the closest supported Chromium build';
+    return 'The Playwright version bundled with the patrol package cannot '
+        'install Chromium on $platform. Update the patrol package to the '
+        'latest version$override.';
+  }
+
   @visibleForTesting
   Future<bool> verifyServerReady(String url) async {
     try {
@@ -715,10 +737,14 @@ class WebTestBackend {
     );
 
     if (result.exitCode != 0) {
+      final hint = playwrightUnsupportedPlatformHint(
+        '${result.stdout}\n${result.stderr}',
+      );
       throw ProcessException(
         'npx',
         ['playwright', 'install', 'chromium'],
-        'Failed to install Playwright dependencies:\n'
+        '${hint == null ? '' : '$hint\n'}'
+            'Failed to install Playwright dependencies:\n'
             'STDOUT: ${result.stdout}\n'
             'STDERR: ${result.stderr}',
         result.exitCode,
