@@ -373,6 +373,14 @@ class IOSPickMultipleImagesFromGalleryRequest {
   late String appId;
 }
 
+class IOSAllowFaceIdPermissionRequest {
+  late int timeoutMillis;
+}
+
+class IOSAllowFaceIdPermissionResponse {
+  late bool allowed;
+}
+
 abstract class MobileAutomator<IOSServer, AndroidServer, DartClient> {
   void configure(ConfigureRequest request);
 
@@ -468,6 +476,13 @@ abstract class AndroidAutomator<AndroidServer, DartClient> {
     AndroidSetFoldPostureRequest request,
   );
   void resetFoldPosture();
+
+  // biometrics
+  void enrollBiometrics();
+  void unenrollBiometrics();
+  void passBiometric();
+  void failBiometric();
+  void cancelBiometric();
 }
 
 abstract class IosAutomator<IOSServer, DartClient> {
@@ -502,6 +517,12 @@ abstract class IosAutomator<IOSServer, DartClient> {
   );
 
   void debug();
+
+  // biometrics
+  IOSAllowFaceIdPermissionResponse allowFaceIdPermission(
+    IOSAllowFaceIdPermissionRequest request,
+  );
+  void cancelBiometric();
 }
 
 enum IOSElementType {

@@ -1003,3 +1003,21 @@ Map<String, dynamic> _$IOSPickMultipleImagesFromGalleryRequestToJson(
   'timeoutMillis': instance.timeoutMillis,
   'appId': instance.appId,
 };
+
+IOSAllowFaceIdPermissionRequest _$IOSAllowFaceIdPermissionRequestFromJson(
+  Map<String, dynamic> json,
+) => IOSAllowFaceIdPermissionRequest(
+  timeoutMillis: (json['timeoutMillis'] as num).toInt(),
+);
+
+Map<String, dynamic> _$IOSAllowFaceIdPermissionRequestToJson(
+  IOSAllowFaceIdPermissionRequest instance,
+) => <String, dynamic>{'timeoutMillis': instance.timeoutMillis};
+
+IOSAllowFaceIdPermissionResponse _$IOSAllowFaceIdPermissionResponseFromJson(
+  Map<String, dynamic> json,
+) => IOSAllowFaceIdPermissionResponse(allowed: json['allowed'] as bool);
+
+Map<String, dynamic> _$IOSAllowFaceIdPermissionResponseToJson(
+  IOSAllowFaceIdPermissionResponse instance,
+) => <String, dynamic>{'allowed': instance.allowed};

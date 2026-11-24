@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Simulate Face ID and Touch ID on iOS simulators for `$.platform.mobile` biometrics in `patrol`.
 - Fix `patrol develop --use-prebuilt-apks` failing with `flutter build bundle failed with code 64` on
   projects with a flavor, by no longer passing `--flavor` to `flutter build bundle`, which defines no
   such option. Only a checkout that had never generated the Dart plugin registrant was affected, which

@@ -47,11 +47,13 @@ class IOSAutomator extends NativeMobileAutomator
 
   // The simulator shares the host's network.
   static const _hostServerAddress = '127.0.0.1';
+  static const _faceIdPermissionTimeout = Duration(seconds: 3);
 
   final _patrolLog = PatrolLogWriter();
   final IOSAutomatorConfig _config;
 
   IosAutomatorClient? _clientInstance;
+  var _faceIdPermissionChecked = false;
 
   // Created lazily so the port is read after [PatrolRuntimePorts.ensureLoaded].
   IosAutomatorClient get _client {
@@ -600,29 +602,17 @@ class IOSAutomator extends NativeMobileAutomator
   @override
   Future<void> setHingeAngle(double degrees) async {
     await wrapRequest('setHingeAngle', () async {
-      final hostServerPort = PatrolRuntimePorts.hostServerPort();
-      if (hostServerPort == null) {
-        throw PatrolActionException(
-          'setHingeAngle() works only on iOS simulators run by `patrol test` '
-          'or `patrol develop`',
-        );
-      }
-
       final view = ui.PlatformDispatcher.instance.implicitView;
       final sizeBefore = view?.physicalSize;
 
-      final response = await http
-          .post(
-            Uri.http('$_hostServerAddress:$hostServerPort', '/setHingeAngle'),
-            body: jsonEncode({'degrees': degrees}),
-          )
-          .timeout(_config.connectionTimeout);
-      if (response.statusCode != io.HttpStatus.ok) {
-        throw PatrolActionException('setHingeAngle() failed: ${response.body}');
-      }
+      final response = await _postToHostServer(
+        'setHingeAngle',
+        'setHingeAngle',
+        {'degrees': degrees},
+      );
 
       // Only a closed hinge uses the cover display.
-      final previousDegrees = switch (jsonDecode(response.body)) {
+      final previousDegrees = switch (response) {
         {'previousDegrees': final num degrees} => degrees,
         _ => null,
       };
@@ -632,5 +622,107 @@ class IOSAutomator extends NativeMobileAutomator
         await waitForDisplaySwitch(view, sizeBefore);
       }
     });
+  }
+
+  @override
+  Future<void> enrollBiometrics() async {
+    await wrapRequest('enrollBiometrics', () async {
+      await _postToHostServer('enrollBiometrics', 'setBiometricEnrollment', {
+        'enrolled': true,
+      });
+    });
+  }
+
+  @override
+  Future<void> unenrollBiometrics() async {
+    await wrapRequest('unenrollBiometrics', () async {
+      await _postToHostServer('unenrollBiometrics', 'setBiometricEnrollment', {
+        'enrolled': false,
+      });
+    });
+  }
+
+  @override
+  Future<void> passBiometric() async {
+    await wrapRequest('passBiometric', () async {
+      await _allowFaceIdPermission();
+      await _postToHostServer('passBiometric', 'sendBiometricMatch', {
+        'match': true,
+      });
+    });
+  }
+
+  @override
+  Future<void> failBiometric() async {
+    await wrapRequest('failBiometric', () async {
+      await _allowFaceIdPermission();
+      await _postToHostServer('failBiometric', 'sendBiometricMatch', {
+        'match': false,
+      });
+    });
+  }
+
+  @override
+  Future<void> cancelBiometric() async {
+    await wrapRequest('cancelBiometric', () async {
+      await _allowFaceIdPermission();
+      // Face ID shows Cancel only after a failed attempt.
+      await _postToHostServer('cancelBiometric', 'sendBiometricMatch', {
+        'match': false,
+      });
+      await _client.cancelBiometric();
+    });
+  }
+
+  /// Taps OK if iOS asks whether the app may use Face ID, which it does before
+  /// the app's first Face ID prompt, so tests don't have to.
+  ///
+  /// The first call waits a while for the alert, since the app may still be
+  /// about to show it. Later calls only check, because iOS asks once.
+  Future<void> _allowFaceIdPermission() async {
+    final timeout = _faceIdPermissionChecked
+        ? Duration.zero
+        : _faceIdPermissionTimeout;
+    _faceIdPermissionChecked = true;
+
+    final response = await _client.allowFaceIdPermission(
+      IOSAllowFaceIdPermissionRequest(timeoutMillis: timeout.inMilliseconds),
+    );
+    if (response.allowed) {
+      // The Face ID prompt animates in after the alert, and ignores a match
+      // that comes before it.
+      await Future<void>.delayed(const Duration(seconds: 1));
+    }
+  }
+
+  /// Sends [body] to the [route] of the `patrol` CLI, which does what a
+  /// simulator can't do from the inside, and returns the decoded response.
+  ///
+  /// Errors name [method], the API the test called.
+  Future<Object?> _postToHostServer(
+    String method,
+    String route,
+    Map<String, Object?> body,
+  ) async {
+    final action = '$method()';
+    final hostServerPort = PatrolRuntimePorts.hostServerPort();
+    if (hostServerPort == null) {
+      throw PatrolActionException(
+        '$action works only on iOS simulators run by `patrol test` or '
+        '`patrol develop`',
+      );
+    }
+
+    final response = await http
+        .post(
+          Uri.http('$_hostServerAddress:$hostServerPort', '/$route'),
+          body: jsonEncode(body),
+        )
+        .timeout(_config.connectionTimeout);
+    if (response.statusCode != io.HttpStatus.ok) {
+      throw PatrolActionException('$action failed: ${response.body}');
+    }
+
+    return jsonDecode(response.body);
   }
 }

@@ -28,3 +28,6 @@
 "remove_app" = "앱 제거";
 "delete_app" = "앱 삭제";
 "delete" = "삭제";
+
+/* Biometric prompt */
+"cancel" = "취소";

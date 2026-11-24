@@ -58,6 +58,11 @@ object AutomatorConstants {
     const val GALLERY_SUB_MENU_LIST_RES_ID = "com.google.android.documentsui:id/sub_menu_list"
 
     /**
+     * Resource ID for the negative button (the app's cancel text) of the system's BiometricPrompt
+     */
+    const val BIOMETRIC_PROMPT_NEGATIVE_BUTTON_RES_ID = "com.android.systemui:id/button_negative"
+
+    /**
      * Resource ID for the "Add" button in gallery on Android API 34-35
      * Used to confirm selection when picking images from gallery
      */

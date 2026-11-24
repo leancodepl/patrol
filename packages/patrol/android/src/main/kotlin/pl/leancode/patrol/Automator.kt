@@ -30,6 +30,7 @@ import androidx.test.uiautomator.UiObject
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.UiObjectNotFoundException
 import androidx.test.uiautomator.UiSelector
+import androidx.test.uiautomator.Until
 import pl.leancode.patrol.contracts.Contracts.AndroidFoldPosture
 import pl.leancode.patrol.contracts.Contracts.AndroidNativeView
 import pl.leancode.patrol.contracts.Contracts.AndroidSelector
@@ -288,6 +289,47 @@ class Automator private constructor() {
     fun resetFoldPosture() {
         Logger.d("resetFoldPosture()")
         uiDevice.executeShellCommand("cmd device_state state reset")
+    }
+
+    private var simulatedBiometrics: SimulatedBiometrics? = null
+
+    private fun biometrics(): SimulatedBiometrics {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+            throw PatrolException("Simulating biometrics needs Android 12+ (API 31)")
+        }
+
+        return simulatedBiometrics
+            ?: SimulatedBiometrics(targetContext, { uiAutomation }, uiDevice::executeShellCommand)
+                .also { simulatedBiometrics = it }
+    }
+
+    fun enrollBiometrics() {
+        Logger.d("enrollBiometrics()")
+        biometrics().enroll()
+    }
+
+    fun unenrollBiometrics() {
+        Logger.d("unenrollBiometrics()")
+        biometrics().unenroll()
+    }
+
+    fun passBiometric() {
+        Logger.d("passBiometric()")
+        biometrics().pass()
+    }
+
+    fun failBiometric() {
+        Logger.d("failBiometric()")
+        biometrics().fail()
+    }
+
+    /** Taps the cancel button of the system's biometric prompt. */
+    fun cancelBiometric() {
+        Logger.d("cancelBiometric()")
+        val selector = By.res(AutomatorConstants.BIOMETRIC_PROMPT_NEGATIVE_BUTTON_RES_ID)
+        val button = uiDevice.wait(Until.findObject(selector), timeoutMillis)
+            ?: throw UiObjectNotFoundException("cancel button of the biometric prompt")
+        button.click()
     }
 
     fun enableAirplaneMode() {
