@@ -4,17 +4,20 @@
   resolving patrol_cli 4.x. See `migration5.md`. (#3323)
 - Migrate to the `NativePlatform` API of `platform` 3.2.0 and drop the `<3.2.0` pin. `platform` 3.2.0
   needs `meta` 1.18, which Flutter pins only from 3.44 on, hence the new minimum. (#3323)
-- Fix `patrol develop --use-prebuilt-apks` failing with `flutter build bundle failed with code 64` on
-  projects with a flavor, by no longer passing `--flavor` to `flutter build bundle`, which defines no
-  such option. Only a checkout that had never generated the Dart plugin registrant was affected, which
-  is every fresh CI checkout. (#3297)
-- `patrol coverage pull` now reads coverage from runs with `clearPackageData:true` (one run per
-  test, written by `patrol` on Android 12+) and no longer refuses those BrowserStack builds. A
-  session that kept only the first test's run (older Android) still fails. (#3359)
 
 - **BREAKING CHANGE**
   - Remove `--tags` from `patrol develop`. It was accepted but never applied, so a session ran
     every test in the file. (#3382)
+
+## 4.10.0
+
+- Read coverage from runs with the test orchestrator's `clearPackageData:true` in
+  `patrol coverage pull`: it merges the per-test runs that `patrol` 4.12.0 or newer writes on
+  Android 12+, and no longer refuses those BrowserStack builds. A session that kept only the first
+  test's run (older Android) still fails. (#3359)
+- Fix `patrol develop --use-prebuilt-apks` failing with `flutter build bundle failed with code 64`
+  on projects with a flavor and a fresh checkout (as on CI): `--flavor` is no longer passed to
+  `flutter build bundle`, which has no such option. (#3297)
 
 ## 4.9.0
 

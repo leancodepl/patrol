@@ -1,21 +1,32 @@
-## Unreleased
+## 5.0.0-dev.1
 
-- **Breaking:** Require Flutter 3.44 and Dart 3.12 or newer. See `migration5.md`.
+- **Breaking:** Require Flutter 3.44 and Dart 3.12 or newer. See `migration5.md`. (#3377)
 - **Breaking:** Bump `minSdk` to 24 (Android 7.0), Flutter 3.44's minimum. See `migration5.md`.
+  (#3378)
 - **Breaking:** Bump the minimum macOS deployment target to 10.15, Flutter 3.44's minimum. See
-  `migration5.md`.
+  `migration5.md`. (#3378)
 - Depend on Flutter's `FlutterFramework` Swift package when the app builds with Swift Package Manager,
-  as Flutter 3.41+ expects from plugins.
-- Remove the placeholder `GoogleService-Info.plist` and `google-services.json` from the example app, so security scanners no longer flag the published package. (#3360)
-- Add web platform screenshot support via `$.takeNativeScreenshot('tag')`. (#3047)
-- Support Android code coverage with the test orchestrator's `clearPackageData:true` on Android
-  12+: each test's coverage is appended to the coverage file as the `shell` user, so it is no
-  longer limited to the first test. Reading the per-test runs needs a `patrol_cli` release that
-  includes this change. (#3359)
-- Add `includeInvisibleNodes` to `$.platform.android.getNativeViews()` to keep nodes some WebViews report as invisible, and `AndroidNativeView.isVisibleToUser` to tell them apart. (#3287)
+  as Flutter 3.41+ expects from plugins. (#3377)
+
+## 4.12.0
+
+- Add Android code coverage for runs with the test orchestrator's `clearPackageData:true` on
+  Android 12+: each test's coverage is appended to the coverage file as the `shell` user, so it no
+  longer stops at the first test. `patrol coverage pull` needs `patrol_cli` 4.10.0 or newer to read
+  the per-test runs. See the
+  [docs](https://patrol.leancode.co/documentation/integrations/browserstack#dart-code-coverage-android).
+  (#3359)
+- Add `includeInvisibleNodes` to `$.platform.android.getNativeViews()` to keep the nodes some
+  WebViews report as invisible, and `AndroidNativeView.isVisibleToUser` to tell them apart. (#3287)
+- Add screenshots on web: `$.takeNativeScreenshot('tag')` and `screenshot_on_failure`. See the
+  [docs](https://patrol.leancode.co/cli-commands/test#on-web). (#3047)
 - Add R8 consumer rules to the Android plugin, so release-mode tests with minification enabled no
   longer need app-side keep rules for Patrol and the test runners, including `AndroidJUnit4` for the
   tests that build-time discovery generates. (#3334)
+- Remove the placeholder `GoogleService-Info.plist` and `google-services.json` from the example
+  app, so security scanners no longer flag the published package. (#3360)
+- Import `package:flutter/widgets.dart` instead of `package:flutter/material.dart`, which Flutter
+  3.47+ deprecates in favour of `package:material_ui`. (#3399)
 
 ## 4.11.0
 

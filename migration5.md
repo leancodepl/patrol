@@ -87,7 +87,5 @@ branch, the packages, what changed and what users have to do (`TODO` when that
 isn't known yet). A line leaves the Inbox when it becomes a section above. Empty
 the Inbox before 5.0.0 is released.
 
-- #3382, `patrol_cli`: `patrol develop` no longer accepts `--tags`, which it
-  never applied. Remove `--tags` from `patrol develop` calls, otherwise the
-  command stops with `Could not find an option named "--tags"`. `patrol test`
-  and `patrol build` keep `--tags`.
+- #3382, `patrol_cli`: `patrol develop` no longer accepts `--tags`, which it never applied. Remove
+  `--tags` from `patrol develop` commands and scripts; `patrol test` keeps it.
