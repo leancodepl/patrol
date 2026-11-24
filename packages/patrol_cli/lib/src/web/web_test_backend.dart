@@ -485,29 +485,28 @@ class WebTestBackend {
       return;
     }
 
-    // Failures from the run a restart replaces are noise; later ones are real.
-    if (restartTeardown.isOpen &&
-        (line.contains('EXCEPTION CAUGHT') ||
-            line.contains('RethrownDartError') ||
-            line.contains('Test failed.') ||
-            line.contains('Some tests failed.'))) {
-      _logger.detail('Flutter (restart teardown): $line');
-      return;
-    }
-
-    if (line.contains('EXCEPTION CAUGHT') ||
-        line.contains('TestFailure') ||
-        line.startsWith('Expected:') ||
-        line.startsWith('  Actual:') ||
-        line.startsWith('   Which:') ||
-        line.contains('Test failed.') ||
-        line.contains('Some tests failed.')) {
-      _logger.err(line);
+    if (_isFailureLine(line)) {
+      // Failures from the run a restart replaces are noise; later ones are real.
+      if (restartTeardown.isOpen) {
+        _logger.detail('Flutter (restart teardown): $line');
+      } else {
+        _logger.err(line);
+      }
       return;
     }
 
     _logger.detail('Flutter: $line');
   }
+
+  static bool _isFailureLine(String line) =>
+      line.contains('EXCEPTION CAUGHT') ||
+      line.contains('RethrownDartError') ||
+      line.contains('TestFailure') ||
+      line.startsWith('Expected:') ||
+      line.startsWith('  Actual:') ||
+      line.startsWith('   Which:') ||
+      line.contains('Test failed.') ||
+      line.contains('Some tests failed.');
 
   Future<Process> _startFlutterWebServer(
     WebAppOptions options, {

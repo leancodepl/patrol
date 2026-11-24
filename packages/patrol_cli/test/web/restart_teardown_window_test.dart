@@ -77,6 +77,19 @@ void main() {
       verifyNever(() => logger.err(any()));
     });
 
+    test("hides the replaced run's assertion when r lands mid-expect", () {
+      backend.restartTeardown.restartRequested();
+      feed([
+        restarted,
+        'TestFailure: Expected: exactly one matching candidate',
+        'Expected: exactly one matching candidate',
+        '  Actual: _TextWidgetFinder:<Found 0 widgets>',
+        '   Which: means none were found but one was expected',
+      ]);
+
+      verifyNever(() => logger.err(any()));
+    });
+
     test('shows a throwing setUpAll when the marker follows the restart', () {
       backend.restartTeardown.restartRequested();
       feed([
