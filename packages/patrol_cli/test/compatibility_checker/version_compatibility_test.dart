@@ -209,13 +209,13 @@ void main() {
         expect(
           areVersionsCompatible(
             Version.parse('5.0.0-dev.1'),
-            Version.parse('4.11.0'),
+            Version.parse('4.12.0'),
           ),
           isFalse,
         );
         expect(
           areVersionsCompatible(
-            Version.parse('4.9.0'),
+            Version.parse('4.10.0'),
             Version.parse('5.0.0-dev.1'),
           ),
           isFalse,
@@ -225,8 +225,8 @@ void main() {
       test('the last 4.x releases still pair', () {
         expect(
           areVersionsCompatible(
-            Version.parse('4.9.0'),
-            Version.parse('4.11.0'),
+            Version.parse('4.10.0'),
+            Version.parse('4.12.0'),
           ),
           isTrue,
         );
