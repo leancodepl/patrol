@@ -8,6 +8,9 @@
 - **BREAKING CHANGE**
   - Remove `--tags` from `patrol develop`. It was accepted but never applied, so a session ran
     every test in the file. (#3382)
+- When Chromium cannot be installed for web tests because the OS is newer than the Playwright
+  bundled with `patrol`, the error now says to update `patrol` and, on Ubuntu, which
+  `PLAYWRIGHT_HOST_PLATFORM_OVERRIDE` value works as a fallback.
 
 ## 4.10.0
 
