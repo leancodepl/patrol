@@ -6,6 +6,31 @@ end. Before the release, this file becomes the migration guide in the docs.
 
 Each section says which packages it affects, what changed and what to do.
 
+## Package versions
+
+Update `patrol` and `patrol_cli` together: Patrol 5.0 is `patrol` 5.x with
+`patrol_cli` 5.x. Prereleases are published as `5.0.0-dev.N`.
+
+| Package | 5.0 | Notes |
+|---|---|---|
+| `patrol` | 5.x | |
+| `patrol_cli` | 5.x | |
+| `patrol_mcp` | not released yet | needs a release that depends on `patrol_cli` 5.x; until then it resolves `patrol_cli` 4.x |
+| `patrol_finders` | 3.x, no change so far | |
+| `patrol_log` | 0.10.x, no change so far | |
+
+To try a prerelease, pin it explicitly, since pub doesn't pick prereleases on
+its own:
+
+```yaml
+dev_dependencies:
+  patrol: 5.0.0-dev.1
+```
+
+```bash
+dart pub global activate patrol_cli 5.0.0-dev.1
+```
+
 ## Flutter 3.44 and Dart 3.12 are required
 
 **Packages:** `patrol`, `patrol_cli`

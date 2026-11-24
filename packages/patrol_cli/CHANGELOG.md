@@ -1,9 +1,9 @@
-## Unreleased
+## 5.0.0-dev.1
 
 - **Breaking:** Bump min Flutter SDK to 3.44.0 and Dart SDK to 3.12.0. Older Flutter versions keep
-  resolving patrol_cli 4.x. See `migration5.md`.
+  resolving patrol_cli 4.x. See `migration5.md`. (#3323)
 - Migrate to the `NativePlatform` API of `platform` 3.2.0 and drop the `<3.2.0` pin. `platform` 3.2.0
-  needs `meta` 1.18, which Flutter pins only from 3.44 on, hence the new minimum.
+  needs `meta` 1.18, which Flutter pins only from 3.44 on, hence the new minimum. (#3323)
 
 - **BREAKING CHANGE**
   - Remove `--tags` from `patrol develop`. It was accepted but never applied, so a session ran

@@ -877,7 +877,7 @@ packages:
       path: "../../packages/patrol_cli"
       relative: true
     source: path
-    version: "4.9.0"
+    version: "5.0.0-dev.1"
   patrol_finders:
     dependency: transitive
     description:
