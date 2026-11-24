@@ -57,6 +57,25 @@ void main() {
       expect(dart.arguments, ['exec', '--', 'dart']);
     });
 
+    test('drops the flutter flags that follow a path', () {
+      final dart = FlutterCommand.parse(
+        '"/Users/me/my sdk/bin/flutter" --no-version-check',
+      ).toDartCommand();
+
+      expect(dart.executable, '/Users/me/my sdk/bin/dart');
+      expect(dart.arguments, isEmpty);
+    });
+
+    test('drops the flutter flags that follow a wrapper', () {
+      final dart = const FlutterCommand('fvm', [
+        'flutter',
+        '--no-version-check',
+      ]).toDartCommand();
+
+      expect(dart.executable, 'fvm');
+      expect(dart.arguments, ['dart']);
+    });
+
     test('maps Windows executables', () {
       final dart = const FlutterCommand(
         r'C:\src\flutter\bin\flutter.bat',
