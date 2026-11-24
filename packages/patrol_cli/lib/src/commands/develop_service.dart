@@ -34,15 +34,19 @@ final _minWebDevelopFlutterVersion = Version.parse(
   '$_minWebDevelopFlutter-0.0.pre',
 );
 
-/// Whether [flutterVersion] carries flutter/flutter#183838. An unparseable
-/// version passes, so a format change upstream can't block web develop.
+/// Whether [flutterVersion] carries flutter/flutter#183838. An unknown version
+/// passes, so a format change upstream can't block web develop: that is one
+/// that doesn't parse, or 0.x, which Flutter reports (as `0.0.0-unknown`) when
+/// it can't read its git tags.
 @visibleForTesting
 bool supportsWebHotRestart(String flutterVersion) {
+  final Version version;
   try {
-    return Version.parse(flutterVersion) >= _minWebDevelopFlutterVersion;
+    version = Version.parse(flutterVersion);
   } on Object {
     return true;
   }
+  return version.major == 0 || version >= _minWebDevelopFlutterVersion;
 }
 
 /// Result of a completed test execution within a develop session.
