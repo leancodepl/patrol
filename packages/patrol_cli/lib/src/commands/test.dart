@@ -246,6 +246,23 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       return 1;
     }
 
+    final webBrowser = stringArg('web-browser') ?? 'chromium';
+    if (isWeb && webBrowser != 'chromium') {
+      final chromiumOnlyFlags = [
+        if (coverageEnabled) '--coverage',
+        if (stringArg('web-channel') != null) '--web-channel',
+        if (optionalBoolArg('web-chromium-sandbox') != null)
+          '--web-chromium-sandbox',
+      ];
+      if (chromiumOnlyFlags.isNotEmpty) {
+        _logger.err(
+          'These options only work with --web-browser chromium, '
+          'not $webBrowser: ${chromiumOnlyFlags.join(', ')}.',
+        );
+        return 1;
+      }
+    }
+
     final coverageWorkspace = boolArg('coverage-workspace');
     final ignoreGlobs = stringsArg('coverage-ignore').map(Glob.new).toSet();
     final coveragePackagesRegExps = stringsArg('coverage-package');
@@ -381,6 +398,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       headless: optionalBoolArg('web-headless'),
       webPort: intArg('web-port'),
       serverTimeout: intArg('web-server-timeout'),
+      browser: stringArg('web-browser'),
       browserArgs: stringArg('web-browser-args'),
       channel: stringArg('web-channel'),
       executablePath: stringArg('web-executable-path'),

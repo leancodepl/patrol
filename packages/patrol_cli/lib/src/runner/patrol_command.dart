@@ -412,6 +412,13 @@ abstract class PatrolCommand extends Command<int> {
         valueHelp: 'number',
       )
       ..addOption(
+        'web-browser',
+        help:
+            'Browser engine to run web tests in. Defaults to chromium. '
+            'webkit is the engine of Safari and of every iOS browser.',
+        allowed: ['chromium', 'firefox', 'webkit'],
+      )
+      ..addOption(
         'web-browser-args',
         help: 'Custom browser launch arguments. JSON array of strings.',
         valueHelp: '\'["--no-sandbox", "--disable-gpu"]\'',
