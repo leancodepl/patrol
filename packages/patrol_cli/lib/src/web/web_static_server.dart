@@ -53,8 +53,8 @@ class WebStaticServer {
   WebStaticServer._(
     this._server,
     this._root, {
-    required bool crossOriginIsolated,
-  }) : _crossOriginIsolated = crossOriginIsolated;
+    required this._crossOriginIsolated,
+  });
 
   /// Starts serving [root] on [port], or on a free port when it is null.
   static Future<WebStaticServer> serve(

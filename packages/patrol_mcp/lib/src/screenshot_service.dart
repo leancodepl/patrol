@@ -72,7 +72,7 @@ abstract final class ScreenshotService {
       }
 
       if (device.targetPlatform == TargetPlatform.web) {
-        return _handleWebScreenshot(webDebuggerPort);
+        return await _handleWebScreenshot(webDebuggerPort);
       }
 
       final platform = ScreenshotPlatform.fromDevice(device);
