@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:args/command_runner.dart';
 import 'package:file/memory.dart';
 import 'package:mocktail/mocktail.dart';
@@ -22,6 +24,7 @@ void main() {
       mockLogger = MockLogger();
       mockWebTestBackend = MockWebTestBackend();
       when(() => mockLogger.err(any())).thenReturn(null);
+      when(() => mockLogger.detail(any())).thenReturn(null);
 
       command = TestWithoutBuildingCommand(
         deviceFinder: MockDeviceFinder(),
@@ -61,6 +64,17 @@ void main() {
       verify(
         () => mockLogger.err(any(that: startsWith('--only is not supported'))),
       ).called(1);
+      verifyZeroInteractions(mockWebTestBackend);
+    });
+
+    test('reports a busy --web-port instead of crashing', () async {
+      final busy = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
+      addTearDown(busy.close);
+
+      final exitCode = await runCommand(['--web-port', '${busy.port}']);
+
+      expect(exitCode, 1);
+      verify(() => mockLogger.err(any(that: contains('SocketException'))));
       verifyZeroInteractions(mockWebTestBackend);
     });
 

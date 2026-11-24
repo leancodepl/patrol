@@ -239,8 +239,9 @@ class TestWithoutBuildingCommand extends PatrolCommand {
       return 1;
     }
 
+    final externalBaseUrl = stringArg('base-url');
     final artifact = WebArtifact.at(input, fs: _fs);
-    final problem = artifact.problem;
+    final problem = artifact.problem(servesApp: externalBaseUrl == null);
     if (problem != null) {
       _logger
         ..err(problem)
@@ -299,20 +300,17 @@ class TestWithoutBuildingCommand extends PatrolCommand {
       acceptDownloads: optionalBoolArg('web-accept-downloads'),
     );
 
-    final externalBaseUrl = stringArg('base-url');
-    final server = externalBaseUrl != null
-        ? null
-        : await WebStaticServer.serve(
-            artifact.appDir,
-            port: options.webPort,
-            logger: _logger,
-          );
-
-    if (server != null) {
-      _logger.info('Serving ${artifact.appDir.path} at ${server.baseUrl}');
-    }
-
+    WebStaticServer? server;
     try {
+      if (externalBaseUrl == null) {
+        server = await WebStaticServer.serve(
+          artifact.appDir,
+          port: options.webPort,
+          logger: _logger,
+        );
+        _logger.info('Serving ${artifact.appDir.path} at ${server.baseUrl}');
+      }
+
       await _webTestBackend.executePrebuilt(
         options,
         baseUrl: externalBaseUrl ?? server!.baseUrl,
