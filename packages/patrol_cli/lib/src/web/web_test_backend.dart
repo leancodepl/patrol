@@ -86,6 +86,10 @@ class WebTestBackend {
   /// Set on quit so subprocess kills aren't surfaced as unexpected exits.
   bool _quitting = false;
 
+  /// Why the Playwright driver ended the session, so it fails instead of
+  /// reading as a quit.
+  String? _driverFailure;
+
   FlutterTool? _flutterTool;
   bool _openDevtools = false;
 
@@ -245,11 +249,21 @@ class WebTestBackend {
     try {
       await _watchFlutterRun(flutterProcess, exited);
 
-      await _waitForWebDebugger(
-        flutterProcess,
-        debuggerPort,
-        serverTimeout: options.serverTimeout,
-      );
+      try {
+        await _waitForWebDebugger(
+          flutterProcess,
+          debuggerPort,
+          serverTimeout: options.serverTimeout,
+        );
+      } on Object {
+        if (_quitting) {
+          return;
+        }
+        rethrow;
+      }
+      if (_quitting) {
+        return;
+      }
 
       await _runPlaywrightDevelop(
         '$debuggerPort',
@@ -424,7 +438,10 @@ class WebTestBackend {
       if (exited.isCompleted) {
         return;
       }
-      if (exitCode != 0 && !_quitting) {
+      final driverFailure = _driverFailure;
+      if (driverFailure != null) {
+        exited.completeError(driverFailure);
+      } else if (exitCode != 0 && !_quitting) {
         exited.completeError(
           'Flutter process exited unexpectedly with code $exitCode',
         );
@@ -854,6 +871,7 @@ class WebTestBackend {
         'The Playwright driver exited unexpectedly with code $exitCode. '
         'Quitting the develop session.',
       );
+      _driverFailure = 'The Playwright driver exited with code $exitCode';
       _quitting = true;
       await _stopFlutterProcess();
     }).ignore();
