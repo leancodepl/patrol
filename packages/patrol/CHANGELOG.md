@@ -15,6 +15,8 @@
   tests that build-time discovery generates. (#3334)
 - Remove the placeholder `GoogleService-Info.plist` and `google-services.json` from the example
   app, so security scanners no longer flag the published package. (#3360)
+- Import `package:flutter/widgets.dart` instead of `package:flutter/material.dart`, which Flutter
+  3.47+ deprecates in favour of `package:material_ui`. (#3399)
 
 ## 4.11.0
 
