@@ -1,7 +1,8 @@
-## Unreleased
+## 3.7.1
 
-- Report the elapsed duration when drag helpers exhaust their iterations. (#2103)
-- Drop an unneeded `package:flutter/material.dart` import, which Flutter 3.47+ deprecates in favour of `package:material_ui`. (#3399)
+- Fix the duration in the timeout exception that `dragUntilExists()` and `dragUntilVisible()` throw after running out of iterations: it now reports the time spent dragging instead of `settleBetweenScrollsTimeout`. (#3300)
+- Drop an unneeded `package:flutter/material.dart` import, which Flutter 3.47+ deprecates in favour
+  of `package:material_ui`. (#3399)
 
 ## 3.7.0
 
