@@ -125,6 +125,34 @@ void main() {
       });
     });
 
+    test("shows a throwing setUpAll's error, not just the summary", () {
+      const errorLine =
+          '00:00 +0: web.app_test (setUpAll) \x1b[1m\x1b[31m[E]\x1b[0m';
+      backend.restartTeardown.restartRequested();
+      feed([
+        restarted,
+        replacementRunMarker,
+        errorLine,
+        '  Bad state: setUpAll failed',
+        '  package:e2e_app/app_test.dart 7:18  <fn>',
+        someTestsFailed,
+      ]);
+
+      verify(() => logger.err(errorLine)).called(1);
+      verify(() => logger.err('  Bad state: setUpAll failed')).called(1);
+      verifyNever(
+        () => logger.err('  package:e2e_app/app_test.dart 7:18  <fn>'),
+      );
+      verify(() => logger.err(someTestsFailed)).called(1);
+    });
+
+    test("hides the replaced run's reporter errors inside the window", () {
+      backend.restartTeardown.restartRequested();
+      feed(['00:01 +0: web.app_test logs in [E]', '  Bad state: torn down']);
+
+      verifyNever(() => logger.err(any()));
+    });
+
     test('closes the window when the restart fails to compile', () {
       backend.restartTeardown.restartRequested();
       feed(['Try again after fixing the above error(s).', someTestsFailed]);

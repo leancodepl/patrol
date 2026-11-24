@@ -485,7 +485,13 @@ class WebTestBackend {
       return;
     }
 
-    if (_isFailureLine(line)) {
+    // flutter_test's reporter prints a failure as `... [E]` and the error on
+    // the next, indented line; that is the only place a setUpAll error shows.
+    final plain = line.replaceAll(_ansiEscape, '');
+    final isReporterError = _afterReporterError && plain.startsWith('  ');
+    _afterReporterError = plain.endsWith('[E]');
+
+    if (_isFailureLine(line) || _afterReporterError || isReporterError) {
       // Failures from the run a restart replaces are noise; later ones are real.
       if (restartTeardown.isOpen) {
         _logger.detail('Flutter (restart teardown): $line');
@@ -497,6 +503,10 @@ class WebTestBackend {
 
     _logger.detail('Flutter: $line');
   }
+
+  bool _afterReporterError = false;
+
+  static final _ansiEscape = RegExp(r'\x1b\[[0-9;]*m');
 
   static bool _isFailureLine(String line) =>
       line.contains('EXCEPTION CAUGHT') ||
