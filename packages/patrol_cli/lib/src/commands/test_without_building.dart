@@ -224,6 +224,20 @@ class TestWithoutBuildingCommand extends PatrolCommand {
       _logger.err('Flavors are not supported on web. Remove --flavor.');
       return 1;
     }
+    if (stringsArg('only').isNotEmpty) {
+      _logger.err(
+        '--only is not supported with --input yet; the whole artifact would '
+        'run. Remove --only.',
+      );
+      return 1;
+    }
+    if (stringsArg('device').isNotEmpty) {
+      _logger.err(
+        '--device does not apply to --input: a web artifact runs in '
+        "Playwright's own browser. Remove --device.",
+      );
+      return 1;
+    }
 
     final artifact = WebArtifact.at(input, fs: _fs);
     final problem = artifact.problem;
