@@ -13,15 +13,13 @@ import 'package:patrol_cli/src/coverage/bind_unused_port.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
 import 'package:patrol_cli/src/devices.dart';
+import 'package:patrol_cli/src/web/restart_teardown_window.dart';
 import 'package:patrol_cli/src/web/web_devtools_server.dart';
 import 'package:patrol_log/patrol_log.dart';
 import 'package:patrol_log/patrol_log_reader.dart';
 import 'package:process/process.dart';
 
 const _kDefaultWebServerTimeoutSeconds = 120;
-
-/// Backstop for the teardown window when no replacement run ever starts.
-const _kRestartTeardownWindow = Duration(seconds: 3);
 
 /// How long a hot restart counts as in flight before another "r" resends it.
 const _kRestartOutcomeWindow = Duration(seconds: 5);
@@ -68,17 +66,8 @@ class WebTestBackend {
 
   DateTime? _restartRequestedAt;
 
-  DateTime? _restartSettledAt;
-
-  /// Whether output still belongs to the run a restart is replacing.
-  bool get _inRestartTeardown {
-    if (_restartInFlight) {
-      return true;
-    }
-    final settled = _restartSettledAt;
-    return settled != null &&
-        DateTime.now().difference(settled) < _kRestartTeardownWindow;
-  }
+  @visibleForTesting
+  final restartTeardown = RestartTeardownWindow();
 
   /// Set once the resident `flutter run` is gone.
   int? _flutterExitCode;
@@ -271,12 +260,7 @@ class WebTestBackend {
         showFlutterLogs: showFlutterLogs,
         hideTestSteps: hideTestSteps,
         clearTestSteps: clearTestSteps,
-        onLogEntry: (entry) {
-          if (entry is TestEntry && entry.status == TestEntryStatus.start) {
-            _restartSettledAt = null;
-          }
-          onLogEntry?.call(entry);
-        },
+        onLogEntry: onLogEntry,
       );
 
       _markAttached();
@@ -375,6 +359,7 @@ class WebTestBackend {
 
     _restartInFlight = true;
     _restartRequestedAt = DateTime.now();
+    restartTeardown.restartRequested();
     _logger.success('Hot Restart for entrypoint ${basename(target)}...');
     process.stdin.add('R'.codeUnits);
     await process.stdin.flush();
@@ -417,7 +402,7 @@ class WebTestBackend {
     process.stdout
         .transform(const SystemEncoding().decoder)
         .transform(const LineSplitter())
-        .listen(_onFlutterLine)
+        .listen(onFlutterLine)
         .disposedBy(_disposeScope);
 
     process.stderr
@@ -430,6 +415,7 @@ class WebTestBackend {
       _flutterExitCode = exitCode;
       _hotRestartActive = false;
       _restartInFlight = false;
+      restartTeardown.close();
       if (!debugServiceReady.isCompleted) {
         debugServiceReady.completeError(
           'Flutter process exited unexpectedly with code $exitCode',
@@ -453,11 +439,17 @@ class WebTestBackend {
 
   Completer<void>? _debugServiceReady;
 
-  void _onFlutterLine(String rawLine) {
+  @visibleForTesting
+  void onFlutterLine(String rawLine) {
     final line = rawLine.replaceFirst(_flutterLogPrefix, '');
 
     // Playwright re-emits these and its copy is the one PatrolLogReader reads.
     if (line.contains('PATROL_LOG')) {
+      if (restartTeardown.isOpen &&
+          RestartTeardownWindow.isReplacementRunMarker(line)) {
+        restartTeardown.close();
+        _logger.detail('Hot Restart: the replacement run started');
+      }
       return;
     }
 
@@ -480,7 +472,7 @@ class WebTestBackend {
 
     if (line.startsWith('Restarted application in')) {
       _restartInFlight = false;
-      _restartSettledAt = DateTime.now();
+      restartTeardown.restartCompleted();
       _logger.success(line);
       return;
     }
@@ -488,12 +480,13 @@ class WebTestBackend {
     if (line == 'Try again after fixing the above error(s).' ||
         line.contains('Failed to recompile application.')) {
       _restartInFlight = false;
+      restartTeardown.close();
       _logger.err('Hot restart failed. Fix the errors above and press "r".');
       return;
     }
 
     // Failures from the run a restart replaces are noise; later ones are real.
-    if (_inRestartTeardown &&
+    if (restartTeardown.isOpen &&
         (line.contains('EXCEPTION CAUGHT') ||
             line.contains('RethrownDartError') ||
             line.contains('Test failed.') ||
