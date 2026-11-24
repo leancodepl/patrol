@@ -955,7 +955,7 @@ class WebTestBackend {
     }
   }
 
-  static const _kDependencyTimeoutSeconds = 120;
+  static const _kDependencyTimeoutSeconds = 300;
 
   Future<void> _ensureNodeDependencies(String webRunnerPath) async {
     _logger.info('Installing Node.js dependencies...');
