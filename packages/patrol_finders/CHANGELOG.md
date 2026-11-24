@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Report the elapsed duration when drag helpers exhaust their iterations. (#2103)
+- Drop an unneeded `package:flutter/material.dart` import, which Flutter 3.47+ deprecates in favour of `package:material_ui`. (#3399)
 
 ## 3.7.0
 
