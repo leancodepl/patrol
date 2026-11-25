@@ -89,3 +89,7 @@ the Inbox before 5.0.0 is released.
 
 - #3382, `patrol_cli`: `patrol develop` no longer accepts `--tags`, which it never applied. Remove
   `--tags` from `patrol develop` commands and scripts; `patrol test` keeps it.
+- #3040, `patrol_cli`: `patrol develop` on web requires Flutter 3.47.0 or newer, since hot restart
+  needs flutter/flutter#183838; every other platform and `patrol test` on web keep the 3.44 floor.
+  Upgrade Flutter, or point patrol at a newer SDK with `--flutter-command`, to keep using
+  `patrol develop -d chrome`.
