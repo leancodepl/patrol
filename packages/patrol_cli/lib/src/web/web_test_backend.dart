@@ -79,6 +79,9 @@ class WebTestBackend {
   /// reading as a quit.
   String? _driverFailure;
 
+  /// The `npm`/`npx` install running before the driver starts, if any.
+  Process? _installProcess;
+
   FlutterTool? _flutterTool;
   bool _openDevtools = false;
 
@@ -211,6 +214,11 @@ class WebTestBackend {
     // Without this, a crash during startup is unhandled and skips `finally`.
     unawaited(exited.future.then((_) {}, onError: (Object _) {}));
 
+    // Ctrl+C reaches the driver too; on Windows it may not exit with 0.
+    final sigintSubscription = ProcessSignal.sigint.watch().listen((_) {
+      _quitting = true;
+    });
+
     final stdinSubscription = stdin.listen((event) async {
       if (event.isEmpty) {
         return;
@@ -230,6 +238,7 @@ class WebTestBackend {
           previousStdinModes = null;
         }
         _logger.success('Quitting process...');
+        await _killInstall();
         _playwrightDevelopProcess?.kill();
         await _stopFlutterProcess();
       }
@@ -273,6 +282,8 @@ class WebTestBackend {
       await exited.future;
     } finally {
       await stdinSubscription.cancel();
+      await sigintSubscription.cancel();
+      _quitting = true;
       _playwrightDevelopProcess?.kill();
       await _stopFlutterProcess();
       final modes = previousStdinModes;
@@ -818,7 +829,17 @@ class WebTestBackend {
 
     final webRunnerPath = await _getWebRunnerPath();
     _ensureWebRunnerExists(webRunnerPath);
-    await _ensureNodeDependencies(webRunnerPath);
+    try {
+      await _ensureNodeDependencies(webRunnerPath);
+    } on Object {
+      if (_quitting) {
+        return;
+      }
+      rethrow;
+    }
+    if (_quitting) {
+      return;
+    }
 
     final testResultsDir =
         options.resultsDir ?? '${Directory.current.path}/test-results';
@@ -869,12 +890,20 @@ class WebTestBackend {
       if (_quitting) {
         return;
       }
-      _logger.err(
-        'The Playwright driver exited unexpectedly with code $exitCode. '
-        'Quitting the develop session.',
-      );
-      _driverFailure = 'The Playwright driver exited with code $exitCode';
       _quitting = true;
+      if (exitCode == 0) {
+        // Also fires when Chrome crashes, so don't claim the user closed it.
+        _logger.info(
+          'The browser was closed or disconnected. Quitting the develop '
+          'session.',
+        );
+      } else {
+        _logger.err(
+          'The Playwright driver exited unexpectedly with code $exitCode. '
+          'Quitting the develop session.',
+        );
+        _driverFailure = 'The Playwright driver exited with code $exitCode';
+      }
       await _stopFlutterProcess();
     }).ignore();
   }
@@ -975,17 +1004,13 @@ class WebTestBackend {
     }
   }
 
-  static const _kDependencyTimeoutSeconds = 300;
-
   Future<void> _ensureNodeDependencies(String webRunnerPath) async {
     _logger.info('Installing Node.js dependencies...');
 
-    final nodeResult = await _runInstallWithTimeout(
-      ['npm', 'install'],
-      workingDirectory: webRunnerPath,
-      timeoutMessage:
-          'npm install timed out after $_kDependencyTimeoutSeconds seconds',
-    );
+    final nodeResult = await _runInstall([
+      'npm',
+      'install',
+    ], workingDirectory: webRunnerPath);
 
     if (nodeResult.exitCode != 0) {
       throw ProcessException(
@@ -1001,13 +1026,12 @@ class WebTestBackend {
     _logger
       ..info('Node.js dependencies installed successfully.')
       ..info('Installing Playwright dependencies...');
-    final result = await _runInstallWithTimeout(
-      ['npx', 'playwright', 'install', 'chromium'],
-      workingDirectory: webRunnerPath,
-      timeoutMessage:
-          'npx playwright install timed out after '
-          '$_kDependencyTimeoutSeconds seconds',
-    );
+    final result = await _runInstall([
+      'npx',
+      'playwright',
+      'install',
+      'chromium',
+    ], workingDirectory: webRunnerPath);
 
     if (result.exitCode != 0) {
       throw ProcessException(
@@ -1021,17 +1045,17 @@ class WebTestBackend {
     }
   }
 
-  /// Runs [command], killing it and its children if it exceeds the timeout.
-  Future<ProcessResult> _runInstallWithTimeout(
+  /// Runs [command], kept in [_installProcess] so a quit can kill it.
+  Future<ProcessResult> _runInstall(
     List<String> command, {
     required String workingDirectory,
-    required String timeoutMessage,
   }) async {
     final process = await _processManager.start(
       command,
       workingDirectory: workingDirectory,
       runInShell: true,
     );
+    _installProcess = process;
 
     // Drain both pipes so a full buffer can't stall the process.
     final stdoutFuture = process.stdout
@@ -1041,27 +1065,26 @@ class WebTestBackend {
         .transform(const SystemEncoding().decoder)
         .join();
 
-    final int exitCode;
     try {
-      exitCode = await process.exitCode.timeout(
-        const Duration(seconds: _kDependencyTimeoutSeconds),
+      return ProcessResult(
+        process.pid,
+        await process.exitCode,
+        await stdoutFuture,
+        await stderrFuture,
       );
-    } on TimeoutException {
-      await _killProcessTree(process.pid);
-      process.kill(ProcessSignal.sigkill);
-      await Future.wait([
-        stdoutFuture,
-        stderrFuture,
-      ]).timeout(const Duration(seconds: 5), onTimeout: () => const []);
-      throw TimeoutException(timeoutMessage);
+    } finally {
+      _installProcess = null;
     }
+  }
 
-    return ProcessResult(
-      process.pid,
-      exitCode,
-      await stdoutFuture,
-      await stderrFuture,
-    );
+  /// Kills a running dependency install and everything it spawned.
+  Future<void> _killInstall() async {
+    final install = _installProcess;
+    if (install == null) {
+      return;
+    }
+    await _killProcessTree(install.pid);
+    install.kill(ProcessSignal.sigkill);
   }
 
   /// Kills every descendant of [pid]; `npm` children outlive the shell.
