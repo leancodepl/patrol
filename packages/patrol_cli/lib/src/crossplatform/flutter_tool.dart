@@ -300,7 +300,7 @@ class FlutterTool {
               );
 
               if (openBrowser) {
-                unawaited(_openDevtoolsPage(_devtoolsUrl));
+                unawaited(openDevtoolsPage(_devtoolsUrl));
               }
             }
 
@@ -429,13 +429,20 @@ class FlutterTool {
   }
 
   void revertInteractiveMode(StdinModes stdinModes) {
-    io.stdin.lineMode = stdinModes.lineMode;
-    io.stdin.echoMode = stdinModes.echoMode;
+    // stdin may already be closed (e.g. after Ctrl+C).
+    try {
+      io.stdin.lineMode = stdinModes.lineMode;
+    } on io.StdinException catch (err) {
+      _logger.detail('Failed to revert interactive shell mode: $err');
+      return;
+    }
+    _restoreEchoMode(stdinModes.echoMode);
 
     _logger.detail('Interactive shell mode disabled.');
   }
 
-  Future<void> _openDevtoolsPage(String url) async {
+  /// Opens [url] in the system browser.
+  Future<void> openDevtoolsPage(String url) async {
     io.Process? process;
     switch (_platform.operatingSystem) {
       case NativePlatform.macOS:
@@ -450,7 +457,7 @@ class FlutterTool {
   }
 }
 
-@visibleForTesting
+/// Rewrites the DevTools URL Flutter prints into the Patrol extension page.
 String getDevtoolsUrl(String line) {
   final rawUrl = getObservationUrl(line);
   final uri = Uri.parse(rawUrl);

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:file/file.dart';
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/logger.dart';
@@ -9,6 +10,9 @@ import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:patrol_cli/src/test_bundler.dart';
+import 'package:patrol_cli/src/web/web_artifact.dart';
+import 'package:patrol_cli/src/web/web_static_server.dart';
+import 'package:patrol_cli/src/web/web_test_backend.dart';
 
 /// Runs tests that were already built, without rebuilding anything.
 ///
@@ -22,6 +26,10 @@ import 'package:patrol_cli/src/test_bundler.dart';
 /// Requires build-time test discovery: the tests are selected natively, which is
 /// only possible because `patrol build --emit-test-manifest` generated a real
 /// native test per Dart test.
+///
+/// On web there is no device and no native runner: `--input` points at a
+/// directory from `patrol build web`, which this command serves and drives with
+/// the Playwright runner shipped inside it. Nothing there needs Flutter.
 class TestWithoutBuildingCommand extends PatrolCommand {
   TestWithoutBuildingCommand({
     required this._deviceFinder,
@@ -29,6 +37,8 @@ class TestWithoutBuildingCommand extends PatrolCommand {
     required this._pubspecReader,
     required this._androidTestBackend,
     required this._iosTestBackend,
+    required this._webTestBackend,
+    required this._fs,
     required this._analytics,
     required this._logger,
   }) {
@@ -44,7 +54,22 @@ class TestWithoutBuildingCommand extends PatrolCommand {
     usesClearTestSteps();
 
     usesAndroidOptions();
+    usesWeb();
     argParser
+      ..addOption(
+        'input',
+        help:
+            'Directory produced by `patrol build web`. Runs that artifact '
+            'instead of anything installed on a device.',
+        valueHelp: 'build/patrol-web',
+      )
+      ..addOption(
+        'base-url',
+        help:
+            'Serve the app yourself and point Patrol at it, instead of letting '
+            '`--input` serve it. Requires --input for the runner.',
+        valueHelp: 'http://localhost:8080',
+      )
       ..addOption(
         'bundle-id',
         help: 'Bundle identifier of the iOS app under test.',
@@ -64,6 +89,8 @@ class TestWithoutBuildingCommand extends PatrolCommand {
   final PubspecReader _pubspecReader;
   final AndroidTestBackend _androidTestBackend;
   final IOSTestBackend _iosTestBackend;
+  final WebTestBackend _webTestBackend;
+  final FileSystem _fs;
 
   final Analytics _analytics;
   final Logger _logger;
@@ -77,12 +104,21 @@ class TestWithoutBuildingCommand extends PatrolCommand {
 
   @override
   Future<int> run() async {
-    unawaited(
-      _analytics.sendCommand(
-        FlutterVersion.fromCLI(flutterCommand),
-        'test_without_building',
-      ),
-    );
+    final flutterVersion = FlutterVersion.tryFromCLI(flutterCommand);
+    if (flutterVersion != null) {
+      unawaited(
+        _analytics.sendCommand(flutterVersion, 'test_without_building'),
+      );
+    }
+
+    final input = stringArg('input');
+    if (input != null) {
+      return _runPrebuiltWeb(input);
+    }
+    if (stringArg('base-url') != null) {
+      _logger.err('--base-url only applies to a web artifact. Pass --input.');
+      return 1;
+    }
 
     final config = _pubspecReader.read();
 
@@ -177,6 +213,120 @@ class TestWithoutBuildingCommand extends PatrolCommand {
         ..detail('$st')
         ..err(defaultFailureMessage);
       return 1;
+    }
+
+    return 0;
+  }
+
+  /// Runs a directory built by `patrol build web`.
+  Future<int> _runPrebuiltWeb(String input) async {
+    if (stringArg('flavor') != null) {
+      _logger.err('Flavors are not supported on web. Remove --flavor.');
+      return 1;
+    }
+    if (stringsArg('only').isNotEmpty) {
+      _logger.err(
+        '--only is not supported with --input yet; the whole artifact would '
+        'run. Remove --only.',
+      );
+      return 1;
+    }
+    if (stringsArg('device').isNotEmpty) {
+      _logger.err(
+        '--device does not apply to --input: a web artifact runs in '
+        "Playwright's own browser. Remove --device.",
+      );
+      return 1;
+    }
+
+    final externalBaseUrl = stringArg('base-url');
+    final artifact = WebArtifact.at(input, fs: _fs);
+    final problem = artifact.problem(servesApp: externalBaseUrl == null);
+    if (problem != null) {
+      _logger
+        ..err(problem)
+        ..err('Build one with: patrol build web --output $input');
+      return 1;
+    }
+
+    final options = WebAppOptions(
+      // Nothing is compiled here; these only satisfy the shared options type.
+      flutter: FlutterAppOptions(
+        command: flutterCommand,
+        target: '',
+        flavor: null,
+        buildMode: buildMode,
+        dartDefines: const {},
+        dartDefineFromFilePaths: const [],
+        buildName: null,
+        buildNumber: null,
+      ),
+      resultsDir: stringArg('web-results-dir'),
+      reportDir: stringArg('web-report-dir'),
+      retries: intArg('web-retries'),
+      video: stringArg('web-video'),
+      timeout: intArg('web-timeout'),
+      workers: intArg('web-workers'),
+      reporter: stringArg('web-reporter'),
+      locale: stringArg('web-locale'),
+      timezone: stringArg('web-timezone'),
+      colorScheme: stringArg('web-color-scheme'),
+      geolocation: stringArg('web-geolocation'),
+      permissions: stringArg('web-permissions'),
+      userAgent: stringArg('web-user-agent'),
+      viewport: stringArg('web-viewport'),
+      globalTimeout: intArg('web-global-timeout'),
+      shard: stringArg('web-shard'),
+      headless: optionalBoolArg('web-headless'),
+      webPort: intArg('web-port'),
+      browserArgs: stringArg('web-browser-args'),
+      channel: stringArg('web-channel'),
+      executablePath: stringArg('web-executable-path'),
+      slowMo: intArg('web-slow-mo'),
+      chromiumSandbox: optionalBoolArg('web-chromium-sandbox'),
+      downloadsPath: stringArg('web-downloads-path'),
+      ignoreDefaultArgs: stringArg('web-ignore-default-args'),
+      proxy: stringArg('web-proxy'),
+      browserTimeout: intArg('web-browser-timeout'),
+      tracesDir: stringArg('web-traces-dir'),
+      bypassCsp: optionalBoolArg('web-bypass-csp'),
+      ignoreHttpsErrors: optionalBoolArg('web-ignore-https-errors'),
+      offline: optionalBoolArg('web-offline'),
+      httpCredentials: stringArg('web-http-credentials'),
+      extraHttpHeaders: stringArg('web-extra-http-headers'),
+      screenshot: stringArg('web-screenshot'),
+      trace: stringArg('web-trace'),
+      storageState: stringArg('web-storage-state'),
+      acceptDownloads: optionalBoolArg('web-accept-downloads'),
+    );
+
+    WebStaticServer? server;
+    try {
+      if (externalBaseUrl == null) {
+        server = await WebStaticServer.serve(
+          artifact.appDir,
+          port: options.webPort,
+          logger: _logger,
+        );
+        _logger.info('Serving ${artifact.appDir.path} at ${server.baseUrl}');
+      }
+
+      await _webTestBackend.executePrebuilt(
+        options,
+        baseUrl: externalBaseUrl ?? server!.baseUrl,
+        runnerPath: artifact.runnerDir.absolute.path,
+        showFlutterLogs: boolArg('show-flutter-logs'),
+        hideTestSteps: boolArg('hide-test-steps'),
+        clearTestSteps: boolArg('clear-test-steps'),
+      );
+    } catch (err, st) {
+      _logger
+        ..err('$err')
+        ..detail('$st')
+        ..err(defaultFailureMessage);
+      return 1;
+    } finally {
+      await server?.close();
     }
 
     return 0;
