@@ -271,6 +271,9 @@ class WebTestBackend {
         clearTestSteps: clearTestSteps,
         onLogEntry: onLogEntry,
       );
+      if (_quitting) {
+        return;
+      }
 
       _markAttached();
 
