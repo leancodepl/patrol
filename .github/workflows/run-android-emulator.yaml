@@ -243,10 +243,11 @@ jobs:
     name: Notify on Slack
     uses: ./.github/workflows/send-slack-message.yaml
     needs: [plan, run_tests]
-    if: always() && needs.run_tests.result != 'skipped'
+    # A failed scheduled build skips the tests but must still alert.
+    if: always() && (needs.run_tests.result != 'skipped' || github.event.workflow_run.event == 'schedule')
     with:
       TESTS_EXIT_CODE: ${{ needs.run_tests.outputs.TESTS_EXIT_CODE }}
-      SLACK_MESSAGE_TITLE: ${{ needs.run_tests.outputs.SLACK_MESSAGE_TITLE }}
-      URL_TO_DETAILS: ${{ needs.run_tests.outputs.URL_TO_DETAILS }}
-      TRIGGER_EVENT: ${{ needs.plan.outputs.event }}
+      SLACK_MESSAGE_TITLE: ${{ needs.run_tests.outputs.SLACK_MESSAGE_TITLE || format('{0} on emulator.wtf', github.event.workflow_run.name) }}
+      URL_TO_DETAILS: ${{ needs.run_tests.outputs.URL_TO_DETAILS || github.event.workflow_run.html_url }}
+      TRIGGER_EVENT: ${{ needs.plan.outputs.event || github.event.workflow_run.event }}
     secrets: inherit
