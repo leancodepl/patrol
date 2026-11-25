@@ -179,6 +179,12 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
   /// @nodoc
   late PatrolAppService patrolAppService;
 
+  /// @nodoc
+  List<String> get entrypointArgs => _entrypointArgs;
+  set entrypointArgs(List<String> value) =>
+      _entrypointArgs = List.unmodifiable(value);
+  List<String> _entrypointArgs = const [];
+
   /// The singleton instance of this object.
   ///
   /// Provides access to the features exposed by this class. The binding must be

@@ -1,3 +1,9 @@
+## Unreleased
+
+- Add `$.entrypointArgs` with the Dart entrypoint arguments the native side of the app passes to
+  the test bundle (`dartEntrypointArgs` on Android, `entrypointArgs` on iOS and macOS). Needs a
+  `patrol_cli` release that includes this change. (#3366)
+
 ## 5.0.0-dev.1
 
 - **Breaking:** Require Flutter 3.44 and Dart 3.12 or newer. See `migration5.md`. (#3377)

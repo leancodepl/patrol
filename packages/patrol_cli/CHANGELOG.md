@@ -1,3 +1,9 @@
+## Unreleased
+
+- Fix the generated test bundle dropping the Dart entrypoint arguments passed by the native side of
+  the app: `main` now takes them and passes them to tests as `$.entrypointArgs`. Needs a `patrol`
+  release that includes this change. (#3366)
+
 ## 5.0.0-dev.1
 
 - **Breaking:** Bump min Flutter SDK to 3.44.0 and Dart SDK to 3.12.0. Older Flutter versions keep

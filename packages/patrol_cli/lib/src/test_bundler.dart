@@ -54,7 +54,7 @@ import 'package:test_api/src/backend/invoker.dart';
 ${generateImports(testDirectory, testFilePaths, web: web)}
 // END: GENERATED TEST IMPORTS
 
-Future<void> main() async {
+Future<void> main([List<String> args = const []]) async {
   // This is the entrypoint of the bundled Dart test.
   //
   // Its responsibilities are:
@@ -62,6 +62,8 @@ Future<void> main() async {
   //    explores the hierarchy of groups and tests.
   //  * Hosting a PatrolAppService, which the native side of Patrol uses to get
   //    the Dart tests, and to request execution of a specific Dart test.
+  //  * Passing the Dart entrypoint arguments ([args]) from the native side of
+  //    the app to the tests, which read them with `\$.entrypointArgs`.
   //
   // When running on Android, the Android Test Orchestrator, before running the
   // tests, makes an initial run to gather the tests that it will later run. The
@@ -100,7 +102,8 @@ Future<void> main() async {
       config: PlatformAutomatorConfig.defaultConfig(),
     );
     await platformAutomator.initialize();
-    binding = PatrolBinding.ensureInitialized(platformAutomator);
+    binding = PatrolBinding.ensureInitialized(platformAutomator)
+      ..entrypointArgs = args;
   }
 
   // A special test to explore the hierarchy of groups and tests. This is a hack
@@ -232,13 +235,14 @@ import 'package:patrol/src/platform/mobile/patrol_runtime_ports.dart';
 ${generateImports(testDirectory, [testFilePath])}
 // END: GENERATED TEST IMPORTS
 
-Future<void> main() async {
+Future<void> main([List<String> args = const []]) async {
   final platformAutomator = PlatformAutomator(
     config: PlatformAutomatorConfig.defaultConfig(),
   );
   await platformAutomator.initialize();
 
   PatrolBinding.ensureInitialized(platformAutomator)
+    ..entrypointArgs = args
     ..workaroundDebugDefaultTargetPlatformOverride =
         debugDefaultTargetPlatformOverride;
 
@@ -429,7 +433,22 @@ ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e
 
 import '$relativeTargetPath' as bundle;
 
-Future<void> main() => bundle.main();
+Future<void> main([List<String> args = const []]) async {
+  // A bundle kept with --no-generate-bundle may have a main() without args.
+  final Function entrypoint = bundle.main;
+  if (entrypoint is! dynamic Function(List<String>) && args.isNotEmpty) {
+    print(
+      'Warning: main() in $relativeTargetPath takes no arguments, so the '
+      'entrypoint arguments are dropped. Regenerate the test bundle or add a '
+      'List<String> args parameter to read them with \\\$.entrypointArgs.',
+    );
+  }
+  await switch (entrypoint) {
+    final dynamic Function(List<String>) main => main(args),
+    final dynamic Function() main => main(),
+    _ => throw StateError('Unsupported main() signature in the test bundle'),
+  };
+}
 ''');
   }
 }
