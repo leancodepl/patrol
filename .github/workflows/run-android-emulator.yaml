@@ -6,6 +6,12 @@ on:
   workflow_run:
     workflows: ["test android emulator", "test android emulator webview"]
     types: [completed]
+  workflow_dispatch:
+    inputs:
+      build_run_id:
+        description: ID of a successful run of an emulator build workflow
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -13,7 +19,7 @@ permissions:
   statuses: write
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.workflow_run.name }}-${{ github.event.workflow_run.head_repository.full_name }}-${{ github.event.workflow_run.head_branch }}
+  group: ${{ github.workflow }}-${{ inputs.build_run_id || format('{0}-{1}-{2}', github.event.workflow_run.name, github.event.workflow_run.head_repository.full_name, github.event.workflow_run.head_branch) }}
   cancel-in-progress: true
 
 env:
@@ -23,17 +29,45 @@ env:
 jobs:
   plan:
     name: Plan
-    if: github.event.workflow_run.conclusion == 'success'
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
       suite: ${{ steps.plan.outputs.suite }}
       matrix: ${{ steps.plan.outputs.matrix }}
+      build_run_id: ${{ steps.build.outputs.run_id }}
+      workflow_name: ${{ steps.build.outputs.name }}
+      head_sha: ${{ steps.build.outputs.head_sha }}
+      event: ${{ steps.build.outputs.event }}
     steps:
+      - name: Find the build run
+        id: build
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INPUT_RUN_ID: ${{ inputs.build_run_id }}
+          EVENT_RUN_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          run_id="${INPUT_RUN_ID:-$EVENT_RUN_ID}"
+          if ! [[ "$run_id" =~ ^[0-9]+$ ]]; then
+            echo "::error::Invalid build run ID: $run_id"
+            exit 1
+          fi
+          run="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id")"
+          if [ "$(jq -r .conclusion <<< "$run")" != success ]; then
+            echo "::error::Build run $run_id did not succeed"
+            exit 1
+          fi
+          {
+            echo "run_id=$run_id"
+            echo "name=$(jq -r .name <<< "$run")"
+            echo "head_sha=$(jq -r .head_sha <<< "$run")"
+            echo "event=$(jq -r .event <<< "$run")"
+          } >> "$GITHUB_OUTPUT"
+
       - name: Pick the suite for the workflow that built the APKs
         id: plan
         env:
-          WORKFLOW_NAME: ${{ github.event.workflow_run.name }}
+          WORKFLOW_NAME: ${{ steps.build.outputs.name }}
         run: |
           case "$WORKFLOW_NAME" in
             "test android emulator")
@@ -56,7 +90,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     outputs:
-      SLACK_MESSAGE_TITLE: ${{ github.event.workflow_run.name }} on emulator.wtf
+      SLACK_MESSAGE_TITLE: ${{ needs.plan.outputs.workflow_name }} on emulator.wtf
       TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
       URL_TO_DETAILS: ${{ steps.tests_step.outputs.URL_TO_DETAILS }}
 
@@ -66,7 +100,7 @@ jobs:
 
     env:
       GH_TOKEN: ${{ github.token }}
-      HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+      HEAD_SHA: ${{ needs.plan.outputs.head_sha }}
       STATUS_CONTEXT: e2e android / ${{ matrix.label }}
       RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
@@ -90,7 +124,7 @@ jobs:
         with:
           name: e2e-apks
           path: ${{ runner.temp }}/apks
-          run-id: ${{ github.event.workflow_run.id }}
+          run-id: ${{ needs.plan.outputs.build_run_id }}
           github-token: ${{ github.token }}
 
       - name: Check the downloaded files
@@ -208,11 +242,11 @@ jobs:
   call_send_slack_message:
     name: Notify on Slack
     uses: ./.github/workflows/send-slack-message.yaml
-    needs: run_tests
+    needs: [plan, run_tests]
     if: always() && needs.run_tests.result != 'skipped'
     with:
       TESTS_EXIT_CODE: ${{ needs.run_tests.outputs.TESTS_EXIT_CODE }}
       SLACK_MESSAGE_TITLE: ${{ needs.run_tests.outputs.SLACK_MESSAGE_TITLE }}
       URL_TO_DETAILS: ${{ needs.run_tests.outputs.URL_TO_DETAILS }}
-      TRIGGER_EVENT: ${{ github.event.workflow_run.event }}
+      TRIGGER_EVENT: ${{ needs.plan.outputs.event }}
     secrets: inherit

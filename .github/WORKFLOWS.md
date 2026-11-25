@@ -67,7 +67,7 @@ The emulator tests are split so that PR code, including PRs from forks, never ru
 2. [run android emulator][run-android-emulator] starts on `workflow_run` when a build succeeds. It always runs from master, takes `emulatorwtf.yaml` from master, runs the APKs on emulator.wtf with the token, and never executes anything from the build.
 3. It reports each run as an `e2e android / API <n>` or `e2e android / webview` commit status on the PR's head commit, linking to its run. The run summary lists the failed tests, so contributors without emulator.wtf access can see them.
 
-On a fork PR, a maintainer reviews the changes and approves the workflows; nothing else is needed. The results come from an APK the PR built, so on fork PRs they are informative, and the scheduled runs on master stay the trusted signal.
+On a fork PR, a maintainer reviews the changes and approves the workflows; nothing else is needed. To run the tests again for a build, start [run android emulator][run-android-emulator] with `workflow_dispatch` and the build's run ID. The results come from an APK the PR built, so on fork PRs they are informative, and the scheduled runs on master stay the trusted signal.
 
 Because the builds run on `pull_request`, GitHub takes their definition from the PR merged into its base branch. A PR into `release/5.0` therefore builds with the Flutter version pinned on `release/5.0`. Changes to `run-android-emulator.yaml` or `emulatorwtf.yaml` take effect only once they are on master.
 
