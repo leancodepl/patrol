@@ -11,10 +11,12 @@ import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
 import 'package:patrol_cli/src/devices.dart';
+import 'package:patrol_cli/src/web/playwright_output.dart';
 import 'package:patrol_log/patrol_log_reader.dart';
 import 'package:process/process.dart';
 
 const _kDefaultWebServerTimeoutSeconds = 120;
+const _kPlaywrightOutputDrainTimeout = Duration(seconds: 5);
 
 class WebTestBackend {
   WebTestBackend({
@@ -469,9 +471,30 @@ class WebTestBackend {
         );
       }
 
+      // Playwright prints setup and config errors to stdout or stderr. Keep
+      // its last lines to show them if it fails without reporting any test.
+      final playwrightOutput = PlaywrightOutput();
+      final stdoutDone = Completer<void>();
+      final stderrDone = Completer<void>();
+
       final patrolLogReader =
           PatrolLogReader(
-              listenStdOut: playwrightProcess.listenStdOut,
+              listenStdOut: (onData, {onError, onDone, cancelOnError}) =>
+                  playwrightProcess.listenStdOut(
+                    (line) {
+                      playwrightOutput.addStdout(line);
+                      if (!line.contains('PATROL_LOG')) {
+                        _logger.detail('Playwright stdout: $line');
+                      }
+                      onData(line);
+                    },
+                    onError: onError,
+                    onDone: () {
+                      stdoutDone.complete();
+                      onDone?.call();
+                    },
+                    cancelOnError: cancelOnError,
+                  ),
               scope: scope,
               log: _logger.info,
               reportPath: testReportDir,
@@ -489,26 +512,61 @@ class WebTestBackend {
               .transform(const SystemEncoding().decoder)
               .transform(const LineSplitter())
               .listen((line) {
+                playwrightOutput.addStderr(line);
                 _logger.detail('Playwright stderr: $line');
-              })
+              }, onDone: stderrDone.complete)
             ..disposedBy(scope);
 
-      // Check if process exits unexpectedly
-      playwrightProcess.exitCode.then((exitCode) {
-        if (!completer.isCompleted) {
-          stderrSubscription.cancel();
-          patrolLogReader.stopTimer();
-          // TODO: Don't print the summary in develop
-          _logger.info(patrolLogReader.summary);
+      // Cancelled subscriptions never call onDone. When the run is
+      // interrupted, stop waiting for the output right away. Disposes run in
+      // LIFO order, so this runs before the subscriptions are cancelled.
+      scope.addDispose(() {
+        for (final done in [stdoutDone, stderrDone]) {
+          if (!done.isCompleted) {
+            done.complete();
+          }
+        }
+      });
 
-          if (patrolLogReader.failedTestsCount > 0) {
-            completer.completeError('Some tests failed.');
-          } else if (exitCode != 0) {
-            completer.completeError(
-              'Playwright process exited unexpectedly with code $exitCode',
-            );
-          } else {
-            completer.complete();
+      // Check if process exits unexpectedly
+      playwrightProcess.exitCode.then((exitCode) async {
+        try {
+          patrolLogReader.stopTimer();
+
+          // The exit code can arrive before the last lines of output. Wait for
+          // them, but not forever: a leftover child process may keep the pipes
+          // open.
+          await Future.wait([
+            stdoutDone.future,
+            stderrDone.future,
+          ]).timeout(_kPlaywrightOutputDrainTimeout, onTimeout: () => []);
+
+          if (!completer.isCompleted) {
+            await stderrSubscription.cancel();
+            // TODO: Don't print the summary in develop
+            _logger.info(patrolLogReader.summary);
+
+            if (patrolLogReader.failedTestsCount > 0) {
+              completer.completeError('Some tests failed.');
+            } else if (exitCode != 0) {
+              final output = playwrightOutput.lines;
+              // Skip it when the run was interrupted (e.g. Ctrl+C).
+              if (output.isNotEmpty && !scope.disposed) {
+                _logger.err(
+                  'Last lines of Playwright output:\n${output.join('\n')}',
+                );
+              }
+              completer.completeError(
+                'Playwright process exited unexpectedly with code $exitCode',
+              );
+            } else {
+              completer.complete();
+            }
+          }
+        } catch (err, st) {
+          // Don't leave `patrol test` waiting forever.
+          if (!completer.isCompleted) {
+            completer.completeError(err, st);
           }
         }
       }).ignore();
