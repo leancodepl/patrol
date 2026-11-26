@@ -4,7 +4,7 @@
   in the summary, e.g. an unsupported `--web-channel`, an error in global setup or an invalid
   `PATROL_WEB_*` value. Before, only `Playwright process exited unexpectedly with code 1` was
   printed, and the cause was hidden even with `--verbose` when Playwright printed it to stdout.
-  (#TBD)
+  (#3410)
 
 ## 4.10.0
 
