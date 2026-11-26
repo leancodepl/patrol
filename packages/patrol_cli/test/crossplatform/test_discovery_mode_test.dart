@@ -1,6 +1,7 @@
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/crossplatform/test_discovery_mode.dart';
+import 'package:patrol_cli/src/devices.dart';
 import 'package:test/test.dart';
 
 import '../src/mocks.dart';
@@ -13,11 +14,13 @@ void main() {
   });
 
   bool resolve({
+    TargetPlatform targetPlatform = TargetPlatform.android,
     bool? flag,
     bool? pubspecValue,
     String testDirectory = 'patrol_test',
     bool defaultValue = true,
   }) => resolveEmitTestManifest(
+    targetPlatform: targetPlatform,
     flag: flag,
     pubspecValue: pubspecValue,
     testDirectory: testDirectory,
@@ -42,6 +45,25 @@ void main() {
     test('the flag overrides pubspec', () {
       expect(resolve(flag: false, pubspecValue: true), isFalse);
       expect(resolve(flag: true, pubspecValue: false), isTrue);
+    });
+
+    test('is off without a warning or error on web and macOS', () {
+      for (final platform in [TargetPlatform.web, TargetPlatform.macOS]) {
+        expect(
+          resolve(
+            targetPlatform: platform,
+            testDirectory: 'integration_test',
+            pubspecValue: true,
+          ),
+          isFalse,
+        );
+        expect(resolve(targetPlatform: platform, flag: true), isFalse);
+      }
+      verifyNever(() => logger.warn(any()));
+    });
+
+    test('is on by default on iOS', () {
+      expect(resolve(targetPlatform: TargetPlatform.iOS), isTrue);
     });
 
     test('falls back to runtime discovery under integration_test/', () {

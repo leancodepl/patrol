@@ -413,6 +413,74 @@ void main() {
       });
     });
 
+    group('hasGeneratedTests', () {
+      File modeFile() =>
+          fs.file('build/ios_integ/patrol_test_discovery_mode')
+            ..createSync(recursive: true);
+      File inc() =>
+          fs.file('ios/RunnerUITests/PatrolGeneratedTests.inc')
+            ..createSync(recursive: true);
+
+      test('reads the mode stored with the build', () {
+        modeFile().writeAsStringSync('build-time');
+
+        expect(iosTestBackend.hasGeneratedTests, isTrue);
+      });
+
+      test('ignores a leftover .inc when the build used runtime discovery', () {
+        modeFile().writeAsStringSync('runtime');
+        inc().writeAsStringSync(
+          '@interface PatrolGeneratedTests_a : X\n@end\n',
+        );
+
+        expect(iosTestBackend.hasGeneratedTests, isFalse);
+      });
+
+      test('falls back to the .inc for a build without a stored mode', () {
+        inc().writeAsStringSync(
+          '@interface PatrolGeneratedTests_a : X\n@end\n',
+        );
+
+        expect(iosTestBackend.hasGeneratedTests, isTrue);
+      });
+
+      test('a new build drops the mode of the previous one', () async {
+        modeFile().writeAsStringSync('build-time');
+        fs.file('ios/RunnerUITests/RunnerUITests.m')
+          ..createSync(recursive: true)
+          ..writeAsStringSync(legacyRunnerLine);
+
+        await expectLater(
+          iosTestBackend.build(
+            IOSAppOptions(
+              flutter: const FlutterAppOptions(
+                command: FlutterCommand('flutter'),
+                target: 'patrol_test/test_bundle.dart',
+                flavor: null,
+                buildMode: BuildMode.release,
+                dartDefines: {},
+                dartDefineFromFilePaths: [],
+                buildName: null,
+                buildNumber: null,
+              ),
+              scheme: 'Runner',
+              configuration: 'Release',
+              simulator: false,
+              osVersion: 'latest',
+              appServerPort: 8080,
+              testServerPort: 8081,
+            ),
+          ),
+          throwsA(isNot(isA<ToolExit>())),
+        );
+
+        expect(
+          fs.file('build/ios_integ/patrol_test_discovery_mode').existsSync(),
+          isFalse,
+        );
+      });
+    });
+
     group('addGeneratedTestsInclude', () {
       test('adds the guarded include right after the macro', () {
         expect(

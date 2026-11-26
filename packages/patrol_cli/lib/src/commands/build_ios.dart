@@ -10,6 +10,7 @@ import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart'
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/crossplatform/test_discovery_mode.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
+import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
@@ -194,6 +195,7 @@ class BuildIOSCommand extends PatrolCommand {
       fullIsolation: boolArg('full-isolation'),
       clearIOSPermissions: boolArg('clear-permissions'),
       emitTestManifest: resolveEmitTestManifest(
+        targetPlatform: TargetPlatform.iOS,
         flag: optionalBoolArg('emit-test-manifest'),
         pubspecValue: config.emitTestManifest,
         testDirectory: config.testDirectory,

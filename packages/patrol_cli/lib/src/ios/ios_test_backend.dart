@@ -102,6 +102,9 @@ class IOSTestBackend {
 
       // Rewritten on every build, so a stale .inc never runs old tests.
       _writeRuntimeDiscoveryInc();
+      if (_discoveryModeFile.existsSync()) {
+        _discoveryModeFile.deleteSync();
+      }
       _verifyRunnerSetup(emitTestManifest: options.emitTestManifest);
 
       if (options.emitTestManifest) {
@@ -159,6 +162,11 @@ class IOSTestBackend {
       exitCode = await process.exitCode;
       if (exitCode == 0) {
         task.complete('Completed building $subject');
+        _discoveryModeFile
+          ..createSync(recursive: true)
+          ..writeAsStringSync(
+            options.emitTestManifest ? _buildTimeMode : _runtimeMode,
+          );
       } else if (exitCode == _xcodebuildInterrupted) {
         const cause = 'xcodebuild was interrupted';
         task.fail('Failed to execute tests of $subject ($cause)');
@@ -291,7 +299,7 @@ class IOSTestBackend {
     if (onlyTests.isEmpty) {
       return const [];
     }
-    final manifest = _hasGeneratedTests
+    final manifest = hasGeneratedTests
         ? TestManifest.loadFromBuild(_rootDirectory)
         : null;
     if (manifest == null) {
@@ -328,7 +336,7 @@ class IOSTestBackend {
   /// runtime discovery (whose tests are all in the base class) and when the
   /// manifest is missing, in which case the whole target runs.
   List<String> _generatedClassSelectors() {
-    if (!_hasGeneratedTests) {
+    if (!hasGeneratedTests) {
       return const [];
     }
     final manifest = TestManifest.loadFromBuild(_rootDirectory);
@@ -346,9 +354,25 @@ class IOSTestBackend {
       .childDirectory('RunnerUITests')
       .childFile(_generatedIncName);
 
+  static const _buildTimeMode = 'build-time';
+  static const _runtimeMode = 'runtime';
+
+  /// The discovery mode of the last build, stored with its artifacts, so a run
+  /// on another machine that only gets `build/` still knows it.
+  File get _discoveryModeFile => _rootDirectory
+      .childDirectory('build')
+      .childDirectory('ios_integ')
+      .childFile('patrol_test_discovery_mode');
+
   /// Whether the last build generated test classes, i.e. ran with build-time
   /// discovery.
-  bool get _hasGeneratedTests {
+  @visibleForTesting
+  bool get hasGeneratedTests {
+    final mode = _discoveryModeFile;
+    if (mode.existsSync()) {
+      return mode.readAsStringSync().trim() == _buildTimeMode;
+    }
+    // Built by a patrol_cli that didn't record the mode.
     final inc = _generatedIncFile;
     return inc.existsSync() && inc.readAsStringSync().contains('@interface ');
   }
@@ -510,7 +534,7 @@ class IOSTestBackend {
                 ),
                 resultBundlePath: reportPath,
                 onlyTesting: onlyTesting,
-                staticRunner: !interruptible && _hasGeneratedTests,
+                staticRunner: !interruptible && hasGeneratedTests,
               ),
               runInShell: true,
               environment: {

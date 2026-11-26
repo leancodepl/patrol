@@ -1,7 +1,9 @@
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
+import 'package:patrol_cli/src/devices.dart';
 
-/// Decides whether a build uses build-time test discovery: the
+/// Decides whether a build for [targetPlatform] uses build-time test discovery:
+/// only Android and iOS have it, so any other platform gets `false`. Then the
 /// `--[no-]emit-test-manifest` [flag] wins, then `patrol.emit_test_manifest`
 /// from pubspec.yaml ([pubspecValue]), then [defaultValue].
 ///
@@ -9,12 +11,18 @@ import 'package:patrol_cli/src/base/logger.dart';
 /// `flutter test` runs that directory on a device. There the default falls back
 /// to runtime discovery with a warning, and an explicit opt-in fails.
 bool resolveEmitTestManifest({
+  required TargetPlatform targetPlatform,
   required bool? flag,
   required bool? pubspecValue,
   required String testDirectory,
   required Logger logger,
   bool defaultValue = true,
 }) {
+  if (targetPlatform != TargetPlatform.android &&
+      targetPlatform != TargetPlatform.iOS) {
+    return false;
+  }
+
   final explicit = flag ?? pubspecValue;
   if (!isUnderIntegrationTest(testDirectory)) {
     return explicit ?? defaultValue;

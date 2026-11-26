@@ -176,6 +176,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     final isWeb = device.targetPlatform == TargetPlatform.web;
 
     final emitTestManifest = resolveEmitTestManifest(
+      targetPlatform: device.targetPlatform,
       flag: optionalBoolArg('emit-test-manifest'),
       pubspecValue: config.emitTestManifest,
       testDirectory: config.testDirectory,

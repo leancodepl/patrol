@@ -320,6 +320,7 @@ class DevelopService {
     // A hot-restart session runs through runtime discovery, so develop only
     // generates native tests when asked to. They then cover just its target.
     final emitTestManifest = resolveEmitTestManifest(
+      targetPlatform: device.targetPlatform,
       flag: options.emitTestManifest,
       pubspecValue: config.emitTestManifest,
       testDirectory: config.testDirectory,

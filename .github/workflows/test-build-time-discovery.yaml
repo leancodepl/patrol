@@ -98,7 +98,9 @@ jobs:
         run: |
           generated_dir=android/app/src/androidTest/java/pl/leancode/patrol/e2e_app
           ls "$generated_dir"
-          ! ls "$generated_dir"/PatrolGeneratedTests*.java 2>/dev/null
+          if ls "$generated_dir"/PatrolGeneratedTests*.java 2>/dev/null; then
+            echo "::error::Runtime discovery left generated classes behind"; exit 1
+          fi
 
       - name: Generate the classes again
         working-directory: dev/e2e_app
@@ -116,7 +118,9 @@ jobs:
           test -f "$generated_dir/PatrolGeneratedTests_internal_group_test.java"
           # The marker the host test class looks for, holding no tests of its own.
           test -f "$generated_dir/PatrolGeneratedTests.java"
-          ! grep -q '@Test' "$generated_dir/PatrolGeneratedTests.java"
+          if grep -q '@Test' "$generated_dir/PatrolGeneratedTests.java"; then
+            echo "::error::The marker class must hold no tests"; exit 1
+          fi
 
           # The file is in the class name, so the method carries only the test.
           grep -q 'public void test_top_level_group_in_file_alpha_first()' \
@@ -221,10 +225,14 @@ jobs:
 
       - name: Verify runtime discovery ran the tests
         run: |
-          ! grep -q '@interface' ios/RunnerUITests/PatrolGeneratedTests.inc
+          if grep -q '@interface' ios/RunnerUITests/PatrolGeneratedTests.inc; then
+            echo "::error::Runtime discovery left generated classes behind"; exit 1
+          fi
           xcresult="$(ls -td build/*.xcresult | head -1)"
           xcrun xcresulttool get test-results tests --path "$xcresult" --compact > tests.json
           cat tests.json
-          # Runtime discovery reports every test under the runner class.
-          grep -q '"RunnerUITests"' tests.json
-          ! grep -q '"PatrolGeneratedTests_at_finder_test"' tests.json
+          if grep -q 'PatrolGeneratedTests_' tests.json; then
+            echo "::error::Generated test classes ran with runtime discovery"; exit 1
+          fi
+          # Runtime discovery names each test after its Dart name.
+          grep -q 'at_finder_test' tests.json

@@ -23,6 +23,7 @@
   static PatrolServer *_patrolServer = nil;                                                                         \
   static ObjCPatrolAppServiceClient *_patrolAppServiceClient = nil;                                                 \
   static int _patrolGeneratedTestIndex = 0;                                                                         \
+  static NSError *_patrolServerStartError = nil;                                                                    \
                                                                                                                     \
   +(NSArray<NSString *> *)selectedTestNames {                                                                       \
     return _selectedTestNames.array;                                                                                \
@@ -75,7 +76,7 @@
     [server startAndReturnError:&err];                                                                              \
     if (err != nil) {                                                                                               \
       NSLog(@"patrolServer.start(): failed, err: %@", err);                                                         \
-      XCTFail(@"patrolServer.start() failed: %@", err);                                                             \
+      _patrolServerStartError = err;                                                                                \
       return NO;                                                                                                    \
     }                                                                                                               \
     _patrolServer = server;                                                                                         \
@@ -243,6 +244,7 @@
       IMP implementation = imp_implementationWithBlock(^(id _self) {                                                \
         NSLog(@"Patrol develop session: starting native automation server");                                        \
         if (![__test_class patrolStartServerIfNeeded]) {                                                            \
+          XCTFail(@"patrolServer.start() failed: %@", _patrolServerStartError);                                     \
           return;                                                                                                   \
         }                                                                                                           \
         [__test_class patrolAllowLocalNetwork];                                                                     \
@@ -277,6 +279,7 @@
                                                                                                                     \
     /* Runtime discovery: launch the app once and ask it for its Dart tests. */                                     \
     if (![self patrolStartServerIfNeeded]) {                                                                        \
+      XCTFail(@"patrolServer.start() failed: %@", _patrolServerStartError);                                         \
       return @[];                                                                                                   \
     }                                                                                                               \
     PatrolServer *server = _patrolServer;                                                                           \
@@ -422,6 +425,7 @@
   -(void)patrolExecuteDartTest : (NSString *)dartTestName skip : (BOOL)skip {                                       \
     NSLog(@"RunnerUITests running Dart test: %@", dartTestName);                                                    \
     if (![__test_class patrolStartServerIfNeeded]) {                                                                \
+      XCTFail(@"patrolServer.start() failed: %@", _patrolServerStartError);                                         \
       return;                                                                                                       \
     }                                                                                                               \
     if (_patrolGeneratedTestIndex == 0) {                                                                           \
