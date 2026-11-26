@@ -195,53 +195,54 @@ class IOSTestBackend {
     });
   }
 
-  /// Makes sure `RunnerUITests.m` compiles in the generated tests when
-  /// build-time discovery is on. A runner that has the
-  /// `PATROL_INTEGRATION_TEST_IOS_RUNNER` macro but not the `#include` (every
-  /// project set up before Patrol 5.0) gets the include added once; the include
-  /// is harmless with runtime discovery, so the file works in both modes after.
-  void _verifyRunnerSetup({required bool emitTestManifest}) {
+  /// Why this project can't use build-time discovery on iOS, or null when it
+  /// can: `RunnerUITests.m` has to `#include` the generated tests. Patrol never
+  /// edits the file; the caller warns or fails with the lines to add.
+  String? discoverySetupProblem() {
     final runner = _runnerFile;
     // A missing target is reported by xcodebuild.
+    if (!runner.existsSync() ||
+        includesGeneratedTests(runner.readAsStringSync())) {
+      return null;
+    }
+    return "${runner.path} doesn't include the generated tests. Add these lines "
+        'right after PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerUITests):\n'
+        '\n'
+        '${_indented(_generatedIncInclude)}\n'
+        '\n'
+        'See $_discoveryDocsUrl';
+  }
+
+  /// Stops a build that would fail to compile or silently skip the generated
+  /// tests.
+  void _verifyRunnerSetup({required bool emitTestManifest}) {
+    final runner = _runnerFile;
     if (!runner.existsSync()) {
       return;
     }
 
-    final contents = runner.readAsStringSync();
-    if (contents.contains('PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN')) {
+    if (runner.readAsStringSync().contains(
+      'PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN',
+    )) {
       throwToolExit(
         '${runner.path} uses the PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN '
         'and _END macros, which were removed in Patrol 5.0. Replace them with:\n'
         '\n'
-        '${_runnerSnippet('RunnerUITests')}\n'
+        '${_indented('PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerUITests)\n$_generatedIncInclude')}\n'
         '\n'
         'See $_discoveryDocsUrl',
       );
     }
 
-    if (!emitTestManifest || includesGeneratedTests(contents)) {
-      return;
+    if (emitTestManifest) {
+      final problem = discoverySetupProblem();
+      if (problem != null) {
+        throwToolExit(
+          'Build-time test discovery is on, but $problem\n'
+          'Or pass --no-emit-test-manifest to use runtime discovery.',
+        );
+      }
     }
-
-    final migrated = addGeneratedTestsInclude(contents);
-    if (migrated == null) {
-      throwToolExit(
-        "Build-time test discovery is enabled, but ${runner.path} doesn't "
-        "#include the generated tests and Patrol couldn't add the include on "
-        'its own. Make the file end with:\n'
-        '\n'
-        '${_runnerSnippet('RunnerUITests')}\n'
-        '\n'
-        'or pass --no-emit-test-manifest to use runtime discovery. '
-        'See $_discoveryDocsUrl',
-      );
-    }
-
-    runner.writeAsStringSync(migrated);
-    _logger.info(
-      'Added #include "$_generatedIncName" to ${runner.path}, which build-time '
-      'test discovery needs. Commit this change.',
-    );
   }
 
   static const _generatedIncName = 'PatrolGeneratedTests.inc';
@@ -254,35 +255,15 @@ class IOSTestBackend {
       '#include "$_generatedIncName"\n'
       '#endif';
 
-  static String _runnerSnippet(String className) =>
-      '  PATROL_INTEGRATION_TEST_IOS_RUNNER($className)\n'
-      '${_generatedIncInclude.split('\n').map((l) => '  $l').join('\n')}';
+  static String _indented(String lines) =>
+      lines.split('\n').map((l) => '  $l').join('\n');
 
-  static final _runnerMacroLine = RegExp(
-    r'^[ \t]*PATROL_INTEGRATION_TEST_IOS_RUNNER(?:_STATIC_BASE)?\(\w+\)[ \t]*$',
-    multiLine: true,
-  );
-
-  /// Whether [runnerSource] already pulls in `PatrolGeneratedTests.inc`.
+  /// Whether [runnerSource] pulls in `PatrolGeneratedTests.inc`.
   @visibleForTesting
   static bool includesGeneratedTests(String runnerSource) => RegExp(
-    '^[ \\t]*#(?:include|import)[ \\t]+"$_generatedIncName"',
+    '^[ \\t]*#[ \\t]*(?:include|import)[ \\t]*[<"]$_generatedIncName[>"]',
     multiLine: true,
   ).hasMatch(runnerSource);
-
-  /// Returns [runnerSource] with the guarded `#include` of the generated tests
-  /// added right after the runner macro, or null when there is no single
-  /// runner macro line to anchor it to.
-  @visibleForTesting
-  static String? addGeneratedTestsInclude(String runnerSource) {
-    final matches = _runnerMacroLine.allMatches(runnerSource).toList();
-    if (matches.length != 1) {
-      return null;
-    }
-    final end = matches.single.end;
-    return '${runnerSource.substring(0, end)}\n$_generatedIncInclude'
-        '${runnerSource.substring(end)}';
-  }
 
   File get _runnerFile => _rootDirectory
       .childDirectory('ios')

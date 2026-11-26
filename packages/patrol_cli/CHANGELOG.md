@@ -50,8 +50,8 @@
     `patrol develop` keeps runtime discovery unless asked. See `migration5.md`.
   - Tests under `integration_test/` fall back to runtime discovery with a warning, and an explicit
     `--emit-test-manifest` there fails the build.
-  - On iOS, `patrol build` and `patrol test` add the `#include` of the generated tests to a
-    `RunnerUITests.m` that lacks it, and stop with the snippet to paste when they can't. The removed
+  - On iOS, a `RunnerUITests.m` without the `#include` of the generated tests keeps runtime
+    discovery with a warning that shows the lines to add (an explicit opt-in fails instead). The removed
     `PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN`/`_END` macros are reported with the
     replacement. Requires `patrol` 5.0.
 - Show why build-time discovery failed (the failing part of the host `flutter test` output) without

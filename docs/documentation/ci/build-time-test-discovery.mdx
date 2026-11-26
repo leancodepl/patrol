@@ -101,10 +101,10 @@ test file and `RunnerUITests` runs no tests of its own. With runtime discovery
 the file declares nothing and `RunnerUITests` registers the tests at runtime, as
 before.
 
-You don't have to make this change by hand: when the file has the runner macro
-but not the `#include`, `patrol build ios` and `patrol test` add it and tell you
-to commit the change. If the file is customized so that Patrol can't find the
-macro line, the build stops and shows the snippet above.
+Patrol never edits this file. When the `#include` is missing, `patrol build ios`
+and `patrol test` use runtime discovery and print a warning with the lines to
+add. If you turned build-time discovery on explicitly (`--emit-test-manifest` or
+`emit_test_manifest: true`), the build stops with the same lines instead.
 
 <Info>
   `RunnerUITests.m` files set up for the opt-in in Patrol 4.x, with
@@ -185,8 +185,9 @@ Upgrading a project that used runtime discovery:
    `Platform` or `defaultTargetPlatform` anywhere that decides whether a test is
    registered or skipped, and make sure no test file throws while it is loaded on
    your computer.
-3. Run `patrol test` or `patrol build ios` once and commit the `#include` it adds
-   to `RunnerUITests.m`.
+3. Add the `#include` [above](#ios-only-include-the-generated-tests-in-runneruitestsm)
+   to `RunnerUITests.m`. Until you do, iOS builds use runtime discovery and
+   print a warning.
 4. Add the generated files to `.gitignore`.
 5. Update anything that depends on native test names: generated tests are named
    `PatrolGeneratedTests_<file>/test_<name>` instead of the Dart test name under

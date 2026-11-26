@@ -69,8 +69,9 @@ whole suite runs as a single `testInvocations()` session.
 ### Enable build-time test discovery
 
 [Build-time test discovery](/documentation/ci/build-time-test-discovery) is on
-by default. Make sure `RunnerUITests.m` includes the generated tests (Patrol adds
-the `#include` on the first build) and that `emit_test_manifest` isn't set to
+by default. Make sure `RunnerUITests.m` includes the generated tests (see the
+setup on that page; without it iOS builds fall back to runtime discovery) and
+that `emit_test_manifest` isn't set to
 `false`.
 
 ### Build and upload

@@ -307,7 +307,7 @@ void main() {
 
       const legacyRunner =
           'PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerUITests)\n';
-      const migratedRunner =
+      const currentRunner =
           'PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerUITests)\n'
           '#if __has_include("PatrolGeneratedTests.inc")\n'
           '#include "PatrolGeneratedTests.inc"\n'
@@ -325,15 +325,36 @@ void main() {
           );
 
       test(
-        'adds the include to a pre-5.0 runner when discovery is on',
+        'builds with discovery when the runner includes the tests',
         () async {
-          writeRunner(static: false);
+          runner()
+            ..createSync(recursive: true)
+            ..writeAsStringSync(currentRunner);
 
           await buildPastSetup(emitTestManifest: true);
 
-          expect(runner().readAsStringSync(), migratedRunner);
+          expect(runner().readAsStringSync(), currentRunner);
         },
       );
+
+      test('stops when discovery is on and the include is missing', () async {
+        writeRunner(static: false);
+
+        await expectLater(
+          iosTestBackend.build(options(emitTestManifest: true)),
+          throwsA(
+            isA<ToolExit>().having(
+              (e) => e.message,
+              'message',
+              allOf(
+                contains('#include "PatrolGeneratedTests.inc"'),
+                contains('--no-emit-test-manifest'),
+              ),
+            ),
+          ),
+        );
+        expect(runner().readAsStringSync(), legacyRunner);
+      });
 
       test('leaves a pre-5.0 runner alone when discovery is off', () async {
         writeRunner(static: false);
@@ -394,22 +415,33 @@ void main() {
           },
         );
       }
+    });
 
-      test("explains a runner it can't migrate when discovery is on", () async {
-        runner()
-          ..createSync(recursive: true)
-          ..writeAsStringSync('@implementation RunnerUITests\n@end\n');
+    group('discoverySetupProblem', () {
+      File runner() =>
+          fs.file('ios/RunnerUITests/RunnerUITests.m')
+            ..createSync(recursive: true);
 
-        await expectLater(
-          iosTestBackend.build(options(emitTestManifest: true)),
-          throwsA(
-            isA<ToolExit>().having(
-              (e) => e.message,
-              'message',
-              contains('--no-emit-test-manifest'),
-            ),
-          ),
+      test('is null when the runner includes the generated tests', () {
+        runner().writeAsStringSync(
+          '$legacyRunnerLine\n#include "PatrolGeneratedTests.inc"\n',
         );
+
+        expect(iosTestBackend.discoverySetupProblem(), isNull);
+      });
+
+      test('is null without a runner', () {
+        expect(iosTestBackend.discoverySetupProblem(), isNull);
+      });
+
+      test('names the lines to add when the include is missing', () {
+        runner().writeAsStringSync('$legacyRunnerLine;\r\n');
+
+        expect(
+          iosTestBackend.discoverySetupProblem(),
+          contains('#if __has_include("PatrolGeneratedTests.inc")'),
+        );
+        expect(runner().readAsStringSync(), '$legacyRunnerLine;\r\n');
       });
     });
 
@@ -481,39 +513,6 @@ void main() {
       });
     });
 
-    group('addGeneratedTestsInclude', () {
-      test('adds the guarded include right after the macro', () {
-        expect(
-          IOSTestBackend.addGeneratedTestsInclude(
-            '@import patrol;\n\n$legacyRunnerLine\n// trailing\n',
-          ),
-          '@import patrol;\n\n$legacyRunnerLine\n'
-          '#if __has_include("PatrolGeneratedTests.inc")\n'
-          '#include "PatrolGeneratedTests.inc"\n'
-          '#endif\n'
-          '// trailing\n',
-        );
-      });
-
-      test('handles a file without a trailing newline', () {
-        final migrated = IOSTestBackend.addGeneratedTestsInclude(
-          legacyRunnerLine,
-        );
-        expect(migrated, endsWith('#endif'));
-        expect(IOSTestBackend.includesGeneratedTests(migrated!), isTrue);
-      });
-
-      test('returns null without a single runner macro line', () {
-        expect(IOSTestBackend.addGeneratedTestsInclude('@end\n'), isNull);
-        expect(
-          IOSTestBackend.addGeneratedTestsInclude(
-            '$legacyRunnerLine\n$legacyRunnerLine\n',
-          ),
-          isNull,
-        );
-      });
-    });
-
     group('includesGeneratedTests', () {
       test('finds #include and #import', () {
         expect(
@@ -525,6 +524,15 @@ void main() {
         expect(
           IOSTestBackend.includesGeneratedTests(
             '#import "PatrolGeneratedTests.inc"\n',
+          ),
+          isTrue,
+        );
+      });
+
+      test('finds an angle-bracket include', () {
+        expect(
+          IOSTestBackend.includesGeneratedTests(
+            '#include <PatrolGeneratedTests.inc>\n',
           ),
           isTrue,
         );

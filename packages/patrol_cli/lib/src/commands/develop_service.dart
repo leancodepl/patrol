@@ -326,6 +326,9 @@ class DevelopService {
       testDirectory: config.testDirectory,
       logger: _logger,
       defaultValue: false,
+      setupProblem: device.targetPlatform == TargetPlatform.iOS
+          ? _iosTestBackend.discoverySetupProblem()
+          : null,
     );
 
     final androidOpts = AndroidAppOptions(

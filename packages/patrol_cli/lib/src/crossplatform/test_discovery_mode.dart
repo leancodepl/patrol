@@ -7,9 +7,10 @@ import 'package:patrol_cli/src/devices.dart';
 /// `--[no-]emit-test-manifest` [flag] wins, then `patrol.emit_test_manifest`
 /// from pubspec.yaml ([pubspecValue]), then [defaultValue].
 ///
-/// Tests under `integration_test/` can't be discovered on the host, because
-/// `flutter test` runs that directory on a device. There the default falls back
-/// to runtime discovery with a warning, and an explicit opt-in fails.
+/// When the project isn't set up for it (tests under `integration_test/`, or
+/// [setupProblem], such as an iOS runner without the generated tests), the
+/// default falls back to runtime discovery with a warning, and an explicit
+/// opt-in fails. A default never breaks a build.
 bool resolveEmitTestManifest({
   required TargetPlatform targetPlatform,
   required bool? flag,
@@ -17,6 +18,7 @@ bool resolveEmitTestManifest({
   required String testDirectory,
   required Logger logger,
   bool defaultValue = true,
+  String? setupProblem,
 }) {
   if (targetPlatform != TargetPlatform.android &&
       targetPlatform != TargetPlatform.iOS) {
@@ -24,26 +26,32 @@ bool resolveEmitTestManifest({
   }
 
   final explicit = flag ?? pubspecValue;
-  if (!isUnderIntegrationTest(testDirectory)) {
-    return explicit ?? defaultValue;
+  final enabled = explicit ?? defaultValue;
+  if (!enabled) {
+    return false;
   }
 
-  if (explicit ?? false) {
+  final problem = isUnderIntegrationTest(testDirectory)
+      ? 'tests in "$testDirectory" can\'t be discovered at build time, because '
+            'Flutter runs integration_test/ on a device. Move them out of '
+            'integration_test/ (to patrol_test/, or set '
+            'patrol.test_directory).'
+      : setupProblem;
+  if (problem == null) {
+    return true;
+  }
+
+  if (explicit != null) {
     throwToolExit(
-      'Build-time test discovery needs the tests outside integration_test/ '
-      '(the test directory is "$testDirectory"). Move them to patrol_test/ '
-      '(or set patrol.test_directory), or pass --no-emit-test-manifest to use '
-      'runtime discovery.',
+      'Build-time test discovery is on, but $problem\n'
+      'Or pass --no-emit-test-manifest to use runtime discovery.',
     );
   }
-  if (explicit == null && defaultValue) {
-    logger.warn(
-      'Using runtime test discovery: tests in "$testDirectory" can\'t be '
-      'discovered at build time. Move them out of integration_test/ to use '
-      'build-time discovery, or set patrol.emit_test_manifest: false in '
-      'pubspec.yaml to hide this warning.',
-    );
-  }
+  logger.warn(
+    'Using runtime test discovery: $problem\n'
+    'Or set patrol.emit_test_manifest: false in pubspec.yaml to hide this '
+    'warning.',
+  );
   return false;
 }
 

@@ -19,6 +19,7 @@ void main() {
     bool? pubspecValue,
     String testDirectory = 'patrol_test',
     bool defaultValue = true,
+    String? setupProblem,
   }) => resolveEmitTestManifest(
     targetPlatform: targetPlatform,
     flag: flag,
@@ -26,6 +27,7 @@ void main() {
     testDirectory: testDirectory,
     logger: logger,
     defaultValue: defaultValue,
+    setupProblem: setupProblem,
   );
 
   group('resolveEmitTestManifest', () {
@@ -94,6 +96,32 @@ void main() {
         () => resolve(testDirectory: 'integration_test', pubspecValue: true),
         throwsA(isA<ToolExit>()),
       );
+    });
+  });
+
+  group('resolveEmitTestManifest with a setup problem', () {
+    const problem = "RunnerUITests.m doesn't include the generated tests.";
+
+    test('falls back to runtime discovery with the problem as a warning', () {
+      expect(resolve(setupProblem: problem), isFalse);
+      verify(() => logger.warn(any(that: contains(problem)))).called(1);
+    });
+
+    test('fails on an explicit opt-in', () {
+      expect(
+        () => resolve(setupProblem: problem, flag: true),
+        throwsA(isA<ToolExit>()),
+      );
+      expect(
+        () => resolve(setupProblem: problem, pubspecValue: true),
+        throwsA(isA<ToolExit>()),
+      );
+    });
+
+    test('stays quiet when discovery is off', () {
+      expect(resolve(setupProblem: problem, pubspecValue: false), isFalse);
+      expect(resolve(setupProblem: problem, defaultValue: false), isFalse);
+      verifyNever(() => logger.warn(any()));
     });
   });
 

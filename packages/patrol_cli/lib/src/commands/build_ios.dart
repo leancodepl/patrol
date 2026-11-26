@@ -200,6 +200,7 @@ class BuildIOSCommand extends PatrolCommand {
         pubspecValue: config.emitTestManifest,
         testDirectory: config.testDirectory,
         logger: _logger,
+        setupProblem: _iosTestBackend.discoverySetupProblem(),
       ),
     );
 

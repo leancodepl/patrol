@@ -143,10 +143,9 @@ What changes for you:
    A test file that throws while it loads (for example
    `throw UnsupportedError('Unsupported platform')` in `main()`) fails the
    build, and the error is shown.
-3. **iOS: commit the change to `RunnerUITests.m`.** The first `patrol test` or
-   `patrol build ios` adds the `#include` of the generated tests to
-   `ios/RunnerUITests/RunnerUITests.m`. The file then looks like this and works
-   with both discovery modes:
+3. **iOS: include the generated tests in `RunnerUITests.m`.** Add three lines
+   after the runner macro in `ios/RunnerUITests/RunnerUITests.m`. The file then
+   looks like this and works with both discovery modes:
 
    ```objc
    @import XCTest;
@@ -159,8 +158,10 @@ What changes for you:
    #endif
    ```
 
-   If you customized the file and Patrol can't find the macro line, the build
-   stops and shows this snippet. A runner set up for the 4.x opt-in
+   Patrol doesn't edit the file. Until the lines are there, iOS builds use
+   runtime discovery and print a warning with them (a build with
+   `--emit-test-manifest` or `emit_test_manifest: true` stops instead). A runner
+   set up for the 4.x opt-in
    (`PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE`) keeps working; the 4.7.0
    `PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN`/`_END` pair doesn't compile
    any more, replace it with the snippet.

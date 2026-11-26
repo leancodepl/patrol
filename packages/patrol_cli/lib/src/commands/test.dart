@@ -181,6 +181,9 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       pubspecValue: config.emitTestManifest,
       testDirectory: config.testDirectory,
       logger: _logger,
+      setupProblem: device.targetPlatform == TargetPlatform.iOS
+          ? _iosTestBackend.discoverySetupProblem()
+          : null,
     );
 
     // Validate that flavors are not used with web platform
