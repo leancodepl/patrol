@@ -24,12 +24,31 @@ final class PatrolPhase {
 /// How Patrol launches the app before a phase.
 final class PatrolAppLaunch {
   /// Launches the app using its launcher activity.
-  const PatrolAppLaunch.normal() : url = null, keepsProcess = false;
+  const PatrolAppLaunch.normal()
+    : url = null,
+      keepsProcess = false,
+      reinstalls = false;
 
   /// Launches the app through [url].
   const PatrolAppLaunch.deepLink(String this.url)
     : assert(url != ''),
-      keepsProcess = false;
+      keepsProcess = false,
+      reinstalls = false;
+
+  /// Uninstalls the app, installs it again and launches it normally.
+  ///
+  /// The phase starts as after a fresh install: the app's files, preferences,
+  /// databases and granted permissions are gone. Patrol installs the same
+  /// build that the previous phase ran.
+  ///
+  /// The system decides what else goes with the app. For example, iOS keeps
+  /// the app's keychain items across a reinstall.
+  ///
+  /// On iOS, only the Simulator is supported.
+  const PatrolAppLaunch.cleanInstall()
+    : url = null,
+      keepsProcess = false,
+      reinstalls = true;
 
   /// Does not kill or launch the app. The phase runs in the app as the
   /// previous phase left it.
@@ -44,13 +63,19 @@ final class PatrolAppLaunch {
   /// The process keeps its native state in both cases. Dart state is lost only
   /// when the engine restarts, so do not share Dart objects between the two
   /// phases.
-  const PatrolAppLaunch.attach() : url = null, keepsProcess = true;
+  const PatrolAppLaunch.attach()
+    : url = null,
+      keepsProcess = true,
+      reinstalls = false;
 
   /// The deep link URL, or `null` if Patrol does not open one.
   final String? url;
 
   /// Whether the phase starts without killing the app.
   final bool keepsProcess;
+
+  /// Whether the app is reinstalled before the phase.
+  final bool reinstalls;
 }
 
 /// Metadata attached to the callback returned by [phases].
@@ -82,6 +107,7 @@ final class PatrolPhases {
       nextPhaseIndex: nextPhaseIndex,
       launchUrl: launch.url,
       keepsProcess: launch.keepsProcess,
+      cleanInstall: launch.reinstalls,
     );
   }
 
@@ -101,6 +127,7 @@ final class PatrolPhaseContinuation {
     required this.nextPhaseIndex,
     required this.launchUrl,
     this.keepsProcess = false,
+    this.cleanInstall = false,
   });
 
   /// The next Dart phase.
@@ -111,6 +138,9 @@ final class PatrolPhaseContinuation {
 
   /// Whether the next phase attaches to the running app.
   final bool keepsProcess;
+
+  /// Whether the app is reinstalled before the next phase.
+  final bool cleanInstall;
 }
 
 final _phasesByCallback = Expando<PatrolPhases>('Patrol phased test');

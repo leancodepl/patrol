@@ -214,6 +214,7 @@ public struct RunDartTestResponse: Codable {
   public var nextPhaseIndex: Int?
   public var nextPhaseLaunchUrl: String?
   public var nextPhaseKeepsProcess: Bool?
+  public var nextPhaseCleanInstall: Bool?
 }
 
 public struct MarkPatrolAppServiceReadyRequest: Codable {

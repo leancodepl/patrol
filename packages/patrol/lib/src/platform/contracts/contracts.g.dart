@@ -62,6 +62,7 @@ RunDartTestResponse _$RunDartTestResponseFromJson(Map<String, dynamic> json) =>
       nextPhaseIndex: (json['nextPhaseIndex'] as num?)?.toInt(),
       nextPhaseLaunchUrl: json['nextPhaseLaunchUrl'] as String?,
       nextPhaseKeepsProcess: json['nextPhaseKeepsProcess'] as bool?,
+      nextPhaseCleanInstall: json['nextPhaseCleanInstall'] as bool?,
     );
 
 Map<String, dynamic> _$RunDartTestResponseToJson(
@@ -72,6 +73,7 @@ Map<String, dynamic> _$RunDartTestResponseToJson(
   'nextPhaseIndex': instance.nextPhaseIndex,
   'nextPhaseLaunchUrl': instance.nextPhaseLaunchUrl,
   'nextPhaseKeepsProcess': instance.nextPhaseKeepsProcess,
+  'nextPhaseCleanInstall': instance.nextPhaseCleanInstall,
 };
 
 const _$RunDartTestResponseResultEnumMap = {

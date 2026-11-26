@@ -57,6 +57,26 @@ void main() {
       expect(definition.canAttachAt(3), isFalse);
     });
 
+    test('a clean install phase relaunches the app after reinstalling it', () {
+      final definition = patrolPhasesOf(
+        phases([
+          PatrolPhase((_) => Future.value()),
+          PatrolPhase(
+            (_) => Future.value(),
+            launch: const PatrolAppLaunch.cleanInstall(),
+          ),
+          PatrolPhase((_) => Future.value()),
+        ]),
+      )!;
+
+      final cleanInstall = definition.continuationAfter(0)!;
+      expect(cleanInstall.cleanInstall, isTrue);
+      expect(cleanInstall.keepsProcess, isFalse);
+      expect(cleanInstall.launchUrl, isNull);
+      expect(definition.continuationAfter(1)!.cleanInstall, isFalse);
+      expect(definition.canAttachAt(1), isFalse);
+    });
+
     test('rejects an empty phase list', () {
       expect(() => phases([]), throwsArgumentError);
     });
@@ -68,6 +88,7 @@ void main() {
       nextPhaseIndex: 2,
       nextPhaseLaunchUrl: 'patrol://settings',
       nextPhaseKeepsProcess: true,
+      nextPhaseCleanInstall: true,
     );
 
     expect(RunDartTestResponse.fromJson(response.toJson()), response);

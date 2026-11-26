@@ -352,6 +352,7 @@ class PatrolAppService extends PatrolAppServiceServer {
       nextPhaseIndex: continuation?.nextPhaseIndex,
       nextPhaseLaunchUrl: continuation?.launchUrl,
       nextPhaseKeepsProcess: continuation?.keepsProcess,
+      nextPhaseCleanInstall: continuation?.cleanInstall,
     );
   }
 }

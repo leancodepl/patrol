@@ -499,6 +499,25 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
     }
 
     /**
+     * Uninstalls the app under test and installs the same APKs again. Safe only when the runner
+     * is not hosted in that app.
+     */
+    private void reinstallApp(String appId) {
+        Logger.INSTANCE.i("PatrolJUnitRunner: reinstalling " + appId);
+        final UiDevice device = UiDevice.getInstance(this);
+        // `--user current` keeps other users and work profiles as they are. Older `pm` lacks it.
+        final String user = android.os.Build.VERSION.SDK_INT >= 24 ? "current" : null;
+        new PatrolAppReinstaller(command -> {
+            try {
+                return device.executeShellCommand(command);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to run `" + command + "`", e);
+            }
+        }, user).reinstall(appId);
+        Logger.INSTANCE.i("PatrolJUnitRunner: reinstalled " + appId);
+    }
+
+    /**
      * <p>
      * Waits until PatrolAppService, running in the Dart side of the app, reports
      * that it's ready to be asked about the list of Dart tests.
@@ -690,6 +709,9 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
                 closePatrolAppServiceClient();
                 PatrolServer.Companion.getAppReady().close();
                 forceStopApp(targetAppId);
+                if (Boolean.TRUE.equals(response.getNextPhaseCleanInstall())) {
+                    reinstallApp(targetAppId);
+                }
                 openApp(targetAppId, response.getNextPhaseLaunchUrl());
 
                 awaitPatrolAppService();

@@ -286,6 +286,7 @@ class RunDartTestResponse with Equatable {
     this.nextPhaseIndex,
     this.nextPhaseLaunchUrl,
     this.nextPhaseKeepsProcess,
+    this.nextPhaseCleanInstall,
   });
 
   factory RunDartTestResponse.fromJson(Map<String, dynamic> json) =>
@@ -296,6 +297,7 @@ class RunDartTestResponse with Equatable {
   final int? nextPhaseIndex;
   final String? nextPhaseLaunchUrl;
   final bool? nextPhaseKeepsProcess;
+  final bool? nextPhaseCleanInstall;
 
   Map<String, dynamic> toJson() => _$RunDartTestResponseToJson(this);
 
@@ -306,6 +308,7 @@ class RunDartTestResponse with Equatable {
     nextPhaseIndex,
     nextPhaseLaunchUrl,
     nextPhaseKeepsProcess,
+    nextPhaseCleanInstall,
   ];
 }
 

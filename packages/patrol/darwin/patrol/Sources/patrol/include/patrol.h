@@ -38,10 +38,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, readonly, nullable) NSString *details;
 @property(nonatomic, readonly, nullable) NSNumber *nextPhaseIndex;
 @property(nonatomic, readonly, nullable) NSString *nextPhaseLaunchUrl;
+@property(nonatomic, readonly) BOOL nextPhaseKeepsProcess;
+@property(nonatomic, readonly) BOOL nextPhaseCleanInstall;
 - (instancetype)initWithResult:(NSString *)result
                        details:(NSString *_Nullable)details
                 nextPhaseIndex:(NSNumber *_Nullable)nextPhaseIndex
-            nextPhaseLaunchUrl:(NSString *_Nullable)nextPhaseLaunchUrl;
+            nextPhaseLaunchUrl:(NSString *_Nullable)nextPhaseLaunchUrl
+         nextPhaseKeepsProcess:(BOOL)nextPhaseKeepsProcess
+         nextPhaseCleanInstall:(BOOL)nextPhaseCleanInstall;
 @end
 
 @interface ObjCPatrolAppServiceClient : NSObject

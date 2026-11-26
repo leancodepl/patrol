@@ -75,6 +75,37 @@ patrolTest(
 
 `PatrolAppLaunch.normal()` is the default.
 
+To start the next phase from a fresh install, use `PatrolAppLaunch.cleanInstall()`.
+Patrol uninstalls the app, installs the same build again and launches it
+normally:
+
+```dart
+patrolTest(
+  'shows onboarding after a reinstall',
+  phases([
+    PatrolPhase(($) async {
+      await $.pumpWidgetAndSettle(const MyApp());
+      // Finish onboarding, log in, write files...
+    }),
+    PatrolPhase(
+      ($) async {
+        await $.pumpWidgetAndSettle(const MyApp());
+        // The app's files, preferences and permissions are gone.
+      },
+      launch: const PatrolAppLaunch.cleanInstall(),
+    ),
+  ]),
+);
+```
+
+The new phase starts like after a fresh install from the store: files,
+preferences, databases and granted permissions are gone. What else survives is
+up to the platform. For example, iOS keeps the app's keychain items.
+
+On iOS, `cleanInstall()` works only on the Simulator. Patrol deletes the app
+from the home screen, so the Simulator must use a language that Patrol
+supports: English, German, French, Polish, Japanese or Korean.
+
 `launch` is **ignored on the first phase**. That process is already started by
 the native runner before Dart runs. Put a deep link on phase 2 or later.
 

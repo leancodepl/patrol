@@ -221,7 +221,8 @@ class Contracts {
     val details: String? = null,
     val nextPhaseIndex: Long? = null,
     val nextPhaseLaunchUrl: String? = null,
-    val nextPhaseKeepsProcess: Boolean? = null
+    val nextPhaseKeepsProcess: Boolean? = null,
+    val nextPhaseCleanInstall: Boolean? = null
   ){
     fun hasDetails(): Boolean {
       return details != null
@@ -234,6 +235,9 @@ class Contracts {
     }
     fun hasNextPhaseKeepsProcess(): Boolean {
       return nextPhaseKeepsProcess != null
+    }
+    fun hasNextPhaseCleanInstall(): Boolean {
+      return nextPhaseCleanInstall != null
     }
   }
 

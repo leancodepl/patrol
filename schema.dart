@@ -39,6 +39,9 @@ class RunDartTestResponse {
   // True when the next phase attaches to the running app instead of killing
   // and relaunching it.
   bool? nextPhaseKeepsProcess;
+  // True when the native runner reinstalls the app before it launches the
+  // next phase.
+  bool? nextPhaseCleanInstall;
 }
 
 class MarkPatrolAppServiceReadyRequest {
