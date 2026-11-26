@@ -408,6 +408,64 @@ void main() {
       });
     });
 
+    // The web runner (packages/patrol/web_runner/tests/unreportedTests.ts)
+    // prints these lines when Playwright fails a test before the Dart test
+    // reports a result, e.g. when the app never starts.
+    group('failures reported by the web runner', () {
+      late PatrolLogReader reader;
+
+      setUp(() async {
+        reader = _buildReader();
+        await reader.readEntries();
+      });
+
+      tearDown(() => reader.close());
+
+      test('counts a test that failed before the Dart test started', () async {
+        reader
+          ..parse(
+            'PATROL_LOG {"type":"test","name":"web.web_example_cookies_test cookies",'
+            '"status":"start","timestamp":"2026-01-02T03:04:05.000Z"}',
+          )
+          ..parse(
+            'PATROL_LOG {"type":"test","name":"web.web_example_cookies_test cookies",'
+            '"status":"failure","timestamp":"2026-01-02T03:05:05.000Z",'
+            r'"error":"Test timeout of 2000ms exceeded while setting up \"page\"."}',
+          );
+
+        await pumpEventQueue();
+
+        expect(reader.totalTests, 1);
+        expect(reader.successfulTests, 0);
+        expect(reader.failedTestsCount, 1);
+        expect(
+          reader.failedTests.single.closingTestEntry?.error,
+          contains('setting up "page"'),
+        );
+      });
+
+      test('closes a test the Dart side started but did not finish', () async {
+        reader
+          ..parse(
+            _patrolLogLine(_testEntryJson(name: 'cookies', status: 'start')),
+          )
+          ..parse(
+            'PATROL_LOG {"type":"test","name":"web.web_example_cookies_test cookies",'
+            '"status":"failure","timestamp":"2026-01-02T03:05:05.000Z",'
+            '"error":"Test timeout of 2000ms exceeded."}',
+          );
+
+        await pumpEventQueue();
+
+        expect(reader.totalTests, 1);
+        expect(reader.failedTestsCount, 1);
+        expect(
+          reader.failedTests.single.closingTestEntry?.error,
+          'Test timeout of 2000ms exceeded.',
+        );
+      });
+    });
+
     group('_clearLines', () {
       Future<String> runWithCapturedStdout(Future<void> Function() body) async {
         final mockStdout = _MockStdout();
