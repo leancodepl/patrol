@@ -5,7 +5,7 @@
   the tests and to test discovery. When the user agent is a phone's, `navigator.platform` now matches it, so
   `defaultTargetPlatform` is Android or iOS on any host; this also applies to a phone user agent set with
   `--web-user-agent`. In mobile mode the app's page gets Flutter's viewport meta tag before it loads, which avoids a
-  "ViewInsets cannot be negative" assertion while a debug build starts. (#TBD)
+  "ViewInsets cannot be negative" assertion while a debug build starts. (#3405)
 
 ## 4.12.0
 
