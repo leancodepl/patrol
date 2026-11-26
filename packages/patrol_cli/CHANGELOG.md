@@ -4,7 +4,7 @@
   `patrol test` to run web tests on a remote Playwright browser, such as `npx playwright run-server`
   or a hosted grid, and skip installing a local browser when one is used. Requires `patrol` with the
   matching web runner change. See the
-  [docs](https://patrol.leancode.co/documentation/web#running-tests-on-a-remote-browser). (#TBD)
+  [docs](https://patrol.leancode.co/documentation/web#running-tests-on-a-remote-browser). (#3406)
 
 ## 4.10.0
 

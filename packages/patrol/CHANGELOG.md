@@ -5,7 +5,7 @@
   local browser. `PATROL_WEB_CONNECT_HEADERS` adds headers to the connection, and
   `PATROL_WEB_CONNECT_EXPOSE_NETWORK` (default `<loopback>`, empty to turn it off) lets the remote
   browser reach the app served on localhost. `PATROL_WEB_BROWSER_TIMEOUT` also limits connecting. A
-  remote browser runs headless by default. (#TBD)
+  remote browser runs headless by default. (#3406)
 
 ## 4.12.0
 
