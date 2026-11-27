@@ -270,8 +270,8 @@ class McpCommand extends PatrolCommand {
               description:
                   'Optional project to run in, for work spanning more than one '
                   'checkout. Accepted while no session is running; a running '
-                  'session must be quit first. Omit to use the project the '
-                  'server resolved.',
+                  'session must be quit first. The test file has to be inside '
+                  'it. Omit to use the project the server resolved.',
             ),
             'device': JsonString(
               description:

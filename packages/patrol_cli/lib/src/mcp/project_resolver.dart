@@ -2,7 +2,7 @@ import 'dart:io' show Platform;
 
 import 'package:file/file.dart';
 import 'package:file/local.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' show Context;
 import 'package:patrol_cli/src/runner/patrol_command_runner.dart';
 
 /// The workspace root directories the MCP client has advertised (via the
@@ -33,7 +33,8 @@ typedef ResolvedProject = ({String root, String? testFile});
 ///
 /// An explicit root (the request's, `--project-root` or `PROJECT_ROOT`) that
 /// leads to no project fails the resolution; the other signals are skipped when
-/// they lead to none.
+/// they lead to none. A test file whose project is outside the request's
+/// `projectRoot` fails it too.
 ///
 /// The result is cached until a caller names a different root, or until a test
 /// file turns out not to belong to it.
@@ -56,7 +57,7 @@ class ProjectResolver {
     final start = _startDirectory = _currentDirectory();
     String? pin(String? value) => value == null || value.trim().isEmpty
         ? null
-        : p.normalize(p.join(start, value));
+        : _path.normalize(_path.join(start, value));
     _projectRootOverride = pin(projectRootOverride);
     _envProjectRoot = pin(_env['PROJECT_ROOT']);
     _envClaudeProjectDir = pin(_env['CLAUDE_PROJECT_DIR']);
@@ -64,6 +65,9 @@ class ProjectResolver {
 
   final RootsReader _readRoots;
   final FileSystem _fs;
+
+  /// Paths follow [_fs]'s style, which need not be the host's.
+  Context get _path => _fs.path;
 
   /// From `--project-root`; takes precedence over every other signal.
   late final String? _projectRootOverride;
@@ -102,6 +106,9 @@ class ProjectResolver {
 
     // 1. What the caller named for this request, then the server's own flags.
     var hit = _trySignal('projectRoot', requestedRoot, testFile, attempts);
+    if (hit != null && testFile != null) {
+      _requireInside(requestedRoot!, hit, testFile);
+    }
     hit ??= _trySignal(
       '--project-root',
       _projectRootOverride,
@@ -127,7 +134,7 @@ class ProjectResolver {
     if (hit == null) {
       throw ProjectResolutionException(attempts);
     }
-    final root = p.canonicalize(hit);
+    final root = _path.canonicalize(hit);
     if (remember) {
       _cached = root;
     }
@@ -140,16 +147,16 @@ class ProjectResolver {
     if (testFile == null || testFile.trim().isEmpty) {
       return testFile;
     }
-    if (p.isAbsolute(testFile)) {
-      return p.relative(testFile, from: root);
+    if (_path.isAbsolute(testFile)) {
+      return _path.relative(testFile, from: root);
     }
-    if (_fs.file(p.join(root, testFile)).existsSync()) {
+    if (_fs.file(_path.join(root, testFile)).existsSync()) {
       return testFile;
     }
     for (final dir in _signalDirectories()) {
-      final candidate = p.join(dir, testFile);
+      final candidate = _path.join(dir, testFile);
       if (_fs.file(candidate).existsSync()) {
-        return p.relative(p.canonicalize(candidate), from: root);
+        return _path.relative(_path.canonicalize(candidate), from: root);
       }
     }
     return testFile;
@@ -182,10 +189,29 @@ class ProjectResolver {
     return _fromTestFile(dir, testFile) ?? _findPubspecDir(dir);
   }
 
+  /// Throws when [project], which owns [testFile], is neither the project
+  /// [requestedRoot] leads to nor inside [requestedRoot].
+  void _requireInside(String requestedRoot, String project, String testFile) {
+    final root = _path.canonicalize(requestedRoot);
+    final owner = _path.canonicalize(project);
+    final rootProject = _findPubspecDir(requestedRoot);
+    if (_path.equals(owner, root) ||
+        _path.isWithin(root, owner) ||
+        (rootProject != null &&
+            _path.equals(owner, _path.canonicalize(rootProject)))) {
+      return;
+    }
+    throw ProjectResolutionException.outsideRoot(
+      testFile: testFile,
+      project: owner,
+      requestedRoot: root,
+    );
+  }
+
   /// Whether [testFile] belongs to the project at [root] itself.
   bool _ownsTestFile(String root, String testFile) {
     final owner = _fromTestFile(root, testFile);
-    return owner != null && p.equals(p.canonicalize(owner), root);
+    return owner != null && _path.equals(_path.canonicalize(owner), root);
   }
 
   /// The project owning [testFile] when it exists under [dir].
@@ -193,11 +219,11 @@ class ProjectResolver {
     if (testFile == null || testFile.trim().isEmpty) {
       return null;
     }
-    final candidate = p.join(dir, testFile);
+    final candidate = _path.join(dir, testFile);
     if (!_fs.file(candidate).existsSync()) {
       return null;
     }
-    return _findPubspecDir(p.dirname(candidate));
+    return _findPubspecDir(_path.dirname(candidate));
   }
 
   /// The roots the client last advertised, kept for turning a workspace-relative
@@ -227,7 +253,7 @@ class ProjectResolver {
   /// The nearest ancestor of [start] holding a `pubspec.yaml`, or null when
   /// [start] does not exist or nothing above it does.
   String? _findPubspecDir(String start) {
-    final dir = _fs.directory(p.absolute(start));
+    final dir = _fs.directory(_path.absolute(start));
     if (!dir.existsSync()) {
       return null;
     }
@@ -237,13 +263,29 @@ class ProjectResolver {
 
 /// Thrown when [ProjectResolver] cannot locate a Flutter project from any signal.
 class ProjectResolutionException implements Exception {
-  ProjectResolutionException(this.attempts);
+  ProjectResolutionException(this.attempts) : _message = null;
+
+  /// The request named a `projectRoot` and a test file of another project.
+  ProjectResolutionException.outsideRoot({
+    required String testFile,
+    required String project,
+    required String requestedRoot,
+  }) : attempts = ['projectRoot=$requestedRoot'],
+       _message =
+           'Test file $testFile belongs to the project at $project, which is '
+           'outside projectRoot $requestedRoot. Name a test file inside '
+           'projectRoot, or leave projectRoot out.';
+
+  final String? _message;
 
   /// The signals that were tried, in order, as `label=value`.
   final List<String> attempts;
 
   @override
   String toString() {
+    if (_message case final message?) {
+      return message;
+    }
     final tried = attempts.isEmpty
         ? 'nothing (no project signals were available)'
         : attempts.join(', ');

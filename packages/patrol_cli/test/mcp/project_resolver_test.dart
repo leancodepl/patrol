@@ -157,24 +157,76 @@ void main() {
       expect(await subject.resolve(requestedRoot: app).root, app);
     });
 
-    test('resolves on a filesystem that never touches the disk', () async {
-      final fs = MemoryFileSystem.test();
-      final app = fs.directory('/repo/app')..createSync(recursive: true);
-      app.childFile('pubspec.yaml').writeAsStringSync('name: app');
-      fs
-          .file('/repo/app/patrol_test/login_test.dart')
-          .createSync(recursive: true);
+    for (final style in [FileSystemStyle.posix, FileSystemStyle.windows]) {
+      final name = style == FileSystemStyle.windows ? 'windows' : 'posix';
+      test(
+        'resolves on a $name filesystem that never touches the disk',
+        () async {
+          final fs = MemoryFileSystem.test(style: style);
+          final repo = fs.currentDirectory.childDirectory('repo').path;
+          final app = fs.directory(fs.path.join(repo, 'app'))
+            ..createSync(recursive: true);
+          app.childFile('pubspec.yaml').writeAsStringSync('name: app');
+          fs
+              .file(fs.path.join(app.path, 'patrol_test', 'login_test.dart'))
+              .createSync(recursive: true);
 
-      final resolved = await ProjectResolver(
-        readRoots: () async => ['/repo'],
-        environment: const {},
-        currentDirectory: () => '/repo',
-        fileSystem: fs,
-      ).resolve(testFile: 'app/patrol_test/login_test.dart');
+          final resolved =
+              await ProjectResolver(
+                readRoots: () async => [repo],
+                environment: const {},
+                currentDirectory: () => repo,
+                fileSystem: fs,
+              ).resolve(
+                testFile: fs.path.join('app', 'patrol_test', 'login_test.dart'),
+              );
 
-      expect(resolved.root, '/repo/app');
-      expect(resolved.testFile, p.join('patrol_test', 'login_test.dart'));
+          expect(resolved.root, fs.path.canonicalize(app.path));
+          expect(
+            resolved.testFile,
+            fs.path.join('patrol_test', 'login_test.dart'),
+          );
+        },
+      );
+    }
+
+    test('fails on a test file outside the requested root', () async {
+      final requested = project('requested');
+      final other = project('other');
+      testFile(other, 'patrol_test/login_test.dart');
+
+      await expectLater(
+        resolver().resolve(
+          requestedRoot: requested,
+          testFile: p.join(other, 'patrol_test', 'login_test.dart'),
+        ),
+        throwsA(
+          isA<ProjectResolutionException>().having(
+            (e) => e.toString(),
+            'message',
+            allOf(contains(other), contains('outside projectRoot')),
+          ),
+        ),
+      );
     });
+
+    test(
+      'takes a package below the requested root from its test file',
+      () async {
+        final repo = project('repo');
+        final app = project(p.join('repo', 'app'));
+        testFile(app, 'patrol_test/login_test.dart');
+
+        final root = await resolver()
+            .resolve(
+              requestedRoot: repo,
+              testFile: p.join(app, 'patrol_test', 'login_test.dart'),
+            )
+            .root;
+
+        expect(root, app);
+      },
+    );
 
     test('a requested root wins over every other signal', () async {
       final requested = project('requested');
