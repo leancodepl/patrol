@@ -86,16 +86,31 @@ static inline void PatrolWithoutQuiescenceWait(void (^block)(void)) {
 // Class methods shared by the iOS runners. They delete the app under test through Springboard.
 // On the iOS Simulator, the next launch of the app installs it again.
 #define PATROL_SPRINGBOARD_UNINSTALL_METHODS                                                                         \
-  +(BOOL)uninstallApp {                                                                                              \
+  /* Attaches a screenshot of the current screen to [testCase] when Patrol takes screenshots on failure. */          \
+  +(void)attachFailureScreenshotTo : (XCTestCase *)testCase {                                                        \
+    if (PATROL_SCREENSHOT_ON_FAILURE) {                                                                              \
+      [PatrolScreenshotBuffer attachCurrentScreenNamed:@"patrol_failure" to:testCase];                               \
+    }                                                                                                                \
+  }                                                                                                                  \
+                                                                                                                     \
+  /* When the deletion fails, attaches a screenshot to [testCase] that shows what blocked it. */                     \
+  +(BOOL)uninstallAppReportingFailureTo : (XCTestCase *)testCase {                                                   \
     /* XCTest reads the label from the running app. A skipped test or a failed deletion leaves the app               \
-       closed, so remember the label, and launch the app to read it if it is not known yet. */                       \
+       closed, so remember the label, and launch the app to read it if it is not known yet. Remember                 \
+       only a real name, so that a bad read is retried by the next test. */                                          \
     static NSString *appName = nil;                                                                                  \
     XCUIApplication *app = [[XCUIApplication alloc] init];                                                           \
-    if (appName == nil) {                                                                                            \
+    if (appName.length == 0) {                                                                                       \
       if (app.state == XCUIApplicationStateNotRunning || app.state == XCUIApplicationStateUnknown) {                 \
         [app launch];                                                                                                \
       }                                                                                                              \
-      appName = app.label;                                                                                           \
+      NSString *label = app.label;                                                                                   \
+      if (label.length == 0) {                                                                                       \
+        NSLog(@"Could not read the app's name, so its icon cannot be found");                                        \
+        [self attachFailureScreenshotTo:testCase];                                                                   \
+        return NO;                                                                                                   \
+      }                                                                                                              \
+      appName = label;                                                                                               \
     }                                                                                                                \
     NSLog(@"Uninstalling app: %@", appName);                                                                         \
                                                                                                                      \
@@ -125,6 +140,8 @@ static inline void PatrolWithoutQuiescenceWait(void (^block)(void)) {
           [icon pressForDuration:1.3];                                                                               \
           deleted = [self deleteAppIcon:icon named:appName inSpringboard:springboard patience:patience];             \
           if (!deleted) {                                                                                            \
+            /* Take the screenshot while the menu or alert that blocked the deletion is still open. */               \
+            [self attachFailureScreenshotTo:testCase];                                                               \
             /* Close the context menu or alert that is left open, so the next launch is not covered. */              \
             [[XCUIDevice sharedDevice] pressButton:XCUIDeviceButtonHome];                                            \
           }                                                                                                          \
@@ -151,6 +168,7 @@ static inline void PatrolWithoutQuiescenceWait(void (^block)(void)) {
       NSLog(@"An alert hides the home screen: %@, buttons: %@", alert.label,                                         \
             [alert.buttons.allElementsBoundByIndex valueForKey:@"label"]);                                           \
     }                                                                                                                \
+    [self attachFailureScreenshotTo:testCase];                                                                       \
     return NO;                                                                                                       \
   }                                                                                                                  \
                                                                                                                      \
@@ -485,7 +503,7 @@ static inline void PatrolWithoutQuiescenceWait(void (^block)(void)) {
                                                                                                                     \
         if (FULL_ISOLATION && i > 0) {                                                                              \
           NSLog(@"Uninstalling app");                                                                               \
-          if (![self uninstallApp]) {                                                                               \
+          if (![self uninstallAppReportingFailureTo:_self]) {                                                       \
             XCTFail(@"Could not delete the app for --full-isolation. The runner log says which step failed. "       \
                     @"Patrol finds Springboard's buttons in English, German, French, Polish, Japanese or Korean."); \
             return;                                                                                                 \
@@ -644,7 +662,7 @@ static inline void PatrolWithoutQuiescenceWait(void (^block)(void)) {
     }                                                                                                                  \
     if (FULL_ISOLATION && _patrolStaticTestIndex > 0) {                                                                \
       NSLog(@"Uninstalling app");                                                                                      \
-      if (![[self class] uninstallApp]) {                                                                              \
+      if (![[self class] uninstallAppReportingFailureTo:self]) {                                                       \
         XCTFail(@"Could not delete the app for --full-isolation. The runner log says which step failed. "              \
                 @"Patrol finds Springboard's buttons in English, German, French, Polish, Japanese or Korean.");        \
         return;                                                                                                        \
