@@ -361,6 +361,7 @@ To install a specific version of Patrol CLI, run:
         _logger.err('$err');
       }
     } on ToolInterrupted catch (err, st) {
+      exitCode = err.exitCode;
       if (verbose) {
         _logger
           ..err('$err')

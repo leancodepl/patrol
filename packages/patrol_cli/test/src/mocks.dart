@@ -7,6 +7,8 @@ import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/logger.dart' as logger;
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
+import 'package:patrol_cli/src/coverage/coverage_tool.dart';
+import 'package:patrol_cli/src/coverage/web_coverage_tool.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
@@ -60,6 +62,10 @@ class MockPubspecReader extends Mock implements PubspecReader {}
 class MockCompatibilityChecker extends Mock implements CompatibilityChecker {}
 
 class MockAdb extends Mock implements Adb {}
+
+class MockCoverageTool extends Mock implements CoverageTool {}
+
+class MockWebCoverageTool extends Mock implements WebCoverageTool {}
 
 class MockAnalytics extends Mock implements Analytics {
   @override
