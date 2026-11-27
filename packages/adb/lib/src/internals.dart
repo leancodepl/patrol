@@ -5,11 +5,35 @@ import 'extensions.dart';
 
 const _interval = Duration(milliseconds: 100);
 
+/// Calls [isReady] every [interval] until it returns true. Throws [AdbTimeout]
+/// naming [what] once [timeout] has passed, so a device that is gone does not
+/// keep a caller polling forever.
+Future<void> waitUntilReady(
+  String what,
+  Future<bool> Function() isReady, {
+  required Duration timeout,
+  Duration interval = _interval,
+}) async {
+  final stopwatch = Stopwatch()..start();
+  while (!await isReady()) {
+    if (stopwatch.elapsed >= timeout) {
+      throw AdbTimeout(
+        message: '$what was not ready after ${timeout.inSeconds}s',
+      );
+    }
+    await Future<void>.delayed(interval);
+  }
+}
+
 /// This class makes it easy to swap out the implementation of the some ADB
 /// commands.
 class AdbInternals {
   /// Creates a new [AdbInternals] instance.
-  const AdbInternals();
+  const AdbInternals({this.readyTimeout = const Duration(minutes: 2)});
+
+  /// How long to wait for the ADB server or a device service before throwing
+  /// [AdbTimeout]. A freshly booted emulator can take a while.
+  final Duration readyTimeout;
 
   /// Calls `adb devices` and returns its stdout.
   Future<String> devices() async {
@@ -33,53 +57,45 @@ class AdbInternals {
     } on io.ProcessException catch (err) {
       throw AdbExecutableNotFound(message: err.message);
     }
-    while (true) {
+    await waitUntilReady('The ADB server', () async {
       final result = await io.Process.run('adb', [
         'start-server',
       ], runInShell: true);
-      if (result.stdErr.contains(AdbDaemonNotRunning.trigger)) {
-        await Future<void>.delayed(_interval);
-      } else {
-        break;
-      }
-    }
+      return !result.stdErr.contains(AdbDaemonNotRunning.trigger);
+    }, timeout: readyTimeout);
   }
 
   /// Ensures that the `activity` service is running on the device.
-  Future<void> ensureActivityServiceRunning({required String? device}) async {
-    while (true) {
-      final result = await io.Process.run('adb', [
-        if (device != null) ...['-s', device],
-        'shell',
-        'service',
-        'list',
-      ], runInShell: true);
-
-      const trigger = 'activity: [android.app.IActivityManager]';
-      if (result.stdOut.contains(trigger)) {
-        break;
-      } else {
-        await Future<void>.delayed(_interval);
-      }
-    }
-  }
+  Future<void> ensureActivityServiceRunning({required String? device}) =>
+      _waitForService(
+        'activity: [android.app.IActivityManager]',
+        name: 'activity',
+        device: device,
+      );
 
   /// Ensures that the `package` service is running on the device.
-  Future<void> ensurePackageServiceRunning({required String? device}) async {
-    while (true) {
+  Future<void> ensurePackageServiceRunning({required String? device}) =>
+      _waitForService(
+        'package: [android.content.pm.IPackageManager]',
+        name: 'package',
+        device: device,
+      );
+
+  Future<void> _waitForService(
+    String trigger, {
+    required String name,
+    required String? device,
+  }) => waitUntilReady(
+    'The $name service on ${device ?? 'the device'}',
+    () async {
       final result = await io.Process.run('adb', [
         if (device != null) ...['-s', device],
         'shell',
         'service',
         'list',
       ], runInShell: true);
-
-      const trigger = 'package: [android.content.pm.IPackageManager]';
-      if (result.stdOut.contains(trigger)) {
-        break;
-      } else {
-        await Future<void>.delayed(_interval);
-      }
-    }
-  }
+      return result.stdOut.contains(trigger);
+    },
+    timeout: readyTimeout,
+  );
 }

@@ -1,3 +1,8 @@
+## Unreleased
+
+- Give up with an `AdbTimeout` after 2 minutes when the ADB server, or a device's package or
+  activity service, does not become ready, instead of polling forever when the device is gone.
+
 ## 0.6.1
 
 - Add `pull` and `remove` methods to `Adb`, so callers use one place for adb resolution and device handling instead of raw `adb` invocations. (#3222)
