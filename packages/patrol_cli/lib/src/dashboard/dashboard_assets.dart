@@ -375,9 +375,6 @@ body {
 .test-body { display: none; border-top: 1px solid var(--border); padding: 18px 16px 20px; }
 .test.is-open .test-body { display: grid; gap: 20px; }
 .test-body.with-video { grid-template-columns: minmax(0, 1fr) 288px; }
-/* A grid item won't shrink below its content by default, so the folded
-   exception's unbreakable summary would push the steps under the video. */
-.test-main { min-width: 0; }
 @media (max-width: 860px) { .test-body.with-video { grid-template-columns: minmax(0, 1fr); } }
 
 .section-label {
@@ -481,7 +478,9 @@ body {
 
 /* ---------- steps ---------- */
 
-.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+/* The implicit `auto` column would grow to the folded exception's one-line
+   summary and push the step durations under the video. */
+.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 2px; }
 .step { border-radius: 8px; }
 .step-row {
   display: grid;
