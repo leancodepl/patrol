@@ -26,12 +26,17 @@
   the test bundle (`dartEntrypointArgs` on Android, `entrypointArgs` on iOS and macOS). Needs a
   `patrol_cli` release that includes this change. (#3366)
 - Agent skills: `patrol-write-test` now covers the state a restart of a running session keeps,
-  assertions that cannot fail, and `settlePolicy` on screens with never-ending animations.
+  what a failed run leaves behind, assertions that cannot fail, steps a test does not need, and
+  `settlePolicy` on screens with never-ending animations.
 - Fix web tests failing on Ubuntu 26.04 (now `ubuntu-latest` on GitHub Actions) with "Playwright does
   not support chromium on ubuntu26.04-x64", by updating Playwright to 1.61.1, which also moves web
   tests to Chromium 149. This also fixes `npx playwright install` hanging while extracting Chromium
   on Node.js 26 and newer Node.js 24 releases. With `--web-reporter junit`, some failures are now
   reported as `<error>` instead of `<failure>` in the XML.
+- `--full-isolation` deletes the app on iOS in seconds instead of minutes. Patrol no longer waits
+  for the home screen to stop animating after every step, and waits for each button of the deletion
+  instead. When it cannot delete the app, the test fails instead of running in the previous install.
+  (#3416)
 - Add native screenshots on iOS: `screenshot_on_failure: true` and `$.takeNativeScreenshot('tag')`
   now work on simulators and physical devices. See the
   [docs](https://patrol.leancode.co/cli-commands/test#on-ios). (#3271)
