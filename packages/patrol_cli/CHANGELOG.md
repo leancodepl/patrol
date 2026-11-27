@@ -10,6 +10,7 @@
 - `patrol test-without-building` on Android now installs the `androidTestUtil` APKs (orchestrator,
   test-services) from the last `patrol build android`, so tools that write through `TestStorage`,
   such as allure-android, work on a fresh device. (#3427)
+- Report a dead `flutter attach` or `flutter logs` in `patrol develop`. (#3234)
 
 ## 4.10.0
 
@@ -42,7 +43,6 @@
 - Fix `patrol test` on web timing out when the Flutter web server serves https (set up with
   `web_dev_config.yaml`): the server URL is now detected, and the readiness check accepts a
   self-signed certificate from that server. (#3314)
-- Report a dead `flutter attach` or `flutter logs` in `patrol develop`. (#3234)
 
 ## 4.8.0
 
