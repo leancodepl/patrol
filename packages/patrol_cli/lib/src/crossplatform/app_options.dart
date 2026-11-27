@@ -133,14 +133,35 @@ class AndroidAppOptions {
     );
   }
 
-  List<String> toGradleAssembleTestInvocation({required bool isWindows}) {
+  /// When [testUtilExport] is set, the same Gradle run also copies the
+  /// `androidTestUtil` APKs (orchestrator, test-services) into its `outputDir`
+  /// using the init script at its `initScript` path.
+  List<String> toGradleAssembleTestInvocation({
+    required bool isWindows,
+    ({String initScript, String outputDir})? testUtilExport,
+  }) {
     // for example: assembleDevDebugAndroidTest, assembleReleaseAndroidTest
-    return _toGradleInvocation(
+    final cmd = _toGradleInvocation(
       isWindows: isWindows,
       task: 'assemble$_effectiveFlavor${_buildMode}AndroidTest',
       noUninstallAfterTests: !uninstall,
     );
+    if (testUtilExport != null) {
+      cmd.addAll([
+        ':app:$exportAndroidTestUtilTask',
+        '--init-script',
+        testUtilExport.initScript,
+        '-P$androidTestUtilDirProperty=${testUtilExport.outputDir}',
+      ]);
+    }
+    return cmd;
   }
+
+  /// Gradle task registered by the test-util export init script.
+  static const exportAndroidTestUtilTask = 'patrolExportAndroidTestUtil';
+
+  /// Gradle property holding the directory the test-util APKs are copied to.
+  static const androidTestUtilDirProperty = 'patrol-test-util-dir';
 
   List<String> toGradleConnectedTestInvocation({
     required bool isWindows,
