@@ -317,9 +317,11 @@ On `patrol test`, Patrol extracts the images from the `.xcresult` into
 
 #### On web
 
-Web screenshot support is currently unreleased. Playwright captures the active
-page and saves PNGs to `test-results/<per-test-directory>/screenshots/` by default
-(override the results root with `--web-results-dir`; the runner receives it as
+Requires `patrol_cli` 4.8.0 and `patrol` 4.12.0 or newer.
+
+Playwright captures the active page and saves PNGs to
+`test-results/<per-test-directory>/screenshots/` by default (override the
+results root with `--web-results-dir`; the runner receives it as
 `PATROL_TEST_RESULTS_DIR`). File names contain a timestamp and the sanitized tag,
 and the images are attached to the Playwright report.
 
