@@ -1,4 +1,4 @@
-## Unreleased
+## 4.0.0-dev.1
 
 - Add `PatrolTesterConfig.dragWithoutFling`. When true, scrolling methods such as `scrollTo()`
   end each drag without a fling and cover 3 steps per drag, so they no longer wait for the scroll
