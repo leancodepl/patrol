@@ -675,6 +675,7 @@ class DevelopService {
           attachUsingUrl: attachUsingUrl,
           debugUrl: vmServiceUrlCompleter?.future,
           forwardFlutterLogs: flutterLogs.forwardFlutterLogs,
+          removeAdbForwards: device.targetPlatform == TargetPlatform.android,
           // Stop the device side first, so the Gradle run waiting on
           // `am instrument` ends on its own while the backend is disposed. The
           // uninstall runs here because the quit handler exits the process right

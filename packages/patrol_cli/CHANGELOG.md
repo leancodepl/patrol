@@ -46,6 +46,7 @@
   that shape a run, so the same artifact can be sharded across machines.
 - Fix `patrol develop` leaving Gradle and logcat processes behind after quitting with `q`, and the
   test running on the Android device after Ctrl+C. (#3249)
+- `patrol develop` no longer leaves `adb` port forwards behind on Android devices when the session ends. (#3367)
 
 - **BREAKING CHANGE**
   - Remove `--tags` from `patrol develop`. It was accepted but never applied, so a session ran

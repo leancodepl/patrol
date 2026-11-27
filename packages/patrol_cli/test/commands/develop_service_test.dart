@@ -214,6 +214,7 @@ void main() {
             attachUsingUrl: any(named: 'attachUsingUrl'),
             debugUrl: any(named: 'debugUrl'),
             forwardFlutterLogs: any(named: 'forwardFlutterLogs'),
+            removeAdbForwards: any(named: 'removeAdbForwards'),
             onQuit: any(named: 'onQuit'),
           ),
         ).thenAnswer((_) => attachNeverCompletes.future);
@@ -267,6 +268,7 @@ void main() {
             attachUsingUrl: any(named: 'attachUsingUrl'),
             debugUrl: any(named: 'debugUrl'),
             forwardFlutterLogs: any(named: 'forwardFlutterLogs'),
+            removeAdbForwards: any(named: 'removeAdbForwards'),
             onQuit: any(named: 'onQuit'),
           ),
         ).thenAnswer((_) => attachNeverCompletes.future);
@@ -462,6 +464,7 @@ void main() {
             openDevtools: any(named: 'openDevtools'),
             attachUsingUrl: any(named: 'attachUsingUrl'),
             forwardFlutterLogs: any(named: 'forwardFlutterLogs'),
+            removeAdbForwards: any(named: 'removeAdbForwards'),
             onQuit: any(named: 'onQuit'),
           ),
         ).thenAnswer((_) => attachCompleter.future);
@@ -614,6 +617,7 @@ void main() {
             openDevtools: any(named: 'openDevtools'),
             attachUsingUrl: any(named: 'attachUsingUrl'),
             forwardFlutterLogs: any(named: 'forwardFlutterLogs'),
+            removeAdbForwards: any(named: 'removeAdbForwards'),
             onQuit: any(named: 'onQuit'),
           ),
         ).thenAnswer((invocation) {
@@ -679,6 +683,7 @@ void main() {
           openDevtools: any(named: 'openDevtools'),
           attachUsingUrl: any(named: 'attachUsingUrl'),
           forwardFlutterLogs: any(named: 'forwardFlutterLogs'),
+          removeAdbForwards: any(named: 'removeAdbForwards'),
           onQuit: any(named: 'onQuit'),
         ),
       ).thenAnswer((_) => Completer<void>().future);
@@ -751,6 +756,7 @@ void main() {
           openDevtools: any(named: 'openDevtools'),
           attachUsingUrl: any(named: 'attachUsingUrl'),
           forwardFlutterLogs: any(named: 'forwardFlutterLogs'),
+          removeAdbForwards: any(named: 'removeAdbForwards'),
           onQuit: any(named: 'onQuit'),
         ),
       ).thenAnswer((invocation) async {
@@ -820,6 +826,7 @@ void main() {
             openDevtools: any(named: 'openDevtools'),
             attachUsingUrl: any(named: 'attachUsingUrl'),
             forwardFlutterLogs: any(named: 'forwardFlutterLogs'),
+            removeAdbForwards: any(named: 'removeAdbForwards'),
             onQuit: any(named: 'onQuit'),
           ),
         ).thenAnswer((invocation) async {
@@ -989,6 +996,7 @@ void main() {
             attachUsingUrl: any(named: 'attachUsingUrl'),
             debugUrl: any(named: 'debugUrl'),
             forwardFlutterLogs: any(named: 'forwardFlutterLogs'),
+            removeAdbForwards: any(named: 'removeAdbForwards'),
             onQuit: any(named: 'onQuit'),
           ),
         ).thenAnswer((invocation) {
