@@ -18,6 +18,9 @@
   tests to Chromium 149. This also fixes `npx playwright install` hanging while extracting Chromium
   on Node.js 26 and newer Node.js 24 releases. With `--web-reporter junit`, some failures are now
   reported as `<error>` instead of `<failure>` in the XML.
+- Add native screenshots on iOS: `screenshot_on_failure: true` and `$.takeNativeScreenshot('tag')`
+  now work on simulators and physical devices. See the
+  [docs](https://patrol.leancode.co/cli-commands/test#on-ios). (#3271)
 
 ## 5.0.0-dev.1
 

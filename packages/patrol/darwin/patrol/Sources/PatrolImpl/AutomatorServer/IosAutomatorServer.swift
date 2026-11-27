@@ -16,6 +16,7 @@ protocol IosAutomatorServer {
     func tapAt(request: IOSTapAtRequest) throws
     func waitUntilVisible(request: IOSWaitUntilVisibleRequest) throws
     func swipe(request: IOSSwipeRequest) throws
+    func takeNativeScreenshot(request: IOSTakeNativeScreenshotRequest) throws
     func closeHeadsUpNotification() throws
     func tapOnNotification(request: IOSTapOnNotificationRequest) throws
     func tapBackToPreviousAppButton(request: IOSTapBackToPreviousAppButtonRequest) throws
@@ -75,6 +76,12 @@ extension IosAutomatorServer {
     private func swipeHandler(request: HTTPRequest) throws -> HTTPResponse {
         let requestArg = try JSONDecoder().decode(IOSSwipeRequest.self, from: request.body)
         try swipe(request: requestArg)
+        return HTTPResponse(.ok)
+    }
+
+    private func takeNativeScreenshotHandler(request: HTTPRequest) throws -> HTTPResponse {
+        let requestArg = try JSONDecoder().decode(IOSTakeNativeScreenshotRequest.self, from: request.body)
+        try takeNativeScreenshot(request: requestArg)
         return HTTPResponse(.ok)
     }
 
@@ -179,6 +186,11 @@ extension IosAutomatorServer {
             request in handleRequest(
                 request: request,
                 handler: swipeHandler)
+        }
+        server.route(.POST, "takeNativeScreenshot") {
+            request in handleRequest(
+                request: request,
+                handler: takeNativeScreenshotHandler)
         }
         server.route(.POST, "closeHeadsUpNotification") {
             request in handleRequest(
