@@ -3,6 +3,9 @@
 Tests that show **Flutter automation + native desktop automation** in a
 single `patrol test -d windows` run.
 
+**Agents / remote Windows box:** follow the exact checklist in
+[AGENT_RUN.md](AGENT_RUN.md).
+
 ## What you will see
 
 1. Flutter window — Patrol taps in-app buttons (same model as Android/iOS)
