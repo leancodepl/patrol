@@ -1,19 +1,14 @@
 // We want to keep tests on deprecated APIs.
 // ignore_for_file: deprecated_member_use
 
-import 'dart:io' show Platform;
-
 import 'common.dart';
 
 void main() {
-  final String appId;
-  if (Platform.isIOS) {
-    appId = 'com.apple.Preferences';
-  } else if (Platform.isAndroid) {
-    appId = 'com.android.settings';
-  } else {
-    throw UnsupportedError('Unsupported platform');
-  }
+  final appId = switch (patrolTargetPlatform) {
+    PatrolTargetPlatform.iOS => 'com.apple.Preferences',
+    PatrolTargetPlatform.android => 'com.android.settings',
+    _ => throw UnsupportedError('Unsupported platform'),
+  };
 
   patrol(
     'taps at the lower middle of the screen in the Settings app',

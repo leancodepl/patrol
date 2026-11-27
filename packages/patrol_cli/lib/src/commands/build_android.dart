@@ -10,7 +10,9 @@ import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/commands/dart_define_utils.dart';
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
+import 'package:patrol_cli/src/crossplatform/test_discovery_mode.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
+import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:patrol_cli/src/test_bundler.dart';
@@ -237,8 +239,16 @@ class BuildAndroidCommand extends PatrolCommand {
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       uninstall: uninstall,
-      emitTestManifest:
-          optionalBoolArg('emit-test-manifest') ?? config.emitTestManifest,
+      // A --develop build bundles one target for a hot-restart session, which
+      // runs through runtime discovery.
+      emitTestManifest: resolveEmitTestManifest(
+        targetPlatform: TargetPlatform.android,
+        flag: optionalBoolArg('emit-test-manifest'),
+        pubspecValue: config.emitTestManifest,
+        testDirectory: config.projectTestDirectory,
+        logger: _logger,
+        defaultValue: !develop,
+      ),
     );
 
     try {
