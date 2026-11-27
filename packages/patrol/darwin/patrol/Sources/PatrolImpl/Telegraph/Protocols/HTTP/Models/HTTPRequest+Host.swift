@@ -1,30 +1,30 @@
 #if PATROL_ENABLED
-//
-//  HTTPRequest+Host.swift
-//  Telegraph
-//
-//  Created by Yvo van Beek on 2/20/17.
-//  Copyright © 2017 Building42. All rights reserved.
-//
+  //
+  //  HTTPRequest+Host.swift
+  //  Telegraph
+  //
+  //  Created by Yvo van Beek on 2/20/17.
+  //  Copyright © 2017 Building42. All rights reserved.
+  //
 
-import Foundation
+  import Foundation
 
-extension HTTPRequest {
-  // Sets the host header to the specified host and port.
-  public func setHostHeader(host: String?, port: Int? = nil) {
-    var value: String?
+  extension HTTPRequest {
+    // Sets the host header to the specified host and port.
+    public func setHostHeader(host: String?, port: Int? = nil) {
+      var value: String?
 
-    if let host = host {
-      value = "\(host)"
+      if let host = host {
+        value = "\(host)"
 
-      // The default port is 80, no need to send that
-      if let port = port, port != 80 {
-        value?.append(":\(port)")
+        // The default port is 80, no need to send that
+        if let port = port, port != 80 {
+          value?.append(":\(port)")
+        }
       }
-    }
 
-    headers.host = value
+      headers.host = value
+    }
   }
-}
 
 #endif

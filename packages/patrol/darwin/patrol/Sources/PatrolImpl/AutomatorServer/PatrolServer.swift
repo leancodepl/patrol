@@ -1,159 +1,159 @@
 #if PATROL_ENABLED
-import Foundation
+  import Foundation
 
-#if canImport(Darwin)
-  import Darwin
-#endif
+  #if canImport(Darwin)
+    import Darwin
+  #endif
 
-@objc(PatrolServer) public class PatrolServer: NSObject {
-  private static let envPortKey = "PATROL_TEST_PORT"
+  @objc(PatrolServer) public class PatrolServer: NSObject {
+    private static let envPortKey = "PATROL_TEST_PORT"
 
-  private static let defaultPort = 8081
+    private static let defaultPort = 8081
 
-  private static let maxPortBindAttempts = 50
+    private static let maxPortBindAttempts = 50
 
-  private let automator: Automator
-  private let server: Server
+    private let automator: Automator
+    private let server: Server
 
-  @objc
-  public var appReady = false
+    @objc
+    public var appReady = false
 
-  /// Port the native automation server bound to after [start].
-  @objc public private(set) var boundTestPort: Int = defaultPort
+    /// Port the native automation server bound to after [start].
+    @objc public private(set) var boundTestPort: Int = defaultPort
 
-  /// Port the app under test should use for [PatrolAppService].
-  @objc public private(set) var boundAppPort: Int = defaultPort + 1
+    /// Port the app under test should use for [PatrolAppService].
+    @objc public private(set) var boundAppPort: Int = defaultPort + 1
 
-  private var preferredPort: Int = {
-    guard let portStr = ProcessInfo.processInfo.environment[envPortKey] else {
-      Logger.shared.i("\(envPortKey) is null, falling back to default (\(defaultPort))")
-      return defaultPort
+    private var preferredPort: Int = {
+      guard let portStr = ProcessInfo.processInfo.environment[envPortKey] else {
+        Logger.shared.i("\(envPortKey) is null, falling back to default (\(defaultPort))")
+        return defaultPort
+      }
+
+      guard let portInt = Int(portStr) else {
+        Logger.shared.i(
+          "\(envPortKey) with value \(portStr) is not valid, falling back to default (\(defaultPort))"
+        )
+        return defaultPort
+      }
+
+      return portInt
+    }()
+
+    @objc public override init() {
+      Logger.shared.i("PatrolServer constructor called")
+
+      self.server = Server()
+      #if os(iOS)
+        self.automator = IOSAutomator()
+      #elseif os(macOS)
+        self.automator = MacOSAutomator()
+      #endif
     }
 
-    guard let portInt = Int(portStr) else {
-      Logger.shared.i(
-        "\(envPortKey) with value \(portStr) is not valid, falling back to default (\(defaultPort))"
-      )
-      return defaultPort
-    }
+    @objc public func start() throws {
+      Logger.shared.i("Starting server...")
 
-    return portInt
-  }()
+      #if os(macOS)
+        SystemDialogMonitor.register()
+      #endif
 
-  @objc public override init() {
-    Logger.shared.i("PatrolServer constructor called")
+      let provider = AutomatorServer(automator: automator) { appReady in
+        Logger.shared.i("App reported that it is ready")
+        self.appReady = appReady
+      }
 
-    self.server = Server()
-    #if os(iOS)
-      self.automator = IOSAutomator()
-    #elseif os(macOS)
-      self.automator = MacOSAutomator()
-    #endif
-  }
+      provider.setupRoutes(server: server)
 
-  @objc public func start() throws {
-    Logger.shared.i("Starting server...")
-
-    #if os(macOS)
-      SystemDialogMonitor.register()
-    #endif
-
-    let provider = AutomatorServer(automator: automator) { appReady in
-      Logger.shared.i("App reported that it is ready")
-      self.appReady = appReady
-    }
-
-    provider.setupRoutes(server: server)
-
-    // Mount optional extension routes on the same server.
-    let registrar = PatrolRouteRegistrar { [server = self.server] path, handler in
-      server.route(.POST, path) { request in
-        do {
-          let responseBody = try handler(request.body)
-          return HTTPResponse(.ok, body: responseBody)
-        } catch let err {
-          return HTTPResponse(.badRequest, headers: [:], error: err)
+      // Mount optional extension routes on the same server.
+      let registrar = PatrolRouteRegistrar { [server = self.server] path, handler in
+        server.route(.POST, path) { request in
+          do {
+            let responseBody = try handler(request.body)
+            return HTTPResponse(.ok, body: responseBody)
+          } catch let err {
+            return HTTPResponse(.badRequest, headers: [:], error: err)
+          }
         }
       }
-    }
-    for ext in PatrolServerExtensions.discover() {
-      Logger.shared.i("Loaded Patrol server extension: \(ext.name)")
-      ext.register(on: registrar)
-    }
-
-    var portToTry = preferredPort
-    var lastError: Error?
-
-    for attempt in 0..<Self.maxPortBindAttempts {
-      let appPortToTry = portToTry + 1
-      if !Self.isPortAvailable(appPortToTry) {
-        Logger.shared.i(
-          "App service port \(appPortToTry) unavailable (attempt \(attempt + 1)), trying next pair"
-        )
-        portToTry += 2
-        continue
+      for ext in PatrolServerExtensions.discover() {
+        Logger.shared.i("Loaded Patrol server extension: \(ext.name)")
+        ext.register(on: registrar)
       }
 
-      do {
-        try server.start(port: portToTry)
-        boundTestPort = portToTry
-        boundAppPort = appPortToTry
-        Logger.shared.i("Server started on http://0.0.0.0:\(boundTestPort)")
-        Logger.shared.i("App service port: \(boundAppPort)")
-        return
-      } catch {
-        lastError = error
-        Logger.shared.i(
-          "Failed to bind PatrolServer on port \(portToTry) (attempt \(attempt + 1)): \(error)"
-        )
-        portToTry += 2
+      var portToTry = preferredPort
+      var lastError: Error?
+
+      for attempt in 0..<Self.maxPortBindAttempts {
+        let appPortToTry = portToTry + 1
+        if !Self.isPortAvailable(appPortToTry) {
+          Logger.shared.i(
+            "App service port \(appPortToTry) unavailable (attempt \(attempt + 1)), trying next pair"
+          )
+          portToTry += 2
+          continue
+        }
+
+        do {
+          try server.start(port: portToTry)
+          boundTestPort = portToTry
+          boundAppPort = appPortToTry
+          Logger.shared.i("Server started on http://0.0.0.0:\(boundTestPort)")
+          Logger.shared.i("App service port: \(boundAppPort)")
+          return
+        } catch {
+          lastError = error
+          Logger.shared.i(
+            "Failed to bind PatrolServer on port \(portToTry) (attempt \(attempt + 1)): \(error)"
+          )
+          portToTry += 2
+        }
       }
+
+      throw lastError
+        ?? NSError(
+          domain: "PatrolServer",
+          code: 1,
+          userInfo: [
+            NSLocalizedDescriptionKey:
+              "Failed to bind PatrolServer after \(Self.maxPortBindAttempts) attempts"
+          ]
+        )
     }
 
-    throw lastError
-      ?? NSError(
-        domain: "PatrolServer",
-        code: 1,
-        userInfo: [
-          NSLocalizedDescriptionKey:
-            "Failed to bind PatrolServer after \(Self.maxPortBindAttempts) attempts"
-        ]
+    private static func isPortAvailable(_ port: Int) -> Bool {
+      let socketFD = socket(AF_INET, SOCK_STREAM, 0)
+      if socketFD < 0 {
+        return false
+      }
+      defer { close(socketFD) }
+
+      var reuse: Int32 = 1
+      setsockopt(
+        socketFD,
+        SOL_SOCKET,
+        SO_REUSEADDR,
+        &reuse,
+        socklen_t(MemoryLayout<Int32>.size)
       )
-  }
 
-  private static func isPortAvailable(_ port: Int) -> Bool {
-    let socketFD = socket(AF_INET, SOCK_STREAM, 0)
-    if socketFD < 0 {
-      return false
-    }
-    defer { close(socketFD) }
-
-    var reuse: Int32 = 1
-    setsockopt(
-      socketFD,
-      SOL_SOCKET,
-      SO_REUSEADDR,
-      &reuse,
-      socklen_t(MemoryLayout<Int32>.size)
-    )
-
-    guard let uint16Port = UInt16(exactly: port) else {
-      return false
-    }
-
-    var addr = sockaddr_in()
-    addr.sin_len = UInt8(MemoryLayout<sockaddr_in>.size)
-    addr.sin_family = sa_family_t(AF_INET)
-    addr.sin_port = in_port_t(uint16Port).bigEndian
-    addr.sin_addr.s_addr = in_addr_t(INADDR_ANY.bigEndian)
-
-    let bindResult = withUnsafePointer(to: &addr) {
-      $0.withMemoryRebound(to: sockaddr.self, capacity: 1) {
-        Darwin.bind(socketFD, $0, socklen_t(MemoryLayout<sockaddr_in>.size))
+      guard let uint16Port = UInt16(exactly: port) else {
+        return false
       }
+
+      var addr = sockaddr_in()
+      addr.sin_len = UInt8(MemoryLayout<sockaddr_in>.size)
+      addr.sin_family = sa_family_t(AF_INET)
+      addr.sin_port = in_port_t(uint16Port).bigEndian
+      addr.sin_addr.s_addr = in_addr_t(INADDR_ANY.bigEndian)
+
+      let bindResult = withUnsafePointer(to: &addr) {
+        $0.withMemoryRebound(to: sockaddr.self, capacity: 1) {
+          Darwin.bind(socketFD, $0, socklen_t(MemoryLayout<sockaddr_in>.size))
+        }
+      }
+      return bindResult == 0
     }
-    return bindResult == 0
   }
-}
 
 #endif

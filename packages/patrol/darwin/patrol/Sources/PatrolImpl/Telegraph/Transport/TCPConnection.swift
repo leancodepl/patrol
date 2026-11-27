@@ -1,32 +1,32 @@
 #if PATROL_ENABLED
-//
-//  TCPConnection.swift
-//  Telegraph
-//
-//  Created by Yvo van Beek on 2/10/17.
-//  Copyright © 2017 Building42. All rights reserved.
-//
+  //
+  //  TCPConnection.swift
+  //  Telegraph
+  //
+  //  Created by Yvo van Beek on 2/10/17.
+  //  Copyright © 2017 Building42. All rights reserved.
+  //
 
-import Foundation
+  import Foundation
 
-public protocol TCPConnection: AnyObject, Hashable {
-  var localEndpoint: Endpoint? { get }
-  var remoteEndpoint: Endpoint? { get }
+  public protocol TCPConnection: AnyObject, Hashable {
+    var localEndpoint: Endpoint? { get }
+    var remoteEndpoint: Endpoint? { get }
 
-  func open()
-  func close(immediately: Bool)
-}
-
-// MARK: Hashable implementation
-
-extension TCPConnection {
-  public static func == (lhs: Self, rhs: Self) -> Bool {
-    return ObjectIdentifier(lhs) == ObjectIdentifier(rhs)
+    func open()
+    func close(immediately: Bool)
   }
 
-  public func hash(into hasher: inout Hasher) {
-    ObjectIdentifier(self).hash(into: &hasher)
+  // MARK: Hashable implementation
+
+  extension TCPConnection {
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+      return ObjectIdentifier(lhs) == ObjectIdentifier(rhs)
+    }
+
+    public func hash(into hasher: inout Hasher) {
+      ObjectIdentifier(self).hash(into: &hasher)
+    }
   }
-}
 
 #endif
