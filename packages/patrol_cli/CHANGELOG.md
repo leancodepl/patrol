@@ -4,6 +4,9 @@
   bundled with `patrol`, the error now says to update `patrol` and, on Ubuntu, which
   `PLAYWRIGHT_HOST_PLATFORM_OVERRIDE` value works as a fallback. On an Ubuntu older than 20.04 it
   says the OS is too old instead.
+- Add native screenshots on iOS, collected by `patrol test` from the `.xcresult` into
+  `<test-directory>/screenshots`. Requires Xcode 16 or newer. See the
+  [docs](https://patrol.leancode.co/cli-commands/test#on-ios). (#3271)
 
 ## 4.10.0
 

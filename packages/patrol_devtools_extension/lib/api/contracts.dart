@@ -1331,6 +1331,21 @@ class AndroidSetFoldPostureResponse with Equatable {
 }
 
 @JsonSerializable()
+class IOSTakeNativeScreenshotRequest with Equatable {
+  const IOSTakeNativeScreenshotRequest({required this.tag});
+
+  factory IOSTakeNativeScreenshotRequest.fromJson(Map<String, dynamic> json) =>
+      _$IOSTakeNativeScreenshotRequestFromJson(json);
+
+  final String tag;
+
+  Map<String, dynamic> toJson() => _$IOSTakeNativeScreenshotRequestToJson(this);
+
+  @override
+  List<Object?> get props => [tag];
+}
+
+@JsonSerializable()
 class IOSTakeCameraPhotoRequest with Equatable {
   const IOSTakeCameraPhotoRequest({
     this.shutterButtonSelector,
