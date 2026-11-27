@@ -10,6 +10,7 @@ import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
+import 'package:patrol_cli/src/crossplatform/executed_tests_check.dart';
 import 'package:patrol_cli/src/crossplatform/patrol_build_environment.dart';
 import 'package:patrol_cli/src/crossplatform/test_manifest_generator.dart';
 import 'package:patrol_cli/src/devices.dart';
@@ -185,7 +186,19 @@ class MacOSTestBackend {
     List<String> onlyTests = const [],
   }) async {
     final runnerSetup = _runnerSetup;
-    final onlyTesting = runnerSetup.onlyTestingFor(onlyTests);
+    // A develop session runs in the base runner class, whatever the mode.
+    final onlyTesting = interruptible
+        ? const <String>[]
+        : runnerSetup.onlyTestingFor(onlyTests);
+    final executedTestsCheck = ExecutedTestsCheck.forRun(
+      _rootDirectory,
+      _logger,
+      platform: TargetPlatform.macOS,
+      emitTestManifest:
+          options.emitTestManifest && runnerSetup.hasGeneratedTests,
+      interruptible: interruptible,
+      onlyTests: onlyTests,
+    );
     await _disposeScope.run((scope) async {
       final subject = '${options.description} on ${device.description}';
       final task = _logger.task('Running $subject');
@@ -205,7 +218,7 @@ class MacOSTestBackend {
                 ),
                 resultBundlePath: resultsPath,
                 onlyTesting: onlyTesting,
-                staticRunner: runnerSetup.hasGeneratedTests,
+                staticRunner: !interruptible && runnerSetup.hasGeneratedTests,
               ),
               runInShell: true,
               environment: {
@@ -217,12 +230,18 @@ class MacOSTestBackend {
               workingDirectory: _rootDirectory.childDirectory('macos').path,
             )
             ..disposedByTree(_disposeScope);
-      process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
+      process
+          .listenStdOut((l) {
+            executedTestsCheck?.onRunnerOutput(l);
+            _logger.detail('\t$l');
+          })
+          .disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
 
       final exitCode = await process.exitCode;
 
       if (exitCode == 0) {
+        executedTestsCheck?.verifyTask(task, subject);
         task.complete('Completed executing $subject');
       } else if (exitCode != 0 && interruptible) {
         task.complete('App shut down on request');

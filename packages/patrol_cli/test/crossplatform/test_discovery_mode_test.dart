@@ -30,6 +30,40 @@ void main() {
     setupProblem: setupProblem,
   );
 
+  group('warnIfEmitTestManifestOnWeb', () {
+    test('warns when the flag is passed for web', () {
+      warnIfEmitTestManifestOnWeb(
+        targetPlatform: TargetPlatform.web,
+        flag: true,
+        logger: logger,
+      );
+
+      verify(
+        () => logger.warn(any(that: contains('not supported on web'))),
+      ).called(1);
+    });
+
+    test('stays quiet without the flag or off web', () {
+      warnIfEmitTestManifestOnWeb(
+        targetPlatform: TargetPlatform.web,
+        flag: null,
+        logger: logger,
+      );
+      warnIfEmitTestManifestOnWeb(
+        targetPlatform: TargetPlatform.web,
+        flag: false,
+        logger: logger,
+      );
+      warnIfEmitTestManifestOnWeb(
+        targetPlatform: TargetPlatform.macOS,
+        flag: true,
+        logger: logger,
+      );
+
+      verifyNever(() => logger.warn(any()));
+    });
+  });
+
   group('resolveEmitTestManifest', () {
     test('is on by default', () {
       expect(resolve(), isTrue);

@@ -188,12 +188,11 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
         _ => null,
       },
     );
-    if (isWeb && (optionalBoolArg('emit-test-manifest') ?? false)) {
-      _logger.warn(
-        'Build-time test discovery is not supported on web, ignoring '
-        '--emit-test-manifest. Tests are discovered in the browser instead.',
-      );
-    }
+    warnIfEmitTestManifestOnWeb(
+      targetPlatform: device.targetPlatform,
+      flag: optionalBoolArg('emit-test-manifest'),
+      logger: _logger,
+    );
 
     // Validate that flavors are not used with web platform
     if (isWeb && stringArg('flavor') != null) {

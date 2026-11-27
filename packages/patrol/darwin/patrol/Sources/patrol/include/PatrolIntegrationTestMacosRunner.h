@@ -20,6 +20,7 @@
                                                                                                                  \
   static PatrolServer *_patrolServer = nil;                                                                      \
   static ObjCPatrolAppServiceClient *_patrolAppServiceClient = nil;                                              \
+  static NSError *_patrolServerStartError = nil;                                                                 \
                                                                                                                  \
   /* True when build-time discovery generated test classes (PatrolGeneratedTests.inc)                            \
      that subclass this one. They then own the tests, and this class runs none. */                               \
@@ -49,7 +50,7 @@
     [server startAndReturnError:&err];                                                                           \
     if (err != nil) {                                                                                            \
       NSLog(@"patrolServer.start(): failed, err: %@", err);                                                      \
-      XCTFail(@"patrolServer.start() failed: %@", err);                                                          \
+      _patrolServerStartError = err;                                                                             \
       return NO;                                                                                                 \
     }                                                                                                            \
     _patrolServer = server;                                                                                      \
@@ -87,6 +88,7 @@
                                                                                                                  \
     /* Runtime discovery: launch the app once and ask it for its Dart tests. */                                  \
     if (![self patrolStartServerIfNeeded]) {                                                                     \
+      XCTFail(@"patrolServer.start() failed: %@", _patrolServerStartError);                                      \
       return @[];                                                                                                \
     }                                                                                                            \
     PatrolServer *server = _patrolServer;                                                                        \
@@ -212,6 +214,7 @@
       XCTSkip(@"Skip that test \"%@\"", dartTestName);                                                           \
     }                                                                                                            \
     if (![[self class] patrolStartServerIfNeeded]) {                                                             \
+      XCTFail(@"patrolServer.start() failed: %@", _patrolServerStartError);                                      \
       return;                                                                                                    \
     }                                                                                                            \
                                                                                                                  \

@@ -257,7 +257,9 @@ runs that used to pass while running fewer tests now fail:
 | A test registered only on the device (`Platform.isAndroid` around `patrolTest`) | Never runs, passes | Every test fails with the list of missing tests |
 
 Runtime discovery doesn't run these checks, including the fallback for tests
-in `integration_test/` or an iOS `RunnerUITests.m` without the `#include`.
+in `integration_test/` or an iOS or macOS `RunnerUITests.m` without the
+`#include`. On macOS a run counts the tests `xcodebuild` reports, because the
+CLI doesn't read the app's logs there.
 
 **What to do:**
 
@@ -319,7 +321,8 @@ your computer, which can't compile web-only imports (`package:web`,
 Playwright the full list before the run, so `--web-shard` works as before.
 
 **What to do:** nothing. `emit_test_manifest` in `pubspec.yaml` is ignored on
-web, and `--emit-test-manifest` with `-d chrome` only prints a warning.
+web, and `--emit-test-manifest` with `patrol test -d chrome` or
+`patrol develop -d chrome` only prints a warning.
 
 ## Inbox
 

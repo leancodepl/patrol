@@ -307,7 +307,8 @@ debugging a single failing test.
 ## Web
 
 Web always uses runtime discovery: the setting and `--no-emit-test-manifest` are
-ignored there, and passing `--emit-test-manifest` only prints a warning.
+ignored there, and passing `--emit-test-manifest` to `patrol test` or
+`patrol develop` only prints a warning.
 Discovery compiles your tests for the Dart VM on your computer, and web test
 suites usually import `package:web`, `dart:js_interop` or `dart:ui_web`, which
 the VM can't compile.

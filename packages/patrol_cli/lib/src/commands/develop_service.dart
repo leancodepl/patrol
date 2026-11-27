@@ -331,6 +331,11 @@ class DevelopService {
       buildNumber: options.buildNumber,
     );
 
+    warnIfEmitTestManifestOnWeb(
+      targetPlatform: device.targetPlatform,
+      flag: options.emitTestManifest,
+      logger: _logger,
+    );
     // A hot-restart session runs through runtime discovery, so develop only
     // generates native tests when asked to. They then cover just its target.
     final emitTestManifest = resolveEmitTestManifest(

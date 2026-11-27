@@ -55,6 +55,22 @@ bool resolveEmitTestManifest({
   return false;
 }
 
+/// Warns that an explicit `--emit-test-manifest` [flag] does nothing on web,
+/// which always discovers tests in the browser.
+void warnIfEmitTestManifestOnWeb({
+  required TargetPlatform targetPlatform,
+  required bool? flag,
+  required Logger logger,
+}) {
+  if (targetPlatform != TargetPlatform.web || !(flag ?? false)) {
+    return;
+  }
+  logger.warn(
+    'Build-time test discovery is not supported on web, ignoring '
+    '--emit-test-manifest. Tests are discovered in the browser instead.',
+  );
+}
+
 /// Whether [testDirectory] is `integration_test` or a directory inside it.
 bool isUnderIntegrationTest(String testDirectory) {
   final segments = testDirectory
