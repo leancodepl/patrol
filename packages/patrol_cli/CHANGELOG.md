@@ -1,3 +1,11 @@
+## Unreleased
+
+- Show the last lines of Playwright's output when `patrol test` on web fails without a failed test
+  in the summary, e.g. an unsupported `--web-channel`, an error in global setup or an invalid
+  `PATROL_WEB_*` value. Before, only `Playwright process exited unexpectedly with code 1` was
+  printed, and the cause was hidden even with `--verbose` when Playwright printed it to stdout.
+  (#3410)
+
 ## 4.10.0
 
 - Read coverage from runs with the test orchestrator's `clearPackageData:true` in

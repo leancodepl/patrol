@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart';
@@ -152,4 +154,158 @@ void main() {
       },
     );
   });
+
+  group('watchPlaywrightProcess', () {
+    late MockLogger logger;
+    late WebTestBackend backend;
+    late DisposeScope scope;
+    late _FakeProcess process;
+
+    setUp(() {
+      logger = MockLogger();
+      backend = WebTestBackend(
+        processManager: MockProcessManager(),
+        parentDisposeScope: DisposeScope(),
+        logger: logger,
+      );
+      scope = DisposeScope();
+      process = _FakeProcess();
+    });
+
+    tearDown(() async {
+      if (!scope.disposed) {
+        await scope.dispose();
+      }
+    });
+
+    Future<void> watch({
+      Duration outputDrainTimeout = const Duration(minutes: 1),
+    }) => backend.watchPlaywrightProcess(
+      process,
+      scope: scope,
+      reportDir: 'playwright-report',
+      showFlutterLogs: false,
+      hideTestSteps: true,
+      clearTestSteps: false,
+      hideTestLifecycle: true,
+      outputDrainTimeout: outputDrainTimeout,
+    );
+
+    List<String> errors() =>
+        verify(() => logger.err(captureAny())).captured.cast<String>();
+
+    test('completes when all tests passed', () async {
+      final result = watch();
+      process
+        ..writeStdout('Running 1 test using 1 worker')
+        ..exit(0);
+      await process.closeStreams();
+
+      await expectLater(result, completes);
+      verifyNever(() => logger.err(any()));
+    });
+
+    test('shows output that arrives after the exit code', () async {
+      final result = watch();
+      process.exit(1);
+      await pumpEventQueue();
+      process
+        ..writeStdout(
+          'Error: browserType.launch: Unsupported chromium channel "bogus"',
+        )
+        ..writeStderr('Error: PATROL_WEB_VIEWPORT must be a valid JSON');
+      await process.closeStreams();
+
+      await expectLater(
+        result,
+        throwsA('Playwright process exited unexpectedly with code 1'),
+      );
+      expect(errors().single.split('\n'), [
+        'Last lines of Playwright output:',
+        'Error: browserType.launch: Unsupported chromium channel "bogus"',
+        'Error: PATROL_WEB_VIEWPORT must be a valid JSON',
+      ]);
+    });
+
+    test('stops waiting for a pipe that stays open', () async {
+      final result = watch(
+        outputDrainTimeout: const Duration(milliseconds: 50),
+      );
+      process
+        ..writeStdout('Error: global setup failed')
+        ..exit(1);
+      // The streams stay open, e.g. a child process still holds the pipes.
+
+      await expectLater(
+        result.timeout(const Duration(seconds: 5)),
+        throwsA('Playwright process exited unexpectedly with code 1'),
+      );
+      expect(errors().single, contains('Error: global setup failed'));
+    });
+
+    test(
+      'stops waiting and prints no output when the run is interrupted',
+      () async {
+        final result = watch();
+        process
+          ..writeStdout('Running 17 tests using 1 worker')
+          ..exit(-15);
+        await pumpEventQueue();
+
+        final expectation = expectLater(
+          result.timeout(const Duration(seconds: 5)),
+          throwsA('Playwright process exited unexpectedly with code -15'),
+        );
+        await scope.dispose();
+
+        await expectation;
+        verifyNever(() => logger.err(any()));
+      },
+    );
+
+    test('prints no output when a test failed', () async {
+      final result = watch();
+      process
+        ..writeStdout(
+          'PATROL_LOG {"type":"test","name":"cookies","status":"start"}',
+        )
+        ..writeStdout(
+          'PATROL_LOG {"type":"test","name":"web.cookies_test cookies",'
+          '"status":"failure"}',
+        )
+        ..writeStdout('  1 failed')
+        ..exit(1);
+      await process.closeStreams();
+
+      await expectLater(result, throwsA('Some tests failed.'));
+      verifyNever(() => logger.err(any()));
+    });
+  });
+}
+
+/// A Playwright process whose output and exit the test controls.
+class _FakeProcess extends Fake implements Process {
+  final _stdout = StreamController<List<int>>();
+  final _stderr = StreamController<List<int>>();
+  final _exitCode = Completer<int>();
+
+  @override
+  Stream<List<int>> get stdout => _stdout.stream;
+
+  @override
+  Stream<List<int>> get stderr => _stderr.stream;
+
+  @override
+  Future<int> get exitCode => _exitCode.future;
+
+  void writeStdout(String line) => _stdout.add(utf8.encode('$line\n'));
+
+  void writeStderr(String line) => _stderr.add(utf8.encode('$line\n'));
+
+  void exit(int code) => _exitCode.complete(code);
+
+  Future<void> closeStreams() async {
+    await _stdout.close();
+    await _stderr.close();
+  }
 }
