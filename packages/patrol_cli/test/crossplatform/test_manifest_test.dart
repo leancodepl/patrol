@@ -1,4 +1,6 @@
+import 'package:file/memory.dart';
 import 'package:patrol_cli/src/crossplatform/test_manifest.dart';
+import 'package:patrol_cli/src/devices.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -242,5 +244,29 @@ void main() {
       expect(selection.unmatched, ['patrol_test/nope_test.dart']);
       expect(selection.tests, hasLength(1));
     });
+  });
+
+  test('keeps one manifest per platform', () {
+    final fs = MemoryFileSystem.test();
+    final root = fs.directory('/app');
+    final android = TestManifest.buildFile(root, TargetPlatform.android)
+      ..createSync(recursive: true)
+      ..writeAsStringSync(
+        '{"group":{"name":"","type":"group","skip":false,"entries":[]}}',
+      );
+
+    expect(android.path, '/app/build/patrol/android/patrol_test_manifest.json');
+    expect(
+      TestManifest.buildFile(root, TargetPlatform.iOS).path,
+      '/app/build/patrol/ios/patrol_test_manifest.json',
+    );
+    expect(
+      TestManifest.loadFromBuild(root, platform: TargetPlatform.android),
+      isNotNull,
+    );
+    expect(
+      TestManifest.loadFromBuild(root, platform: TargetPlatform.iOS),
+      isNull,
+    );
   });
 }

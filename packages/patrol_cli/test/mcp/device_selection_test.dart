@@ -1,5 +1,5 @@
-import 'package:patrol_cli/patrol_cli.dart' show Device, TargetPlatform;
-import 'package:patrol_mcp/src/device_selection.dart';
+import 'package:patrol_cli/src/devices.dart';
+import 'package:patrol_cli/src/mcp/device_selection.dart';
 import 'package:test/test.dart';
 
 Device _device(String id, TargetPlatform platform, {required bool emulator}) =>
@@ -22,9 +22,9 @@ void main() {
   final macos = _device('macos', TargetPlatform.macOS, emulator: false);
 
   group('supportedDevices', () {
-    test('keeps Android, iOS and web, drops macOS', () {
+    test('keeps Android and iOS, drops web and macOS', () {
       final result = supportedDevices([androidEmu, iosSim, web, macos]);
-      expect(result, [androidEmu, iosSim, web]);
+      expect(result, [androidEmu, iosSim]);
     });
 
     test('empty in, empty out', () {

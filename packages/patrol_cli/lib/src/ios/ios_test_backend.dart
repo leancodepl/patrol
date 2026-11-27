@@ -11,6 +11,7 @@ import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
+import 'package:patrol_cli/src/crossplatform/executed_tests_check.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart'
     show getObservationUrl;
 import 'package:patrol_cli/src/crossplatform/patrol_build_environment.dart';
@@ -283,7 +284,10 @@ class IOSTestBackend {
       return const [];
     }
     final manifest = hasGeneratedTests
-        ? TestManifest.loadFromBuild(_rootDirectory)
+        ? TestManifest.loadFromBuild(
+            _rootDirectory,
+            platform: TargetPlatform.iOS,
+          )
         : null;
     if (manifest == null) {
       throwToolExit(
@@ -322,7 +326,10 @@ class IOSTestBackend {
     if (!hasGeneratedTests) {
       return const [];
     }
-    final manifest = TestManifest.loadFromBuild(_rootDirectory);
+    final manifest = TestManifest.loadFromBuild(
+      _rootDirectory,
+      platform: TargetPlatform.iOS,
+    );
     if (manifest == null) {
       return const [];
     }
@@ -432,6 +439,7 @@ class IOSTestBackend {
     void Function(Entry entry)? onLogEntry,
     void Function(String url)? onVmServiceUrl,
     VideoRecordingConfig? videoConfig,
+    String? screenshotsOutputDir,
   }) async {
     // A develop session runs in the base runner class, whatever the mode.
     final onlyTesting = interruptible
@@ -439,6 +447,14 @@ class IOSTestBackend {
         : onlyTests.isNotEmpty
         ? _resolveOnlyTesting(onlyTests)
         : _generatedClassSelectors();
+    final executedTestsCheck = ExecutedTestsCheck.forRun(
+      _rootDirectory,
+      _logger,
+      platform: TargetPlatform.iOS,
+      emitTestManifest: options.emitTestManifest && hasGeneratedTests,
+      interruptible: interruptible,
+      onlyTests: onlyTests,
+    );
     await _disposeScope.run((scope) async {
       // Create video recording manager if enabled
       IOSVideoRecordingManager? videoRecordingManager;
@@ -500,6 +516,8 @@ class IOSTestBackend {
         cancelOnError: cancelOnError,
       );
 
+      final checkedOnLogEntry =
+          executedTestsCheck?.wrapOnLogEntry(onLogEntry) ?? onLogEntry;
       final patrolLogReader =
           PatrolLogReader(
               listenStdOut: listenPatrolLogs,
@@ -510,8 +528,8 @@ class IOSTestBackend {
               hideTestSteps: hideTestSteps,
               clearTestSteps: clearTestSteps,
               onLogEntry:
-                  videoRecordingManager?.wrapOnLogEntry(onLogEntry) ??
-                  onLogEntry,
+                  videoRecordingManager?.wrapOnLogEntry(checkedOnLogEntry) ??
+                  checkedOnLogEntry,
             )
             ..listen()
             ..startTimer();
@@ -546,7 +564,12 @@ class IOSTestBackend {
               workingDirectory: _rootDirectory.childDirectory('ios').path,
             )
             ..disposedByTree(_disposeScope);
-      process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
+      process
+          .listenStdOut((l) {
+            executedTestsCheck?.onRunnerOutput(l);
+            _logger.detail('\t$l');
+          })
+          .disposedBy(scope);
       process.listenStdErr((l) => _logger.detail('\t$l')).disposedBy(scope);
 
       final exitCode = await process.exitCode;
@@ -555,6 +578,18 @@ class IOSTestBackend {
 
       // Cleanup video recording manager
       await videoRecordingManager?.dispose();
+
+      // Extract native screenshots (failure and on-demand) from the .xcresult.
+      // Runs whether tests passed or failed - before the exit-code check below
+      // that throws on failure - so failing runs still yield their screenshots.
+      // Not gated on `screenshot_on_failure`: on-demand captures need it too.
+      // Skipped in develop, which reuses the bundle across hot restarts.
+      if (!interruptible && screenshotsOutputDir != null) {
+        await extractScreenshots(
+          xcresultPath: reportPath,
+          outputDir: screenshotsOutputDir,
+        );
+      }
 
       // Don't print the summary in develop
       if (!interruptible) {
@@ -566,6 +601,7 @@ class IOSTestBackend {
       }
 
       if (exitCode == 0) {
+        executedTestsCheck?.verifyTask(task, subject);
         task.complete('Completed executing $subject');
       } else if (exitCode != 0 && interruptible) {
         task.complete('App shut down on request');
@@ -823,5 +859,194 @@ class IOSTestBackend {
         .toList();
 
     return jsonEncode(ids);
+  }
+
+  /// The 8-byte PNG file signature.
+  static const _pngMagic = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
+
+  /// Prefix that Patrol puts on the names of the screenshots it attaches
+  /// (failure and on-demand), so they can be told apart from XCTest's own
+  /// automatic attachments during extraction.
+  static const _patrolAttachmentPrefix = 'patrol_';
+
+  /// `xcresulttool` suggests `<name>_<n>_<UUID>.<ext>` for an attachment named
+  /// `<name>`; this matches the part it adds.
+  static final _exportNameSuffix = RegExp(
+    r'_\d+_[0-9A-Fa-f]{8}(-[0-9A-Fa-f]{4}){3}-[0-9A-Fa-f]{12}(\.\w+)?$',
+  );
+
+  /// Extracts native screenshots captured during the run from the [xcresultPath]
+  /// bundle into [outputDir], organized per test. Best-effort: never throws.
+  ///
+  /// On iOS the screenshots ride inside the `.xcresult` that xcodebuild writes
+  /// on the host, so this works identically for simulators and physical devices
+  /// - there is no on-device pull step (unlike Android). We export every
+  /// attachment, then keep only PNG images that are either associated with a
+  /// test failure or were attached by Patrol (name prefixed with `patrol_`).
+  @visibleForTesting
+  Future<void> extractScreenshots({
+    required String xcresultPath,
+    required String outputDir,
+  }) async {
+    try {
+      final destination = _rootDirectory.childDirectory(outputDir);
+      // Start clean, even with no bundle to read: a previous run's screenshots
+      // must not pass for this run's.
+      if (destination.existsSync()) {
+        destination.deleteSync(recursive: true);
+      }
+
+      final xcresult = _fs.directory(xcresultPath);
+      if (!xcresult.existsSync()) {
+        _logger.detail(
+          'No .xcresult bundle at $xcresultPath; '
+          'skipping screenshot extraction.',
+        );
+        return;
+      }
+
+      final exportDir = _fs.systemTempDirectory.createTempSync(
+        'patrol_ios_screenshots',
+      );
+      try {
+        final result = await _processManager.run([
+          'xcrun',
+          'xcresulttool',
+          'export',
+          'attachments',
+          '--path',
+          xcresult.absolute.path,
+          '--output-path',
+          exportDir.path,
+        ], runInShell: true);
+
+        if (result.exitCode != 0) {
+          // Older xcresulttool (pre-Xcode 16) lacks `export attachments`.
+          _logger.detail(
+            'Could not export screenshots from the .xcresult bundle '
+            '(xcresulttool exit code ${result.exitCode}). This requires '
+            'Xcode 16 or newer.',
+          );
+          return;
+        }
+
+        final manifestFile = exportDir.childFile('manifest.json');
+        if (!manifestFile.existsSync()) {
+          _logger.detail('No screenshots were captured during the run.');
+          return;
+        }
+
+        final saved = _copyScreenshotsFromExport(
+          manifest: jsonDecode(manifestFile.readAsStringSync()),
+          exportDir: exportDir,
+          destination: destination,
+        );
+
+        if (saved > 0) {
+          _logger.info('Screenshots saved to ${destination.path}');
+        } else {
+          _logger.detail('No screenshots were captured during the run.');
+        }
+      } finally {
+        exportDir.deleteSync(recursive: true);
+      }
+    } catch (err) {
+      _logger.warn('Failed to extract screenshots from the .xcresult: $err');
+    }
+  }
+
+  /// Copies the Patrol-attached and failure PNG attachments listed in
+  /// [manifest] from [exportDir] into [destination], grouped per test. Returns
+  /// the number of screenshots saved.
+  int _copyScreenshotsFromExport({
+    required Object? manifest,
+    required Directory exportDir,
+    required Directory destination,
+  }) {
+    if (manifest is! List) {
+      return 0;
+    }
+
+    var saved = 0;
+    // Distinct test ids can sanitize to the same name; keep their files apart.
+    final dirNameByTestId = <String, String>{};
+    final nextIndexByFile = <String, int>{};
+    for (final testEntry in manifest.whereType<Map<String, dynamic>>()) {
+      final testId = testEntry['testIdentifier'] as String? ?? 'unknown';
+      final attachments = testEntry['attachments'];
+      if (attachments is! List) {
+        continue;
+      }
+
+      for (final attachment in attachments.whereType<Map<String, dynamic>>()) {
+        final fileName = attachment['exportedFileName'] as String?;
+        if (fileName == null) {
+          continue;
+        }
+        final suggestedName =
+            attachment['suggestedHumanReadableName'] as String? ?? 'screenshot';
+        final name = suggestedName.replaceFirst(_exportNameSuffix, '');
+        final isFailure =
+            attachment['isAssociatedWithFailure'] as bool? ?? false;
+        final isPatrol = name.startsWith(_patrolAttachmentPrefix);
+        if (!isFailure && !isPatrol) {
+          continue;
+        }
+
+        final source = exportDir.childFile(fileName);
+        if (!source.existsSync() || !_isPng(source)) {
+          continue;
+        }
+
+        final dirName = dirNameByTestId.putIfAbsent(
+          testId,
+          () => _uniqueName(_sanitize(testId), dirNameByTestId.values),
+        );
+        // Counted per name, so the number only tells repeats of a tag apart.
+        final fileStem = _sanitize(name);
+        final index = nextIndexByFile.update(
+          '$dirName/$fileStem',
+          (index) => index + 1,
+          ifAbsent: () => 0,
+        );
+        final testDir = destination.childDirectory(dirName)
+          ..createSync(recursive: true);
+        source.copySync(testDir.childFile('${fileStem}_$index.png').path);
+        saved++;
+      }
+    }
+    return saved;
+  }
+
+  bool _isPng(File file) {
+    final raf = file.openSync();
+    try {
+      final header = raf.readSync(_pngMagic.length);
+      if (header.length < _pngMagic.length) {
+        return false;
+      }
+      for (var i = 0; i < _pngMagic.length; i++) {
+        if (header[i] != _pngMagic[i]) {
+          return false;
+        }
+      }
+      return true;
+    } finally {
+      raf.closeSync();
+    }
+  }
+
+  /// Makes [value] safe to use as a single path segment.
+  String _sanitize(String value) {
+    return value.replaceAll(RegExp('[^A-Za-z0-9._-]+'), '_');
+  }
+
+  /// Returns [name], with a numeric suffix when it is already in [taken].
+  String _uniqueName(String name, Iterable<String> taken) {
+    var candidate = name;
+    for (var i = 2; taken.contains(candidate); i++) {
+      candidate = '${name}_$i';
+    }
+    return candidate;
   }
 }

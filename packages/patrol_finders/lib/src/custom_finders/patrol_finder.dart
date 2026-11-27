@@ -402,6 +402,7 @@ class PatrolFinder extends MatchFinder {
     Duration? settleBetweenScrollsTimeout,
     Duration? dragDuration,
     SettlePolicy? settlePolicy,
+    bool? dragWithoutFling,
     Alignment alignment = Alignment.center,
     String? description,
   }) {
@@ -418,6 +419,7 @@ class PatrolFinder extends MatchFinder {
           maxScrolls: maxScrolls,
           settleBetweenScrollsTimeout: settleBetweenScrollsTimeout,
           settlePolicy: settlePolicy,
+          dragWithoutFling: dragWithoutFling,
           dragDuration: dragDuration,
           alignment: alignment,
           enablePatrolLog: false,

@@ -1,5 +1,10 @@
 ## Unreleased
 
+- Add `PatrolTesterConfig.dragWithoutFling`. When true, scrolling methods such as `scrollTo()`
+  end each drag without a fling and cover 3 steps per drag, so they no longer wait for the scroll
+  to coast to a stop between drags. Off by default; `scrollTo()`, `scrollUntilVisible()`,
+  `scrollUntilExists()`, `dragUntilVisible()` and `dragUntilExists()` also take a
+  `dragWithoutFling` argument for a single call. (#3421)
 - **Breaking:** `PatrolTester.pumpAndSettle()` returns `Future<int>`, the number of pumped frames,
   like `WidgetTester.pumpAndSettle()`. Overrides, implementations and mocks of it must return
   `Future<int>`. (#3414)

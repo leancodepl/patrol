@@ -508,6 +508,10 @@ public struct AndroidSetFoldPostureResponse: Codable {
   public var previousPosture: AndroidFoldPosture?
 }
 
+public struct IOSTakeNativeScreenshotRequest: Codable {
+  public var tag: String
+}
+
 public struct IOSTakeCameraPhotoRequest: Codable {
   public var shutterButtonSelector: IOSSelector?
   public var doneButtonSelector: IOSSelector?

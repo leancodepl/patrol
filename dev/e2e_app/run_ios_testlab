@@ -23,9 +23,113 @@ else
     echo "Using locale: $IOS_DEVICE_LOCALE"
 fi
 
+RESULTS_BUCKET="patrol_runs"
+# A known results dir so we can pull the .xcresult back afterwards; unique per
+# job, since parallel jobs must not share one.
+RESULTS_DIR="${RESULTS_DIR:-ios_run_$(date -u +%Y%m%d_%H%M%S)_${GITHUB_RUN_ID:-local}_${RANDOM}}"
+
+# Don't let a failing test (gcloud exits non-zero) abort the screenshot pull.
+set +e
 gcloud firebase test ios run \
 	--type xctest \
 	--test "build/ios_integ/Build/Products/ios_tests.zip" \
 	--device model="$IOS_DEVICE_MODEL",version="$IOS_DEVICE_VERSION",locale="$IOS_DEVICE_LOCALE",orientation=portrait \
 	--timeout 30m \
-	--results-bucket="patrol_runs"
+	--results-bucket="$RESULTS_BUCKET" \
+	--results-dir="$RESULTS_DIR"
+TESTS_EXIT_CODE=$?
+set -e
+
+# Pull native artifacts off Firebase Test Lab. On iOS the screenshots are
+# attached to the test's .xcresult, which FTL uploads under
+# <device>/TestLogs/*.xcresult in the results bucket (there is no
+# --directories-to-pull for iOS like on Android). We download the result bundle
+# and export the screenshots. Best-effort: never fails the run. Opt-in with
+# PULL_IOS_ARTIFACTS=1. (The bundle FTL returns holds no screen recordings.)
+# The screenshot filter is the one in `IOSTestBackend._copyScreenshotsFromExport`
+# in patrol_cli (PNGs named `patrol_*` or associated with a failure) — keep the
+# two in sync.
+SCREENSHOTS_DIR="${IOS_SCREENSHOTS_DIR:-ios_screenshots}"
+pull_artifacts() {
+	command -v xcrun >/dev/null 2>&1 || { echo "xcrun not found; skipping artifact pull"; return 0; }
+
+	local pull_dir attach_dir
+	pull_dir="$(mktemp -d)"
+	rm -rf "$SCREENSHOTS_DIR"
+	mkdir -p "$SCREENSHOTS_DIR"
+
+	# Copy the whole results dir; the .xcresult prefix can't be cp'd directly
+	# ("no objects matched"), but its parent recurses fine.
+	if ! gcloud storage cp -r "gs://$RESULTS_BUCKET/$RESULTS_DIR" "$pull_dir" 2>/dev/null; then
+		echo "Could not download results from gs://$RESULTS_BUCKET/$RESULTS_DIR; skipping artifact pull"
+		rm -rf "$pull_dir"
+		return 0
+	fi
+
+	while IFS= read -r xcresult; do
+		attach_dir="$(mktemp -d)"
+		if xcrun xcresulttool export attachments --path "$xcresult" --output-path "$attach_dir" >/dev/null 2>&1; then
+			python3 - "$attach_dir" "$SCREENSHOTS_DIR" <<'PY'
+import hashlib, json, os, re, shutil, sys
+attach_dir, shots_dir = sys.argv[1], sys.argv[2]
+manifest = os.path.join(attach_dir, "manifest.json")
+
+
+def slug(s):
+    return re.sub(r"[^A-Za-z0-9._-]+", "_", s)[:80]
+
+
+# xcresulttool suggests `<name>_<n>_<UUID>.<ext>`; this is the part it adds.
+EXPORT_NAME_SUFFIX = re.compile(
+    r"_\d+_[0-9A-Fa-f]{8}(-[0-9A-Fa-f]{4}){3}-[0-9A-Fa-f]{12}(\.\w+)?$"
+)
+
+
+def is_png(path):
+    with open(path, "rb") as f:
+        return f.read(8) == b"\x89PNG\r\n\x1a\n"
+
+
+def free_path(directory, stem, ext):
+    # Next free index: a test can show up twice (a retry, or a second bundle).
+    i = 0
+    while os.path.exists(os.path.join(directory, f"{stem}_{i}{ext}")):
+        i += 1
+    return os.path.join(directory, f"{stem}_{i}{ext}")
+
+
+if os.path.exists(manifest):
+    for test in json.load(open(manifest)):
+        ident = test.get("testIdentifier", "unknown")
+        # Digest of the full id: same-named tests in two classes stay apart.
+        tid = f"{slug(ident)}-{hashlib.sha1(ident.encode()).hexdigest()[:8]}"
+        for a in test.get("attachments", []):
+            name = EXPORT_NAME_SUFFIX.sub("", a.get("suggestedHumanReadableName", ""))
+            src = os.path.join(attach_dir, a["exportedFileName"])
+            if not os.path.isfile(src):
+                continue
+            wanted = name.startswith("patrol_") or a.get("isAssociatedWithFailure")
+            if wanted and is_png(src):
+                shutil.copy(src, free_path(shots_dir, f"{tid}__{slug(name)}", ".png"))
+PY
+		fi
+		rm -rf "$attach_dir"
+	done < <(find "$pull_dir" -type d -name '*.xcresult')
+
+	rm -rf "$pull_dir"
+
+	if [ -n "$(ls -A "$SCREENSHOTS_DIR" 2>/dev/null)" ]; then
+		echo "Patrol screenshots saved to $SCREENSHOTS_DIR:"
+		ls -1 "$SCREENSHOTS_DIR"
+	else
+		echo "No Patrol screenshots found in the result bundle."
+		rmdir "$SCREENSHOTS_DIR" 2>/dev/null || true
+	fi
+}
+
+# Only where a workflow uploads the result; the pull downloads the whole bundle.
+if [ "${PULL_IOS_ARTIFACTS:-}" = "1" ]; then
+	pull_artifacts || echo "Artifact pull failed; continuing."
+fi
+
+exit "$TESTS_EXIT_CODE"

@@ -161,6 +161,13 @@
       }
     }
 
+    // MARK: Screenshots
+    func takeNativeScreenshot(request: IOSTakeNativeScreenshotRequest) throws {
+      return try runCatching {
+        try automator.takeNativeScreenshot(name: request.tag)
+      }
+    }
+
     // MARK: Volume settings
     func pressVolumeUp() throws {
       return try runCatching {

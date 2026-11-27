@@ -7,6 +7,9 @@
   bundled with `patrol`, the error now says to update `patrol` and, on Ubuntu, which
   `PLAYWRIGHT_HOST_PLATFORM_OVERRIDE` value works as a fallback. On an Ubuntu older than 20.04 it
   says the OS is too old instead.
+- Add native screenshots on iOS, collected by `patrol test` from the `.xcresult` into
+  `<test-directory>/screenshots`. Requires Xcode 16 or newer. See the
+  [docs](https://patrol.leancode.co/cli-commands/test#on-ios). (#3271)
 
 ## 5.0.0-dev.1
 
@@ -47,6 +50,19 @@
 - Fix `patrol develop` leaving Gradle and logcat processes behind after quitting with `q`, and the
   test running on the Android device after Ctrl+C. (#3249)
 - `patrol develop` no longer leaves `adb` port forwards behind on Android devices when the session ends. (#3367)
+- Add `patrol mcp` (experimental), an MCP server shipped with the CLI that lets AI agents run tests
+  in `patrol develop` sessions and read their results. It runs a test on Android or iOS, hot
+  restarts it on the next `run`, and takes screenshots and native trees. One server serves every
+  project it is asked about, git worktrees included. Its results report a `patrol` version this CLI
+  cannot drive. It replaces the `patrol_mcp` package, so its dependencies no longer land in the
+  app's pubspec (#3166). Run it as `patrol mcp` from a globally activated CLI or as
+  `dart run patrol_cli:main mcp` from a dev dependency, with develop flags after `--`;
+  `PATROL_FLAGS` is split as a shell would (#3026). See the
+  [docs](https://patrol.leancode.co/documentation/other/patrol-mcp), migrating off `patrol_mcp`
+  included. (#3368)
+- Look for a `patrol test`/`patrol develop` target in the project when the path names nothing from
+  the directory the command was run in. A relative target still belongs to that directory first,
+  which is how `-t ../patrol_test/app_test.dart` works from a subdirectory. (#3369)
 
 - **BREAKING CHANGE**
   - Remove `--tags` from `patrol develop`. It was accepted but never applied, so a session ran
@@ -61,6 +77,10 @@
     discovery with a warning that shows the lines to add (an explicit opt-in fails instead). The removed
     `PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN`/`_END` macros are reported with the
     replacement. Requires `patrol` 5.0.
+  - With build-time discovery, runs in which tests didn't run fail instead of passing with
+    `Total: 0`. A missing Android Patrol test class (`MainActivityTest.java`) stops the build, a run
+    that executed fewer tests than discovered fails and lists them, and the app fails when it
+    registers a test that discovery didn't find. Requires `patrol` 5.0. See `migration5.md`. (#3425)
 - Show why build-time discovery failed (the failing part of the host `flutter test` output) without
   `--verbose`.
 

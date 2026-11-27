@@ -1,6 +1,19 @@
 import 'package:file/file.dart';
 import 'package:patrol_cli/src/crossplatform/test_manifest.dart';
 
+/// Error shown when build-time discovery is on but the app has no androidTest
+/// host class, without which the generated tests would never run.
+const missingAndroidHostTestMessage =
+    'Build-time test discovery is enabled, but no Patrol test class was found '
+    'in android/app/src/androidTest. Without it no test runs on Android.\n'
+    '\n'
+    'Create MainActivityTest.java there (the class that sets up '
+    'PatrolJUnitRunner) and set testInstrumentationRunner to '
+    '"pl.leancode.patrol.PatrolJUnitRunner" in android/app/build.gradle.\n'
+    '\n'
+    'See https://patrol.leancode.co/documentation#setup (Android).\n'
+    'Or pass --no-emit-test-manifest to use runtime discovery.';
+
 /// The result of [AndroidTestCodegen.generate].
 class AndroidCodegenResult {
   AndroidCodegenResult({
@@ -54,8 +67,7 @@ class AndroidTestCodegen {
   /// test class (the one referencing `PatrolJUnitRunner`), reusing its package.
   ///
   /// [androidDir] is the app's `android/` directory. Returns `null` when the
-  /// androidTest source set / host test class cannot be located (the caller
-  /// then falls back to the runtime discovery path).
+  /// androidTest source set / host test class cannot be located.
   AndroidCodegenResult? generate({
     required String manifestPath,
     required Directory androidDir,
@@ -106,6 +118,12 @@ class AndroidTestCodegen {
       testCount: tests.length,
     );
   }
+
+  /// Whether the androidTest host class that drives `PatrolJUnitRunner` exists.
+  bool hasHostTest(
+    Directory androidDir, {
+    String className = 'PatrolGeneratedTests',
+  }) => _locateHostTest(androidDir, generatedClassName: className) != null;
 
   /// Finds the fully-qualified names of the already-generated classes, without
   /// regenerating them. Used at execution time to build the class filter. Empty

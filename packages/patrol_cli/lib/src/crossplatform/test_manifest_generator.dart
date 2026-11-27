@@ -6,6 +6,7 @@ import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/crossplatform/test_manifest.dart';
 import 'package:patrol_cli/src/devices.dart';
+import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:process/process.dart';
 
 /// Discovers Dart tests at build time by running a host `flutter test` in
@@ -41,9 +42,15 @@ class TestManifestGenerator {
         .childDirectory('build')
         .childDirectory('patrol')
         .childFile('patrol_test_manifest.json');
-    manifestFile.parent.createSync(recursive: true);
-    if (manifestFile.existsSync()) {
-      manifestFile.deleteSync();
+    final platformManifestFile = TestManifest.buildFile(
+      _rootDirectory,
+      targetPlatform,
+    );
+    for (final file in [manifestFile, platformManifestFile]) {
+      file.parent.createSync(recursive: true);
+      if (file.existsSync()) {
+        file.deleteSync();
+      }
     }
 
     final task = _logger.task('Discovering Dart tests at build time');
@@ -80,6 +87,8 @@ class TestManifestGenerator {
 
     task.complete('Discovered Dart tests → ${manifestFile.path}');
     _reportDiscoveredTests(manifestFile, flutter);
+    _writeTestsToBundle(manifestFile, flutter.target);
+    manifestFile.copySync(platformManifestFile.path);
     return manifestFile.absolute.path;
   }
 
@@ -94,6 +103,21 @@ class TestManifestGenerator {
         ? (output.length - maxLines).clamp(0, output.length)
         : firstError;
     return output.skip(start).take(maxLines).toList();
+  }
+
+  void _writeTestsToBundle(File manifestFile, String target) {
+    final fs = _rootDirectory.fileSystem;
+    final bundle = fs.file(fs.path.join(_rootDirectory.path, target));
+    final tests = TestManifest.parse(manifestFile.readAsStringSync()).tests;
+    final written = writeManifestTestsToBundle(bundle, [
+      for (final test in tests) test.dartName,
+    ]);
+    if (!written) {
+      _logger.detail(
+        '${bundle.path} has no manifest tests section, so the app cannot '
+        'report tests that discovery missed',
+      );
+    }
   }
 
   /// Prints a human-readable summary of the discovered tests on the visible

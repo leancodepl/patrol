@@ -8,6 +8,9 @@ extension MapX<K, V> on Map<K, V?> {
 }
 
 extension StringX on String {
+  /// This string, or null when it is empty.
+  String? get nullIfEmpty => isEmpty ? null : this;
+
   /// Adapted from https://stackoverflow.com/a/60404614/7009800
   List<String> splitFirst(String sep) {
     final index = indexOf(sep);

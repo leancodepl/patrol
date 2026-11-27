@@ -18,12 +18,17 @@ class FlutterTool {
     required this._platform,
     required DisposeScope parentDisposeScope,
     required this._logger,
+    this.projectRoot,
     this.onQuit,
     required this._onExit,
     @visibleForTesting this._adbTimeout = const Duration(seconds: 5),
   }) : _disposeScope = DisposeScope() {
     _disposeScope.disposedBy(parentDisposeScope);
   }
+
+  /// The project `flutter attach` and `flutter logs` run in; the process's
+  /// working directory when null.
+  final String? projectRoot;
 
   final Stream<List<int>> _stdin;
   final ProcessManager _processManager;
@@ -78,6 +83,14 @@ class FlutterTool {
     _onRestartFailed = null;
     callback?.call();
   }
+
+  final _hotRestartReady = Completer<void>();
+
+  /// Completes once `flutter attach` will act on a hot restart.
+  ///
+  /// A restart requested earlier is held until then, so a caller that reports
+  /// on the restart waits for this before claiming it was sent.
+  Future<void> get hotRestartReady => _hotRestartReady.future;
 
   /// Forwards logs and hot restarts the app when "r" is pressed.
   Future<void> attachForHotRestart({
@@ -280,7 +293,7 @@ class FlutterTool {
                 '--dart-define',
                 '${dartDefine.key}=${dartDefine.value}',
               ],
-            ])
+            ], workingDirectory: projectRoot)
             ..disposedByTree(scope);
       _attachProcess = process;
 
@@ -370,6 +383,9 @@ class FlutterTool {
                   deviceId,
                 ).then((after) => after.difference(before));
               }
+              if (!_hotRestartReady.isCompleted) {
+                _hotRestartReady.complete();
+              }
               if (_pendingHotRestart) {
                 _pendingHotRestart = false;
                 _logger.success('Hot Restart: sending the queued restart');
@@ -430,14 +446,18 @@ class FlutterTool {
     await _disposeScope.run((scope) async {
       _logger.detail('Logs: waiting for them...');
       final process =
-          await _processManager.start([
-              ...[flutterCommand.executable, ...flutterCommand.arguments],
-              '--no-version-check',
-              '--suppress-analytics',
-              'logs',
-              '--device-id',
-              deviceId,
-            ], runInShell: true)
+          await _processManager.start(
+              [
+                ...[flutterCommand.executable, ...flutterCommand.arguments],
+                '--no-version-check',
+                '--suppress-analytics',
+                'logs',
+                '--device-id',
+                deviceId,
+              ],
+              runInShell: true,
+              workingDirectory: projectRoot,
+            )
             ..disposedByTree(scope);
 
       final completer = Completer<void>();

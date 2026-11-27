@@ -42,6 +42,49 @@ void _test(NativePlatform platform) {
       );
     });
 
+    test('writes the manifest tests into a generated bundle', () {
+      testBundler.createTestBundle(
+        testDirectory,
+        [fs.path.join('patrol_test', 'example_test.dart')],
+        null,
+        null,
+      );
+      final bundle = testBundler.getBundledTestFile(testDirectory);
+      expect(
+        bundle.readAsStringSync(),
+        contains('const List<String>? _patrolManifestTests = null;'),
+      );
+
+      final written = writeManifestTestsToBundle(bundle, [
+        'example_test plain',
+        r'example_test costs $5 and "quotes" \ slash',
+      ]);
+
+      expect(written, isTrue);
+      final contents = bundle.readAsStringSync();
+      expect(contents, contains('  "example_test plain",\n'));
+      expect(
+        contents,
+        contains(r'  "example_test costs \$5 and \"quotes\" \\ slash",'),
+      );
+      expect(contents, isNot(contains('_patrolManifestTests = null')));
+      expect(contents, contains('manifestTests: _patrolManifestTests'));
+
+      // Writing again replaces the previous list.
+      writeManifestTestsToBundle(bundle, ['example_test other']);
+      final rewritten = bundle.readAsStringSync();
+      expect(rewritten, contains('"example_test other"'));
+      expect(rewritten, isNot(contains('"example_test plain"')));
+    });
+
+    test('leaves a bundle without the manifest section alone', () {
+      final bundle = fs.file('custom_bundle.dart')
+        ..writeAsStringSync('void main() {}');
+
+      expect(writeManifestTestsToBundle(bundle, ['a b']), isFalse);
+      expect(bundle.readAsStringSync(), 'void main() {}');
+    });
+
     test('throws ArgumentError when no tests are given', () {
       expect(
         () => testBundler.createTestBundle(testDirectory, [], null, null),

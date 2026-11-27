@@ -39,7 +39,6 @@ unreleased_section() {
 extra_version_file() {
   case "$1" in
     patrol_cli) echo packages/patrol_cli/lib/src/base/constants.dart ;;
-    patrol_mcp) echo packages/patrol_mcp/bin/patrol_mcp.dart ;;
   esac
 }
 

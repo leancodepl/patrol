@@ -15,7 +15,7 @@ Update `patrol` and `patrol_cli` together: Patrol 5.0 is `patrol` 5.x with
 |---|---|---|
 | `patrol` | 5.x | |
 | `patrol_cli` | 5.x | |
-| `patrol_mcp` | not released yet | needs a release that depends on `patrol_cli` 5.x; until then it resolves `patrol_cli` 4.x |
+| `patrol_mcp` | discontinued | replaced by the `patrol mcp` command of `patrol_cli`, see below |
 | `patrol_finders` | 4.x | `pumpAndSettle()` returns `Future<int>` and other API changes, see below |
 | `patrol_log` | 0.10.x, no change so far | |
 
@@ -169,7 +169,7 @@ What changes for you:
 | iOS native test name | `RunnerUITests/<dart test name>` | `PatrolGeneratedTests_<file>/test_<name>` |
 | Android native test name | `MainActivityTest#runDartTest[<dart test name>]` | `PatrolGeneratedTests_<file>#test_<name>` |
 | Tests in `integration_test/` | Runtime discovery | Runtime discovery, with a warning on every build |
-| Registration that depends on `Platform` | Works | The test can go missing or fail on the device |
+| Registration that depends on `Platform` | Works | The run fails (see [Runs in which tests didn't run fail](#runs-in-which-tests-didnt-run-fail)) |
 
 **What to do:**
 
@@ -240,6 +240,48 @@ patrol:
 
 or pass `--no-emit-test-manifest` to a single command. Nothing else is needed,
 `RunnerUITests.m` works in both modes.
+
+## Runs in which tests didn't run fail
+
+**Packages:** `patrol`, `patrol_cli`
+
+With build-time discovery Patrol knows which tests a run should execute, so
+runs that used to pass while running fewer tests now fail:
+
+| Situation | Before | 5.0 |
+|---|---|---|
+| No `MainActivityTest.java` in `android/app/src/androidTest` | `Total: 0`, exit 0 | The build stops with a setup error |
+| Fewer tests ran than discovered (app not installed, stale test APK) | Passes | Fails and lists the tests that didn't run |
+| A test registered only on the device (`Platform.isAndroid` around `patrolTest`) | Never runs, passes | Every test fails with the list of missing tests |
+
+Runtime discovery doesn't run these checks, including the fallback for tests
+in `integration_test/` or an iOS `RunnerUITests.m` without the `#include`.
+
+**What to do:**
+
+1. **Android:** make sure `MainActivityTest.java` is in place, as in the
+   [setup](https://patrol.leancode.co/documentation#setup).
+2. Use `patrolTargetPlatform` for anything that decides whether a test is
+   registered (see step 2 of the previous section).
+3. If CI goes red after the upgrade, read the error: it names the tests that
+   didn't run, which a green run used to hide.
+
+## `patrol_mcp` is replaced by `patrol mcp`
+
+**Packages:** `patrol_mcp`, `patrol_cli` (#3368)
+
+The MCP server ships with `patrol_cli` as the `patrol mcp` command. `patrol_mcp`
+gets no 5.x release.
+
+**What to do:**
+
+1. Remove the `patrol_mcp` dev dependency.
+2. In your MCP client config, replace `dart run patrol_mcp` with `patrol mcp`
+   (`patrol_cli` activated globally) or `dart run patrol_cli:main mcp`
+   (`patrol_cli` as a dev dependency).
+3. Pass flags for `patrol develop` after `--`, for example
+   `patrol mcp -- --flavor dev`. `PROJECT_ROOT`, `PATROL_FLAGS` and
+   `SHOW_TERMINAL` keep working.
 
 ## Inbox
 

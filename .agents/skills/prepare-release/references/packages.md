@@ -9,7 +9,6 @@
 | `patrol_finders` | `pubspec.yaml` | `patrol_finders-vX.Y.Z` | `flutter pub publish --dry-run` | `patrol_finders-check-semver` |
 | `patrol` | `pubspec.yaml` | `patrol-vX.Y.Z` | `flutter pub publish --dry-run` (must list `skills/`) | `patrol-check-semver` |
 | `patrol_cli` | `pubspec.yaml`, `lib/src/base/constants.dart` (`const version`) | `patrol_cli-vX.Y.Z` | `dart pub publish --dry-run` | — |
-| `patrol_mcp` | `pubspec.yaml`, `bin/patrol_mcp.dart` (`const version`) | `patrol_mcp-vX.Y.Z` | none in CI — run `dart pub publish --dry-run` yourself | — |
 
 Each tag triggers `.github/workflows/<pkg>-publish.yaml`, which publishes to
 pub.dev through `leancodepl/mobile-tools/.github/actions/pub-release`, creates a
@@ -40,9 +39,8 @@ reads them live):
 ```
 patrol_log ──┬──> patrol_finders ──> patrol
              ├──────────────────────> patrol
-             └──> patrol_cli ──> patrol_mcp
+             └──> patrol_cli
 adb ─────────────> patrol_cli
-adb ─────────────────────────────> patrol_mcp
 ```
 
 patrol_cli does **not** depend on the patrol package (the `patrol: main` line in
@@ -51,8 +49,7 @@ which the compatibility table covers.
 
 **Release and tag order** follows the graph: a package goes out after the
 siblings it depends on. adb and patrol_log go first; patrol_finders and
-patrol_cli need only those; patrol comes after patrol_finders, and patrol_mcp
-after patrol_cli. patrol and patrol_cli don't depend on each other, so they go
+patrol_cli need only those; patrol comes after patrol_finders. patrol and patrol_cli don't depend on each other, so they go
 out together, in either order (#3357 merged before #3356, and both tags were
 pushed at once). Skip the packages not being released. Each package has its
 own release PR and its own tag on that PR's merge commit. A PR that bumps a
@@ -76,9 +73,8 @@ What CI resolves against pub.dev:
 | Job | Resolves | Catches a too-low floor |
 |---|---|---|
 | patrol-prepare `Resolve against published dependencies` | the newest published siblings | no: only API missing from the newest release, or a constraint pub.dev can't satisfy |
-| patrol_mcp-prepare `Smoke (floor patrol_cli)` | patrol_cli at its floor | for patrol_cli only |
 
-Nothing covers patrol_finders, patrol_cli, or patrol_mcp's `adb`, so run
+Nothing covers patrol_finders or patrol_cli, so run
 `tool/check_dependency_floors.sh <pkg>` before opening a release PR. It removes
 the overrides, downgrades every sibling to its floor and analyzes `lib/` and
 `bin/`. Since a dependent's release PR waits until the sibling it needs is
@@ -86,7 +82,7 @@ published, every floor should be on pub.dev. The script still accepts a floor
 equal to the sibling's version in the tree (a branch stacked on the sibling's
 release branch), and says so.
 
-Both jobs above fail in pub get with "doesn't match any versions" when a
+The job above fails in pub get with "doesn't match any versions" when a
 constraint points at a sibling version that isn't on pub.dev yet: the PR was
 opened before that sibling was published.
 

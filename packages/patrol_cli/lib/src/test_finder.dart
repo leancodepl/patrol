@@ -47,18 +47,19 @@ class TestFinder {
     final absoluteExcludes = _toAbsoluteExcludes(excludes);
 
     for (final target in targets) {
+      final resolved = _resolve(target);
       if (target.endsWith(testFileSuffix)) {
-        final isFile = _fs.isFileSync(target);
+        final isFile = _fs.isFileSync(resolved);
         if (!isFile) {
           throwToolExit('target file $target does not exist');
         }
-        final absoluteTargetPath = _fs.file(target).absolute.path;
+        final absoluteTargetPath = _fs.file(resolved).absolute.path;
         if (!_isExcluded(absoluteTargetPath, absoluteExcludes)) {
           testFiles.add(_fs.path.normalize(absoluteTargetPath));
         }
-      } else if (_fs.isDirectorySync(target)) {
+      } else if (_fs.isDirectorySync(resolved)) {
         final foundTargets = findAllTests(
-          directory: _fs.directory(target).absolute,
+          directory: _fs.directory(resolved).absolute,
           excludes: excludes,
           testFileSuffix: testFileSuffix,
         );
@@ -111,6 +112,21 @@ class TestFinder {
         })
         .map((entity) => _fs.path.normalize(entity.absolute.path))
         .toList();
+  }
+
+  /// [target] as given, or against the project when it names nothing from here.
+  ///
+  /// A relative target belongs to the directory the command was run in, which is
+  /// how `-t ../patrol_test/app_test.dart` works from a subdirectory. A process
+  /// serving a project it was not started in has neither, and its targets are
+  /// the project's own.
+  String _resolve(String target) {
+    if (_fs.path.isAbsolute(target) ||
+        _fs.isFileSync(target) ||
+        _fs.isDirectorySync(target)) {
+      return target;
+    }
+    return _fs.path.join(_rootDir.path, target);
   }
 
   /// Converts `excludes` to absolute paths.
