@@ -118,6 +118,7 @@ class _NodeDetails extends HookWidget {
         ('isLongClickable:', n.view.isLongClickable),
         ('isScrollable:', n.view.isScrollable),
         ('isSelected:', n.view.isSelected),
+        ('isVisibleToUser:', n.view.isVisibleToUser),
         ('visibleBounds:', n.view.visibleBounds._toDisplayValue()),
         ('visibleCenter:', n.view.visibleCenter._toDisplayValue()),
       ],

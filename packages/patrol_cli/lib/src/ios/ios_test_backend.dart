@@ -18,7 +18,9 @@ import 'package:patrol_cli/src/crossplatform/test_manifest.dart';
 import 'package:patrol_cli/src/crossplatform/test_manifest_generator.dart';
 import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
 import 'package:patrol_cli/src/devices.dart';
+import 'package:patrol_cli/src/ios/ios_host_server.dart';
 import 'package:patrol_cli/src/ios/ios_video_recording_manager.dart';
+import 'package:patrol_cli/src/ios/simulator_hinge.dart';
 import 'package:patrol_cli/src/ios/xcode_test_codegen.dart';
 import 'package:patrol_log/patrol_log.dart';
 import 'package:patrol_log/patrol_log_reader.dart';
@@ -421,6 +423,10 @@ class IOSTestBackend {
         );
       }
 
+      final hostServer = device.real
+          ? null
+          : await _startHostServer(device, scope);
+
       final patrolLogCommand = device.real
           ? ['idevicesyslog', '-u', device.id]
           : [
@@ -504,6 +510,8 @@ class IOSTestBackend {
                 'TEST_RUNNER_PATROL_TEST_PORT': options.testServerPort
                     .toString(),
                 'TEST_RUNNER_PATROL_APP_PORT': options.appServerPort.toString(),
+                if (hostServer != null)
+                  'TEST_RUNNER_PATROL_HOST_PORT': hostServer.port.toString(),
                 if (interruptible) 'TEST_RUNNER_PATROL_DEVELOP': '1',
               },
               workingDirectory: _rootDirectory.childDirectory('ios').path,
@@ -542,6 +550,24 @@ class IOSTestBackend {
         throwToolExit(cause);
       }
     });
+  }
+
+  Future<IOSHostServer> _startHostServer(
+    Device device,
+    DisposeScope scope,
+  ) async {
+    final hostServer = await IOSHostServer.start(
+      hinge: SimulatorHinge(
+        deviceId: device.id,
+        processManager: _processManager,
+        fs: _fs,
+        logger: _logger,
+      ),
+      logger: _logger,
+    );
+    scope.addDispose(hostServer.close);
+
+    return hostServer;
   }
 
   /// Uninstalls the app under test and the test runner from [device].

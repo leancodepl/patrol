@@ -1,12 +1,38 @@
 ## Unreleased
 
-- Allow `equatable` 3.x by widening the constraint to `>=2.1.0 <4.0.0`. Resolution stays on 2.x until `cli_completion` supports 3.x.
-- Add `patrol coverage pull`, which splits the JaCoCo `.ec` coverage of a patrol Android run into a standard `jacoco.exec` and a Dart `patrol_lcov.info`, merging duplicate `SF:` records across tests and shards. `--input <file or directory>` reads local `.ec` files (e.g. emulator.wtf or Firebase Test Lab outputs); `--browserstack-build-id` downloads them from BrowserStack, merging every session (shard) unless `--browserstack-session-id` is given, and fails fast on builds that ran with `clearPackageData:true`, which is incompatible with coverage there. (#3066)
+- When Chromium cannot be installed for web tests because the OS is newer than the Playwright
+  bundled with `patrol`, the error now says to update `patrol` and, on Ubuntu, which
+  `PLAYWRIGHT_HOST_PLATFORM_OVERRIDE` value works as a fallback. On an Ubuntu older than 20.04 it
+  says the OS is too old instead.
+
+## 4.10.0
+
+- Read coverage from runs with the test orchestrator's `clearPackageData:true` in
+  `patrol coverage pull`: it merges the per-test runs that `patrol` 4.12.0 or newer writes on
+  Android 12+, and no longer refuses those BrowserStack builds. A session that kept only the first
+  test's run (older Android) still fails. (#3359)
+- Fix `patrol develop --use-prebuilt-apks` failing with `flutter build bundle failed with code 64`
+  on projects with a flavor and a fresh checkout (as on CI): `--flavor` is no longer passed to
+  `flutter build bundle`, which has no such option. (#3297)
+
+## 4.9.0
+
+- Add `patrol coverage pull`, which splits the JaCoCo `.ec` coverage of a patrol Android run into a
+  standard `jacoco.exec` and a Dart `patrol_lcov.info`, merging duplicate records across tests and
+  shards. `--input <file or directory>` reads local `.ec` files (e.g. emulator.wtf or Firebase Test
+  Lab outputs), and `--browserstack-build-id` downloads them from BrowserStack. The Dart coverage
+  comes from `patrol` 4.11.0 or newer. See the
+  [docs](https://patrol.leancode.co/cli-commands/coverage). (#3066)
+- Run a server on the host during iOS simulator runs, which the experimental
+  `$.platform.ios.setFoldPosture` uses to fold a foldable simulator such as the iPhone Duo. Requires
+  `patrol` 4.11.0 or newer. (#3336)
+- Allow `equatable` 3.x by widening the constraint to `>=2.1.0 <4.0.0`, and require `patrol_log`
+  ^0.10.2, which allows it too. Resolution stays on 2.x until `cli_completion` supports 3.x. (#3322)
 - Fix `idevicesyslog` not being scoped to the device under test, so concurrent runs on a host with
   several real iOS devices attached all streamed the same device's log, corrupting the step
-  display, `--show-flutter-logs` output and the test summary. (#3245)
+  display, `--show-flutter-logs` output and the test summary. (#3246)
 - Fix `--flutter-command` and `PATROL_FLUTTER_COMMAND` splitting quoted text on spaces, so a quoted
-  Flutter path with spaces works. Add `splitCommandLine` to the public API. (#3026)
+  Flutter path with spaces works. Add `splitCommandLine` to the public API. (#3315)
 - Fix `patrol test` on web timing out when the Flutter web server serves https (set up with
   `web_dev_config.yaml`): the server URL is now detected, and the readiness check accepts a
   self-signed certificate from that server. (#3314)

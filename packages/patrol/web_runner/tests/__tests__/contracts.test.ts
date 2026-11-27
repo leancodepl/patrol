@@ -10,6 +10,7 @@ import type {
   PatrolNativeRequest,
   SwitchToInitialPageRequest,
   GetCurrentPageUrlRequest,
+  TakeNativeScreenshotRequest,
 } from "../contracts"
 
 // ---------------------------------------------------------------------------
@@ -147,6 +148,15 @@ test.describe("contract types - new multi-tab requests", () => {
     expect(req.action).toBe("waitForPopup")
     expect(req.params).toEqual({})
   })
+
+  test("TakeNativeScreenshotRequest has correct structure", () => {
+    const req: TakeNativeScreenshotRequest = {
+      action: "takeNativeScreenshot",
+      params: { tag: "test_screenshot" },
+    }
+    expect(req.action).toBe("takeNativeScreenshot")
+    expect(req.params).toEqual({ tag: "test_screenshot" })
+  })
 })
 
 test.describe("contract types - union includes new request types", () => {
@@ -158,7 +168,8 @@ test.describe("contract types - union includes new request types", () => {
       { action: "getPages", params: {} },
       { action: "getCurrentPage", params: {} },
       { action: "waitForPopup", params: {} },
+      { action: "takeNativeScreenshot", params: { tag: "tag1" } },
     ]
-    expect(requests).toHaveLength(6)
+    expect(requests).toHaveLength(7)
   })
 })

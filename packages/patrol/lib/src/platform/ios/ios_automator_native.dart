@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'dart:io' as io;
+import 'dart:ui' as ui;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -7,7 +9,9 @@ import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:patrol/src/platform/contracts/ios_automator_client.dart';
 import 'package:patrol/src/platform/ios/ios_automator.dart' as ios_automator;
 import 'package:patrol/src/platform/ios/ios_automator_config.dart';
+import 'package:patrol/src/platform/mobile/fold_posture.dart';
 import 'package:patrol/src/platform/mobile/mobile_automator_native.dart';
+import 'package:patrol/src/platform/mobile/patrol_runtime_ports.dart';
 import 'package:patrol_log/patrol_log.dart';
 
 extension on KeyboardBehavior {
@@ -40,6 +44,9 @@ class IOSAutomator extends NativeMobileAutomator
       _config.logger("bundleId is not set. It's recommended to set it.");
     }
   }
+
+  // The simulator shares the host's network.
+  static const _hostServerAddress = '127.0.0.1';
 
   final _patrolLog = PatrolLogWriter();
   final IOSAutomatorConfig _config;
@@ -583,6 +590,47 @@ class IOSAutomator extends NativeMobileAutomator
           timeoutMillis: timeout?.inMilliseconds,
         ),
       );
+    });
+  }
+
+  @override
+  Future<void> setFoldPosture(FoldPosture posture) =>
+      setHingeAngle(posture.hingeAngle);
+
+  @override
+  Future<void> setHingeAngle(double degrees) async {
+    await wrapRequest('setHingeAngle', () async {
+      final hostServerPort = PatrolRuntimePorts.hostServerPort();
+      if (hostServerPort == null) {
+        throw PatrolActionException(
+          'setHingeAngle() works only on iOS simulators run by `patrol test` '
+          'or `patrol develop`',
+        );
+      }
+
+      final view = ui.PlatformDispatcher.instance.implicitView;
+      final sizeBefore = view?.physicalSize;
+
+      final response = await http
+          .post(
+            Uri.http('$_hostServerAddress:$hostServerPort', '/setHingeAngle'),
+            body: jsonEncode({'degrees': degrees}),
+          )
+          .timeout(_config.connectionTimeout);
+      if (response.statusCode != io.HttpStatus.ok) {
+        throw PatrolActionException('setHingeAngle() failed: ${response.body}');
+      }
+
+      // Only a closed hinge uses the cover display.
+      final previousDegrees = switch (jsonDecode(response.body)) {
+        {'previousDegrees': final num degrees} => degrees,
+        _ => null,
+      };
+      final changesDisplay =
+          previousDegrees == null || (previousDegrees == 0) != (degrees == 0);
+      if (changesDisplay) {
+        await waitForDisplaySwitch(view, sizeBefore);
+      }
     });
   }
 }

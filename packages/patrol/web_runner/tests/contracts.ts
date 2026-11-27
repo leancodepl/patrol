@@ -130,6 +130,12 @@ export type GetPagesRequest = PatrolNativeRequestBase<"getPages", {}>
 export type GetCurrentPageRequest = PatrolNativeRequestBase<"getCurrentPage", {}>
 export type GetCurrentPageUrlRequest = PatrolNativeRequestBase<"getCurrentPageUrl", {}>
 export type WaitForPopupRequest = PatrolNativeRequestBase<"waitForPopup", {}>
+export type TakeNativeScreenshotRequest = PatrolNativeRequestBase<
+  "takeNativeScreenshot",
+  {
+    tag: string
+  }
+>
 type UnknownRequest = PatrolNativeRequestBase<`unknown-placeholder-${string}`, unknown>
 
 export type PatrolNativeRequest =
@@ -159,6 +165,7 @@ export type PatrolNativeRequest =
   | StartTestRequest
   | SwitchToPageRequest
   | SwitchToInitialPageRequest
+  | TakeNativeScreenshotRequest
   | TapRequest
   | UnknownRequest
   | UploadFileRequest

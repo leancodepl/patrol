@@ -33,6 +33,12 @@ class Contracts {
     fine,
   }
 
+  enum class AndroidFoldPosture {
+    closed,
+    halfOpen,
+    open,
+  }
+
   enum class IOSElementType {
     any,
     other,
@@ -405,7 +411,8 @@ class Contracts {
   }
 
   data class AndroidGetNativeViewsRequest (
-    val selector: AndroidSelector? = null
+    val selector: AndroidSelector? = null,
+    val includeInvisibleNodes: Boolean
   ){
     fun hasSelector(): Boolean {
       return selector != null
@@ -441,6 +448,7 @@ class Contracts {
     val isLongClickable: Boolean,
     val isScrollable: Boolean,
     val isSelected: Boolean,
+    val isVisibleToUser: Boolean? = null,
     val visibleBounds: Rectangle,
     val visibleCenter: Point2D,
     val children: List<AndroidNativeView>
@@ -459,6 +467,9 @@ class Contracts {
     }
     fun hasApplicationPackage(): Boolean {
       return applicationPackage != null
+    }
+    fun hasIsVisibleToUser(): Boolean {
+      return isVisibleToUser != null
     }
   }
 
@@ -748,6 +759,18 @@ class Contracts {
   data class AndroidTakeNativeScreenshotRequest (
     val tag: String
   )
+
+  data class AndroidSetFoldPostureRequest (
+    val posture: AndroidFoldPosture
+  )
+
+  data class AndroidSetFoldPostureResponse (
+    val previousPosture: AndroidFoldPosture? = null
+  ){
+    fun hasPreviousPosture(): Boolean {
+      return previousPosture != null
+    }
+  }
 
   data class IOSTakeCameraPhotoRequest (
     val shutterButtonSelector: IOSSelector? = null,

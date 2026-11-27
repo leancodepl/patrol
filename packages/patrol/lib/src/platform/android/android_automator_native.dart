@@ -1,4 +1,5 @@
 import 'dart:io' as io;
+import 'dart:ui' as ui;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -8,6 +9,7 @@ import 'package:patrol/src/platform/android/android_automator.dart'
 import 'package:patrol/src/platform/android/android_automator_config.dart';
 import 'package:patrol/src/platform/contracts/android_automator_client.dart';
 import 'package:patrol/src/platform/contracts/contracts.dart';
+import 'package:patrol/src/platform/mobile/fold_posture.dart';
 import 'package:patrol/src/platform/mobile/mobile_automator_native.dart';
 import 'package:patrol_log/patrol_log.dart';
 
@@ -20,6 +22,14 @@ extension on KeyboardBehavior {
         return KeyboardBehavior.alternative;
     }
   }
+}
+
+extension on FoldPosture {
+  AndroidFoldPosture get toContractsEnum => switch (this) {
+    FoldPosture.closed => AndroidFoldPosture.closed,
+    FoldPosture.halfOpen => AndroidFoldPosture.halfOpen,
+    FoldPosture.open => AndroidFoldPosture.open,
+  };
 }
 
 /// Provides functionality to interact with the OS that the app under test is
@@ -502,18 +512,28 @@ class AndroidAutomator extends NativeMobileAutomator
     await wrapRequest('allowPermission', _client.allowPermission);
   }
 
-  /// Returns a list of currently visible native UI controls, specified by
-  /// [selector], which are currently visible on screen.
+  /// Returns a list of native UI controls specified by [selector].
   ///
-  /// If [selector] is null, returns the whole native UI tree.
+  /// If [selector] is null, returns the whole native UI tree. By default the
+  /// tree skips nodes whose `isVisibleToUser` is false (and their subtrees).
+  /// Pass [includeInvisibleNodes] to keep them, e.g. for WebViews that report
+  /// an on-screen container as invisible. Only applies when [selector] is null.
   @override
   Future<AndroidGetNativeViewsResponse> getNativeViews(
-    AndroidSelector? selector,
-  ) {
+    AndroidSelector? selector, {
+    bool includeInvisibleNodes = false,
+  }) {
+    assert(
+      selector == null || !includeInvisibleNodes,
+      'includeInvisibleNodes only applies when selector is null',
+    );
     return wrapRequest(
       'getNativeViews',
       () => _client.getNativeViews(
-        AndroidGetNativeViewsRequest(selector: selector),
+        AndroidGetNativeViewsRequest(
+          selector: selector,
+          includeInvisibleNodes: includeInvisibleNodes,
+        ),
       ),
       enablePatrolLog: false,
     );
@@ -605,5 +625,32 @@ class AndroidAutomator extends NativeMobileAutomator
         ),
       );
     });
+  }
+
+  @override
+  Future<void> setFoldPosture(FoldPosture posture) async {
+    await wrapRequest('setFoldPosture', () async {
+      final view = ui.PlatformDispatcher.instance.implicitView;
+      final sizeBefore = view?.physicalSize;
+
+      final response = await _client.setFoldPosture(
+        AndroidSetFoldPostureRequest(posture: posture.toContractsEnum),
+      );
+
+      // Only the closed posture uses the cover display.
+      final previousPosture = response.previousPosture;
+      final changesDisplay =
+          previousPosture == null ||
+          (previousPosture == AndroidFoldPosture.closed) !=
+              (posture == FoldPosture.closed);
+      if (changesDisplay) {
+        await waitForDisplaySwitch(view, sizeBefore);
+      }
+    });
+  }
+
+  @override
+  Future<void> resetFoldPosture() async {
+    await wrapRequest('resetFoldPosture', _client.resetFoldPosture);
   }
 }

@@ -108,6 +108,9 @@ class IOSSelector {
 
 class AndroidGetNativeViewsRequest {
   AndroidSelector? selector;
+  // Only used when selector is null (full tree). false (default) drops nodes
+  // whose isVisibleToUser is false, like uiautomator's dumpWindowHierarchy().
+  late bool includeInvisibleNodes;
 }
 
 class IOSGetNativeViewsRequest {
@@ -132,6 +135,7 @@ class AndroidNativeView {
   late bool isLongClickable;
   late bool isScrollable;
   late bool isSelected;
+  bool? isVisibleToUser;
   late Rectangle visibleBounds;
   late Point2D visibleCenter;
   late List<AndroidNativeView> children;
@@ -325,6 +329,17 @@ class AndroidTakeNativeScreenshotRequest {
   late String tag;
 }
 
+enum AndroidFoldPosture { closed, halfOpen, open }
+
+class AndroidSetFoldPostureRequest {
+  late AndroidFoldPosture posture;
+}
+
+class AndroidSetFoldPostureResponse {
+  // Null for other states, such as the rear display.
+  AndroidFoldPosture? previousPosture;
+}
+
 class IOSTakeCameraPhotoRequest {
   IOSSelector? shutterButtonSelector;
   IOSSelector? doneButtonSelector;
@@ -447,6 +462,12 @@ abstract class AndroidAutomator<AndroidServer, DartClient> {
 
   // permissions
   void allowPermission();
+
+  // foldables
+  AndroidSetFoldPostureResponse setFoldPosture(
+    AndroidSetFoldPostureRequest request,
+  );
+  void resetFoldPosture();
 }
 
 abstract class IosAutomator<IOSServer, DartClient> {

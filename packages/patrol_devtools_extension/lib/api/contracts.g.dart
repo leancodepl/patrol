@@ -304,11 +304,15 @@ AndroidGetNativeViewsRequest _$AndroidGetNativeViewsRequestFromJson(
   selector: json['selector'] == null
       ? null
       : AndroidSelector.fromJson(json['selector'] as Map<String, dynamic>),
+  includeInvisibleNodes: json['includeInvisibleNodes'] as bool,
 );
 
 Map<String, dynamic> _$AndroidGetNativeViewsRequestToJson(
   AndroidGetNativeViewsRequest instance,
-) => <String, dynamic>{'selector': instance.selector?.toJson()};
+) => <String, dynamic>{
+  'selector': instance.selector?.toJson(),
+  'includeInvisibleNodes': instance.includeInvisibleNodes,
+};
 
 IOSGetNativeViewsRequest _$IOSGetNativeViewsRequestFromJson(
   Map<String, dynamic> json,
@@ -347,6 +351,7 @@ AndroidNativeView _$AndroidNativeViewFromJson(Map<String, dynamic> json) =>
       isLongClickable: json['isLongClickable'] as bool,
       isScrollable: json['isScrollable'] as bool,
       isSelected: json['isSelected'] as bool,
+      isVisibleToUser: json['isVisibleToUser'] as bool?,
       visibleBounds: Rectangle.fromJson(
         json['visibleBounds'] as Map<String, dynamic>,
       ),
@@ -375,6 +380,7 @@ Map<String, dynamic> _$AndroidNativeViewToJson(AndroidNativeView instance) =>
       'isLongClickable': instance.isLongClickable,
       'isScrollable': instance.isScrollable,
       'isSelected': instance.isSelected,
+      'isVisibleToUser': instance.isVisibleToUser,
       'visibleBounds': instance.visibleBounds.toJson(),
       'visibleCenter': instance.visibleCenter.toJson(),
       'children': instance.children.map((e) => e.toJson()).toList(),
@@ -857,6 +863,39 @@ AndroidTakeNativeScreenshotRequest _$AndroidTakeNativeScreenshotRequestFromJson(
 Map<String, dynamic> _$AndroidTakeNativeScreenshotRequestToJson(
   AndroidTakeNativeScreenshotRequest instance,
 ) => <String, dynamic>{'tag': instance.tag};
+
+AndroidSetFoldPostureRequest _$AndroidSetFoldPostureRequestFromJson(
+  Map<String, dynamic> json,
+) => AndroidSetFoldPostureRequest(
+  posture: $enumDecode(_$AndroidFoldPostureEnumMap, json['posture']),
+);
+
+Map<String, dynamic> _$AndroidSetFoldPostureRequestToJson(
+  AndroidSetFoldPostureRequest instance,
+) => <String, dynamic>{
+  'posture': _$AndroidFoldPostureEnumMap[instance.posture]!,
+};
+
+const _$AndroidFoldPostureEnumMap = {
+  AndroidFoldPosture.closed: 'closed',
+  AndroidFoldPosture.halfOpen: 'halfOpen',
+  AndroidFoldPosture.open: 'open',
+};
+
+AndroidSetFoldPostureResponse _$AndroidSetFoldPostureResponseFromJson(
+  Map<String, dynamic> json,
+) => AndroidSetFoldPostureResponse(
+  previousPosture: $enumDecodeNullable(
+    _$AndroidFoldPostureEnumMap,
+    json['previousPosture'],
+  ),
+);
+
+Map<String, dynamic> _$AndroidSetFoldPostureResponseToJson(
+  AndroidSetFoldPostureResponse instance,
+) => <String, dynamic>{
+  'previousPosture': _$AndroidFoldPostureEnumMap[instance.previousPosture],
+};
 
 IOSTakeCameraPhotoRequest _$IOSTakeCameraPhotoRequestFromJson(
   Map<String, dynamic> json,

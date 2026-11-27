@@ -1,6 +1,6 @@
-## Unreleased
+## 0.2.2
 
-- Fix the `devices` tool and device auto-selection in `run` on Windows (#3296).
+- Fix the `devices` tool and device auto-selection in `run` on Windows (#3298).
 
 ## 0.2.1
 

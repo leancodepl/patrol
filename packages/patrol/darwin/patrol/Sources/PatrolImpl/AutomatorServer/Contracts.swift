@@ -32,6 +32,12 @@ public enum SetLocationAccuracyRequestLocationAccuracy: String, Codable {
   case fine = "fine"
 }
 
+public enum AndroidFoldPosture: String, Codable {
+  case closed = "closed"
+  case halfOpen = "halfOpen"
+  case open = "open"
+}
+
 public enum IOSElementType: String, Codable {
   case any = "any"
   case other = "other"
@@ -281,6 +287,7 @@ public struct IOSSelector: Codable {
 
 public struct AndroidGetNativeViewsRequest: Codable {
   public var selector: AndroidSelector?
+  public var includeInvisibleNodes: Bool
 }
 
 public struct IOSGetNativeViewsRequest: Codable {
@@ -305,6 +312,7 @@ public struct AndroidNativeView: Codable {
   public var isLongClickable: Bool
   public var isScrollable: Bool
   public var isSelected: Bool
+  public var isVisibleToUser: Bool?
   public var visibleBounds: Rectangle
   public var visibleCenter: Point2D
   public var children: [AndroidNativeView]
@@ -490,6 +498,14 @@ public struct AndroidTakeCameraPhotoRequest: Codable {
 
 public struct AndroidTakeNativeScreenshotRequest: Codable {
   public var tag: String
+}
+
+public struct AndroidSetFoldPostureRequest: Codable {
+  public var posture: AndroidFoldPosture
+}
+
+public struct AndroidSetFoldPostureResponse: Codable {
+  public var previousPosture: AndroidFoldPosture?
 }
 
 public struct IOSTakeCameraPhotoRequest: Codable {
