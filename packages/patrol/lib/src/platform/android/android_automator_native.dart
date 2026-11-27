@@ -50,21 +50,28 @@ class AndroidAutomator extends NativeMobileAutomator
     if (_config.packageName.isEmpty && io.Platform.isAndroid) {
       _config.logger("packageName is not set. It's recommended to set it.");
     }
-
-    _client = AndroidAutomatorClient(
-      http.Client(),
-      Uri.http('${_config.host}:${_config.port}'),
-      timeout: _config.connectionTimeout,
-    );
-    _config.logger(
-      'Android NativeAutomatorClient created, port: ${_config.port}',
-    );
   }
 
   final _patrolLog = PatrolLogWriter();
   final AndroidAutomatorConfig _config;
 
-  late final AndroidAutomatorClient _client;
+  AndroidAutomatorClient? _clientInstance;
+
+  // Created lazily so the host is read after [PatrolRuntimePorts.ensureLoaded].
+  AndroidAutomatorClient get _client {
+    final existing = _clientInstance;
+    if (existing != null) {
+      return existing;
+    }
+    _config.logger(
+      'Android NativeAutomatorClient created, port: ${_config.port}',
+    );
+    return _clientInstance = AndroidAutomatorClient(
+      http.Client(),
+      Uri.http('${_config.host}:${_config.port}'),
+      timeout: _config.connectionTimeout,
+    );
+  }
 
   @override
   ConfigureRequest buildConfigureRequest() => ConfigureRequest(

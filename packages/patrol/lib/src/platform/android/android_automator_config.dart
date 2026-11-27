@@ -66,8 +66,8 @@ class AndroidAutomatorConfig extends MobileAutomatorConfig {
     void Function(String)? logger,
   }) {
     return AndroidAutomatorConfig(
-      host: host ?? this.host,
-      port: port ?? this.port,
+      host: host ?? hostOverride,
+      port: port ?? portOverride,
       packageName: packageName ?? this.packageName,
       appName: appName ?? this.appName,
       connectionTimeout: connectionTimeout ?? this.connectionTimeout,

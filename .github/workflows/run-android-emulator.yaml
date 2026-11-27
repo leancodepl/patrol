@@ -139,7 +139,7 @@ jobs:
       - name: Check the downloaded files
         run: |
           cd "$RUNNER_TEMP/apks"
-          for f in app-debug.apk app-debug-androidTest.apk; do
+          for f in app-debug.apk patrolTest-debug.apk; do
             if [ ! -f "$f" ] || [ -L "$f" ]; then
               echo "::error::Missing or unexpected $f in the artifact"
               exit 1
@@ -177,7 +177,7 @@ jobs:
           set +e
           output="$(java -jar "$RUNNER_TEMP/ew-cli/ew-cli.jar" "emulatorwtf.yaml:$SUITE" \
             --app "$RUNNER_TEMP/apks/app-debug.apk" \
-            --test "$RUNNER_TEMP/apks/app-debug-androidTest.apk" \
+            --test "$RUNNER_TEMP/apks/patrolTest-debug.apk" \
             "${args[@]}" \
             --display-name "Patrol example app $LABEL (${HEAD_SHA::7})" \
             --json)"

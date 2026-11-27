@@ -22,9 +22,23 @@ guessing:
 Follow the **Setup** steps, deep-linking to the relevant point:
 
 - Add the `patrol` dev dependency and the `patrol:` block in `pubspec.yaml` — https://patrol.leancode.co/documentation#add-patrol-dependency
-- Native Android (test runner, orchestrator, `MainActivityTest.java`) — https://patrol.leancode.co/documentation#android-setup
-  (Groovy build files: https://patrol.leancode.co/documentation#old-android-setup)
+- Native Android (self-instrumenting `:patrolTest` module,
+  `:patrol_android_test`, and `MainActivityTest.java`) —
+  https://patrol.leancode.co/documentation#android-setup
 - Build flavors, if the project uses them — https://patrol.leancode.co/documentation#flavors
+
+For Android, verify all of the following:
+
+- `settings.gradle(.kts)` includes `:patrolTest` and resolves
+  `:patrol_android_test` relative to Flutter's existing `:patrol` project.
+- `patrolTest/build.gradle(.kts)` applies `com.android.test` and
+  `patrol_test.gradle` (mirrors SDK/flavors/build types, wires the
+  orchestrator, defaults `clearPackageData` to `true`).
+- The host is under `android/patrolTest/src/main` and calls
+  `instrumentation.setUp()`.
+- The harness supplies the standard networking and package-visibility
+  permissions.
+- The app module contains the Flutter app configuration.
 
 ## 2. Write a first minimal test
 
@@ -49,8 +63,10 @@ green run confirms the setup.
 
 ## Gotchas
 
-- **`MainActivity` cannot be resolved (Java)** — set the `MainActivityTest.java`
-  `package` to the app's `applicationId`.
+- **`MainActivity` cannot be resolved in `:patrolTest`** — use the
+  self-instrumenting host template and call `setUp()`.
+- **Flavor task missing** — apply `patrol_test.gradle` so flavors are mirrored
+  from `:app`; do not hardcode flavor names in `:patrolTest`.
 - **Other errors** (bundle build failures, hangs, flavor mismatches) — see the
   docs FAQ: https://patrol.leancode.co/documentation#faq
 
