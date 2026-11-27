@@ -45,6 +45,50 @@ internal sealed class AutomatorServer
 
         _app = builder.Build();
 
+        // Reject browser Origin / non-JSON POSTs (loopback CSRF) and map
+        // unhandled failures to PROTOCOL.md `{ "error": ... }` bodies.
+        _app.Use(async (context, next) =>
+        {
+            if (HttpMethods.IsPost(context.Request.Method))
+            {
+                if (context.Request.Headers.ContainsKey("Origin"))
+                {
+                    await WriteErrorAsync(context, 400, "Browser Origin header is not allowed");
+                    return;
+                }
+
+                var contentType = context.Request.ContentType;
+                if (
+                    contentType is null
+                    || !contentType.StartsWith("application/json", StringComparison.OrdinalIgnoreCase)
+                )
+                {
+                    await WriteErrorAsync(context, 400, "Content-Type must be application/json");
+                    return;
+                }
+            }
+
+            try
+            {
+                await next();
+            }
+            catch (Exception ex) when (ex is JsonException or ArgumentException)
+            {
+                await WriteErrorAsync(context, 400, ex is JsonException j
+                    ? $"Invalid JSON: {j.Message}"
+                    : ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                await WriteErrorAsync(context, 404, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"AutomatorServer: unhandled error: {ex}");
+                await WriteErrorAsync(context, 500, ex.Message);
+            }
+        });
+
         _app.MapPost(
             "/markPatrolAppServiceReady",
             () =>
@@ -63,15 +107,22 @@ internal sealed class AutomatorServer
             "/tapAt",
             async (HttpRequest request) =>
             {
-                using var doc = await JsonDocument.ParseAsync(
-                    request.Body,
-                    cancellationToken: request.HttpContext.RequestAborted
-                );
+                using var doc = await ReadJsonAsync(request);
                 var root = doc.RootElement;
+                if (
+                    !root.TryGetProperty("x", out var xEl)
+                    || !root.TryGetProperty("y", out var yEl)
+                    || xEl.ValueKind != JsonValueKind.Number
+                    || yEl.ValueKind != JsonValueKind.Number
+                )
+                {
+                    return ErrorBadRequest("tapAt requires numeric \"x\" and \"y\"");
+                }
+
                 var tap = new TapAtRequest
                 {
-                    X = root.GetProperty("x").GetDouble(),
-                    Y = root.GetProperty("y").GetDouble(),
+                    X = xEl.GetDouble(),
+                    Y = yEl.GetDouble(),
                 };
 
                 Console.WriteLine(
@@ -104,26 +155,16 @@ internal sealed class AutomatorServer
             "/isElementVisible",
             async (HttpRequest request) =>
             {
-                using var doc = await JsonDocument.ParseAsync(
-                    request.Body,
-                    cancellationToken: request.HttpContext.RequestAborted
+                using var doc = await ReadJsonAsync(request);
+                var root = doc.RootElement;
+                var selector = ParseSelector(root);
+                var timeout = ParseTimeout(root);
+                Console.WriteLine($"AutomatorServer: isElementVisible({selector})");
+                var visible = WindowsUiAutomation.IsElementVisible(
+                    selector,
+                    timeout
                 );
-                try
-                {
-                    var root = doc.RootElement;
-                    var selector = ParseSelector(root);
-                    var timeout = ParseTimeout(root);
-                    Console.WriteLine($"AutomatorServer: isElementVisible({selector})");
-                    var visible = WindowsUiAutomation.IsElementVisible(
-                        selector,
-                        timeout
-                    );
-                    return Results.Json(new { visible });
-                }
-                catch (ArgumentException ex)
-                {
-                    return ErrorBadRequest(ex.Message);
-                }
+                return Results.Json(new { visible });
             }
         );
 
@@ -131,28 +172,18 @@ internal sealed class AutomatorServer
             "/findElement",
             async (HttpRequest request) =>
             {
-                using var doc = await JsonDocument.ParseAsync(
-                    request.Body,
-                    cancellationToken: request.HttpContext.RequestAborted
+                using var doc = await ReadJsonAsync(request);
+                var root = doc.RootElement;
+                var selector = ParseSelector(root);
+                var timeout = ParseTimeout(root);
+                Console.WriteLine($"AutomatorServer: findElement({selector})");
+                var info = WindowsUiAutomation.FindElementInfo(
+                    selector,
+                    timeout
                 );
-                try
-                {
-                    var root = doc.RootElement;
-                    var selector = ParseSelector(root);
-                    var timeout = ParseTimeout(root);
-                    Console.WriteLine($"AutomatorServer: findElement({selector})");
-                    var info = WindowsUiAutomation.FindElementInfo(
-                        selector,
-                        timeout
-                    );
-                    return info is null
-                        ? Results.Json(new { element = (object?)null })
-                        : Results.Json(new { element = ToJson(info) });
-                }
-                catch (ArgumentException ex)
-                {
-                    return ErrorBadRequest(ex.Message);
-                }
+                return info is null
+                    ? Results.Json(new { element = (object?)null })
+                    : Results.Json(new { element = ToJson(info) });
             }
         );
 
@@ -160,10 +191,7 @@ internal sealed class AutomatorServer
             "/enterText",
             async (HttpRequest request) =>
             {
-                using var doc = await JsonDocument.ParseAsync(
-                    request.Body,
-                    cancellationToken: request.HttpContext.RequestAborted
-                );
+                using var doc = await ReadJsonAsync(request);
                 var root = doc.RootElement;
                 if (
                     !root.TryGetProperty("text", out var textEl)
@@ -173,24 +201,12 @@ internal sealed class AutomatorServer
                     return ErrorBadRequest("enterText requires \"text\"");
                 }
 
-                try
-                {
-                    var selector = ParseSelector(root);
-                    var timeout = ParseTimeout(root);
-                    var text = textEl.GetString() ?? "";
-                    Console.WriteLine($"AutomatorServer: enterText({selector})");
-                    WindowsUiAutomation.EnterText(selector, text, timeout);
-                    return Results.Ok();
-                }
-                catch (ArgumentException ex)
-                {
-                    return ErrorBadRequest(ex.Message);
-                }
-                catch (InvalidOperationException ex)
-                {
-                    Console.Error.WriteLine($"AutomatorServer: enterText failed: {ex.Message}");
-                    return ErrorNotFound(ex.Message);
-                }
+                var selector = ParseSelector(root);
+                var timeout = ParseTimeout(root);
+                var text = textEl.GetString() ?? "";
+                Console.WriteLine($"AutomatorServer: enterText({selector})");
+                WindowsUiAutomation.EnterText(selector, text, timeout);
+                return Results.Ok();
             }
         );
 
@@ -198,10 +214,7 @@ internal sealed class AutomatorServer
             "/pressKey",
             async (HttpRequest request) =>
             {
-                using var doc = await JsonDocument.ParseAsync(
-                    request.Body,
-                    cancellationToken: request.HttpContext.RequestAborted
-                );
+                using var doc = await ReadJsonAsync(request);
                 var root = doc.RootElement;
                 if (
                     !root.TryGetProperty("keyCode", out var keyEl)
@@ -211,25 +224,13 @@ internal sealed class AutomatorServer
                     return ErrorBadRequest("pressKey requires \"keyCode\"");
                 }
 
-                try
-                {
-                    var keyCode = keyEl.GetInt32();
-                    var shift = root.TryGetProperty("shift", out var s) && s.GetBoolean();
-                    var ctrl = root.TryGetProperty("ctrl", out var c) && c.GetBoolean();
-                    var alt = root.TryGetProperty("alt", out var a) && a.GetBoolean();
-                    Console.WriteLine($"AutomatorServer: pressKey({keyCode})");
-                    WindowsUiAutomation.PressKey(keyCode, shift, ctrl, alt);
-                    return Results.Ok();
-                }
-                catch (ArgumentOutOfRangeException ex)
-                {
-                    return ErrorBadRequest(ex.Message);
-                }
-                catch (Exception ex)
-                {
-                    Console.Error.WriteLine($"AutomatorServer: pressKey failed: {ex.Message}");
-                    return ErrorInternal(ex.Message);
-                }
+                var keyCode = keyEl.GetInt32();
+                var shift = root.TryGetProperty("shift", out var s) && s.GetBoolean();
+                var ctrl = root.TryGetProperty("ctrl", out var c) && c.GetBoolean();
+                var alt = root.TryGetProperty("alt", out var a) && a.GetBoolean();
+                Console.WriteLine($"AutomatorServer: pressKey({keyCode})");
+                WindowsUiAutomation.PressKey(keyCode, shift, ctrl, alt);
+                return Results.Ok();
             }
         );
 
@@ -237,10 +238,7 @@ internal sealed class AutomatorServer
             "/launchApp",
             async (HttpRequest request) =>
             {
-                using var doc = await JsonDocument.ParseAsync(
-                    request.Body,
-                    cancellationToken: request.HttpContext.RequestAborted
-                );
+                using var doc = await ReadJsonAsync(request);
                 var root = doc.RootElement;
                 if (
                     !root.TryGetProperty("appPath", out var pathEl)
@@ -251,35 +249,27 @@ internal sealed class AutomatorServer
                     return ErrorBadRequest("launchApp requires \"appPath\"");
                 }
 
-                try
+                var appPath = pathEl.GetString()!;
+                string? arguments = null;
+                if (
+                    root.TryGetProperty("arguments", out var argsEl)
+                    && argsEl.ValueKind == JsonValueKind.String
+                )
                 {
-                    var appPath = pathEl.GetString()!;
-                    string? arguments = null;
-                    if (
-                        root.TryGetProperty("arguments", out var argsEl)
-                        && argsEl.ValueKind == JsonValueKind.String
-                    )
-                    {
-                        arguments = argsEl.GetString();
-                    }
-
-                    var activate = true;
-                    if (root.TryGetProperty("activate", out var actEl)
-                        && (actEl.ValueKind == JsonValueKind.True
-                            || actEl.ValueKind == JsonValueKind.False))
-                    {
-                        activate = actEl.GetBoolean();
-                    }
-
-                    Console.WriteLine($"AutomatorServer: launchApp(\"{appPath}\")");
-                    var pid = WindowsAppControl.LaunchApp(appPath, arguments, activate);
-                    return Results.Json(new { processId = pid });
+                    arguments = argsEl.GetString();
                 }
-                catch (Exception ex)
+
+                var activate = true;
+                if (root.TryGetProperty("activate", out var actEl)
+                    && (actEl.ValueKind == JsonValueKind.True
+                        || actEl.ValueKind == JsonValueKind.False))
                 {
-                    Console.Error.WriteLine($"AutomatorServer: launchApp failed: {ex.Message}");
-                    return ErrorInternal(ex.Message);
+                    activate = actEl.GetBoolean();
                 }
+
+                Console.WriteLine($"AutomatorServer: launchApp(\"{appPath}\")");
+                var pid = WindowsAppControl.LaunchApp(appPath, arguments, activate);
+                return Results.Json(new { processId = pid });
             }
         );
 
@@ -287,54 +277,39 @@ internal sealed class AutomatorServer
             "/activateApp",
             async (HttpRequest request) =>
             {
-                using var doc = await JsonDocument.ParseAsync(
-                    request.Body,
-                    cancellationToken: request.HttpContext.RequestAborted
-                );
+                using var doc = await ReadJsonAsync(request);
                 var root = doc.RootElement;
-                try
+                string? processName = null;
+                string? windowName = null;
+                int? processId = null;
+
+                if (
+                    root.TryGetProperty("processName", out var pn)
+                    && pn.ValueKind == JsonValueKind.String
+                )
                 {
-                    string? processName = null;
-                    string? windowName = null;
-                    int? processId = null;
-
-                    if (
-                        root.TryGetProperty("processName", out var pn)
-                        && pn.ValueKind == JsonValueKind.String
-                    )
-                    {
-                        processName = pn.GetString();
-                    }
-
-                    if (
-                        root.TryGetProperty("windowName", out var wn)
-                        && wn.ValueKind == JsonValueKind.String
-                    )
-                    {
-                        windowName = wn.GetString();
-                    }
-
-                    if (
-                        root.TryGetProperty("processId", out var pidEl)
-                        && pidEl.ValueKind == JsonValueKind.Number
-                    )
-                    {
-                        processId = pidEl.GetInt32();
-                    }
-
-                    Console.WriteLine("AutomatorServer: activateApp");
-                    WindowsAppControl.ActivateApp(processName, windowName, processId);
-                    return Results.Ok();
+                    processName = pn.GetString();
                 }
-                catch (ArgumentException ex)
+
+                if (
+                    root.TryGetProperty("windowName", out var wn)
+                    && wn.ValueKind == JsonValueKind.String
+                )
                 {
-                    return ErrorBadRequest(ex.Message);
+                    windowName = wn.GetString();
                 }
-                catch (InvalidOperationException ex)
+
+                if (
+                    root.TryGetProperty("processId", out var pidEl)
+                    && pidEl.ValueKind == JsonValueKind.Number
+                )
                 {
-                    Console.Error.WriteLine($"AutomatorServer: activateApp failed: {ex.Message}");
-                    return ErrorNotFound(ex.Message);
+                    processId = pidEl.GetInt32();
                 }
+
+                Console.WriteLine("AutomatorServer: activateApp");
+                WindowsAppControl.ActivateApp(processName, windowName, processId);
+                return Results.Ok();
             }
         );
 
@@ -359,44 +334,37 @@ internal sealed class AutomatorServer
         Action<UiSelector, TimeSpan?> action
     )
     {
-        using var doc = await JsonDocument.ParseAsync(
+        using var doc = await ReadJsonAsync(request);
+        var root = doc.RootElement;
+        var selector = ParseSelector(root);
+        var timeout = ParseTimeout(root);
+        Console.WriteLine($"AutomatorServer: {actionName}({selector})");
+        action(selector, timeout);
+        return Results.Ok();
+    }
+
+    private static async Task<JsonDocument> ReadJsonAsync(HttpRequest request)
+    {
+        return await JsonDocument.ParseAsync(
             request.Body,
             cancellationToken: request.HttpContext.RequestAborted
         );
-        try
+    }
+
+    private static async Task WriteErrorAsync(HttpContext context, int statusCode, string message)
+    {
+        if (context.Response.HasStarted)
         {
-            var root = doc.RootElement;
-            var selector = ParseSelector(root);
-            var timeout = ParseTimeout(root);
-            Console.WriteLine($"AutomatorServer: {actionName}({selector})");
-            action(selector, timeout);
-            return Results.Ok();
+            throw new InvalidOperationException($"Cannot write error after response started: {message}");
         }
-        catch (ArgumentException ex)
-        {
-            return ErrorBadRequest(ex.Message);
-        }
-        catch (InvalidOperationException ex)
-        {
-            Console.Error.WriteLine($"AutomatorServer: {actionName} failed: {ex.Message}");
-            return ErrorNotFound(ex.Message);
-        }
+
+        context.Response.StatusCode = statusCode;
+        await context.Response.WriteAsJsonAsync(new { error = message });
     }
 
     /// <summary>400 — invalid request. Body: <c>{ "error": "..." }</c>.</summary>
     private static IResult ErrorBadRequest(string message) =>
         Results.Json(new { error = message }, statusCode: StatusCodes.Status400BadRequest);
-
-    /// <summary>404 — target not found. Body: <c>{ "error": "..." }</c>.</summary>
-    private static IResult ErrorNotFound(string message) =>
-        Results.Json(new { error = message }, statusCode: StatusCodes.Status404NotFound);
-
-    /// <summary>500 — unexpected failure. Body: <c>{ "error": "..." }</c>.</summary>
-    private static IResult ErrorInternal(string message) =>
-        Results.Json(
-            new { error = message },
-            statusCode: StatusCodes.Status500InternalServerError
-        );
 
     private static UiSelector ParseSelector(JsonElement root)
     {

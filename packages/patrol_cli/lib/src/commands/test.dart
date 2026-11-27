@@ -237,6 +237,16 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       return 1;
     }
 
+    // Windows launches the exe directly; the VM collector never attaches.
+    if (coverageMode == CoverageMode.vm &&
+        device.targetPlatform == TargetPlatform.windows) {
+      _logger.err(
+        'VM coverage is not supported on Windows yet. '
+        'Please remove the --coverage flag.',
+      );
+      return 1;
+    }
+
     final coverageWorkspace = boolArg('coverage-workspace');
     final ignoreGlobs = stringsArg('coverage-ignore').map(Glob.new).toSet();
     final coveragePackagesRegExps = stringsArg('coverage-package');

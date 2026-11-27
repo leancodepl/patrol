@@ -7,10 +7,12 @@ out-of-process Windows runner (C# today; a C++ port must speak the same).
 
 - Base URL: `http://127.0.0.1:{testPort}/` (default test port `8081`)
 - Method: `POST` to `/{action}`
-- Request: `Content-Type: application/json` body (object; `{}` when empty)
+- Request: `Content-Type: application/json` body (object; `{}` when empty).
+  Browser `Origin` or other content types → `400` `{ "error": ... }`
 - Success: HTTP `200`
   - Void actions may return an empty body or `{}`
   - Otherwise a JSON object
+- Malformed JSON / unexpected failures also use `{ "error": ... }` (see Errors)
 
 ## Errors
 
@@ -50,7 +52,7 @@ omits `within`, it sends `{ "processId": <dart:io pid> }`.
 | Wire shape | Meaning |
 |------------|---------|
 | omitted / absent | Full desktop (only if the client sends no `within`; Dart uses this for `WindowsScope.desktop`) |
-| `{ "processId" }` / `{ "processName" }` / `{ "windowName" }` | Root finds at that top-level window (at least one field required) |
+| `{ "processId" }` / `{ "processName" }` / `{ "windowName" }` | Root finds at that top-level window (at least one field; AND-ed, no fallthrough) |
 
 | Field | Type | Notes |
 |-------|------|--------|

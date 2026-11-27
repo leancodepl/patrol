@@ -148,6 +148,8 @@ class PlatformAutomatorConfig {
         connectionTimeout: connectionTimeout,
         findTimeout: findTimeout,
         logger: logger,
+        host: host,
+        port: port,
       ),
     );
   }

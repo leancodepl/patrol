@@ -116,7 +116,7 @@ internal static class WindowsAppControl
 
     /// <summary>
     /// Resolves a top-level window for scoping finds / activation.
-    /// Returns null when no matching window is present yet.
+    /// Scope fields are AND-ed; a given pid/processName does not fall through.
     /// </summary>
     internal static Window? TryFindWindow(
         UIA3Automation automation,
@@ -125,15 +125,71 @@ internal static class WindowsAppControl
         int? processId
     )
     {
+        List<int> pids;
         if (processId is > 0)
         {
             try
             {
-                var process = Process.GetProcessById(processId.Value);
+                if (Process.GetProcessById(processId.Value).HasExited)
+                {
+                    return null;
+                }
+            }
+            catch (ArgumentException)
+            {
+                return null;
+            }
+
+            pids = [processId.Value];
+        }
+        else if (!string.IsNullOrWhiteSpace(processName))
+        {
+            pids = Process
+                .GetProcessesByName(NormalizeProcessName(processName))
+                .Where(p => !p.HasExited)
+                .Select(p => p.Id)
+                .ToList();
+            if (pids.Count == 0)
+            {
+                return null;
+            }
+        }
+        else if (!string.IsNullOrWhiteSpace(windowName))
+        {
+            return FindByTitle(automation, windowName!);
+        }
+        else
+        {
+            return null;
+        }
+
+        foreach (var pid in pids)
+        {
+            var window = FindForProcess(automation, pid, windowName);
+            if (window is not null)
+            {
+                return window;
+            }
+        }
+
+        return null;
+    }
+
+    private static Window? FindForProcess(
+        UIA3Automation automation,
+        int processId,
+        string? windowName
+    )
+    {
+        if (string.IsNullOrWhiteSpace(windowName))
+        {
+            try
+            {
+                var process = Process.GetProcessById(processId);
                 if (!process.HasExited)
                 {
-                    var app = FlaUI.Core.Application.Attach(process);
-                    var main = app.GetMainWindow(automation, TimeSpan.FromSeconds(2));
+                    var main = FlaUI.Core.Application.Attach(process)
+                        .GetMainWindow(automation, TimeSpan.FromSeconds(2));
                     if (main is not null)
                     {
                         return main;
@@ -142,87 +198,76 @@ internal static class WindowsAppControl
             }
             catch
             {
-                // Process may have exited (common with explorer.exe launcher).
+                // Enumerate desktop windows below.
             }
         }
 
-        if (!string.IsNullOrWhiteSpace(processName))
+        Window? first = null;
+        foreach (var el in automation.GetDesktop().FindAllChildren(cf =>
+            cf.ByControlType(ControlType.Window)))
         {
-            var name = NormalizeProcessName(processName);
-            foreach (var process in Process.GetProcessesByName(name))
+            try
             {
-                try
+                if (el.Properties.ProcessId.ValueOrDefault != processId)
                 {
-                    if (process.HasExited || process.MainWindowHandle == IntPtr.Zero)
+                    continue;
+                }
+
+                var window = el.AsWindow();
+                if (!string.IsNullOrWhiteSpace(windowName))
+                {
+                    if (WindowNameMatches(window.Name, windowName))
                     {
-                        continue;
+                        return window;
                     }
 
-                    var app = FlaUI.Core.Application.Attach(process);
-                    var main = app.GetMainWindow(automation, TimeSpan.FromSeconds(1));
-                    if (main is not null)
-                    {
-                        if (
-                            string.IsNullOrWhiteSpace(windowName)
-                            || WindowNameMatches(main.Name, windowName)
-                        )
-                        {
-                            return main;
-                        }
-                    }
+                    continue;
                 }
-                catch
-                {
-                    // Try next process.
-                }
+
+                first ??= window;
+            }
+            catch
+            {
+                // Skip inaccessible windows.
             }
         }
 
-        if (!string.IsNullOrWhiteSpace(windowName))
-        {
-            var desktop = automation.GetDesktop();
-            var matches = desktop.FindAllChildren(cf =>
-                cf.ByControlType(ControlType.Window).And(cf.ByName(windowName!))
-            );
-            if (matches.Length > 0)
-            {
-                return matches[0].AsWindow();
-            }
+        return string.IsNullOrWhiteSpace(windowName) ? first : null;
+    }
 
-            // Partial title match (Explorer often uses folder name as title).
-            matches = desktop.FindAllChildren(cf => cf.ByControlType(ControlType.Window));
-            foreach (var el in matches)
+    private static Window? FindByTitle(UIA3Automation automation, string windowName)
+    {
+        var exact = automation.GetDesktop().FindAllChildren(cf =>
+            cf.ByControlType(ControlType.Window).And(cf.ByName(windowName))
+        );
+        if (exact.Length > 0)
+        {
+            return exact[0].AsWindow();
+        }
+
+        foreach (var el in automation.GetDesktop().FindAllChildren(cf =>
+            cf.ByControlType(ControlType.Window)))
+        {
+            if (WindowNameMatches(el.Name, windowName))
             {
-                if (WindowNameMatches(el.Name, windowName))
-                {
-                    return el.AsWindow();
-                }
+                return el.AsWindow();
             }
         }
 
         return null;
     }
 
-    private static bool WindowNameMatches(string? actual, string expected)
-    {
-        if (string.IsNullOrWhiteSpace(actual))
-        {
-            return false;
-        }
-
-        return actual.Equals(expected, StringComparison.OrdinalIgnoreCase)
-            || actual.Contains(expected, StringComparison.OrdinalIgnoreCase);
-    }
+    private static bool WindowNameMatches(string? actual, string expected) =>
+        !string.IsNullOrWhiteSpace(actual)
+        && (actual.Equals(expected, StringComparison.OrdinalIgnoreCase)
+            || actual.Contains(expected, StringComparison.OrdinalIgnoreCase));
 
     private static string NormalizeProcessName(string processName)
     {
         var name = processName.Trim();
-        if (name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
-        {
-            name = name[..^4];
-        }
-
-        return name;
+        return name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)
+            ? name[..^4]
+            : name;
     }
 
     private static string? SafeProcessName(Process process)

@@ -113,10 +113,10 @@ class WindowsTestBackend {
   }
 
   String _resolveBuiltAppPath(BuildMode buildMode) {
-    // Flutter writes: build/windows/x64/runner/<Mode>/<project>.exe
-    final buildRoot = _rootDirectory.childDirectory('build').childDirectory(
-      'windows',
-    );
+    // Flutter writes: build/windows/x64/runner/<Mode>/<BINARY_NAME>.exe
+    final buildRoot = _rootDirectory
+        .childDirectory('build')
+        .childDirectory('windows');
 
     final candidates = <Directory>[
       buildRoot.childDirectory('x64').childDirectory('runner'),
@@ -130,6 +130,8 @@ class WindowsTestBackend {
       BuildMode.release => 'Release',
     };
 
+    final preferred = _readWindowsBinaryName()?.toLowerCase();
+
     for (final runnerDir in candidates) {
       final modeDir = runnerDir.childDirectory(modeName);
       if (!modeDir.existsSync()) {
@@ -139,14 +141,24 @@ class WindowsTestBackend {
           .listSync()
           .whereType<File>()
           .where((f) => f.path.toLowerCase().endsWith('.exe'))
-          .where((f) {
-            final name = p.basename(f.path).toLowerCase();
-            return name != 'flutter_windows.dll' && !name.contains('helper');
-          })
           .toList();
-      if (exes.isNotEmpty) {
-        return exes.first.absolute.path;
+      if (exes.isEmpty) {
+        continue;
       }
+      if (preferred != null) {
+        final match = exes.where(
+          (f) => p.basenameWithoutExtension(f.path).toLowerCase() == preferred,
+        );
+        if (match.isNotEmpty) {
+          return match.first.absolute.path;
+        }
+      }
+      final withoutHelper = exes.where(
+        (f) => !p.basename(f.path).toLowerCase().endsWith('_helper.exe'),
+      );
+      return (withoutHelper.isNotEmpty ? withoutHelper.first : exes.first)
+          .absolute
+          .path;
     }
 
     throwToolExit(
@@ -154,15 +166,33 @@ class WindowsTestBackend {
     );
   }
 
+  String? _readWindowsBinaryName() {
+    final cmake = _rootDirectory
+        .childDirectory('windows')
+        .childFile('CMakeLists.txt');
+    if (!cmake.existsSync()) {
+      return null;
+    }
+    return RegExp(
+      r'''set\s*\(\s*BINARY_NAME\s+"([^"]+)"\s*\)''',
+      caseSensitive: false,
+    ).firstMatch(cmake.readAsStringSync())?.group(1)?.trim();
+  }
+
   Future<String> _ensureRunnerBuilt(DisposeScope scope) async {
     final runnerProject = await _resolveRunnerProjectPath();
     final task = _logger.task('Building patrol_windows_runner');
 
     var buildKilled = false;
-    final process = await _processManager.start(
-      ['dotnet', 'build', runnerProject, '-c', 'Release', '-v', 'q'],
-      runInShell: true,
-    );
+    final process = await _processManager.start([
+      'dotnet',
+      'build',
+      runnerProject,
+      '-c',
+      'Release',
+      '-v',
+      'q',
+    ], runInShell: true);
     scope.addDispose(() {
       process.kill();
       buildKilled = true;
