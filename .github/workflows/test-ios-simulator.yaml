@@ -14,6 +14,7 @@ on:
       - 'dev/e2e_app/**'
       - 'schema.dart'
       - 'gen_from_schema'
+      - '.github/workflows/test-ios-simulator.yaml'
       - '!**.md'
       - '!**.mdx'
 

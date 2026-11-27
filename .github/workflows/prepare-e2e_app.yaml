@@ -15,6 +15,7 @@ on:
       - 'dev/e2e_app/**'
       - 'schema.dart'
       - 'gen_from_schema'
+      - 'melos.yaml'
       - '.github/workflows/prepare-e2e_app.yaml'
       - '!**.md'
       - '!**.mdx'

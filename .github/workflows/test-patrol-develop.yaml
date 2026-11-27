@@ -16,6 +16,8 @@ on:
       - 'dev/e2e_app/**'
       - 'schema.dart'
       - 'gen_from_schema'
+      - 'dev/cli_tests/**'
+      - '.github/workflows/test-patrol-develop.yaml'
       - '!**.md'
       - '!**.mdx'
 
