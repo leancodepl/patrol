@@ -68,6 +68,9 @@ void main() {
       enterProjectDirectory: (_) {},
       hotRestartReadyTimeout: const Duration(milliseconds: 50),
     );
+    // Runs before tearDown deletes projectRoot: the session keeps its log file
+    // there open, and Windows does not delete an open file.
+    addTearDown(session.dispose);
     return McpTools(
       session: session,
       deviceFinder: deviceFinder,
