@@ -133,6 +133,31 @@ We recommend using `pumpAndTrySettle()`, because it works with both kinds of
 animations - finite and infinite. This settle policy will be new default in
 future Patrol releases.
 
+### Text cursor and settling
+
+A focused text field on iOS, or a `CupertinoTextField` on any platform, animates
+its blinking cursor and keeps scheduling new frames. Every action that settles
+while such a field is focused then waits several seconds, and
+`SettlePolicy.settle` can time out.
+
+To avoid this, `patrolTest` stops the cursor from blinking while the test runs
+(it sets `EditableText.debugDeterministicCursor`). The cursor stays visible.
+One side effect: when a focused `obscureText` field gets a single new
+character (for example `enterText('a')` into an empty field, or native typing),
+that character stays visible until the field loses focus.
+
+To keep the blinking cursor, opt out:
+
+```dart
+patrolTest(
+  'blinking cursor',
+  deterministicCursor: false,
+  ($) async {
+    // your test code
+  },
+);
+```
+
 ### How does `scrollTo()` work?
 
 The `scrollTo()` method is simple to use, yet very powerful. Here's how you use
