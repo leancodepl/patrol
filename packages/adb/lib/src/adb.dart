@@ -12,8 +12,14 @@ import 'internals.dart';
 ///  * https://developer.android.com/studio/command-line/adb
 class Adb {
   /// Creates a new [Adb] instance.
-  Adb({AdbInternals adbInternals = const AdbInternals()})
-    : _adbInternals = adbInternals;
+  ///
+  /// [readyTimeout] bounds each wait for the ADB server or a device service,
+  /// which then throws [AdbTimeout]. It applies when [adbInternals] is not
+  /// given.
+  Adb({
+    AdbInternals? adbInternals,
+    Duration readyTimeout = const Duration(minutes: 2),
+  }) : _adbInternals = adbInternals ?? AdbInternals(readyTimeout: readyTimeout);
 
   /// Initializes this [Adb] instance.
   ///
