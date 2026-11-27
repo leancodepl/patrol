@@ -560,8 +560,13 @@ class DevelopService {
               );
         final package = android.packageName;
         if (package != null) {
-          stopOnDevice = () =>
-              _androidTestBackend.stopInstrumentation(package, device);
+          // Quitting with `q` and disposing on SIGINT both stop the device
+          // side; whichever comes second waits for the first.
+          Future<void>? stopping;
+          Future<void> stop() => stopping ??= _androidTestBackend
+              .stopInstrumentation(package, device);
+          stopOnDevice = stop;
+          _androidTestBackend.stopOnDispose(stop);
           if (uninstall) {
             finalizer = () => _androidTestBackend.uninstall(package, device);
           }
@@ -611,6 +616,11 @@ class DevelopService {
         );
     }
 
+    // Set once the user quits. Stopping the instrumentation ends the build,
+    // so after a quit the build ending is how the session ends, not a
+    // failure, and the session lasts until the quit cleanup is done.
+    Completer<void>? quit;
+
     try {
       if (device.targetPlatform == TargetPlatform.android) {
         await _androidTestBackend.startAdbServer();
@@ -643,11 +653,6 @@ class DevelopService {
         }
       }
 
-      // Set once the user quits. Stopping the instrumentation ends the build,
-      // so after a quit the build ending is how the session ends, not a
-      // failure, and the session lasts until the quit cleanup is done.
-      Completer<void>? quit;
-
       unawaited(
         future.then(
           (_) {
@@ -677,11 +682,14 @@ class DevelopService {
           debugUrl: vmServiceUrlCompleter?.future,
           forwardFlutterLogs: flutterLogs.forwardFlutterLogs,
           // Stop the device side first, so the Gradle process waiting on
-          // `am instrument` can end before the backend is torn down.
+          // `am instrument` can end before the backend is torn down. The
+          // uninstall runs here because the quit handler exits the process
+          // right after this returns.
           onQuit: () async {
             final done = quit = Completer<void>();
             try {
               await stopOnDevice?.call();
+              await finalizer?.call();
             } finally {
               try {
                 await onQuitCleanup();
@@ -751,7 +759,9 @@ class DevelopService {
       rethrow;
     } finally {
       try {
-        await finalizer?.call();
+        if (quit == null) {
+          await finalizer?.call();
+        }
       } catch (err) {
         _logger.err('Failed to call finalizer: $err');
         rethrow;

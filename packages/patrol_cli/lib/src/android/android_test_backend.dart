@@ -1154,6 +1154,12 @@ class AndroidTestBackend {
   /// a session would kill it together with the session's process tree.
   Future<void> startAdbServer() => _adb.init();
 
+  /// Runs [stop] when this backend is disposed, so an interrupted session
+  /// also ends what it started on the device.
+  void stopOnDispose(Future<void> Function() stop) {
+    _disposeScope.addDispose(stop);
+  }
+
   /// Stops [appId] and its instrumentation on [device].
   ///
   /// In develop mode the instrumentation stays alive so Hot Restart has

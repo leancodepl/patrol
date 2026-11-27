@@ -779,6 +779,112 @@ void main() {
       verifyNever(() => logger.err(any()));
     });
 
+    group('quitting with uninstall', () {
+      late Completer<void> backend;
+      late Future<void> Function()? onQuit;
+
+      void stubSession() {
+        backend = Completer<void>();
+        onQuit = null;
+        when(
+          () => androidTestBackend.execute(
+            any(),
+            any(),
+            interruptible: any(named: 'interruptible'),
+            showFlutterLogs: any(named: 'showFlutterLogs'),
+            hideTestSteps: any(named: 'hideTestSteps'),
+            flavor: any(named: 'flavor'),
+            clearTestSteps: any(named: 'clearTestSteps'),
+            onLogEntry: any(named: 'onLogEntry'),
+            videoConfig: any(named: 'videoConfig'),
+          ),
+        ).thenAnswer((_) => backend.future);
+        when(
+          () => androidTestBackend.stopInstrumentation(any(), any()),
+        ).thenAnswer((_) async {
+          if (!backend.isCompleted) {
+            backend.completeError(Exception('connectedAndroidTest failed'));
+          }
+        });
+        when(
+          () => androidTestBackend.uninstall(any(), any()),
+        ).thenAnswer((_) async {});
+        when(
+          () => flutterTool.attachForHotRestart(
+            flutterCommand: any(named: 'flutterCommand'),
+            deviceId: any(named: 'deviceId'),
+            target: any(named: 'target'),
+            appId: any(named: 'appId'),
+            dartDefines: any(named: 'dartDefines'),
+            openDevtools: any(named: 'openDevtools'),
+            attachUsingUrl: any(named: 'attachUsingUrl'),
+            forwardFlutterLogs: any(named: 'forwardFlutterLogs'),
+            onQuit: any(named: 'onQuit'),
+          ),
+        ).thenAnswer((invocation) async {
+          onQuit =
+              invocation.namedArguments[const Symbol('onQuit')]
+                  as Future<void> Function()?;
+        });
+      }
+
+      Future<void> runSession() => buildService().run(
+        const DevelopOptions(
+          target: 'onboarding_test.dart',
+          flutterCommand: FlutterCommand('flutter'),
+          buildMode: BuildMode.debug,
+          testServerPort: 8081,
+          appServerPort: 8080,
+          generateBundle: false,
+          checkCompatibility: false,
+          packageName: 'com.example.app',
+        ),
+      );
+
+      test('uninstalls the app before the quit handler returns', () async {
+        stubSession();
+        final run = runSession();
+
+        await _waitFor(() => onQuit != null);
+        // The session also uninstalls before it starts the tests.
+        clearInteractions(androidTestBackend);
+        await onQuit!();
+
+        verify(
+          () => androidTestBackend.uninstall('com.example.app', androidDevice),
+        ).called(1);
+
+        await expectLater(run, completes);
+        verifyNever(() => androidTestBackend.uninstall(any(), any()));
+      });
+
+      test(
+        'stops the device side on dispose once, also after a quit',
+        () async {
+          stubSession();
+          final run = runSession();
+
+          await _waitFor(() => onQuit != null);
+          final stopOnDispose =
+              verify(
+                    () => androidTestBackend.stopOnDispose(captureAny()),
+                  ).captured.single
+                  as Future<void> Function();
+
+          await onQuit!();
+          await run;
+          await stopOnDispose();
+
+          verify(
+            () => androidTestBackend.stopInstrumentation(
+              'com.example.app',
+              androidDevice,
+            ),
+          ).called(1);
+        },
+      );
+    });
+
     group('iOS logs', () {
       /// Runs a develop session on [device] and reports where the app's logs
       /// were routed, plus the Dart VM service URL plumbing between the iOS

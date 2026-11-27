@@ -37,7 +37,8 @@
 - `patrol test-without-building --input <dir>` runs that directory. Patrol serves the app itself,
   with the MIME types and cross-origin headers `flutter run` sends, and accepts the `--web-*` options
   that shape a run, so the same artifact can be sharded across machines.
-- Fix `patrol develop` leaving Gradle and logcat processes behind after quitting with `q`. (#3249)
+- Fix `patrol develop` leaving Gradle and logcat processes behind after quitting with `q`, and the
+  test running on the Android device after Ctrl+C. (#3249)
 
 ## 4.9.0
 
