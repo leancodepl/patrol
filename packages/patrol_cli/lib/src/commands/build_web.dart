@@ -22,26 +22,17 @@ const _defaultOutputDir = 'build/patrol-web';
 /// can run on a machine with neither Flutter nor a resolved pub cache.
 class BuildWebCommand extends PatrolCommand {
   BuildWebCommand({
-    required TestFinderFactory testFinderFactory,
-    required TestBundler testBundler,
-    required DartDefinesReader dartDefinesReader,
-    required PubspecReader pubspecReader,
-    required WebTestBackend webTestBackend,
-    required CompatibilityChecker compatibilityChecker,
-    required Directory projectRoot,
-    required FileSystem fs,
-    required Analytics analytics,
-    required Logger logger,
-  }) : _testFinderFactory = testFinderFactory,
-       _testBundler = testBundler,
-       _dartDefinesReader = dartDefinesReader,
-       _pubspecReader = pubspecReader,
-       _webTestBackend = webTestBackend,
-       _compatibilityChecker = compatibilityChecker,
-       _projectRoot = projectRoot,
-       _fs = fs,
-       _analytics = analytics,
-       _logger = logger {
+    required this._testFinderFactory,
+    required this._testBundler,
+    required this._dartDefinesReader,
+    required this._pubspecReader,
+    required this._webTestBackend,
+    required this._compatibilityChecker,
+    required this._projectRoot,
+    required this._fs,
+    required this._analytics,
+    required this._logger,
+  }) {
     usesTargetOption();
     usesBuildModeOption();
     usesDartDefineOption();

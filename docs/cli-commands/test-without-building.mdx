@@ -76,14 +76,19 @@ patrol test-without-building --input build/patrol-web --web-shard 1/6 --web-work
 Pass `--web-port` to pin the port, or `--base-url` to point Patrol at a server
 you started yourself, in which case `<input>/app` is not served.
 
+With `--input`, `--only`, `--device` and `--flavor` are rejected: the artifact
+runs every test it was built with, in Playwright's own browser. The build-mode
+flags are accepted but have no effect, since the artifact is already built.
+
 ### Discussion
 
 The command runs exactly what was last built, so use it while the app and test
 code are unchanged — a fast loop for debugging one failing test. After changing
 Dart or native code, run `patrol build` again.
 
-`--flavor` and the build-mode flags (`--debug`/`--profile`/`--release`) are still
-accepted, because they select **which built artifacts** to run.
+On Android and iOS, `--flavor` and the build-mode flags
+(`--debug`/`--profile`/`--release`) are still accepted, because they select
+**which built artifacts** to run.
 
 On Android, the instrumentation to run is resolved from the device
 (`pm list instrumentation`), so a custom `testApplicationId` or a custom runner is

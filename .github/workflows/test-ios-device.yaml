@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.38.x']
+        flutter-version: ['3.44.x']
         flutter-channel: ['stable']
         # iphone14pro/16.6 was retired on Firebase Test Lab ("Test failed to run"),
         # so we run on a currently supported device/OS instead.

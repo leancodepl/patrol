@@ -14,6 +14,9 @@ const _runnerExcludes = {
   '.cache',
 };
 
+/// Files a file manager drops into any directory it opens.
+const _osMetadataNames = {'.DS_Store', 'Thumbs.db', 'desktop.ini'};
+
 /// The directory layout that `patrol build web` produces and
 /// `patrol test-without-building --input` consumes.
 ///
@@ -32,11 +35,14 @@ class WebArtifact {
   Directory get runnerDir => root.childDirectory(kWebArtifactRunnerDir);
 
   /// The reason this directory can't be run, or null when it can.
-  String? get problem {
+  ///
+  /// [servesApp] is false when the app is served from elsewhere, in which case
+  /// only the runner has to be here.
+  String? problem({bool servesApp = true}) {
     if (!root.existsSync()) {
       return 'Directory ${root.path} does not exist.';
     }
-    if (!appDir.childFile('index.html').existsSync()) {
+    if (servesApp && !appDir.childFile('index.html').existsSync()) {
       return 'No compiled web app at ${appDir.path} '
           '(expected an index.html there).';
     }
@@ -53,7 +59,9 @@ class WebArtifact {
       root.existsSync() &&
       root.listSync().any((entry) {
         final name = entry.fileSystem.path.basename(entry.path);
-        return name != kWebArtifactAppDir && name != kWebArtifactRunnerDir;
+        return name != kWebArtifactAppDir &&
+            name != kWebArtifactRunnerDir &&
+            !_osMetadataNames.contains(name);
       });
 
   /// Copies the patrol package's `web_runner` at [source] into [runnerDir],

@@ -6,7 +6,7 @@ import 'package:dispose_scope/dispose_scope.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
-import 'package:platform/platform.dart';
+import 'package:platform/testing.dart';
 import 'package:test/test.dart';
 
 import '../src/mocks.dart';
@@ -20,13 +20,13 @@ void main() {
 
   late FlutterTool flutterTool;
   late MockProcessManager processManager;
-  late Platform platform;
+  late NativePlatform platform;
 
   setUp(() {
     final disposeScope = DisposeScope();
     final stdin = StreamController<List<int>>();
     processManager = MockProcessManager();
-    platform = FakePlatform();
+    platform = TestNativePlatform();
 
     flutterTool = FlutterTool(
       logger: MockLogger(),

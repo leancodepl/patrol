@@ -28,5 +28,9 @@ void main() {
       expect(supportsWebHotRestart('unknown'), isTrue);
       expect(supportsWebHotRestart(''), isTrue);
     });
+
+    test('accepts the version Flutter reports without its git tags', () {
+      expect(supportsWebHotRestart('0.0.0-unknown'), isTrue);
+    });
   });
 }

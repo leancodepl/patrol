@@ -15,13 +15,10 @@ import 'package:version/version.dart';
 
 class CompatibilityChecker {
   CompatibilityChecker({
-    required Directory projectRoot,
-    required ProcessManager processManager,
-    required Logger logger,
-  }) : _projectRoot = projectRoot,
-       _processManager = processManager,
-       _disposeScope = DisposeScope(),
-       _logger = logger;
+    required this._projectRoot,
+    required this._processManager,
+    required this._logger,
+  }) : _disposeScope = DisposeScope();
 
   final Directory _projectRoot;
   final ProcessManager _processManager;

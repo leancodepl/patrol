@@ -8,7 +8,7 @@ import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 
 class LoggingLocalProcessManager extends LocalProcessManager {
-  const LoggingLocalProcessManager({required Logger logger}) : _logger = logger;
+  const LoggingLocalProcessManager({required this._logger});
 
   final Logger _logger;
 
@@ -118,7 +118,7 @@ extension ProcessTreeDisposers on Process {
         return;
       }
 
-      if (!const LocalPlatform().isWindows) {
+      if (!NativePlatform.current!.isWindows) {
         // Collected before anything dies; once the parent is gone its children
         // are reparented and `pgrep -P` no longer reports them.
         (await _descendants(pid)).forEach(Process.killPid);

@@ -25,12 +25,10 @@ import 'package:process/process.dart';
 /// behind `flutter run --print-dtd`.
 class WebDevtoolsServer {
   WebDevtoolsServer({
-    required ProcessManager processManager,
-    required Logger logger,
-    required DisposeScope disposeScope,
-  }) : _processManager = processManager,
-       _logger = logger,
-       _disposeScope = disposeScope;
+    required this._processManager,
+    required this._logger,
+    required this._disposeScope,
+  });
 
   final ProcessManager _processManager;
   final Logger _logger;

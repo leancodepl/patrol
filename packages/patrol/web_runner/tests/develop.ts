@@ -46,6 +46,7 @@ async function develop() {
     setInterval(() => {}, 30000)
   } catch (error) {
     console.error("Error in develop function:", error)
+    process.exit(1)
   }
 }
 

@@ -1,12 +1,19 @@
 ## Unreleased
 
-- Fix `patrol develop --use-prebuilt-apks` failing with `flutter build bundle failed with code 64` on
-  projects with a flavor, by no longer passing `--flavor` to `flutter build bundle`, which defines no
-  such option. Only a checkout that had never generated the Dart plugin registrant was affected, which
-  is every fresh CI checkout. (#3297)
-- `patrol coverage pull` now reads coverage from runs with `clearPackageData:true` (one run per
-  test, written by `patrol` on Android 12+) and no longer refuses those BrowserStack builds. A
-  session that kept only the first test's run (older Android) still fails. (#3359)
+- Fix the generated test bundle dropping the Dart entrypoint arguments passed by the native side of
+  the app: `main` now takes them and passes them to tests as `$.entrypointArgs`. Needs a `patrol`
+  release that includes this change. (#3366)
+- When Chromium cannot be installed for web tests because the OS is newer than the Playwright
+  bundled with `patrol`, the error now says to update `patrol` and, on Ubuntu, which
+  `PLAYWRIGHT_HOST_PLATFORM_OVERRIDE` value works as a fallback. On an Ubuntu older than 20.04 it
+  says the OS is too old instead.
+
+## 5.0.0-dev.1
+
+- **Breaking:** Bump min Flutter SDK to 3.44.0 and Dart SDK to 3.12.0. Older Flutter versions keep
+  resolving patrol_cli 4.x. See `migration5.md`. (#3323)
+- Migrate to the `NativePlatform` API of `platform` 3.2.0 and drop the `<3.2.0` pin. `platform` 3.2.0
+  needs `meta` 1.18, which Flutter pins only from 3.44 on, hence the new minimum. (#3323)
 - `patrol develop -d chrome` now uses a real Flutter hot restart instead of relaunching the browser
   and the Playwright driver on every `r`; one `flutter run` stays alive for the whole session, as on
   mobile.
@@ -39,6 +46,20 @@
   that shape a run, so the same artifact can be sharded across machines.
 - Fix `patrol develop` leaving Gradle and logcat processes behind after quitting with `q`, and the
   test running on the Android device after Ctrl+C. (#3249)
+
+- **BREAKING CHANGE**
+  - Remove `--tags` from `patrol develop`. It was accepted but never applied, so a session ran
+    every test in the file. (#3382)
+
+## 4.10.0
+
+- Read coverage from runs with the test orchestrator's `clearPackageData:true` in
+  `patrol coverage pull`: it merges the per-test runs that `patrol` 4.12.0 or newer writes on
+  Android 12+, and no longer refuses those BrowserStack builds. A session that kept only the first
+  test's run (older Android) still fails. (#3359)
+- Fix `patrol develop --use-prebuilt-apks` failing with `flutter build bundle failed with code 64`
+  on projects with a flavor and a fresh checkout (as on CI): `--flavor` is no longer passed to
+  `flutter build bundle`, which has no such option. (#3297)
 
 ## 4.9.0
 

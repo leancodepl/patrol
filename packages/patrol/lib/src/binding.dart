@@ -4,8 +4,8 @@ import 'dart:developer';
 import 'dart:isolate';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 import 'package:patrol/src/bs_coverage.dart';
@@ -214,6 +214,12 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
   /// @nodoc
   late PatrolAppService patrolAppService;
 
+  /// @nodoc
+  List<String> get entrypointArgs => _entrypointArgs;
+  set entrypointArgs(List<String> value) =>
+      _entrypointArgs = List.unmodifiable(value);
+  List<String> _entrypointArgs = const [];
+
   /// The singleton instance of this object.
   ///
   /// Provides access to the features exposed by this class. The binding must be
@@ -373,7 +379,7 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
                       child: Text(
                         _currentDartTest!,
                         textDirection: TextDirection.ltr,
-                        style: const TextStyle(color: Colors.red),
+                        style: const TextStyle(color: Color(0xFFF44336)),
                       ),
                     ),
                   );
