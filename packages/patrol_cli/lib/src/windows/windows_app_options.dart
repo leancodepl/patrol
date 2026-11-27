@@ -17,7 +17,7 @@ class WindowsAppOptions {
   /// Port of PatrolAppService inside the app (8082).
   final int appServerPort;
 
-  /// Port of the Windows automator sidecar (8081).
+  /// Port of the Windows automator sidecar (default 8081).
   final int testServerPort;
 
   /// Human-readable description.

@@ -36,31 +36,33 @@ void main() {
       addTearDown(fixture.kill);
 
       // ── 3. Discover native UI (UIA — like UiAutomator / XCUITest) ──────
-      await $.platform.windows.waitUntilVisible(name: 'Allow access');
+      await $.platform.windows.waitUntilVisible(
+        const WindowsSelector(name: 'Allow access'),
+      );
       expect(
         await $.platform.windows.isElementVisible(
-          automationId: 'poc_identity_field',
+          const WindowsSelector(automationId: 'poc_identity_field'),
         ),
         isTrue,
       );
 
       final allow = await $.platform.windows.findElement(
-        automationId: 'poc_allow_button',
+        const WindowsSelector(automationId: 'poc_allow_button'),
       );
       expect(allow, isNotNull);
       expect(allow!.name, 'Allow access');
       expect(allow.width, greaterThan(100));
 
       final fields = await $.platform.windows.findElements(
-        automationId: 'poc_identity_field',
+        const WindowsSelector(automationId: 'poc_identity_field'),
       );
       expect(fields, isNotEmpty);
 
       // ── 4. Type into the native (non-Flutter) text field ───────────────
       // pressKey into an empty native field, then set the full identity.
       await $.platform.windows.enterText(
-        '',
-        automationId: 'poc_identity_field',
+        const WindowsSelector(automationId: 'poc_identity_field'),
+        text: '',
       );
       await $.platform.windows.pressKey(0x48, shift: true); // H
       await $.platform.windows.pressKey(0x49, shift: true); // I
@@ -68,20 +70,24 @@ void main() {
       expect(File(textMarkerPath).readAsStringSync(), 'HI');
 
       await $.platform.windows.enterText(
-        'demo@example.com',
-        automationId: 'poc_identity_field',
+        const WindowsSelector(automationId: 'poc_identity_field'),
+        text: 'demo@example.com',
       );
       await Future<void>.delayed(const Duration(milliseconds: 200));
       expect(File(textMarkerPath).readAsStringSync(), 'demo@example.com');
 
       // ── 5. Click the native Allow button (outside Flutter) ─────────────
-      await $.platform.windows.tap(name: 'Allow access');
+      await $.platform.windows.tap(
+        const WindowsSelector(name: 'Allow access'),
+      );
       await Future<void>.delayed(const Duration(milliseconds: 400));
 
       final marker = File(markerPath).readAsStringSync();
       expect(marker, contains('allowed:demo@example.com'));
       expect(
-        await $.platform.windows.isElementVisible(name: 'Access granted'),
+        await $.platform.windows.isElementVisible(
+          const WindowsSelector(name: 'Access granted'),
+        ),
         isTrue,
       );
 

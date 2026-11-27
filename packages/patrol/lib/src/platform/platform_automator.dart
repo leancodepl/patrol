@@ -146,6 +146,7 @@ class PlatformAutomatorConfig {
       webConfig: WebAutomatorConfig(logger: logger),
       windowsConfig: WindowsAutomatorConfig(
         connectionTimeout: connectionTimeout,
+        findTimeout: findTimeout,
         logger: logger,
       ),
     );
@@ -302,6 +303,7 @@ class PlatformAutomator {
       ios: () => ios.tap(selector.ios, appId: appId, timeout: timeout),
       web: () => web.tap(selector.web),
       macos: () => macos.tap(selector.ios, appId: appId, timeout: timeout),
+      windows: _throwOnWindows,
     );
   }
 
@@ -1240,7 +1242,7 @@ class PlatformAction {
     required T Function() ios,
     required T Function() web,
     required T Function() macos,
-    T Function()? windows,
+    required T Function() windows,
   }) {
     if (current_platform.isAndroid) {
       return android();
@@ -1251,19 +1253,22 @@ class PlatformAction {
     } else if (current_platform.isWeb) {
       return web();
     } else if (current_platform.isWindows) {
-      if (windows != null) {
-        return windows();
-      }
-      return PlatformAutomator._throwOnWindows();
+      return windows();
     }
 
-    throw UnsupportedError('Unkown platform');
+    throw UnsupportedError('Unknown platform');
   }
 
   /// Calls the action for mobile platforms (Android or iOS).
   T mobile<T>({required T Function() android, required T Function() ios}) {
     T error() => throw UnsupportedError('Unsupported platform');
 
-    return safe(android: android, ios: ios, web: error, macos: error);
+    return safe(
+      android: android,
+      ios: ios,
+      web: error,
+      macos: error,
+      windows: error,
+    );
   }
 }

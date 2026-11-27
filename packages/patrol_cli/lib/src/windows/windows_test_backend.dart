@@ -12,7 +12,7 @@ import 'package:patrol_cli/src/ios/ios_test_backend.dart' show BuildMode;
 import 'package:patrol_cli/src/windows/windows_app_options.dart';
 import 'package:process/process.dart';
 
-/// Builds and executes Patrol tests on Windows via the C# sidecar runner.
+/// Builds and executes Patrol tests on Windows via the automator sidecar.
 class WindowsTestBackend {
   /// Creates a [WindowsTestBackend].
   WindowsTestBackend({
@@ -158,16 +158,26 @@ class WindowsTestBackend {
     final runnerProject = await _resolveRunnerProjectPath();
     final task = _logger.task('Building patrol_windows_runner');
 
+    var buildKilled = false;
     final process = await _processManager.start(
       ['dotnet', 'build', runnerProject, '-c', 'Release', '-v', 'q'],
       runInShell: true,
     );
+    scope.addDispose(() {
+      process.kill();
+      buildKilled = true;
+    });
     process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
     process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
     final exitCode = await process.exitCode;
     if (exitCode != 0) {
-      final cause = '`dotnet build` exited with code $exitCode';
+      final cause = buildKilled
+          ? '`dotnet build` was interrupted'
+          : '`dotnet build` exited with code $exitCode';
       task.fail(cause);
+      if (buildKilled) {
+        throwToolInterrupted(cause);
+      }
       throwToolExit(cause);
     }
     task.complete('Built patrol_windows_runner');

@@ -4,7 +4,7 @@ using Patrol.WindowsRunner.Protocol;
 
 namespace Patrol.WindowsRunner;
 
-internal sealed class PatrolAppServiceClient
+internal sealed class PatrolAppServiceClient : IDisposable
 {
     private readonly HttpClient _http;
     private readonly JsonSerializerOptions _json = new()
@@ -14,10 +14,12 @@ internal sealed class PatrolAppServiceClient
 
     public PatrolAppServiceClient(int appPort)
     {
+        // Match Android's two-hour request timeout: runDartTest blocks until
+        // the Dart test finishes, so short limits abort otherwise-valid suites.
         _http = new HttpClient
         {
             BaseAddress = new Uri($"http://127.0.0.1:{appPort}/"),
-            Timeout = TimeSpan.FromMinutes(10),
+            Timeout = TimeSpan.FromHours(2),
         };
     }
 
@@ -47,4 +49,6 @@ internal sealed class PatrolAppServiceClient
         return JsonSerializer.Deserialize<RunDartTestResponse>(body, _json)
             ?? throw new InvalidOperationException("Empty runDartTest response");
     }
+
+    public void Dispose() => _http.Dispose();
 }

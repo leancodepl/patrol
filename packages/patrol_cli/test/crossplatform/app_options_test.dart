@@ -2,6 +2,7 @@ import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
+import 'package:patrol_cli/src/windows/windows_app_options.dart';
 import 'package:test/test.dart';
 
 import '../src/fixtures.dart';
@@ -1034,6 +1035,198 @@ void main() {
             'PATROL_WEB_ACCEPT_DOWNLOADS': 'true',
             'PATROL_WEB_COVERAGE_DIR': '/tmp/coverage',
           }),
+        );
+      });
+    });
+  });
+
+  group('WindowsAppOptions', () {
+    late WindowsAppOptions options;
+
+    group('correctly encodes Flutter build invocation', () {
+      test('with minimal configuration', () {
+        const flutterOpts = FlutterAppOptions(
+          command: flutterCommand,
+          target: 'patrol_test/app_test.dart',
+          buildMode: BuildMode.debug,
+          flavor: null,
+          buildName: null,
+          buildNumber: null,
+          dartDefines: {},
+          dartDefineFromFilePaths: [],
+        );
+
+        options = const WindowsAppOptions(
+          flutter: flutterOpts,
+          appServerPort: 8082,
+          testServerPort: 8081,
+        );
+
+        expect(
+          options.toFlutterBuildInvocation(BuildMode.debug),
+          equals([
+            'flutter',
+            'build',
+            'windows',
+            '--no-version-check',
+            '--suppress-analytics',
+            '--debug',
+            '--target',
+            'patrol_test/app_test.dart',
+          ]),
+        );
+      });
+
+      test('with release build mode', () {
+        const flutterOpts = FlutterAppOptions(
+          command: flutterCommand,
+          target: 'integration_test/app_test.dart',
+          buildMode: BuildMode.release,
+          flavor: null,
+          buildName: null,
+          buildNumber: null,
+          dartDefines: {},
+          dartDefineFromFilePaths: [],
+        );
+
+        options = const WindowsAppOptions(
+          flutter: flutterOpts,
+          appServerPort: 1,
+          testServerPort: 2,
+        );
+
+        expect(
+          options.toFlutterBuildInvocation(BuildMode.release),
+          equals([
+            'flutter',
+            'build',
+            'windows',
+            '--no-version-check',
+            '--suppress-analytics',
+            '--release',
+            '--target',
+            'integration_test/app_test.dart',
+          ]),
+        );
+      });
+
+      test('with dart defines and dart define from file', () {
+        const flutterOpts = FlutterAppOptions(
+          command: flutterCommand,
+          target: 'patrol_test/windows_test.dart',
+          buildMode: BuildMode.profile,
+          flavor: null,
+          buildName: '1.2.3',
+          buildNumber: '42',
+          dartDefines: {'ENV': 'ci', 'DEBUG_MODE': 'false'},
+          dartDefineFromFilePaths: ['config.json'],
+        );
+
+        options = const WindowsAppOptions(
+          flutter: flutterOpts,
+          appServerPort: 8082,
+          testServerPort: 8081,
+        );
+
+        expect(
+          options.toFlutterBuildInvocation(BuildMode.profile),
+          equals([
+            'flutter',
+            'build',
+            'windows',
+            '--no-version-check',
+            '--suppress-analytics',
+            '--profile',
+            '--build-name',
+            '1.2.3',
+            '--build-number',
+            '42',
+            '--target',
+            'patrol_test/windows_test.dart',
+            '--dart-define',
+            'ENV=ci',
+            '--dart-define',
+            'DEBUG_MODE=false',
+            '--dart-define-from-file',
+            'config.json',
+          ]),
+        );
+      });
+
+      test('with flavor and no-tree-shake-icons', () {
+        const flutterOpts = FlutterAppOptions(
+          command: flutterCommand,
+          target: 'patrol_test/app_test.dart',
+          buildMode: BuildMode.debug,
+          flavor: 'dev',
+          buildName: null,
+          buildNumber: null,
+          dartDefines: {},
+          dartDefineFromFilePaths: [],
+          noTreeShakeIcons: true,
+        );
+
+        options = const WindowsAppOptions(
+          flutter: flutterOpts,
+          appServerPort: 8082,
+          testServerPort: 8081,
+        );
+
+        expect(
+          options.toFlutterBuildInvocation(BuildMode.debug),
+          equals([
+            'flutter',
+            'build',
+            'windows',
+            '--no-version-check',
+            '--suppress-analytics',
+            '--debug',
+            '--no-tree-shake-icons',
+            '--flavor',
+            'dev',
+            '--target',
+            'patrol_test/app_test.dart',
+          ]),
+        );
+      });
+
+      test('with custom flutter command arguments', () {
+        const customFlutterCommand = FlutterCommand('flutter', [
+          '--verbose',
+          '--no-pub',
+        ]);
+
+        const flutterOpts = FlutterAppOptions(
+          command: customFlutterCommand,
+          target: 'test/my_test.dart',
+          buildMode: BuildMode.debug,
+          flavor: null,
+          buildName: null,
+          buildNumber: null,
+          dartDefines: {},
+          dartDefineFromFilePaths: [],
+        );
+
+        options = const WindowsAppOptions(
+          flutter: flutterOpts,
+          appServerPort: 8082,
+          testServerPort: 8081,
+        );
+
+        expect(
+          options.toFlutterBuildInvocation(BuildMode.debug),
+          equals([
+            'flutter',
+            '--verbose',
+            '--no-pub',
+            'build',
+            'windows',
+            '--no-version-check',
+            '--suppress-analytics',
+            '--debug',
+            '--target',
+            'test/my_test.dart',
+          ]),
         );
       });
     });

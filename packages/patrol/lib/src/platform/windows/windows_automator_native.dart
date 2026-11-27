@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math' as math;
 
 import 'package:flutter/painting.dart';
 import 'package:http/http.dart' as http;
@@ -12,7 +13,12 @@ import 'package:patrol_log/patrol_log.dart';
 /// HTTP client talking to the Windows Patrol sidecar on port 8081.
 class WindowsAutomator implements windows_automator.WindowsAutomator {
   /// Creates a new [WindowsAutomator].
-  WindowsAutomator({required WindowsAutomatorConfig config}) : _config = config {
+  WindowsAutomator({required WindowsAutomatorConfig config})
+    : assert(
+        config.connectionTimeout > config.findTimeout,
+        'connectionTimeout must be longer than findTimeout',
+      ),
+      _config = config {
     _client = http.Client();
     _apiUri = Uri.http('${_config.host}:${_config.port}');
     _config.logger(
@@ -46,86 +52,49 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
   }
 
   @override
-  Future<void> tap({
-    String? name,
-    String? automationId,
-    String? className,
-    int? index,
-  }) {
+  Future<void> tap(windows_automator.WindowsSelector selector) {
     return _wrapRequest(
       'tap',
-      () => _sendRequest(
-        'tap',
-        _selectorBody(
-          name: name,
-          automationId: automationId,
-          className: className,
-          index: index,
-        ),
-      ),
+      () => _sendRequest('tap', selector.toJson()),
     );
   }
 
   @override
-  Future<void> doubleTap({
-    String? name,
-    String? automationId,
-    String? className,
-    int? index,
-  }) {
+  Future<void> doubleTap(windows_automator.WindowsSelector selector) {
     return _wrapRequest(
       'doubleTap',
-      () => _sendRequest(
-        'doubleTap',
-        _selectorBody(
-          name: name,
-          automationId: automationId,
-          className: className,
-          index: index,
-        ),
-      ),
+      () => _sendRequest('doubleTap', selector.toJson()),
     );
   }
 
   @override
-  Future<void> waitUntilVisible({
-    String? name,
-    String? automationId,
-    String? className,
-    int? index,
+  Future<void> waitUntilVisible(
+    windows_automator.WindowsSelector selector, {
+    Duration? timeout,
   }) {
+    final findTimeout = timeout ?? _config.findTimeout;
     return _wrapRequest(
       'waitUntilVisible',
-      () => _sendRequest(
+      () => _sendRequestTimed(
         'waitUntilVisible',
-        _selectorBody(
-          name: name,
-          automationId: automationId,
-          className: className,
-          index: index,
-        ),
+        {
+          ...selector.toJson(),
+          'timeoutMillis': findTimeout.inMilliseconds,
+        },
+        timeout: _requestTimeoutFor(findTimeout),
       ),
+      requestTimeout: _requestTimeoutFor(findTimeout),
     );
   }
 
   @override
-  Future<bool> isElementVisible({
-    String? name,
-    String? automationId,
-    String? className,
-    int? index,
-  }) {
+  Future<bool> isElementVisible(windows_automator.WindowsSelector selector) {
     return _wrapRequest(
       'isElementVisible',
       () async {
         final json = await _sendRequest(
           'isElementVisible',
-          _selectorBody(
-            name: name,
-            automationId: automationId,
-            className: className,
-            index: index,
-          ),
+          selector.toJson(),
         );
         return json['visible'] == true;
       },
@@ -133,26 +102,20 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
   }
 
   @override
-  Future<windows_automator.WindowsUiElement?> findElement({
-    String? name,
-    String? automationId,
-    String? className,
-    int? index,
-  }) {
+  Future<windows_automator.WindowsUiElement?> findElement(
+    windows_automator.WindowsSelector selector,
+  ) {
     return _wrapRequest(
       'findElement',
       () async {
-        final json = await _sendRequest(
-          'findElement',
-          _selectorBody(
-            name: name,
-            automationId: automationId,
-            className: className,
-            index: index,
-          ),
-        );
+        final json = await _sendRequest('findElement', selector.toJson());
         final element = json['element'];
         if (element is! Map<String, dynamic>) {
+          if (element is Map) {
+            return windows_automator.WindowsUiElement.fromJson(
+              Map<String, dynamic>.from(element),
+            );
+          }
           return null;
         }
         return windows_automator.WindowsUiElement.fromJson(element);
@@ -161,52 +124,44 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
   }
 
   @override
-  Future<List<windows_automator.WindowsUiElement>> findElements({
-    String? name,
-    String? automationId,
-    String? className,
-  }) {
+  Future<List<windows_automator.WindowsUiElement>> findElements(
+    windows_automator.WindowsSelector selector,
+  ) {
     return _wrapRequest(
       'findElements',
       () async {
-        final json = await _sendRequest(
-          'findElements',
-          _selectorBody(
-            name: name,
-            automationId: automationId,
-            className: className,
-          ),
-        );
+        final json = await _sendRequest('findElements', selector.toJson());
         final raw = json['elements'];
         if (raw is! List) {
           return <windows_automator.WindowsUiElement>[];
         }
-        return raw
-            .whereType<Map<String, dynamic>>()
-            .map(windows_automator.WindowsUiElement.fromJson)
-            .toList();
+        final elements = <windows_automator.WindowsUiElement>[];
+        for (final item in raw) {
+          if (item is Map<String, dynamic>) {
+            elements.add(windows_automator.WindowsUiElement.fromJson(item));
+          } else if (item is Map) {
+            elements.add(
+              windows_automator.WindowsUiElement.fromJson(
+                Map<String, dynamic>.from(item),
+              ),
+            );
+          }
+        }
+        return elements;
       },
     );
   }
 
   @override
   Future<void> enterText(
-    String text, {
-    String? name,
-    String? automationId,
-    String? className,
-    int? index,
+    windows_automator.WindowsSelector selector, {
+    required String text,
   }) {
     return _wrapRequest(
       'enterText',
       () => _sendRequest('enterText', {
         'text': text,
-        ..._selectorBody(
-          name: name,
-          automationId: automationId,
-          className: className,
-          index: index,
-        ),
+        ...selector.toJson(),
       }),
     );
   }
@@ -240,7 +195,7 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
       () async {
         final json = await _sendRequest('launchApp', {
           'appPath': appPath,
-          if (arguments != null) 'arguments': arguments,
+          'arguments': ?arguments,
           'activate': activate,
         });
         final pid = json['processId'];
@@ -250,7 +205,10 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
         if (pid is num) {
           return pid.toInt();
         }
-        return 0;
+        throw WindowsAutomatorClientException(
+          200,
+          'launchApp response missing processId: $json',
+        );
       },
     );
   }
@@ -280,39 +238,29 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
     );
   }
 
-  Map<String, dynamic> _selectorBody({
-    String? name,
-    String? automationId,
-    String? className,
-    int? index,
-  }) {
-    final hasName = name != null && name.isNotEmpty;
-    final hasId = automationId != null && automationId.isNotEmpty;
-    final hasClass = className != null && className.isNotEmpty;
-    if (!hasName && !hasId && !hasClass) {
-      throw ArgumentError(
-        'Provide at least one of name, automationId, or className',
-      );
-    }
-
-    return <String, dynamic>{
-      if (hasName) 'name': name,
-      if (hasId) 'automationId': automationId,
-      if (hasClass) 'className': className,
-      if (index != null) 'index': index,
-    };
+  Duration _requestTimeoutFor(Duration findTimeout) {
+    // Sidecar holds the HTTP request open until the find timeout elapses.
+    final padded = findTimeout + const Duration(seconds: 5);
+    return Duration(
+      microseconds: math.max(
+        _config.connectionTimeout.inMicroseconds,
+        padded.inMicroseconds,
+      ),
+    );
   }
 
   Future<T> _wrapRequest<T>(
     String name,
     Future<T> Function() request, {
     bool enablePatrolLog = true,
+    Duration? requestTimeout,
   }) async {
     _config.logger(name);
     final text = '$name()';
+    final timeout = requestTimeout ?? _config.connectionTimeout;
 
     try {
-      final result = await request().timeout(_config.connectionTimeout);
+      final result = await request().timeout(timeout);
       if (enablePatrolLog) {
         _patrolLog.log(StepEntry(action: text, status: StepEntryStatus.success));
       }
@@ -339,7 +287,19 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
   Future<Map<String, dynamic>> _sendRequest(
     String requestName, [
     Map<String, dynamic>? request,
-  ]) async {
+  ]) {
+    return _sendRequestTimed(
+      requestName,
+      request,
+      timeout: _config.connectionTimeout,
+    );
+  }
+
+  Future<Map<String, dynamic>> _sendRequestTimed(
+    String requestName,
+    Map<String, dynamic>? request, {
+    required Duration timeout,
+  }) async {
     final response = await _client
         .post(
           _apiUri.resolve(requestName),
@@ -347,10 +307,10 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
           headers: {
             'Connection': 'keep-alive',
             'Content-Type': 'application/json',
-            'Keep-Alive': 'timeout=${_config.connectionTimeout.inSeconds}',
+            'Keep-Alive': 'timeout=${timeout.inSeconds}',
           },
         )
-        .timeout(_config.connectionTimeout);
+        .timeout(timeout);
 
     if (response.statusCode != 200) {
       throw WindowsAutomatorClientException(
@@ -359,9 +319,21 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
       );
     }
 
-    return response.body.isNotEmpty
-        ? jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>
-        : <String, dynamic>{};
+    if (response.body.isEmpty) {
+      return <String, dynamic>{};
+    }
+
+    final decoded = jsonDecode(utf8.decode(response.bodyBytes));
+    if (decoded is Map<String, dynamic>) {
+      return decoded;
+    }
+    if (decoded is Map) {
+      return Map<String, dynamic>.from(decoded);
+    }
+    throw WindowsAutomatorClientException(
+      response.statusCode,
+      'Expected JSON object, got ${decoded.runtimeType}',
+    );
   }
 }
 

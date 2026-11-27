@@ -44,7 +44,7 @@ internal sealed class TestOrchestrator
 
             await using (var firstApp = await LaunchAppAsync(server, ct))
             {
-                var client = new PatrolAppServiceClient(_appPort);
+                using var client = new PatrolAppServiceClient(_appPort);
                 tests = DartTestTree
                     .Flatten((await client.ListDartTestsAsync(ct)).Group)
                     .Where(t => !t.Skip)
@@ -66,7 +66,7 @@ internal sealed class TestOrchestrator
             {
                 ct.ThrowIfCancellationRequested();
                 await using var app = await LaunchAppAsync(server, ct);
-                var client = new PatrolAppServiceClient(_appPort);
+                using var client = new PatrolAppServiceClient(_appPort);
                 failed += await RunOneAsync(client, tests[i], ct);
                 await StopAppAsync(app);
             }
@@ -140,9 +140,16 @@ internal sealed class TestOrchestrator
         {
             await server.WaitUntilReadyAsync(readyCts.Token);
         }
-        catch (OperationCanceledException) when (!ct.IsCancellationRequested)
+        catch (OperationCanceledException)
         {
+            // Clean up whether readiness timed out or the caller cancelled
+            // (Ctrl+C) before LaunchAppAsync returned a TrackedProcess.
             await StopAppAsync(new TrackedProcess(process));
+            if (ct.IsCancellationRequested)
+            {
+                throw;
+            }
+
             throw new TimeoutException(
                 "Timed out waiting for markPatrolAppServiceReady"
             );

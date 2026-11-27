@@ -39,24 +39,32 @@ void main() {
     // Explorer reuses the shell — activate by window title (folder name).
     await $.platform.windows.activateApp(windowName: 'PatrolExplorerDemo');
 
-    await $.platform.windows.waitUntilVisible(name: fileName);
+    await $.platform.windows.waitUntilVisible(
+      const WindowsSelector(name: fileName),
+    );
     expect(
-      await $.platform.windows.isElementVisible(name: fileName),
+      await $.platform.windows.isElementVisible(
+        const WindowsSelector(name: fileName),
+      ),
       isTrue,
     );
 
-    final item = await $.platform.windows.findElement(name: fileName);
+    final item = await $.platform.windows.findElement(
+      const WindowsSelector(name: fileName),
+    );
     expect(item, isNotNull);
     expect(item!.name, fileName);
 
     // Select the file in Explorer (outside Flutter).
-    await $.platform.windows.tap(name: fileName);
+    await $.platform.windows.tap(const WindowsSelector(name: fileName));
     await Future<void>.delayed(const Duration(milliseconds: 400));
 
     // Bring Explorer forward again to prove activateApp after interaction.
     await $.platform.windows.activateApp(windowName: 'PatrolExplorerDemo');
     expect(
-      await $.platform.windows.isElementVisible(name: fileName),
+      await $.platform.windows.isElementVisible(
+        const WindowsSelector(name: fileName),
+      ),
       isTrue,
     );
   });

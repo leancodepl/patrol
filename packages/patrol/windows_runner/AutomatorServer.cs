@@ -89,21 +89,22 @@ internal sealed class AutomatorServer
             await RunSelectorActionAsync(
                 request,
                 "tap",
-                selector => WindowsUiAutomation.Tap(selector)
+                (selector, _) => WindowsUiAutomation.Tap(selector)
             ));
 
         _app.MapPost("/doubleTap", async (HttpRequest request) =>
             await RunSelectorActionAsync(
                 request,
                 "doubleTap",
-                selector => WindowsUiAutomation.DoubleTap(selector)
+                (selector, _) => WindowsUiAutomation.DoubleTap(selector)
             ));
 
         _app.MapPost("/waitUntilVisible", async (HttpRequest request) =>
             await RunSelectorActionAsync(
                 request,
                 "waitUntilVisible",
-                selector => WindowsUiAutomation.WaitUntilVisible(selector)
+                (selector, timeout) =>
+                    WindowsUiAutomation.WaitUntilVisible(selector, timeout)
             ));
 
         _app.MapPost(
@@ -385,7 +386,7 @@ internal sealed class AutomatorServer
     private static async Task<IResult> RunSelectorActionAsync(
         HttpRequest request,
         string actionName,
-        Action<UiSelector> action
+        Action<UiSelector, TimeSpan?> action
     )
     {
         using var doc = await JsonDocument.ParseAsync(
@@ -394,9 +395,11 @@ internal sealed class AutomatorServer
         );
         try
         {
-            var selector = ParseSelector(doc.RootElement);
+            var root = doc.RootElement;
+            var selector = ParseSelector(root);
+            var timeout = ParseTimeout(root);
             Console.WriteLine($"AutomatorServer: {actionName}({selector})");
-            action(selector);
+            action(selector, timeout);
             return Results.Ok();
         }
         catch (ArgumentException ex)
@@ -453,6 +456,25 @@ internal sealed class AutomatorServer
         }
 
         return UiSelector.FromRequest(name, automationId, className, index);
+    }
+
+    private static TimeSpan? ParseTimeout(JsonElement root)
+    {
+        if (
+            !root.TryGetProperty("timeoutMillis", out var timeoutEl)
+            || timeoutEl.ValueKind != JsonValueKind.Number
+        )
+        {
+            return null;
+        }
+
+        var millis = timeoutEl.GetInt32();
+        if (millis <= 0)
+        {
+            throw new ArgumentException("\"timeoutMillis\" must be > 0");
+        }
+
+        return TimeSpan.FromMilliseconds(millis);
     }
 
     private static object ToJson(UiElementInfo info) =>
