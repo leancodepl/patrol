@@ -1204,6 +1204,93 @@ void main() {
       });
     });
 
+    group('pumpAndSettle()', () {
+      Widget fadingApp() {
+        var visible = true;
+        return MaterialApp(
+          home: Scaffold(
+            body: StatefulBuilder(
+              builder: (context, setState) => Column(
+                children: [
+                  AnimatedOpacity(
+                    opacity: visible ? 1 : 0,
+                    duration: const Duration(seconds: 1),
+                    child: const Text('fading'),
+                  ),
+                  TextButton(
+                    onPressed: () => setState(() => visible = !visible),
+                    child: const Text('toggle'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      }
+
+      patrolWidgetTest('returns 1 when nothing is scheduled', ($) async {
+        await $.pumpWidget(const MaterialApp(home: Text('idle')));
+
+        expect(await $.pumpAndSettle(), 1);
+      });
+
+      patrolWidgetTest(
+        'returns the same frame count as WidgetTester.pumpAndSettle',
+        ($) async {
+          await $.pumpWidget(fadingApp());
+
+          await $.tester.tap(find.text('toggle'));
+          final patrolCount = await $.pumpAndSettle();
+
+          await $.tester.tap(find.text('toggle'));
+          final flutterCount = await $.tester.pumpAndSettle();
+
+          expect(patrolCount, greaterThan(1));
+          expect(patrolCount, flutterCount);
+        },
+      );
+
+      patrolWidgetTest('pumps fewer frames with a longer duration', ($) async {
+        await $.pumpWidget(fadingApp());
+
+        await $.tester.tap(find.text('toggle'));
+        final shortCount = await $.pumpAndSettle();
+
+        await $.tester.tap(find.text('toggle'));
+        final longCount = await $.pumpAndSettle(
+          duration: const Duration(milliseconds: 500),
+        );
+
+        expect(longCount, lessThan(shortCount));
+      });
+
+      patrolWidgetTest(
+        'throws after config.settleTimeout when it never settles',
+        config: const PatrolTesterConfig(settleTimeout: Duration(seconds: 2)),
+        ($) async {
+          await $.pumpWidget(
+            const MaterialApp(home: CircularProgressIndicator()),
+          );
+          final start = $.tester.binding.clock.now();
+
+          await expectLater(
+            $.pumpAndSettle,
+            throwsA(
+              isA<FlutterError>().having(
+                (err) => err.message,
+                'message',
+                'pumpAndSettle timed out',
+              ),
+            ),
+          );
+
+          final elapsed = $.tester.binding.clock.now().difference(start);
+          expect(elapsed, greaterThanOrEqualTo(const Duration(seconds: 2)));
+          expect(elapsed, lessThan(const Duration(seconds: 10)));
+        },
+      );
+    });
+
     group('pumpAndTrySettle()', () {
       late int count;
       late int state;

@@ -253,13 +253,15 @@ class PatrolTester {
     await tester.pump(duration, phase);
   }
 
+  /// Returns the number of pumped frames.
+  ///
   /// See [WidgetTester.pumpAndSettle].
-  Future<void> pumpAndSettle({
+  Future<int> pumpAndSettle({
     Duration duration = const Duration(milliseconds: 100),
     EnginePhase phase = EnginePhase.sendSemanticsUpdate,
     Duration? timeout,
-  }) async {
-    await tester.pumpAndSettle(
+  }) {
+    return tester.pumpAndSettle(
       duration,
       phase,
       timeout ?? config.settleTimeout,

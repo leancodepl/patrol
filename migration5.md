@@ -16,7 +16,7 @@ Update `patrol` and `patrol_cli` together: Patrol 5.0 is `patrol` 5.x with
 | `patrol` | 5.x | |
 | `patrol_cli` | 5.x | |
 | `patrol_mcp` | not released yet | needs a release that depends on `patrol_cli` 5.x; until then it resolves `patrol_cli` 4.x |
-| `patrol_finders` | 3.x, no change so far | |
+| `patrol_finders` | TODO | `pumpAndSettle()` return type changed, see Inbox |
 | `patrol_log` | 0.10.x, no change so far | |
 
 To try a prerelease, pin it explicitly, since pub doesn't pick prereleases on
@@ -93,3 +93,6 @@ the Inbox before 5.0.0 is released.
   needs flutter/flutter#183838; every other platform and `patrol test` on web keep the 3.44 floor.
   Upgrade Flutter, or point patrol at a newer SDK with `--flutter-command`, to keep using
   `patrol develop -d chrome`.
+- `feat/pump-and-settle-return-int`, `patrol_finders` (and `patrol` through `$`):
+  `pumpAndSettle()` returns `Future<int>` (number of pumped frames) instead of `Future<void>`.
+  Callers need no change; classes that override `pumpAndSettle()` must return `Future<int>`.
