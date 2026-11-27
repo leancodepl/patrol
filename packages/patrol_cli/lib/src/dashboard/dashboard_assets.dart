@@ -375,6 +375,9 @@ body {
 .test-body { display: none; border-top: 1px solid var(--border); padding: 18px 16px 20px; }
 .test.is-open .test-body { display: grid; gap: 20px; }
 .test-body.with-video { grid-template-columns: minmax(0, 1fr) 288px; }
+/* A grid item won't shrink below its content by default, so the folded
+   exception's unbreakable summary would push the steps under the video. */
+.test-main { min-width: 0; }
 @media (max-width: 860px) { .test-body.with-video { grid-template-columns: minmax(0, 1fr); } }
 
 .section-label {
