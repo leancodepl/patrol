@@ -72,14 +72,14 @@ jobs:
       - name: Run web device emulation tests
         run: |
           patrol test --target patrol_test/web/device_emulation/ -d chrome --verbose --web-headless \
-            --web-report-dir playwright-report/device-pixel-7 --web-results-dir test-results/device-pixel-7 \
+            --web-report-dir "$PWD/playwright-report/device-pixel-7" --web-results-dir "$PWD/test-results/device-pixel-7" \
             --web-device "Pixel 7" \
             --dart-define=EMULATED_PLATFORM=android \
             --dart-define=EMULATED_DEVICE_PIXEL_RATIO=2.625 \
             --dart-define=EMULATED_SIZE=412x839 \
             --dart-define=EMULATED_SCREEN=412x915
           patrol test --target patrol_test/web/device_emulation/ -d chrome --verbose --web-headless \
-            --web-report-dir playwright-report/device-iphone-15 --web-results-dir test-results/device-iphone-15 \
+            --web-report-dir "$PWD/playwright-report/device-iphone-15" --web-results-dir "$PWD/test-results/device-iphone-15" \
             --web-device "iPhone 15" \
             --dart-define=EMULATED_PLATFORM=iOS \
             --dart-define=EMULATED_DEVICE_PIXEL_RATIO=3 \
