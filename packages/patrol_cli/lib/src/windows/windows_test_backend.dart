@@ -180,54 +180,89 @@ class WindowsTestBackend {
   }
 
   Future<String> _ensureRunnerBuilt(DisposeScope scope) async {
-    final runnerProject = await _resolveRunnerProjectPath();
+    final runnerDir = await _resolveRunnerDirectory();
+    final buildDir = _fs.directory(p.join(runnerDir, 'build'));
     final task = _logger.task('Building patrol_windows_runner');
 
-    var buildKilled = false;
-    final process = await _processManager.start([
-      'dotnet',
-      'build',
-      runnerProject,
-      '-c',
-      'Release',
-      '-v',
-      'q',
-    ], runInShell: true);
-    scope.addDispose(() {
-      process.kill();
-      buildKilled = true;
-    });
-    process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
-    process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
-    final exitCode = await process.exitCode;
-    if (exitCode != 0) {
-      final cause = buildKilled
-          ? '`dotnet build` was interrupted'
-          : '`dotnet build` exited with code $exitCode';
-      task.fail(cause);
-      if (buildKilled) {
-        throwToolInterrupted(cause);
+    Future<void> runCmake(List<String> args, {required String label}) async {
+      var killed = false;
+      final process = await _processManager.start(
+        args,
+        runInShell: true,
+        workingDirectory: runnerDir,
+      );
+      scope.addDispose(() {
+        process.kill();
+        killed = true;
+      });
+      process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
+      process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
+      final exitCode = await process.exitCode;
+      if (exitCode != 0) {
+        final cause = killed
+            ? '`$label` was interrupted'
+            : '`$label` exited with code $exitCode';
+        task.fail(cause);
+        if (killed) {
+          throwToolInterrupted(cause);
+        }
+        throwToolExit(cause);
       }
-      throwToolExit(cause);
     }
+
+    // Configure once (or when CMakeCache is missing), then build Release.
+    // Pin the VS generator so `-A x64` is valid (Ninja rejects `-A`).
+    if (!buildDir.childFile('CMakeCache.txt').existsSync()) {
+      await runCmake([
+        'cmake',
+        '-S',
+        runnerDir,
+        '-B',
+        buildDir.path,
+        '-G',
+        'Visual Studio 17 2022',
+        '-A',
+        'x64',
+      ], label: 'cmake configure');
+    }
+
+    await runCmake([
+      'cmake',
+      '--build',
+      buildDir.path,
+      '--config',
+      'Release',
+    ], label: 'cmake --build');
+
     task.complete('Built patrol_windows_runner');
 
-    final projectDir = _fs.file(runnerProject).parent;
-    final exe = projectDir
-        .childDirectory('bin')
-        .childDirectory('Release')
-        .childDirectory('net8.0-windows')
-        .childFile('patrol_windows_runner.exe');
-
-    if (!exe.existsSync()) {
-      throwToolExit('Built runner not found at ${exe.path}');
+    final exeCandidates = <File>[
+      buildDir.childDirectory('bin').childFile('patrol_windows_runner.exe'),
+      buildDir
+          .childDirectory('Release')
+          .childFile('patrol_windows_runner.exe'),
+      buildDir
+          .childDirectory('bin')
+          .childDirectory('Release')
+          .childFile('patrol_windows_runner.exe'),
+    ];
+    for (final exe in exeCandidates) {
+      if (exe.existsSync()) {
+        return exe.absolute.path;
+      }
     }
-    return exe.absolute.path;
+
+    throwToolExit(
+      'Built runner not found under ${buildDir.path} '
+      '(expected bin/patrol_windows_runner.exe).\n'
+      'Ensure CMake and the MSVC "Desktop development with C++" workload '
+      'are installed (same toolchain as Flutter Windows).',
+    );
   }
 
   /// Resolves `packages/patrol/windows_runner` the same way web resolves
   /// `web_runner`: via the app's package_config → installed `patrol` root.
-  Future<String> _resolveRunnerProjectPath() async {
+  Future<String> _resolveRunnerDirectory() async {
     final packageConfig = await findPackageConfig(
       io.Directory(_rootDirectory.path),
     );
@@ -247,18 +282,16 @@ class WindowsTestBackend {
     }
 
     final runnerDir = p.join(patrolPackage.root.toFilePath(), 'windows_runner');
-    final csproj = _fs
-        .directory(runnerDir)
-        .childFile('Patrol.WindowsRunner.csproj');
+    final cmake = _fs.directory(runnerDir).childFile('CMakeLists.txt');
 
-    if (!csproj.existsSync()) {
+    if (!cmake.existsSync()) {
       throwToolExit(
-        'windows_runner not found at: ${csproj.path}\n'
+        'windows_runner not found at: ${cmake.path}\n'
         'This should ship with the patrol package (like web_runner).\n'
         'Please ensure patrol is properly installed.',
       );
     }
 
-    return csproj.absolute.path;
+    return _fs.directory(runnerDir).absolute.path;
   }
 }

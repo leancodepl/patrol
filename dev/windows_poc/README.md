@@ -35,7 +35,7 @@ dart run ../../../packages/patrol_cli/bin/main.dart test -d windows patrol_test/
 Tip: run on a visible desktop session (not a locked RDP screen) so windows
 are easy to watch.
 
-## Native stack (C# vs C++)
+## Native stack
 
-See [NATIVE_STACK.md](NATIVE_STACK.md) for pros/cons of C# + FlaUI vs C++ UIA,
-and options for shipping a .NET runner if we stay on C#.
+The automator sidecar is **C++ / UIA3** (see [NATIVE_STACK.md](NATIVE_STACK.md)).
+The WinForms fixture under `fixture/` remains .NET only for the dialog demo.

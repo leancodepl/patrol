@@ -1,7 +1,7 @@
 # Windows automator sidecar HTTP protocol
 
 Language-neutral contract between the Dart `WindowsAutomator` client and the
-out-of-process Windows runner (C# today; a C++ port must speak the same).
+out-of-process Windows runner (C++ / UIA3).
 
 ## Transport
 

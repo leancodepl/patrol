@@ -114,3 +114,6 @@ the Inbox before 5.0.0 is released.
   needs flutter/flutter#183838; every other platform and `patrol test` on web keep the 3.44 floor.
   Upgrade Flutter, or point patrol at a newer SDK with `--flutter-command`, to keep using
   `patrol develop -d chrome`.
+- #3183, `patrol` / `patrol_cli`: experimental Windows runner is C++/CMake (not C#/.NET). Building
+  Windows tests needs the MSVC Desktop C++ workload (same as Flutter Windows); `dotnet` is not
+  required for the runner.
