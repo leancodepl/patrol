@@ -58,7 +58,7 @@ abstract final class NativeTreeService {
       );
     } catch (err) {
       // Also catches Errors: a body that is valid JSON but not an object throws
-      // a TypeError, which would otherwise escape the tool callback.
+      // a TypeError.
       return CallToolResult(
         content: [TextContent(text: 'Failed to fetch native tree: $err')],
         isError: true,

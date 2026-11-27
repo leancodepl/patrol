@@ -127,9 +127,7 @@ void main() {
     });
 
     test('an absolute test file wins over a configured project', () async {
-      // A worktree of the same repository is a different project, and an editor
-      // config pinning `PROJECT_ROOT=.` points at the tree the server started
-      // in, not the one the test lives in.
+      // A worktree of the same repository is a different project.
       final main = project('main');
       final worktree = project('main-flow');
       testFile(worktree, 'patrol_test/login_test.dart');

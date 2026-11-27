@@ -156,11 +156,7 @@ void main() {
     final lookupStarted = Completer<void>();
     final tools = toolsWith(
       fake,
-      listAttachedDevices: ({required flutterCommand}) async {
-        lookupStarted.complete();
-        await Future<void>.delayed(const Duration(milliseconds: 100));
-        return const [device];
-      },
+      listAttachedDevices: slowLookup(lookupStarted),
     );
     final abort = BasicAbortController();
 

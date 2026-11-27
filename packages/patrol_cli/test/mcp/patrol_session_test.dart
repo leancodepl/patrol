@@ -318,23 +318,10 @@ packages:
 
   test('quit cancels a run that is still starting', () async {
     final fake = FakeDevelop();
-    // A device lookup slow enough to quit inside, which is where a real cold
-    // start spends its first seconds.
     final lookupStarted = Completer<void>();
     final session = sessionWith(
       fake,
-      listAttachedDevices: ({required flutterCommand}) async {
-        lookupStarted.complete();
-        await Future<void>.delayed(const Duration(milliseconds: 100));
-        return const [
-          Device(
-            name: 'test device',
-            id: 'test-device',
-            targetPlatform: TargetPlatform.android,
-            real: false,
-          ),
-        ];
-      },
+      listAttachedDevices: slowLookup(lookupStarted),
     );
 
     final run = session.startAndWait('app_test.dart');
@@ -348,24 +335,6 @@ packages:
     expect(result.status.warning, contains('cancelled'));
     expect(fake.events, isEmpty, reason: 'nothing should have been built');
   });
-
-  /// A device lookup slow enough to act inside, which is where a real cold
-  /// start spends its first seconds.
-  AttachedDevicesReader slowLookup(Completer<void> started) =>
-      ({required flutterCommand}) async {
-        if (!started.isCompleted) {
-          started.complete();
-        }
-        await Future<void>.delayed(const Duration(milliseconds: 100));
-        return const [
-          Device(
-            name: 'test device',
-            id: 'test-device',
-            targetPlatform: TargetPlatform.android,
-            real: false,
-          ),
-        ];
-      };
 
   test('dispose cancels a run that is still starting', () async {
     // The MCP client's own cancellation and the server's shutdown both end in
@@ -863,7 +832,7 @@ packages:
     expect(status.quietFor, const Duration(minutes: 4, seconds: 5));
     expect(status.lastTestEntry, 'app_test login');
     expect(status.stallNote, contains('nothing for 4m05s'));
-    expect(status.stallNote, contains('app_test login'));
+    expect(status.stallNote, contains('"app_test login", 4m05s ago'));
 
     await session.dispose();
   });
@@ -891,16 +860,37 @@ packages:
     final session = sessionWith(fake, now: () => clock);
     await startSession(session, 'app_test.dart');
 
-    clock = clock.add(const Duration(minutes: 5));
     // Same file, so this is a hot restart of the live session, and it times out
     // the way a caller's own run does.
-    final result = await session.startAndWait(
+    final run = session.startAndWait(
       'app_test.dart',
       timeout: const Duration(milliseconds: 50),
     );
+    await Future<void>.delayed(const Duration(milliseconds: 10));
+    clock = clock.add(const Duration(minutes: 5));
+    final result = await run;
 
     expect(result.status.warning, contains('Run timed out'));
     expect(result.status.warning, contains('nothing for 5m00s'));
+
+    await session.dispose();
+  });
+
+  test('a hot restart starts the quiet and the last test over', () async {
+    final fake = FakeDevelop(hotRestartReady: Future<void>.value());
+    var clock = DateTime(2026, 8, 18, 12);
+    final session = sessionWith(fake, now: () => clock);
+    await startSession(session, 'app_test.dart');
+    fake.onLogEntry?.call(
+      TestEntry(name: 'app_test login', status: TestEntryStatus.start),
+    );
+
+    clock = clock.add(const Duration(minutes: 5));
+    session.sendCommand(SessionCommand.hotRestart);
+    final status = session.getStatus();
+
+    expect(status.quietFor, Duration.zero);
+    expect(status.lastTestEntry, isNull);
 
     await session.dispose();
   });
@@ -942,8 +932,7 @@ packages:
   });
 
   test('a develop failure with a message becomes the warning', () async {
-    // patrol_cli reports expected failures - an incompatible patrol, an
-    // unsupported platform - as ToolExit with a message written for the user.
+    // patrol_cli reports expected failures as ToolExit with a message.
     final fake = FakeDevelop(
       runError: const ToolExit('Cannot use release mode.'),
     );
@@ -974,6 +963,26 @@ packages:
     expect(result.status.output, contains('ERROR: Exception: gradle exploded'));
   });
 
+  test('dispose waits for a session whose app died to tear down', () async {
+    final fake = FakeDevelop();
+    final session = sessionWith(fake);
+    final run = session.startAndWait(
+      'app_test.dart',
+      device: 'test-device',
+      timeout: const Duration(seconds: 5),
+    );
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+    fake.onTestsCompleted?.call(
+      const TestCompletionResult(success: false, error: 'app crashed'),
+    );
+    await run;
+    expect(session.isRunning, isFalse);
+
+    await session.dispose();
+
+    expect(fake.events, ['create', 'dispose']);
+  });
+
   test('a backend that exits mid-run is reported as a failure', () async {
     final fake = FakeDevelop();
     final session = sessionWith(fake);
@@ -992,8 +1001,7 @@ packages:
     expect(result.status.testState, TestState.finishedFailed);
     expect(result.status.warning, contains('stopped without the test'));
     expect(result.status.output, contains('ERROR: app crashed'));
-    // The app is gone, so the session ends with it: the next run starts cold
-    // instead of hot-restarting a dead app.
+    // The app is gone, so the session ends with it and the next run starts cold.
     expect(session.isRunning, isFalse);
     await session.awaitTeardown();
     expect(fake.events, ['create', 'dispose']);

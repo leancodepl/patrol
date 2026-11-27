@@ -24,9 +24,7 @@ class FakeDevelop {
     when(
       () => service.hotRestartReady,
     ).thenAnswer((_) => hotRestartReady ?? Completer<void>().future);
-    // A develop session outlives a test run: run() returns when the session is
-    // quit, as the real one does when `flutter attach` exits. With [runError]
-    // it fails instead, the way a build or a compatibility check does.
+    // run() returns when the session is quit, or fails with [runError].
     when(() => service.run(any())).thenAnswer((invocation) {
       options.add(invocation.positionalArguments.first as DevelopOptions);
       if (runError != null) {
@@ -40,13 +38,11 @@ class FakeDevelop {
 
   final service = MockDevelopService();
 
-  /// Whether a `Q` on stdin ends `run()`, as `flutter attach` exiting does. Off,
-  /// a run ends only through [endRun], the way a backend that exits late does.
+  /// Whether a `Q` on stdin ends `run()`. Off, a run ends only through [endRun].
   final bool quitEndsRun;
 
-  /// Whether `run()` keeps going after the backend has exited, the way the real
-  /// one uninstalls the app and deletes its entrypoint on the way out. A `Q`
-  /// then reports the exit, and the run ends only through [endRun].
+  /// Whether `run()` keeps going after the backend has exited. A `Q` then
+  /// reports the exit, and the run ends only through [endRun].
   final bool runOutlivesExit;
 
   /// Ends the [index]th run, if it is still going.
@@ -85,9 +81,7 @@ class FakeDevelop {
     this.onLogEntry = onLogEntry;
     this.onTestsCompleted = onTestsCompleted;
     completions.add(onTestsCompleted);
-    // Teardown takes a moment, as it does in a real session where processes
-    // have to be reaped, so an overlapping start is visible in the order.
-    // Disposing kills `flutter attach`, which is what ends run().
+    // Teardown takes a moment, so an overlapping start shows in [events].
     final run = _runs.length;
     disposeScope.addDispose(
       () => Future<void>.delayed(const Duration(milliseconds: 30), () {
@@ -116,3 +110,20 @@ class FakeDevelop {
     ConfigEntry(config: {ConfigEntry.developCompletedKey: true}),
   );
 }
+
+/// A device lookup slow enough to act inside, as a cold start's first seconds.
+AttachedDevicesReader slowLookup(Completer<void> started) =>
+    ({required flutterCommand}) async {
+      if (!started.isCompleted) {
+        started.complete();
+      }
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      return const [
+        Device(
+          name: 'test device',
+          id: 'test-device',
+          targetPlatform: TargetPlatform.android,
+          real: false,
+        ),
+      ];
+    };

@@ -441,9 +441,8 @@ final class PatrolSession {
 
   var _isRunning = false;
 
-  /// Set while a cold start is under way: the device lookup and the build take
-  /// long enough that a caller asks to stop within them, and until the develop
-  /// service exists there is nothing else to act on.
+  /// Set while a cold start is under way, before a develop service exists for a
+  /// quit to act on.
   var _starting = false;
   var _cancelRequested = false;
 
@@ -465,8 +464,7 @@ final class PatrolSession {
   static const _quietBeforeStalled = Duration(minutes: 3);
 
   /// When the session last heard anything from the run, and the last test entry
-  /// it saw. A run that goes quiet says nothing on its own, so a caller waiting
-  /// on it is told how long the quiet has lasted.
+  /// it saw.
   DateTime? _lastHeardAt;
   DateTime? _lastTestEntryAt;
   String? _lastTestEntry;
@@ -499,10 +497,7 @@ final class PatrolSession {
   bool get _callerChecksCompatibility =>
       developArgs.contains('--check-compatibility');
 
-  /// Identifies the session whose callbacks may still change this object's
-  /// state.
-
-  /// Whether a develop session is loaded.
+  /// Whether a develop session is loaded or starting.
   bool get isRunning => _isRunning || _starting;
 
   /// The device discovered by the last [startAndWait] call.
@@ -690,8 +685,7 @@ final class PatrolSession {
         flutterCommand: flutterCommand,
       );
     } on FormatException catch (err) {
-      // Reaches the caller as a refusal; otherwise it escapes the tool callback
-      // and the client is told only "Tool execution failed".
+      // Reaches the caller as a refusal with the flag error.
       return 'Cannot start: ${err.message} Check the develop flags this server '
           'was started with.';
     }
@@ -774,12 +768,12 @@ final class PatrolSession {
     // DevelopSessionFactory wires up the CLI components. Its onExit completes
     // a completer, because the server outlives every session it runs.
     final exitCompleter = Completer<void>();
-    // A session's callbacks answer for that session only: the previous one's
-    // backend can report its exit while this one is already running.
     if (_cancelRequested) {
       return _cancelled;
     }
 
+    // A session's callbacks answer for that session only: the previous one's
+    // backend can report its exit while this one is already running.
     final live = _LiveSession(scope: disposeScope, stdin: stdinController);
     _liveSession = live;
     live.service = _createDevelopService(
@@ -889,16 +883,14 @@ final class PatrolSession {
   /// torn down. Safe to call when idle or repeatedly.
   Future<void> dispose() async {
     await quit();
-    // A run cancelled after it opened the log leaves no session to close it.
-    if (!_isRunning) {
-      await _logStreaming.stopLogging();
-    }
+    // A session whose app died is already tearing down without a quit.
+    await awaitTeardown();
   }
 
   /// Quits the running session and returns once it has released its resources.
   ///
-  /// A run still starting is cancelled instead; the start is waited for so it
-  /// cannot come up after this returns.
+  /// A run still starting is cancelled, and the start is waited for so it cannot
+  /// come up after this returns.
   Future<String> quit() async {
     if (_starting) {
       _cancelRequested = true;
@@ -1052,8 +1044,7 @@ final class PatrolSession {
         'in the output below for something else: a crash, a build that did not '
         'finish, or a toolchain that never connected.';
     _completeFinish();
-    // The app is gone, so the session is over: a run arriving while the
-    // backend still uninstalls would otherwise hot-restart a dead app.
+    // The app is gone, so the session is over and the next run starts cold.
     if (_liveSession case final live?) {
       unawaited(_cleanupOf(live));
     }
@@ -1116,6 +1107,9 @@ final class PatrolSession {
       case SessionCommand.hotRestart:
         _outputs.clear();
         _errorDetails.clear();
+        _lastHeardAt = _now();
+        _lastTestEntry = null;
+        _lastTestEntryAt = null;
         _testState = TestState.running;
         _finishWarning = null;
         // Complete the old completer so any previous waiters are unblocked, then
@@ -1137,8 +1131,7 @@ final class PatrolSession {
     return since == null ? null : _now().difference(since);
   }
 
-  /// Names the quiet once it lasts long enough that a caller waiting on the run
-  /// would otherwise learn nothing until its timeout.
+  /// Names the quiet once it lasts [_quietBeforeStalled].
   String? _stallNote(Duration? quiet) {
     if (quiet == null || quiet < _quietBeforeStalled) {
       return null;
@@ -1146,10 +1139,11 @@ final class PatrolSession {
     final buffer = StringBuffer(
       'The run has logged nothing for ${_describe(quiet)}',
     );
-    if (_lastTestEntry case final last? when _lastTestEntryAt != null) {
+    final lastAt = _lastTestEntryAt;
+    if (_lastTestEntry case final last? when lastAt != null) {
       buffer.write(
         '; the last test entry was "$last", '
-        '${_describe(_now().difference(_lastTestEntryAt!))} before that',
+        '${_describe(_now().difference(lastAt))} ago',
       );
     } else {
       buffer.write(' and no test has been reported yet');
@@ -1297,9 +1291,9 @@ final class PatrolSession {
 
   /// Opens a Terminal window following [logPath], or returns why it could not.
   ///
-  /// Terminal runs a `.command` file it is asked to open, and opening a file
-  /// needs no permission to control Terminal. `tail -F` follows the path, which
-  /// every session reopens from the start.
+  /// Terminal runs a `.command` file it is asked to open, which needs no
+  /// permission to control Terminal. `tail -F` follows a path every session
+  /// reopens.
   Future<String?> _openLogWindow(String logPath) async {
     final dir = await io.Directory.systemTemp.createTemp('patrol_mcp_log');
     // Terminal reads the script after `open` returns, so it stays on disk.

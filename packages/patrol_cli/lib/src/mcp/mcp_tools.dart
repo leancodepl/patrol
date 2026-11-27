@@ -165,9 +165,8 @@ class McpTools {
   /// resolution failure as the tool's error with the signals that were tried.
   ///
   /// [testFile] and [requestedRoot] are what the call itself said about the
-  /// project. A server started outside any Dart package has nothing else to go
-  /// on, so resolving without them would fail here before the call's own signals
-  /// were ever read.
+  /// project; for a server started outside any Dart package they are the only
+  /// signals.
   Future<CallToolResult> withProject(
     Future<CallToolResult> Function() body, {
     String? testFile,
@@ -187,8 +186,7 @@ class McpTools {
         );
       }
       // Only a run needs a project. A tool that reports on the session, or lists
-      // what is attached, still has an answer — and refusing it would leave an
-      // agent nothing to call on a server that has not been told where to work.
+      // what is attached, answers without one.
       _session.noteProjectUnresolved('$err');
     }
     return body();
