@@ -1,3 +1,11 @@
+## Unreleased
+
+- Fix web tests failing on Ubuntu 26.04 (now `ubuntu-latest` on GitHub Actions) with "Playwright does
+  not support chromium on ubuntu26.04-x64", by updating Playwright to 1.61.1, which also moves web
+  tests to Chromium 149. This also fixes `npx playwright install` hanging while extracting Chromium
+  on Node.js 26 and newer Node.js 24 releases. With `--web-reporter junit`, some failures are now
+  reported as `<error>` instead of `<failure>` in the XML.
+
 ## 4.12.0
 
 - Add Android code coverage for runs with the test orchestrator's `clearPackageData:true` on

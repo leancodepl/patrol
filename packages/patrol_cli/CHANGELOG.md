@@ -1,3 +1,10 @@
+## Unreleased
+
+- When Chromium cannot be installed for web tests because the OS is newer than the Playwright
+  bundled with `patrol`, the error now says to update `patrol` and, on Ubuntu, which
+  `PLAYWRIGHT_HOST_PLATFORM_OVERRIDE` value works as a fallback. On an Ubuntu older than 20.04 it
+  says the OS is too old instead.
+
 ## 4.10.0
 
 - Read coverage from runs with the test orchestrator's `clearPackageData:true` in
