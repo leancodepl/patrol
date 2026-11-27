@@ -48,6 +48,14 @@ const dashboardCss = '''
   --fail: #ff5f56;
   --skip: #8b918a;
   --warn: #ffc53d;
+  /* Labels on solid status fills, and the brand accents that must stay visible
+     against the surface: yellow on dark, Patrol black on light. */
+  --on-status: #1f1f1f;
+  --rail: var(--yellow);
+  --bar-fill: color-mix(in srgb, var(--yellow) 70%, var(--border-strong));
+  --chip-active-bg: var(--yellow);
+  --chip-active-fg: #1f1f1f;
+  --focus: var(--yellow);
   --shadow: 0 18px 40px -24px rgba(0, 0, 0, 0.9);
   --radius: 14px;
   --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
@@ -67,10 +75,17 @@ html[data-theme="light"] {
   --text: #1f1f1f;
   --text-dim: #5d635b;
   --text-faint: #8b918a;
-  --pass: #1a9d55;
-  --fail: #d92c22;
-  --skip: #757b74;
-  --warn: #a86c00;
+  --pass: #117a3c;
+  --fail: #c4241b;
+  --skip: #5d635b;
+  --warn: #8f5c00;
+  --on-status: #ffffff;
+  /* Yellow on a light surface is ~1.2:1, so light accents use Patrol black. */
+  --rail: #1f1f1f;
+  --bar-fill: #5d635b;
+  --chip-active-bg: #1f1f1f;
+  --chip-active-fg: #f0ff00;
+  --focus: #1f1f1f;
   --shadow: 0 18px 40px -30px rgba(0, 0, 0, 0.35);
 }
 
@@ -142,15 +157,27 @@ body {
 .hero-title {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
-  gap: 12px;
+  align-items: center;
+  gap: 14px;
   margin: 0;
   font-size: clamp(26px, 4vw, 38px);
   font-weight: 800;
   letter-spacing: -0.03em;
 }
-.hero-title .verdict-pass { color: var(--pass); }
-.hero-title .verdict-fail { color: var(--fail); }
+/* The headline stays in ink; the mark beside it carries the status. */
+.verdict-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  color: var(--on-status);
+}
+.verdict-mark .ico { width: 22px; height: 22px; stroke-width: 2.2; }
+.verdict-mark.pass { background: var(--pass); }
+.verdict-mark.fail { background: var(--fail); }
 
 .hero-meta {
   display: flex;
@@ -198,25 +225,22 @@ body {
   color: var(--text-faint);
 }
 .stat-value { margin-top: 8px; font-size: 30px; font-weight: 750; letter-spacing: -0.03em; }
-.stat.accent { border-color: color-mix(in srgb, var(--yellow) 45%, var(--border)); background: linear-gradient(180deg, var(--yellow-soft), transparent 70%), var(--surface); }
+.stat.accent { box-shadow: inset 4px 0 0 var(--rail), var(--shadow); }
 .stat .dot { width: 8px; height: 8px; border-radius: 50%; }
 .dot-passed { background: var(--pass); }
 .dot-failed { background: var(--fail); }
 .dot-skipped { background: var(--skip); }
 .dot-incomplete { background: var(--warn); }
-.stat-passed .stat-value { color: var(--pass); }
-.stat-failed .stat-value { color: var(--fail); }
-.stat-skipped .stat-value { color: var(--skip); }
 
 .bar {
   display: flex;
+  gap: 2px;
   height: 8px;
   margin-top: 20px;
-  border-radius: 999px;
-  overflow: hidden;
-  background: var(--surface-3);
 }
-.bar span { height: 100%; transition: width 0.4s ease; }
+.bar span { height: 100%; border-radius: 2px; transition: width 0.4s ease; }
+.bar span:first-child { border-top-left-radius: 999px; border-bottom-left-radius: 999px; }
+.bar span:last-child { border-top-right-radius: 999px; border-bottom-right-radius: 999px; }
 .bar .seg-passed { background: var(--pass); }
 .bar .seg-failed { background: var(--fail); }
 .bar .seg-incomplete { background: var(--warn); }
@@ -270,7 +294,7 @@ body {
   font-size: 14px;
 }
 .search::placeholder { color: var(--text-faint); }
-.search:focus { outline: none; border-color: var(--yellow); box-shadow: 0 0 0 3px var(--yellow-soft); }
+.search:focus { outline: none; border-color: var(--focus); box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 22%, transparent); }
 
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .chip {
@@ -290,9 +314,9 @@ body {
 }
 .chip:hover { color: var(--text); }
 .chip[aria-pressed="true"] {
-  color: #1f1f1f;
-  background: var(--yellow);
-  border-color: var(--yellow);
+  color: var(--chip-active-fg);
+  background: var(--chip-active-bg);
+  border-color: var(--chip-active-bg);
   font-weight: 600;
 }
 .chip .count { opacity: 0.65; font-variant-numeric: tabular-nums; }
@@ -331,7 +355,7 @@ body {
   cursor: pointer;
 }
 .test-head:hover { background: var(--surface-2); }
-.test-head:focus-visible { outline: 2px solid var(--yellow); outline-offset: -2px; }
+.test-head:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
 
 .chevron { color: var(--text-faint); transition: transform 0.2s ease; }
 .chevron svg { width: 14px; height: 14px; display: block; }
@@ -367,10 +391,10 @@ body {
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
-.badge-passed { color: var(--pass); background: color-mix(in srgb, var(--pass) 16%, transparent); }
-.badge-failed { color: var(--fail); background: color-mix(in srgb, var(--fail) 18%, transparent); }
-.badge-skipped { color: var(--skip); background: color-mix(in srgb, var(--skip) 18%, transparent); }
-.badge-incomplete { color: var(--warn); background: color-mix(in srgb, var(--warn) 18%, transparent); }
+.badge-passed { color: var(--pass); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pass) 45%, transparent); }
+.badge-skipped { color: var(--skip); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--skip) 45%, transparent); }
+.badge-failed { color: var(--on-status); background: var(--fail); }
+.badge-incomplete { color: var(--on-status); background: var(--warn); }
 
 .test-body { display: none; border-top: 1px solid var(--border); padding: 18px 16px 20px; }
 .test.is-open .test-body { display: grid; gap: 20px; }
@@ -501,7 +525,7 @@ body {
 .step-failed .step-action { color: var(--fail); font-weight: 600; }
 .step-running .step-action { color: var(--warn); }
 .step-track { height: 4px; border-radius: 999px; background: var(--surface-3); overflow: hidden; }
-.step-track span { display: block; height: 100%; border-radius: 999px; background: color-mix(in srgb, var(--yellow) 70%, var(--border-strong)); }
+.step-track span { display: block; height: 100%; border-radius: 999px; background: var(--bar-fill); }
 .step-failed .step-track span { background: var(--fail); }
 .step-duration { font-family: var(--mono); font-size: 11.5px; color: var(--text-dim); text-align: right; font-variant-numeric: tabular-nums; }
 
@@ -530,7 +554,7 @@ body {
   width: 100%;
   /* Phone recordings are portrait, so cap the height instead of letting one
      video stretch the whole row. */
-  max-height: 520px;
+  max-height: 460px;
   object-fit: contain;
   border: 1px solid var(--border);
   border-radius: 12px;

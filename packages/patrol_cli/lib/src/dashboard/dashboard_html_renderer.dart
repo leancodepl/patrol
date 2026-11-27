@@ -79,10 +79,12 @@ class DashboardHtmlRenderer {
 
   void _writeHero(StringBuffer buffer, DashboardRun run) {
     final verdict = run.isSuccessful
-        ? '<span class="verdict-pass">All tests passed</span>'
-        : '<span class="verdict-fail">'
-              '${run.failedCount + run.incompleteCount} of ${run.totalCount} '
-              'test${run.totalCount == 1 ? '' : 's'} failed</span>';
+        ? '<span class="verdict-mark pass">$iconCheck</span>'
+              '<span>All tests passed</span>'
+        : '<span class="verdict-mark fail">$iconCross</span>'
+              '<span>${run.failedCount + run.incompleteCount} of '
+              '${run.totalCount} test${run.totalCount == 1 ? '' : 's'} '
+              'failed</span>';
 
     buffer
       ..writeln('<section class="hero">')
@@ -185,7 +187,11 @@ class DashboardHtmlRenderer {
     }
 
     buffer
-      ..write('<div class="bar" role="img" aria-label="Test results">')
+      ..write(
+        '<div class="bar" role="img" aria-label="${run.passedCount} passed, '
+        '${run.failedCount + run.incompleteCount} failed, '
+        '${run.skippedCount} skipped">',
+      )
       ..write(segment('passed', run.passedCount))
       ..write(segment('failed', run.failedCount))
       ..write(segment('incomplete', run.incompleteCount))
