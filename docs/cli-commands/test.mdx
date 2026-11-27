@@ -354,6 +354,26 @@ features such as reporting. To see the full list of supported arguments, run `pa
 - `--clear-permissions`: Not applicable to web platform
 - `--full-isolation`: Not applicable to web platform
 
+### Linux desktop
+
+Patrol runs tests on the Linux desktop build of your app:
+
+```bash
+patrol test --device linux
+```
+
+On Linux:
+- Only Dart-side (Flutter) interactions work. There is no native automation, so native actions
+  (`$.platform.*`) throw `UnsupportedError`.
+- Each test runs in a new process of the built app (`build/linux/<arch>/<mode>/bundle/`).
+- The app needs a display. On a machine without one, such as CI, run Patrol under a virtual
+  display:
+  ```bash
+  xvfb-run -a patrol test --device linux
+  ```
+- `--flavor` needs Flutter 3.47.0 or newer: older `flutter build linux` has no flavors.
+- `--coverage` is not supported yet.
+
 ### Running without rebuilding
 
 With [build-time test discovery][discovery] (the default), already-built tests

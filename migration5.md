@@ -297,3 +297,5 @@ the Inbox before 5.0.0 is released.
   needs flutter/flutter#183838; every other platform and `patrol test` on web keep the 3.44 floor.
   Upgrade Flutter, or point patrol at a newer SDK with `--flutter-command`, to keep using
   `patrol develop -d chrome`.
+- #3308, `patrol`: `PatrolTargetPlatform` has a new `linux` value. Exhaustive `switch`es on it
+  need a `linux` (or `_`) case.

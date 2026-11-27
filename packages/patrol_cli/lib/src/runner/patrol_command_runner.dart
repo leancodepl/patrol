@@ -33,6 +33,7 @@ import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
+import 'package:patrol_cli/src/linux/linux_test_backend.dart';
 import 'package:patrol_cli/src/macos/macos_test_backend.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart' show addGlobalFlags;
@@ -157,6 +158,14 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       logger: _logger,
     );
 
+    final linuxTestBackend = LinuxTestBackend(
+      processManager: _processManager,
+      platform: _platform,
+      rootDirectory: rootDirectory,
+      parentDisposeScope: _disposeScope,
+      logger: _logger,
+    );
+
     final webTestBackend = WebTestBackend(
       processManager: _processManager,
       parentDisposeScope: _disposeScope,
@@ -183,6 +192,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         webTestBackend: webTestBackend,
         projectRoot: rootDirectory,
         fs: _fs,
+        linuxTestBackend: linuxTestBackend,
         compatibilityChecker: CompatibilityChecker(
           projectRoot: rootDirectory,
           processManager: _processManager,
@@ -222,6 +232,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         iosTestBackend: iosTestBackend,
         macosTestBackend: macosTestBackend,
         webTestBackend: webTestBackend,
+        linuxTestBackend: linuxTestBackend,
         analytics: _analytics,
         logger: _logger,
         stdin: stdin,
@@ -244,6 +255,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         iosTestBackend: iosTestBackend,
         macOSTestBackend: macosTestBackend,
         webTestBackend: webTestBackend,
+        linuxTestBackend: linuxTestBackend,
         coverageTool: CoverageTool(
           fs: _fs,
           rootDirectory: rootDirectory,

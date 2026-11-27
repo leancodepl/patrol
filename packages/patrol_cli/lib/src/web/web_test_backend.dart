@@ -12,6 +12,7 @@ import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/coverage/bind_unused_port.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
+import 'package:patrol_cli/src/crossplatform/stop_flutter_run.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/web/restart_teardown_window.dart';
 import 'package:patrol_cli/src/web/web_devtools_server.dart';
@@ -387,24 +388,8 @@ class WebTestBackend {
     }
 
     _logger.detail('Stopping Flutter web server...');
-
-    try {
-      // Quit via flutter so it closes Chrome; a hard kill orphans it on macOS.
-      process.stdin.add('q'.codeUnits);
-      await process.stdin.flush();
-    } on Object catch (err) {
-      _logger.detail('Failed to send quit to Flutter: $err');
-    }
-
-    try {
-      await process.exitCode.timeout(const Duration(seconds: 10));
-    } on TimeoutException {
-      _logger.detail(
-        'Graceful shutdown timed out, force killing Flutter process...',
-      );
-      process.kill(ProcessSignal.sigkill);
-      await process.exitCode;
-    }
+    // Quit via flutter so it closes Chrome; a hard kill orphans it on macOS.
+    await stopFlutterRun(process, logger: _logger);
   }
 
   /// Attaches the only listeners to the resident `flutter run`'s output.

@@ -134,17 +134,22 @@ abstract class PatrolCommand extends Command<int> {
   }
 
   void usesPortOptions() {
-    argParser
-      ..addOption(
-        'test-server-port',
-        help: 'Port to use for server running in the test instrumentation app.',
-        defaultsTo: _defaultTestServerPort.toString(),
-      )
-      ..addOption(
-        'app-server-port',
-        help: 'Port to use for server running in the app under test.',
-        defaultsTo: _defaultAppServerPort.toString(),
-      );
+    argParser.addOption(
+      'test-server-port',
+      help: 'Port to use for server running in the test instrumentation app.',
+      defaultsTo: _defaultTestServerPort.toString(),
+    );
+    usesAppServerPortOption();
+  }
+
+  /// Adds only `--app-server-port`, for platforms without a native test
+  /// server (Linux).
+  void usesAppServerPortOption() {
+    argParser.addOption(
+      'app-server-port',
+      help: 'Port to use for server running in the app under test.',
+      defaultsTo: _defaultAppServerPort.toString(),
+    );
   }
 
   void usesDartDefineFromFileOption() {
