@@ -214,8 +214,9 @@ What changes for you:
    Patrol doesn't edit the file. Until the lines are there, iOS and macOS builds use
    runtime discovery and print a warning with them (a build with
    `--emit-test-manifest` or `emit_test_manifest: true` stops instead). A runner
-   set up for the 4.x opt-in
-   (`PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE`) keeps working; the 4.7.0
+   set up for the 4.x opt-in stops the build: rename
+   `PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE` to
+   `PATROL_INTEGRATION_TEST_IOS_RUNNER`. The 4.7.0
    `PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN`/`_END` pair doesn't compile
    any more, replace it with the snippet.
 4. **Ignore the generated files.** Add to `.gitignore`:

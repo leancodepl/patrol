@@ -676,7 +676,3 @@ static inline void PatrolWithoutQuiescenceWait(void (^block)(void)) {
   }                                                                                                                 \
                                                                                                                     \
   @end
-
-// Deprecated: the runner above handles build-time discovery too. Kept so that
-// RunnerUITests.m files set up for build-time discovery in Patrol 4.x still compile.
-#define PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE(__test_class) PATROL_INTEGRATION_TEST_IOS_RUNNER(__test_class)

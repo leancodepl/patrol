@@ -284,11 +284,10 @@ void main() {
     });
 
     group('build', () {
-      void writeRunner({required bool static}) {
-        final body = static
-            ? 'PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE(RunnerUITests)\n'
-                  '#include "PatrolGeneratedTests.inc"\n'
-            : 'PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerUITests)\n';
+      void writeRunner({required bool included}) {
+        final body =
+            'PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerUITests)\n'
+            '${included ? '#include "PatrolGeneratedTests.inc"\n' : ''}';
         fs.file('ios/RunnerUITests/RunnerUITests.m')
           ..createSync(recursive: true)
           ..writeAsStringSync(body);
@@ -348,7 +347,7 @@ void main() {
       );
 
       test('stops when discovery is on and the include is missing', () async {
-        writeRunner(static: false);
+        writeRunner(included: false);
 
         await expectLater(
           iosTestBackend.build(options(emitTestManifest: true)),
@@ -367,7 +366,7 @@ void main() {
       });
 
       test('leaves a pre-5.0 runner alone when discovery is off', () async {
-        writeRunner(static: false);
+        writeRunner(included: false);
 
         await buildPastSetup(emitTestManifest: false);
 
@@ -378,7 +377,7 @@ void main() {
       test(
         'deletes a stale .inc when the runner does not include it',
         () async {
-          writeRunner(static: false);
+          writeRunner(included: false);
           inc()
             ..createSync(recursive: true)
             ..writeAsStringSync(
@@ -392,7 +391,7 @@ void main() {
       );
 
       test('empties a stale .inc when the runner includes it', () async {
-        writeRunner(static: true);
+        writeRunner(included: true);
         inc()
           ..createSync(recursive: true)
           ..writeAsStringSync(
@@ -405,7 +404,7 @@ void main() {
       });
 
       test('keeps an unchanged empty .inc untouched', () async {
-        writeRunner(static: true);
+        writeRunner(included: true);
         await buildPastSetup(emitTestManifest: false);
         final modified = DateTime(2020);
         inc().setLastModifiedSync(modified);
@@ -428,13 +427,26 @@ void main() {
 
       for (final emitTestManifest in [true, false]) {
         test(
-          'accepts a 4.x STATIC_BASE runner (discovery: $emitTestManifest)',
+          'asks to rename a 4.x STATIC_BASE runner (discovery: $emitTestManifest)',
           () async {
-            writeRunner(static: true);
+            runner()
+              ..createSync(recursive: true)
+              ..writeAsStringSync(
+                'PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE(RunnerUITests)\n'
+                '#include "PatrolGeneratedTests.inc"\n',
+              );
             final before = runner().readAsStringSync();
 
-            await buildPastSetup(emitTestManifest: emitTestManifest);
-
+            await expectLater(
+              iosTestBackend.build(options(emitTestManifest: emitTestManifest)),
+              throwsA(
+                isA<ToolExit>().having(
+                  (e) => e.message,
+                  'message',
+                  contains('Rename it to PATROL_INTEGRATION_TEST_IOS_RUNNER'),
+                ),
+              ),
+            );
             expect(runner().readAsStringSync(), before);
           },
         );

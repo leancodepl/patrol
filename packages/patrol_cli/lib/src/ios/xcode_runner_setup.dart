@@ -126,7 +126,18 @@ class XcodeRunnerSetup {
       return;
     }
 
-    if (_removedStaticMacro.hasMatch(runner.readAsStringSync())) {
+    final contents = runner.readAsStringSync();
+    if (_removedStaticBaseMacro.hasMatch(contents)) {
+      throwToolExit(
+        '${runner.path} uses ${runnerMacro}_STATIC_BASE, which was removed in '
+        'Patrol 5.0. Rename it to $runnerMacro, which runs build-time '
+        'discovered tests too.\n'
+        '\n'
+        'See $_discoveryDocsUrl',
+      );
+    }
+
+    if (_removedStaticMacro.hasMatch(contents)) {
       throwToolExit(
         '${runner.path} uses the ${runnerMacro}_STATIC_BEGIN and _END macros, '
         'which were removed in Patrol 5.0. Replace them with:\n'
@@ -154,6 +165,9 @@ class XcodeRunnerSetup {
       ..createSync(recursive: true)
       ..writeAsStringSync(emitTestManifest ? _buildTimeMode : _runtimeMode);
   }
+
+  RegExp get _removedStaticBaseMacro =>
+      RegExp('\\b${runnerMacro}_STATIC_BASE\\(');
 
   RegExp get _removedStaticMacro =>
       RegExp('^[ \\t]*${runnerMacro}_STATIC_BEGIN\\b', multiLine: true);
