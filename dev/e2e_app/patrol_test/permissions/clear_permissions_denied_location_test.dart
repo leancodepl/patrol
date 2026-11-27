@@ -5,10 +5,11 @@ import '../common.dart';
 
 const _dialogTimeout = Duration(seconds: 10);
 
+// XCTest runs cases in name order, hence the numbers.
 // Run alone, from a fresh install, with `--clear-permissions`: the second case
 // checks that the reset also clears a denied location permission.
 void main() {
-  patrol('denies location', ($) async {
+  patrol('1. denies location', ($) async {
     await createApp($);
     await $('Open permissions screen').scrollTo().tap();
 
@@ -27,7 +28,7 @@ void main() {
     );
   }, tags: ['ios', 'clear_permissions_denied_location']);
 
-  patrol('asks for location again after a denial', ($) async {
+  patrol('2. asks for location again after a denial', ($) async {
     final status = await Permission.locationWhenInUse.status;
     print('Location status after reset: $status');
     expect(status, PermissionStatus.denied);
