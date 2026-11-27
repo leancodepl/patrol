@@ -190,74 +190,36 @@ Check out our video version of this tutorial on YouTube!
 
     <Step id="create-patrol-test-module">
       Create `android/patrolTest/build.gradle.kts`. This is a self-instrumenting
-      test-only APK. It copies the app's flavor dimensions, product flavors, build
-      types, and SDK levels.
+      test-only APK. `patrol_test.gradle` copies the app's flavor dimensions,
+      product flavors, build types, and SDK levels, wires the orchestrator, and
+      assigns each test APK a package ID plus the matching app variant's
+      `applicationId` and clear-data setting as manifest metadata.
 
       ```kotlin title="android/patrolTest/build.gradle.kts"
-      import com.android.build.api.dsl.ApplicationExtension
-
       plugins {
           id("com.android.test")
-      }
-
-      val appAndroid =
-          project(":app").extensions.getByType(ApplicationExtension::class.java)
-      val appNamespace = requireNotNull(appAndroid.namespace) {
-          "The :app module must declare an Android namespace"
-      }
-
-      android {
-          namespace = "$appNamespace.patrol_test"
-          compileSdk = appAndroid.compileSdk
-
-          defaultConfig {
-              minSdk = appAndroid.defaultConfig.minSdk
-              targetSdk = appAndroid.defaultConfig.targetSdk
-              testInstrumentationRunner = "pl.leancode.patrol.PatrolJUnitRunner"
-              // Clear the app under test before each test.
-              testInstrumentationRunnerArguments["clearPackageData"] = "true"
-          }
-
-          flavorDimensions += appAndroid.flavorDimensions
-          appAndroid.productFlavors.forEach { appFlavor ->
-              productFlavors.create(appFlavor.name) {
-                  dimension = appFlavor.dimension
-              }
-          }
-          appAndroid.buildTypes.forEach { appBuildType ->
-              if (buildTypes.findByName(appBuildType.name) == null) {
-                  buildTypes.create(appBuildType.name)
-              }
-          }
-          buildTypes.configureEach {
-              if (name != "debug" && name != "release") {
-                  matchingFallbacks += listOf("release", "debug")
-              }
-          }
-
-          targetProjectPath = ":app"
-          experimentalProperties["android.experimental.self-instrumenting"] = true
-
-          testOptions {
-              execution = "ANDROIDX_TEST_ORCHESTRATOR"
-          }
-      }
-
-      dependencies {
-          implementation(project(":patrol_android_test"))
-          androidTestUtil("androidx.test:orchestrator:1.5.1")
       }
 
       apply(from = project(":patrol_android_test").projectDir.resolve("patrol_test.gradle"))
       ```
 
-      `patrol_test.gradle` assigns each test APK a package ID and embeds the
-      matching app variant's `applicationId` and clear-data setting as manifest
-      metadata.
+      For `build.gradle` (Groovy), use:
 
-      The orchestrator gives every Dart test a fresh instrumentation process and a
-      freshly launched app. With `clearPackageData` set as above, Patrol wipes the
-      **app's** data before each test (including runtime permissions).
+      ```groovy title="android/patrolTest/build.gradle"
+      plugins {
+          id 'com.android.test'
+      }
+
+      apply from: new File(
+          project(':patrol_android_test').projectDir,
+          'patrol_test.gradle'
+      )
+      ```
+
+      The script defaults `clearPackageData` to `true` (Patrol wipes the **app's**
+      data before each test, including runtime permissions). Override after the
+      `apply` if you need a different value. The orchestrator gives every Dart
+      test a fresh instrumentation process and a freshly launched app.
       `:patrol_android_test` contributes the test APK's required `INTERNET`
       and `QUERY_ALL_PACKAGES` permissions.
     </Step>

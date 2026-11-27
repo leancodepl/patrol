@@ -1,5 +1,61 @@
-// Configures :patrolTest package IDs and manifest metadata.
+// Applies the standard :patrolTest Android configuration.
+//
+// User project:
+//   plugins { id("com.android.test") }
+//   apply(from = project(":patrol_android_test").projectDir.resolve("patrol_test.gradle"))
+//
+// Optional overrides go after the apply (e.g. clearPackageData, extra dependencies).
+
 def testAndroid = project.extensions.getByName("android")
+def appAndroid = project(":app").extensions.getByName("android")
+def androidComponents = project.extensions.getByName("androidComponents")
+
+def appNamespace = appAndroid.namespace
+if (appNamespace == null || appNamespace.toString().trim().isEmpty()) {
+    throw new GradleException("The :app module must declare an Android namespace")
+}
+
+testAndroid.namespace = "${appNamespace}.patrol_test"
+testAndroid.compileSdk = appAndroid.compileSdk
+testAndroid.targetProjectPath = ":app"
+testAndroid.experimentalProperties["android.experimental.self-instrumenting"] = true
+
+testAndroid.defaultConfig {
+    minSdk = appAndroid.defaultConfig.minSdk
+    targetSdk = appAndroid.defaultConfig.targetSdk
+    testInstrumentationRunner = "pl.leancode.patrol.PatrolJUnitRunner"
+    // Clear the app under test before each test (mapped below to patrolClearAppData).
+    testInstrumentationRunnerArguments["clearPackageData"] = "true"
+}
+
+testAndroid.flavorDimensions.addAll(appAndroid.flavorDimensions)
+appAndroid.productFlavors.each { appFlavor ->
+    if (testAndroid.productFlavors.findByName(appFlavor.name) == null) {
+        testAndroid.productFlavors.create(appFlavor.name) { flavor ->
+            flavor.dimension = appFlavor.dimension
+        }
+    }
+}
+appAndroid.buildTypes.each { appBuildType ->
+    if (testAndroid.buildTypes.findByName(appBuildType.name) == null) {
+        testAndroid.buildTypes.create(appBuildType.name)
+    }
+}
+testAndroid.buildTypes.configureEach { buildType ->
+    if (buildType.name != "debug" && buildType.name != "release") {
+        buildType.matchingFallbacks += ["release", "debug"]
+    }
+    // Release (and custom) test APKs must be installable; debug-sign every build type.
+    buildType.signingConfig = testAndroid.signingConfigs.getByName("debug")
+}
+
+// Give every Dart test a fresh instrumentation process.
+testAndroid.testOptions.execution = "ANDROIDX_TEST_ORCHESTRATOR"
+
+project.dependencies {
+    implementation(project.project(":patrol_android_test"))
+    androidTestUtil("androidx.test:orchestrator:1.5.1")
+}
 
 def remapClearPackageData = { args ->
     if (args == null) {
@@ -23,29 +79,25 @@ def bakedClear = { args ->
     return args.get("patrolClearAppData").toString().equalsIgnoreCase("true") ? "true" : "false"
 }
 
-remapClearPackageData(testAndroid.defaultConfig.testInstrumentationRunnerArguments)
-testAndroid.defaultConfig.manifestPlaceholders.put(
-        "patrolClearAppData",
-        bakedClear(testAndroid.defaultConfig.testInstrumentationRunnerArguments) ?: "false"
-)
+// Runs after the consumer's android {} blocks below the apply(), so overrides stick.
+androidComponents.finalizeDsl { extension ->
+    remapClearPackageData(extension.defaultConfig.testInstrumentationRunnerArguments)
+    extension.defaultConfig.manifestPlaceholders.put(
+            "patrolClearAppData",
+            bakedClear(extension.defaultConfig.testInstrumentationRunnerArguments) ?: "false"
+    )
 
-testAndroid.productFlavors.all { flavor ->
-    remapClearPackageData(flavor.testInstrumentationRunnerArguments)
-    def flavorClear = bakedClear(flavor.testInstrumentationRunnerArguments)
-    if (flavorClear == null) {
-        flavorClear = bakedClear(testAndroid.defaultConfig.testInstrumentationRunnerArguments)
+    extension.productFlavors.each { flavor ->
+        remapClearPackageData(flavor.testInstrumentationRunnerArguments)
+        def flavorClear = bakedClear(flavor.testInstrumentationRunnerArguments)
+        if (flavorClear == null) {
+            flavorClear = bakedClear(extension.defaultConfig.testInstrumentationRunnerArguments)
+        }
+        flavor.manifestPlaceholders.put("patrolClearAppData", flavorClear ?: "false")
     }
-    flavor.manifestPlaceholders.put("patrolClearAppData", flavorClear ?: "false")
-}
-
-// Release (and custom) test APKs must be installable; debug-sign every build type.
-testAndroid.buildTypes.configureEach { buildType ->
-    buildType.signingConfig = testAndroid.signingConfigs.getByName("debug")
 }
 
 // Use the matching :app variant's final application ID.
-def appAndroid = project(":app").extensions.getByName("android")
-def androidComponents = project.extensions.getByName("androidComponents")
 androidComponents.beforeVariants(androidComponents.selector().all()) { variantBuilder ->
     def appVariant = appAndroid.applicationVariants.find {
         it.name.equalsIgnoreCase(variantBuilder.name)

@@ -31,13 +31,9 @@ For Android, verify all of the following:
 
 - `settings.gradle(.kts)` includes `:patrolTest` and resolves
   `:patrol_android_test` relative to Flutter's existing `:patrol` project.
-- `patrolTest` applies `com.android.test`, targets `:app`, enables
-  `android.experimental.self-instrumenting`, and mirrors the app's SDK levels,
-  flavor dimensions, product flavors, and build types.
-- The orchestrator (`testOptions.execution` plus the `androidTestUtil`
-  dependency) is configured on `:patrolTest`. Set
-  `testInstrumentationRunnerArguments["clearPackageData"] = "true"` there to
-  clear the app before each test.
+- `patrolTest/build.gradle(.kts)` applies `com.android.test` and
+  `patrol_test.gradle` (mirrors SDK/flavors/build types, wires the
+  orchestrator, defaults `clearPackageData` to `true`).
 - The host is under `android/patrolTest/src/main` and calls
   `instrumentation.setUp()`.
 - The harness supplies the standard networking and package-visibility
@@ -69,8 +65,8 @@ green run confirms the setup.
 
 - **`MainActivity` cannot be resolved in `:patrolTest`** — use the
   self-instrumenting host template and call `setUp()`.
-- **Flavor task missing** — ensure the `:patrolTest` build file mirrors flavor
-  dimensions and product flavors from `:app`; do not hardcode flavor names.
+- **Flavor task missing** — apply `patrol_test.gradle` so flavors are mirrored
+  from `:app`; do not hardcode flavor names in `:patrolTest`.
 - **Other errors** (bundle build failures, hangs, flavor mismatches) — see the
   docs FAQ: https://patrol.leancode.co/documentation#faq
 
