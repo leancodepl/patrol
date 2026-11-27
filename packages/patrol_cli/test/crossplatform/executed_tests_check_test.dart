@@ -2,6 +2,7 @@ import 'package:file/memory.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/crossplatform/executed_tests_check.dart';
 import 'package:patrol_cli/src/crossplatform/test_manifest.dart';
+import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_log/patrol_log.dart';
 import 'package:test/test.dart';
 
@@ -29,21 +30,26 @@ Matcher _toolExit(Object messageMatcher) => throwsA(
 void main() {
   final manifest = TestManifest.parse(_manifest);
 
-  group('expectedTestNames', () {
-    test('expects every test, skipped ones included, without --only', () {
-      expect(expectedTestNames(manifest.tests), [
+  group('selectedTests', () {
+    List<String> names(List<DiscoveredTest> tests) => [
+      for (final test in tests) test.dartName,
+    ];
+
+    test('selects every test, skipped ones included, without --only', () {
+      expect(names(selectedTests(manifest.tests)), [
         'example_test a',
         'example_test b',
         'other_test c',
       ]);
     });
 
-    test('expects only the tests and files --only selects', () {
-      expect(expectedTestNames(manifest.tests, onlyTests: ['other_test c']), [
-        'other_test c',
-      ]);
+    test('selects only the tests and files --only names', () {
       expect(
-        expectedTestNames(manifest.tests, onlyTests: ['example_test.dart']),
+        names(selectedTests(manifest.tests, onlyTests: ['other_test c'])),
+        ['other_test c'],
+      );
+      expect(
+        names(selectedTests(manifest.tests, onlyTests: ['example_test.dart'])),
         ['example_test a', 'example_test b'],
       );
     });
@@ -54,10 +60,13 @@ void main() {
 
     setUp(() => check = ExecutedTestsCheck.fromManifest(manifest));
 
+    test('does not expect skipped tests, which the app never reports', () {
+      expect(check.expected, ['example_test a', 'other_test c']);
+    });
+
     test('passes when the app logged a result for every test', () {
       check
         ..onLogEntry(_result('example_test a', TestEntryStatus.success))
-        ..onLogEntry(_result('example_test b', TestEntryStatus.skip))
         ..onLogEntry(_result('other_test c', TestEntryStatus.failure));
 
       expect(check.verify, returnsNormally);
@@ -68,26 +77,26 @@ void main() {
         check.verify,
         _toolExit(
           allOf(
-            contains('found 3 test(s), but only 0 ran'),
+            contains('2 test(s) should have run, but only 0 did'),
             contains('MainActivityTest.java'),
           ),
         ),
       );
     });
 
-    test('fails and names the tests that did not run', () {
+    test('fails and names only the tests that did not run', () {
       check
         ..onLogEntry(_result('example_test a', TestEntryStatus.start))
-        ..onLogEntry(_result('example_test a', TestEntryStatus.success))
-        ..onLogEntry(_result('example_test b', TestEntryStatus.skip));
+        ..onLogEntry(_result('example_test a', TestEntryStatus.success));
 
       expect(
         check.verify,
         _toolExit(
           allOf(
-            contains('but only 2 ran'),
+            contains('but only 1 did'),
             contains('  - other_test c'),
             isNot(contains('example_test a\n')),
+            isNot(contains('example_test b')),
           ),
         ),
       );
@@ -99,7 +108,7 @@ void main() {
       expect(check.missing, contains('other_test c'));
     });
 
-    test('trusts the native runner count when device logs are lost', () {
+    test('trusts the native runner count when the app logged nothing', () {
       check.onRunnerOutput('Executed 3 tests, with 0 failures (0 unexpected)');
 
       expect(check.verify, returnsNormally);
@@ -114,14 +123,29 @@ void main() {
       expect(gradle.executedCount, 3);
     });
 
-    test('a smaller runner count does not hide logged results', () {
+    test('trusts the names over the count when the app logged results', () {
+      // A stale test APK: as many tests as the manifest, but other ones.
       check
-        ..onLogEntry(_result('example_test a', TestEntryStatus.success))
-        ..onLogEntry(_result('example_test b', TestEntryStatus.skip))
-        ..onLogEntry(_result('other_test c', TestEntryStatus.success))
-        ..onRunnerOutput('OK (1 test)');
+        ..onLogEntry(_result('example_test old', TestEntryStatus.success))
+        ..onLogEntry(_result('other_test old', TestEntryStatus.success))
+        ..onRunnerOutput('OK (3 tests)');
 
-      expect(check.verify, returnsNormally);
+      expect(
+        check.verify,
+        _toolExit(
+          allOf(contains('but only 0 did'), contains('  - example_test a')),
+        ),
+      );
+    });
+
+    test('passes when every selected test is skipped', () {
+      final skipped = ExecutedTestsCheck.fromManifest(
+        manifest,
+        onlyTests: ['example_test b'],
+      );
+
+      expect(skipped.expected, isEmpty);
+      expect(skipped.verify, returnsNormally);
     });
 
     test('fails when discovery found no tests', () {
@@ -137,7 +161,7 @@ void main() {
 
     setUp(() {
       fs = MemoryFileSystem.test();
-      fs.file('/app/build/patrol/patrol_test_manifest.json')
+      fs.file('/app/build/patrol/android/patrol_test_manifest.json')
         ..createSync(recursive: true)
         ..writeAsStringSync(_manifest);
     });
@@ -146,16 +170,18 @@ void main() {
       final check = ExecutedTestsCheck.forRun(
         fs.directory('/app'),
         MockLogger(),
+        platform: TargetPlatform.android,
         emitTestManifest: true,
       );
 
-      expect(check?.expected, hasLength(3));
+      expect(check?.expected, hasLength(2));
     });
 
     test('skips runtime discovery even with a manifest left from before', () {
       final check = ExecutedTestsCheck.forRun(
         fs.directory('/app'),
         MockLogger(),
+        platform: TargetPlatform.android,
         emitTestManifest: false,
       );
 
@@ -166,8 +192,20 @@ void main() {
       final check = ExecutedTestsCheck.forRun(
         fs.directory('/app'),
         MockLogger(),
+        platform: TargetPlatform.android,
         emitTestManifest: true,
         interruptible: true,
+      );
+
+      expect(check, isNull);
+    });
+
+    test("reads the manifest of the device's platform only", () {
+      final check = ExecutedTestsCheck.forRun(
+        fs.directory('/app'),
+        MockLogger(),
+        platform: TargetPlatform.iOS,
+        emitTestManifest: true,
       );
 
       expect(check, isNull);

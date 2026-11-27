@@ -11,7 +11,8 @@ const missingAndroidHostTestMessage =
     'PatrolJUnitRunner) and set testInstrumentationRunner to '
     '"pl.leancode.patrol.PatrolJUnitRunner" in android/app/build.gradle.\n'
     '\n'
-    'See https://patrol.leancode.co/documentation#setup (Android).';
+    'See https://patrol.leancode.co/documentation#setup (Android).\n'
+    'Or pass --no-emit-test-manifest to use runtime discovery.';
 
 /// The result of [AndroidTestCodegen.generate].
 class AndroidCodegenResult {

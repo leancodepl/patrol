@@ -6,7 +6,7 @@
   alias, and the 4.7.0 `..._STATIC_BEGIN`/`_END` macros are removed. See `migration5.md`.
 - **Breaking:** With build-time test discovery, a test the app registers that discovery didn't find
   (for example one behind `Platform.isAndroid`) fails every test of the run with the list of
-  missing tests, instead of silently never running. Requires `patrol_cli` 5.0.
+  missing tests, instead of silently never running. Requires `patrol_cli` 5.0. (#3425)
 - Add `$.entrypointArgs` with the Dart entrypoint arguments the native side of the app passes to
   the test bundle (`dartEntrypointArgs` on Android, `entrypointArgs` on iOS and macOS). Needs a
   `patrol_cli` release that includes this change. (#3366)

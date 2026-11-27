@@ -2,6 +2,7 @@ import 'package:file/file.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/crossplatform/test_manifest.dart';
+import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_log/patrol_log.dart';
 
 /// Fails a run in which fewer tests ran than the build-time manifest lists.
@@ -11,16 +12,19 @@ import 'package:patrol_log/patrol_log.dart';
 /// its result, or when the native runner reports at least that many tests
 /// (device logs can arrive late).
 class ExecutedTestsCheck {
-  ExecutedTestsCheck(this.expected);
+  ExecutedTestsCheck(this.expected, {this.selectedCount});
 
-  /// Expects every test in [manifest], or only the ones [onlyTests] selects.
+  /// Expects every test in [manifest], or only the ones [onlyTests] selects,
+  /// except skipped ones, which the native runner skips without the app.
   factory ExecutedTestsCheck.fromManifest(
     TestManifest manifest, {
     List<String> onlyTests = const [],
   }) {
-    return ExecutedTestsCheck(
-      expectedTestNames(manifest.tests, onlyTests: onlyTests),
-    );
+    final selected = selectedTests(manifest.tests, onlyTests: onlyTests);
+    return ExecutedTestsCheck([
+      for (final test in selected)
+        if (!test.skip) test.dartName,
+    ], selectedCount: selected.length);
   }
 
   /// The check for a run of the app in [rootDirectory], or `null` when
@@ -29,6 +33,7 @@ class ExecutedTestsCheck {
   static ExecutedTestsCheck? forRun(
     Directory rootDirectory,
     Logger logger, {
+    required TargetPlatform platform,
     required bool emitTestManifest,
     bool interruptible = false,
     List<String> onlyTests = const [],
@@ -36,7 +41,10 @@ class ExecutedTestsCheck {
     if (!emitTestManifest || interruptible) {
       return null;
     }
-    final manifest = TestManifest.loadFromBuild(rootDirectory);
+    final manifest = TestManifest.loadFromBuild(
+      rootDirectory,
+      platform: platform,
+    );
     if (manifest == null) {
       logger.warn(
         'No build-time test manifest found, so Patrol cannot check that every '
@@ -49,6 +57,9 @@ class ExecutedTestsCheck {
 
   /// Dart names of the tests that must run.
   final List<String> expected;
+
+  /// How many tests the run selects, skipped ones included.
+  final int? selectedCount;
 
   final _finished = <String>{};
   var _runnerCount = 0;
@@ -98,10 +109,13 @@ class ExecutedTestsCheck {
   List<String> get missing =>
       expected.where((name) => !_finished.contains(name)).toList();
 
-  /// The number of expected tests that ran.
+  /// The number of expected tests that ran. The runner count stands in only
+  /// when the app logged no result at all, because device logs can be lost.
   int get executedCount {
-    final logged = expected.length - missing.length;
-    return _runnerCount > logged ? _runnerCount : logged;
+    if (_finished.isEmpty) {
+      return _runnerCount;
+    }
+    return expected.length - missing.length;
   }
 
   /// Like [verify], but fails [task] for [subject] first.
@@ -116,7 +130,7 @@ class ExecutedTestsCheck {
 
   /// Throws a [ToolExit] when fewer tests ran than [expected].
   void verify() {
-    if (expected.isEmpty) {
+    if ((selectedCount ?? expected.length) == 0) {
       throwToolExit(
         'Build-time test discovery found no tests to run. Check the test '
         'targets and the --tags/--exclude-tags filters.',
@@ -130,8 +144,7 @@ class ExecutedTestsCheck {
 
     final missingNames = missing;
     final buffer = StringBuffer(
-      'Build-time test discovery found ${expected.length} test(s), but only '
-      '$executed ran.',
+      '${expected.length} test(s) should have run, but only $executed did.',
     );
     if (missingNames.isNotEmpty) {
       const shown = 20;
@@ -154,25 +167,25 @@ class ExecutedTestsCheck {
   }
 }
 
-/// Dart names of the tests in [tests] that a run with [onlyTests] executes:
-/// every test when [onlyTests] is empty, otherwise the requested tests and
-/// every test of a requested file.
-List<String> expectedTestNames(
+/// The tests in [tests] that a run with [onlyTests] selects: every test when
+/// [onlyTests] is empty, otherwise the requested tests and every test of a
+/// requested file.
+List<DiscoveredTest> selectedTests(
   List<DiscoveredTest> tests, {
   List<String> onlyTests = const [],
 }) {
   if (onlyTests.isEmpty) {
-    return [for (final test in tests) test.dartName];
+    return tests;
   }
 
   final selection = resolveOnlySelection(tests, onlyTests);
   final names = generatePerFileTestNames(tests);
   final classes = selection.classNames.toSet();
-  final selectedTests = selection.tests.map((t) => t.qualified).toSet();
+  final picked = selection.tests.map((t) => t.qualified).toSet();
   return [
     for (var i = 0; i < tests.length; i++)
       if (classes.contains(names[i].className) ||
-          selectedTests.contains(names[i].qualified))
-        tests[i].dartName,
+          picked.contains(names[i].qualified))
+        tests[i],
   ];
 }

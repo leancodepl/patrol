@@ -284,7 +284,10 @@ class IOSTestBackend {
       return const [];
     }
     final manifest = hasGeneratedTests
-        ? TestManifest.loadFromBuild(_rootDirectory)
+        ? TestManifest.loadFromBuild(
+            _rootDirectory,
+            platform: TargetPlatform.iOS,
+          )
         : null;
     if (manifest == null) {
       throwToolExit(
@@ -323,7 +326,10 @@ class IOSTestBackend {
     if (!hasGeneratedTests) {
       return const [];
     }
-    final manifest = TestManifest.loadFromBuild(_rootDirectory);
+    final manifest = TestManifest.loadFromBuild(
+      _rootDirectory,
+      platform: TargetPlatform.iOS,
+    );
     if (manifest == null) {
       return const [];
     }
@@ -443,6 +449,7 @@ class IOSTestBackend {
     final executedTestsCheck = ExecutedTestsCheck.forRun(
       _rootDirectory,
       _logger,
+      platform: TargetPlatform.iOS,
       emitTestManifest: options.emitTestManifest && hasGeneratedTests,
       interruptible: interruptible,
       onlyTests: onlyTests,

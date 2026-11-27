@@ -42,9 +42,15 @@ class TestManifestGenerator {
         .childDirectory('build')
         .childDirectory('patrol')
         .childFile('patrol_test_manifest.json');
-    manifestFile.parent.createSync(recursive: true);
-    if (manifestFile.existsSync()) {
-      manifestFile.deleteSync();
+    final platformManifestFile = TestManifest.buildFile(
+      _rootDirectory,
+      targetPlatform,
+    );
+    for (final file in [manifestFile, platformManifestFile]) {
+      file.parent.createSync(recursive: true);
+      if (file.existsSync()) {
+        file.deleteSync();
+      }
     }
 
     final task = _logger.task('Discovering Dart tests at build time');
@@ -82,6 +88,7 @@ class TestManifestGenerator {
     task.complete('Discovered Dart tests → ${manifestFile.path}');
     _reportDiscoveredTests(manifestFile, flutter);
     _writeTestsToBundle(manifestFile, flutter.target);
+    manifestFile.copySync(platformManifestFile.path);
     return manifestFile.absolute.path;
   }
 

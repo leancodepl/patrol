@@ -405,6 +405,7 @@ class AndroidTestBackend {
     final executedTestsCheck = ExecutedTestsCheck.forRun(
       _rootDirectory,
       _logger,
+      platform: TargetPlatform.android,
       emitTestManifest: options.emitTestManifest,
       interruptible: interruptible,
     );
@@ -810,6 +811,7 @@ class AndroidTestBackend {
     final executedTestsCheck = ExecutedTestsCheck.forRun(
       _rootDirectory,
       _logger,
+      platform: TargetPlatform.android,
       emitTestManifest: true,
       onlyTests: onlyTests,
     );
@@ -916,7 +918,10 @@ class AndroidTestBackend {
       0,
       generatedClassNames.first.lastIndexOf('.'),
     );
-    final manifest = TestManifest.loadFromBuild(_rootDirectory);
+    final manifest = TestManifest.loadFromBuild(
+      _rootDirectory,
+      platform: TargetPlatform.android,
+    );
     if (manifest == null) {
       throwToolExit(
         'No build-time test manifest found. Run `patrol build android` '
