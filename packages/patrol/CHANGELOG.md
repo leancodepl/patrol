@@ -1,5 +1,8 @@
 ## Unreleased
 
+- Add Linux desktop support: Dart-side (Flutter) tests run on Linux, and native actions throw
+  `UnsupportedError`. Adds `PatrolTargetPlatform.linux`. Needs a `patrol_cli` release that includes
+  Linux support (#3310). (#3308)
 - **Breaking:** Remove the native API deprecated in 4.0: `$.native`, `$.native2`, `NativeAutomator`,
   `NativeAutomator2`, `NativeAutomatorConfig`, `NativeSelector`, `GetNativeViewsResult` and the
   `nativeAutomatorConfig` parameter of `patrolTest`. Use `$.platform`. `dart fix --apply` rewrites

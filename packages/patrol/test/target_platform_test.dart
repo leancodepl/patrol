@@ -11,10 +11,11 @@ void main() {
       expect(parsePatrolTargetPlatform('ios'), PatrolTargetPlatform.iOS);
       expect(parsePatrolTargetPlatform('macos'), PatrolTargetPlatform.macOS);
       expect(parsePatrolTargetPlatform('web'), PatrolTargetPlatform.web);
+      expect(parsePatrolTargetPlatform('linux'), PatrolTargetPlatform.linux);
     });
 
     test('rejects a name patrol_cli does not pass', () {
-      for (final name in ['', 'linux']) {
+      for (final name in ['', 'windows']) {
         expect(
           () => parsePatrolTargetPlatform(name),
           throwsA(
