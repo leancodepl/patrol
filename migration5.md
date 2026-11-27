@@ -82,7 +82,7 @@ already meets them, unless it sets lower values explicitly.
 
 ## The native API (`$.native`, `$.native2`) is removed
 
-**Packages:** `patrol`
+**Packages:** `patrol` (#3417)
 
 Removed APIs, deprecated since Patrol 4.0:
 
