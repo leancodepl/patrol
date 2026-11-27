@@ -93,7 +93,6 @@ jobs:
       # The last run used runtime discovery, so it must have removed the classes
       # the build-time runs generated (they would run every test twice).
       - name: Verify the runtime discovery run left no generated classes
-        if: always()
         working-directory: dev/e2e_app
         run: |
           generated_dir=android/app/src/androidTest/java/pl/leancode/patrol/e2e_app

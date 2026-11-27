@@ -100,8 +100,8 @@ class IOSTestBackend {
         );
       }
 
-      // Rewritten on every build, so a stale .inc never runs old tests.
-      _writeRuntimeDiscoveryInc();
+      // Reset on every build, so a stale .inc never runs old tests.
+      _resetGeneratedInc();
       if (_discoveryModeFile.existsSync()) {
         _discoveryModeFile.deleteSync();
       }
@@ -221,9 +221,7 @@ class IOSTestBackend {
       return;
     }
 
-    if (runner.readAsStringSync().contains(
-      'PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN',
-    )) {
+    if (_removedStaticMacro.hasMatch(runner.readAsStringSync())) {
       throwToolExit(
         '${runner.path} uses the PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN '
         'and _END macros, which were removed in Patrol 5.0. Replace them with:\n'
@@ -254,6 +252,11 @@ class IOSTestBackend {
       '#if __has_include("$_generatedIncName")\n'
       '#include "$_generatedIncName"\n'
       '#endif';
+
+  static final _removedStaticMacro = RegExp(
+    r'^[ \t]*PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN\b',
+    multiLine: true,
+  );
 
   static String _indented(String lines) =>
       lines.split('\n').map((l) => '  $l').join('\n');
@@ -358,16 +361,30 @@ class IOSTestBackend {
     return inc.existsSync() && inc.readAsStringSync().contains('@interface ');
   }
 
-  /// Writes a `PatrolGeneratedTests.inc` that declares no tests, so the runner
-  /// falls back to runtime discovery and an unguarded `#include` still
-  /// compiles.
-  void _writeRuntimeDiscoveryInc() {
-    _generatedIncFile
+  static const _runtimeDiscoveryInc =
+      '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
+      '// Built with runtime test discovery: no generated tests.\n';
+
+  /// Leaves a `PatrolGeneratedTests.inc` that declares no tests when the runner
+  /// includes it (an unguarded `#include` needs the file to compile), and no
+  /// file otherwise.
+  void _resetGeneratedInc() {
+    final inc = _generatedIncFile;
+    final runner = _runnerFile;
+    if (!runner.existsSync() ||
+        !includesGeneratedTests(runner.readAsStringSync())) {
+      if (inc.existsSync()) {
+        inc.deleteSync();
+      }
+      return;
+    }
+    // An unchanged file keeps its mtime, so Xcode doesn't rebuild the target.
+    if (inc.existsSync() && inc.readAsStringSync() == _runtimeDiscoveryInc) {
+      return;
+    }
+    inc
       ..createSync(recursive: true)
-      ..writeAsStringSync(
-        '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
-        '// Built with runtime test discovery: no generated tests.\n',
-      );
+      ..writeAsStringSync(_runtimeDiscoveryInc);
   }
 
   /// Generates static XCTest methods from the manifest into the RunnerUITests

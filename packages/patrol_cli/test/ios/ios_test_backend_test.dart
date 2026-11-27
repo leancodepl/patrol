@@ -362,11 +362,27 @@ void main() {
         await buildPastSetup(emitTestManifest: false);
 
         expect(runner().readAsStringSync(), legacyRunner);
-        expect(inc().readAsStringSync(), isNot(contains('@interface')));
+        expect(inc().existsSync(), isFalse);
       });
 
-      test('replaces a stale generated include with an empty one', () async {
-        writeRunner(static: false);
+      test(
+        'deletes a stale .inc when the runner does not include it',
+        () async {
+          writeRunner(static: false);
+          inc()
+            ..createSync(recursive: true)
+            ..writeAsStringSync(
+              '@interface PatrolGeneratedTests_old : X\n@end\n',
+            );
+
+          await buildPastSetup(emitTestManifest: false);
+
+          expect(inc().existsSync(), isFalse);
+        },
+      );
+
+      test('empties a stale .inc when the runner includes it', () async {
+        writeRunner(static: true);
         inc()
           ..createSync(recursive: true)
           ..writeAsStringSync(
@@ -376,6 +392,28 @@ void main() {
         await buildPastSetup(emitTestManifest: false);
 
         expect(inc().readAsStringSync(), isNot(contains('@interface')));
+      });
+
+      test('keeps an unchanged empty .inc untouched', () async {
+        writeRunner(static: true);
+        await buildPastSetup(emitTestManifest: false);
+        final modified = DateTime(2020);
+        inc().setLastModifiedSync(modified);
+
+        await buildPastSetup(emitTestManifest: false);
+
+        expect(inc().lastModifiedSync(), modified);
+      });
+
+      test('ignores the removed STATIC_BEGIN macro in a comment', () async {
+        runner()
+          ..createSync(recursive: true)
+          ..writeAsStringSync(
+            '// was PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN(X)\n'
+            '$currentRunner',
+          );
+
+        await buildPastSetup(emitTestManifest: false);
       });
 
       for (final emitTestManifest in [true, false]) {

@@ -323,7 +323,7 @@ class DevelopService {
       targetPlatform: device.targetPlatform,
       flag: options.emitTestManifest,
       pubspecValue: config.emitTestManifest,
-      testDirectory: config.testDirectory,
+      testDirectory: config.projectTestDirectory,
       logger: _logger,
       defaultValue: false,
       setupProblem: device.targetPlatform == TargetPlatform.iOS

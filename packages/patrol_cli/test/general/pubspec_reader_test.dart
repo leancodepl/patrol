@@ -67,6 +67,50 @@ patrol:
         expect(reader.read().emitTestManifest, isNull);
       });
 
+      group('projectTestDirectory', () {
+        String read(String testDirectory) {
+          fs.file('pubspec.yaml').writeAsStringSync('''
+$_pubspecBase
+patrol:
+  test_directory: $testDirectory
+''');
+          return reader.read().projectTestDirectory;
+        }
+
+        test('keeps a relative path', () {
+          expect(read('patrol_test'), 'patrol_test');
+        });
+
+        test('makes an absolute path inside the project relative', () {
+          final absolute = fs.path.join(
+            fs.currentDirectory.path,
+            'integration_test',
+            'e2e',
+          );
+
+          expect(read(absolute), fs.path.join('integration_test', 'e2e'));
+        });
+
+        test('resolves .. back into the project', () {
+          expect(
+            read(fs.path.join('..', 'awesome_app', 'integration_test')),
+            'integration_test',
+          );
+        });
+
+        test('leaves a path outside the project as given', () {
+          final outside = fs.path.join('..', 'other_app', 'integration_test');
+
+          expect(read(outside), outside);
+        });
+
+        test('equals testDirectory when unset', () {
+          fs.file('pubspec.yaml').writeAsStringSync(_pubspecBase);
+
+          expect(reader.read().projectTestDirectory, 'patrol_test');
+        });
+      });
+
       test('reads emit_test_manifest', () {
         fs.file('pubspec.yaml').writeAsStringSync('''
 $_pubspecBase

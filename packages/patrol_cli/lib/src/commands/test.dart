@@ -179,7 +179,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       targetPlatform: device.targetPlatform,
       flag: optionalBoolArg('emit-test-manifest'),
       pubspecValue: config.emitTestManifest,
-      testDirectory: config.testDirectory,
+      testDirectory: config.projectTestDirectory,
       logger: _logger,
       setupProblem: device.targetPlatform == TargetPlatform.iOS
           ? _iosTestBackend.discoverySetupProblem()

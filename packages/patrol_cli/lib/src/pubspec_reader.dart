@@ -32,6 +32,12 @@ class PatrolPubspecConfig with Equatable {
   String testDirectory;
   String testFileSuffix;
 
+  /// [testDirectory] relative to the project root, also when pubspec.yaml gives
+  /// it as an absolute path or through `..`. Unchanged when it points outside
+  /// the project.
+  String get projectTestDirectory => _projectTestDirectory ?? testDirectory;
+  String? _projectTestDirectory;
+
   /// Whether patrol captures a native screenshot when a test fails (Android).
   bool screenshotOnFailure;
 
@@ -100,6 +106,18 @@ class PubspecReader {
 
   final Directory _projectRoot;
   final FileSystem _fs;
+
+  String? _relativeToProject(String directory) {
+    final path = _fs.path;
+    final root = path.normalize(path.absolute(_projectRoot.path));
+    final absolute = path.normalize(
+      path.isAbsolute(directory) ? directory : path.join(root, directory),
+    );
+    if (!path.isWithin(root, absolute)) {
+      return null;
+    }
+    return path.relative(absolute, from: root);
+  }
 
   /// Gets the patrol package version from pubspec.lock
   /// This reads the actual resolved version that's being used in the project.
@@ -184,7 +202,9 @@ class PubspecReader {
 
     final dynamic testDirectory = patrol['test_directory'];
     if (testDirectory != null && testDirectory is String) {
-      config.testDirectory = testDirectory;
+      config
+        ..testDirectory = testDirectory
+        .._projectTestDirectory = _relativeToProject(testDirectory);
     }
 
     final dynamic testFileSuffix = patrol['test_file_suffix'];

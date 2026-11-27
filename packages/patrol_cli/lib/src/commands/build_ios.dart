@@ -198,7 +198,7 @@ class BuildIOSCommand extends PatrolCommand {
         targetPlatform: TargetPlatform.iOS,
         flag: optionalBoolArg('emit-test-manifest'),
         pubspecValue: config.emitTestManifest,
-        testDirectory: config.testDirectory,
+        testDirectory: config.projectTestDirectory,
         logger: _logger,
         setupProblem: _iosTestBackend.discoverySetupProblem(),
       ),

@@ -245,7 +245,7 @@ class BuildAndroidCommand extends PatrolCommand {
         targetPlatform: TargetPlatform.android,
         flag: optionalBoolArg('emit-test-manifest'),
         pubspecValue: config.emitTestManifest,
-        testDirectory: config.testDirectory,
+        testDirectory: config.projectTestDirectory,
         logger: _logger,
         defaultValue: !develop,
       ),

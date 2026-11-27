@@ -10,7 +10,8 @@ import 'package:patrol_cli/src/devices.dart';
 /// When the project isn't set up for it (tests under `integration_test/`, or
 /// [setupProblem], such as an iOS runner without the generated tests), the
 /// default falls back to runtime discovery with a warning, and an explicit
-/// opt-in fails. A default never breaks a build.
+/// opt-in fails. A discovery run that fails, e.g. on a test file that throws on
+/// the host, fails the build either way.
 bool resolveEmitTestManifest({
   required TargetPlatform targetPlatform,
   required bool? flag,
