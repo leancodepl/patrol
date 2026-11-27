@@ -13,6 +13,10 @@
 - **Breaking:** With build-time test discovery, a test the app registers that discovery didn't find
   (for example one behind `Platform.isAndroid`) fails every test of the run with the list of
   missing tests, instead of silently never running. Requires `patrol_cli` 5.0. (#3425)
+- **Breaking:** `patrolTest` stops the text cursor from blinking, so actions no longer wait several
+  seconds, or time out with `SettlePolicy.settle`, while a text field is focused on iOS (or a
+  `CupertinoTextField` on any platform). To keep the blinking cursor, pass
+  `deterministicCursor: false`. See `migration5.md`. (#3439)
 - Add `$.entrypointArgs` with the Dart entrypoint arguments the native side of the app passes to
   the test bundle (`dartEntrypointArgs` on Android, `entrypointArgs` on iOS and macOS). Needs a
   `patrol_cli` release that includes this change. (#3366)

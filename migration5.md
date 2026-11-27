@@ -260,6 +260,30 @@ gets no 5.x release.
    `patrol mcp -- --flavor dev`. `PROJECT_ROOT`, `PATROL_FLAGS` and
    `SHOW_TERMINAL` keep working.
 
+## The text cursor doesn't blink in `patrolTest`
+
+**Packages:** `patrol` (#3439)
+
+`patrolTest` sets `EditableText.debugDeterministicCursor` while the test body
+runs. On iOS, and with `CupertinoTextField` on any platform, the blinking cursor
+kept scheduling frames, so every action that settled while a text field was
+focused waited several seconds (up to the settle timeout). These actions now
+return as soon as the app settles.
+
+**What to do:**
+
+- **Most tests:** nothing, they get faster.
+- **A test that passed only because of that wait** (for example a bare
+  `expect(...)` right after typing, while a request is still loading): wait for
+  the result explicitly, e.g. `await $('Welcome').waitUntilVisible()`.
+- **Screenshot or video comparisons with a focused field:** the cursor is now
+  always visible; update the baselines once.
+- **A focused `obscureText` field that gets a single new character** (for
+  example `enterText('a')` into an empty field with `hideKeyboard: false`):
+  that character stays visible until the field loses focus.
+- **To keep the blinking cursor:** pass `deterministicCursor: false` to
+  `patrolTest`.
+
 ## Inbox
 
 Short notes on changes that don't have a section yet, one line each: the PR or
