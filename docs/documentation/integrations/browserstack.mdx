@@ -228,6 +228,13 @@ Patrol can collect Dart line coverage on BrowserStack and hand it back through B
 
 Nothing on the device side is BrowserStack-specific: the same setup works on other Android device farms, see [emulator.wtf](/documentation/integrations/emulator-wtf#dart-code-coverage) and [Firebase Test Lab](/documentation/integrations/firebase-test-lab#dart-code-coverage-android).
 
+<Warning>
+  Dart coverage needs the **in-app** `androidTest` layout. The self-instrumenting
+  [`:patrolTest`](/documentation#android-setup) runner lives outside the app
+  process, so `PATROL_COVERAGE_DIR` never reaches Dart and Patrol rejects
+  `coverage=true` there.
+</Warning>
+
 <Steps>
   <Step>
     Instrument the app under test: in **android/app/build.gradle.kts** set `enableAndroidTestCoverage = true` (AGP 8+; `testCoverageEnabled = true` on AGP 7) on the debug build type.

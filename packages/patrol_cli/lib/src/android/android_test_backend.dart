@@ -646,7 +646,7 @@ class AndroidTestBackend {
       if (entity is! File || !entity.path.endsWith('.apk')) {
         continue;
       }
-      if (entity.path.endsWith('-androidTest.apk')) {
+      if (isPrebuiltAndroidTestApk(entity.path)) {
         testApks.add(entity);
       } else {
         appApks.add(entity);
@@ -655,7 +655,8 @@ class AndroidTestBackend {
     if (appApks.length != 1 || testApks.length != 1) {
       final found = [...appApks, ...testApks].map((f) => f.path).join(', ');
       throwToolExit(
-        'Expected exactly one app APK and one *-androidTest.apk in $apksDir '
+        'Expected exactly one app APK and one test APK '
+        '(*-androidTest.apk or patrolTest-*.apk) in $apksDir '
         '(found: ${found.isEmpty ? 'none' : found}).',
       );
     }
@@ -666,6 +667,13 @@ class AndroidTestBackend {
     await _adbInstall(appApk.path, device);
     _logger.detail('Installing androidTest APK: ${testApk.path}');
     await _adbInstall(testApk.path, device);
+  }
+
+  @visibleForTesting
+  static bool isPrebuiltAndroidTestApk(String path) {
+    final name = path.split(RegExp(r'[/\\]')).last;
+    return name.endsWith('-androidTest.apk') ||
+        (name.startsWith('patrolTest-') && name.endsWith('.apk'));
   }
 
   /// Develop-mode counterpart of [execute] for APKs built on another machine
@@ -698,7 +706,7 @@ class AndroidTestBackend {
     }
 
     final (instrumentPackage, instrumentRunner) =
-        await _resolveInstrumentationComponent(packageName, device);
+        await _resolvePatrolInstrumentation(packageName, device);
 
     await _disposeScope.run((scope) async {
       final processLogcat =
@@ -1019,24 +1027,15 @@ class AndroidTestBackend {
     Device device,
   ) async {
     final fallback = (testPackageName, 'pl.leancode.patrol.PatrolJUnitRunner');
-
-    final result = await _processManager.run([
-      'adb',
-      ...['-s', device.id],
-      'shell',
-      ...['pm', 'list', 'instrumentation'],
-    ], runInShell: true);
-
-    if (result.exitCode != 0) {
+    final entries = await _listInstrumentation(device);
+    if (entries == null) {
       _logger.detail(
-        'Could not query instrumentation (`pm list instrumentation` exited '
-        '${result.exitCode}); using default component '
+        'Could not query instrumentation; using default component '
         '${fallback.$1}/${fallback.$2}',
       );
       return fallback;
     }
 
-    final entries = _parseInstrumentation(result.stdOut);
     final candidates = entries
         .where((entry) => entry.package == testPackageName)
         .toList();
@@ -1059,6 +1058,87 @@ class AndroidTestBackend {
       '(target=${chosen.target})',
     );
     return (chosen.package, chosen.runner);
+  }
+
+  Future<(String, String)> _resolvePatrolInstrumentation(
+    String appPackageName,
+    Device device,
+  ) async {
+    final inAppTestPackage = '$appPackageName.test';
+    final fallback = (inAppTestPackage, 'pl.leancode.patrol.PatrolJUnitRunner');
+
+    final entries = await _listInstrumentation(device);
+    if (entries == null) {
+      _logger.detail(
+        'Could not query instrumentation; using default component '
+        '${fallback.$1}/${fallback.$2}',
+      );
+      return fallback;
+    }
+
+    final patrol = entries
+        .where((entry) => entry.runner.contains('PatrolJUnitRunner'))
+        .toList();
+
+    for (final entry in patrol) {
+      if (entry.package == inAppTestPackage) {
+        _logger.detail(
+          'Using instrumentation component ${entry.package}/${entry.runner} '
+          '(target=${entry.target})',
+        );
+        return (entry.package, entry.runner);
+      }
+    }
+
+    final selfInstrumenting = patrol
+        .where((entry) => entry.package != appPackageName)
+        .toList();
+    if (selfInstrumenting.isNotEmpty) {
+      selfInstrumenting.sort((a, b) {
+        int rank(_Instrumentation e) => e.target == e.package ? 0 : 1;
+        return rank(a).compareTo(rank(b));
+      });
+      final chosen = selfInstrumenting.first;
+      _logger.detail(
+        'Using instrumentation component ${chosen.package}/${chosen.runner} '
+        '(target=${chosen.target})',
+      );
+      return (chosen.package, chosen.runner);
+    }
+
+    if (patrol.isNotEmpty) {
+      final chosen = patrol.first;
+      _logger.detail(
+        'Using instrumentation component ${chosen.package}/${chosen.runner} '
+        '(target=${chosen.target})',
+      );
+      return (chosen.package, chosen.runner);
+    }
+
+    _logger.detail(
+      'No Patrol instrumentation found; using default component '
+      '${fallback.$1}/${fallback.$2}',
+    );
+    return fallback;
+  }
+
+  Future<List<_Instrumentation>?> _listInstrumentation(Device device) async {
+    final result = await _processManager.run([
+      'adb',
+      ...['-s', device.id],
+      'shell',
+      ...['pm', 'list', 'instrumentation'],
+    ], runInShell: true);
+
+    if (result.exitCode != 0) {
+      _logger.detail(
+        'Could not query instrumentation (`pm list instrumentation` exited '
+        '${result.exitCode})',
+      );
+      return null;
+    }
+
+    return _parseInstrumentation(result.stdOut);
   }
 
   /// Parses `pm list instrumentation` output lines of the form
@@ -1199,12 +1279,10 @@ class AndroidTestBackend {
 
   String _resolveBuiltApplicationId(AndroidAppOptions options) {
     try {
-      return AndroidArtifactResolver(_rootDirectory)
-          .app(
-            buildMode: options.flutter.buildMode,
-            flavor: options.flutter.flavor,
-          )
-          .applicationId;
+      return AndroidArtifactResolver(_rootDirectory).applicationId(
+        buildMode: options.flutter.buildMode,
+        flavor: options.flutter.flavor,
+      );
     } on ToolExit {
       final packageName = options.packageName;
       if (packageName != null && packageName.isNotEmpty) {

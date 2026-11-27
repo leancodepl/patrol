@@ -25,6 +25,16 @@ class AndroidArtifactResolver {
     );
   }
 
+  String applicationId({
+    required BuildMode buildMode,
+    required String? flavor,
+  }) {
+    return _resolveApplicationId(
+      metadataRoots: _apkOutputRoots('app'),
+      expectedVariant: _variantName(buildMode, flavor),
+    );
+  }
+
   AndroidArtifact test({
     required AndroidTestLayout layout,
     required BuildMode buildMode,
@@ -94,21 +104,65 @@ class AndroidArtifactResolver {
     );
   }
 
-  AndroidArtifact? _resolveIn(Directory metadataRoot, String expectedVariant) {
-    final metadataFiles =
-        metadataRoot
-            .listSync(recursive: true)
-            .whereType<File>()
-            .where((file) => file.basename == 'output-metadata.json')
-            .toList()
-          ..sort((a, b) => a.path.compareTo(b.path));
+  String _resolveApplicationId({
+    required List<Directory> metadataRoots,
+    required String expectedVariant,
+  }) {
+    final existing = [
+      for (final root in metadataRoots)
+        if (root.existsSync()) root,
+    ];
+    if (existing.isEmpty) {
+      throwToolExit(
+        'No Android APK outputs found under '
+        '${metadataRoots.map((root) => root.path).join(' or ')}. '
+        'Build the requested variant first.',
+      );
+    }
 
-    for (final metadataFile in metadataFiles) {
+    for (final metadataRoot in existing) {
+      final applicationId = _applicationIdIn(metadataRoot, expectedVariant);
+      if (applicationId != null) {
+        return applicationId;
+      }
+    }
+
+    throwToolExit(
+      'Could not resolve Android applicationId for variant $expectedVariant '
+      'under ${existing.map((root) => root.path).join(' or ')}. '
+      'Build that variant first.',
+    );
+  }
+
+  String? _applicationIdIn(Directory metadataRoot, String expectedVariant) {
+    for (final metadataFile in _metadataFiles(metadataRoot)) {
       try {
-        final metadata =
-            jsonDecode(metadataFile.readAsStringSync()) as Map<String, dynamic>;
-        final variantName = metadata['variantName'] as String?;
-        if (variantName?.toLowerCase() != expectedVariant.toLowerCase()) {
+        final metadata = _decodeMetadata(metadataFile);
+        if (metadata == null) {
+          continue;
+        }
+        if (!_matchesVariant(metadata, expectedVariant)) {
+          continue;
+        }
+        final applicationId = metadata['applicationId'] as String?;
+        if (applicationId != null && applicationId.isNotEmpty) {
+          return applicationId;
+        }
+      } on FormatException {
+        // Ignore unrelated or partially written metadata files.
+      }
+    }
+    return null;
+  }
+
+  AndroidArtifact? _resolveIn(Directory metadataRoot, String expectedVariant) {
+    for (final metadataFile in _metadataFiles(metadataRoot)) {
+      try {
+        final metadata = _decodeMetadata(metadataFile);
+        if (metadata == null) {
+          continue;
+        }
+        if (!_matchesVariant(metadata, expectedVariant)) {
           continue;
         }
         final applicationId = metadata['applicationId'] as String?;
@@ -139,6 +193,28 @@ class AndroidArtifactResolver {
       }
     }
     return null;
+  }
+
+  List<File> _metadataFiles(Directory metadataRoot) {
+    return metadataRoot
+        .listSync(recursive: true)
+        .whereType<File>()
+        .where((file) => file.basename == 'output-metadata.json')
+        .toList()
+      ..sort((a, b) => a.path.compareTo(b.path));
+  }
+
+  Map<String, dynamic>? _decodeMetadata(File metadataFile) {
+    final decoded = jsonDecode(metadataFile.readAsStringSync());
+    if (decoded is! Map<String, dynamic>) {
+      return null;
+    }
+    return decoded;
+  }
+
+  bool _matchesVariant(Map<String, dynamic> metadata, String expectedVariant) {
+    final variantName = metadata['variantName'] as String?;
+    return variantName?.toLowerCase() == expectedVariant.toLowerCase();
   }
 
   String _variantName(BuildMode mode, String? flavor) {

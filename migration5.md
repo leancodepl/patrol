@@ -291,6 +291,9 @@ branch, the packages, what changed and what users have to do (`TODO` when that
 isn't known yet). A line leaves the Inbox when it becomes a section above. Empty
 the Inbox before 5.0.0 is released.
 
+- #3280, `patrol`: Dart/JaCoCo coverage (`PATROL_BS_COVERAGE` / `coverage=true`) requires the
+  in-app `androidTest` layout; the self-instrumenting `:patrolTest` runner rejects it. Stay on
+  in-app androidTest for farm coverage, or drop coverage when migrating to `:patrolTest`.
 - #3382, `patrol_cli`: `patrol develop` no longer accepts `--tags`, which it never applied. Remove
   `--tags` from `patrol develop` commands and scripts; `patrol test` keeps it.
 - #3040, `patrol_cli`: `patrol develop` on web requires Flutter 3.47.0 or newer, since hot restart

@@ -71,6 +71,14 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         coverageFilePath = arguments.getString("coverageFile");
         coverageEnabled = "true".equalsIgnoreCase(arguments.getString("coverage"));
         if (coverageEnabled) {
+            if (isSelfInstrumenting()) {
+                throw new IllegalStateException(
+                        "Dart/JaCoCo coverage (coverage=true / PATROL_BS_COVERAGE) "
+                                + "requires the in-app androidTest layout. The "
+                                + "self-instrumenting :patrolTest runner runs outside "
+                                + "the app process, so PATROL_COVERAGE_DIR cannot reach Dart."
+                );
+            }
             Logger.INSTANCE.i(
                 "BS coverage: taking over JaCoCo dump → " + coverageFilePath
             );
