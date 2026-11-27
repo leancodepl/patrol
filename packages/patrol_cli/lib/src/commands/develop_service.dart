@@ -122,6 +122,20 @@ class DevelopService {
 
   Device? _device;
 
+  /// What [restartInto] needs from the running session; set by [run] once it
+  /// generated the bundle.
+  ({String testDirectory, String testFileSuffix})? _bundleTarget;
+
+  /// While false, log entries are not passed to [onLogEntry]: they belong to
+  /// the program a hot restart is replacing.
+  var _acceptLogEntries = true;
+
+  void _onBackendLogEntry(Entry entry) {
+    if (_acceptLogEntries) {
+      onLogEntry?.call(entry);
+    }
+  }
+
   /// The device discovered during the last [run] call.
   Device? get device => _device;
 
@@ -164,6 +178,78 @@ class DevelopService {
     _flutterTool.hotRestartReady,
   ]);
 
+  /// Hot-restarts the running session into the test file [target] resolves
+  /// to. The native app does not depend on the test file, so no build runs.
+  ///
+  /// Returns null once the app runs the new test. Otherwise returns why it
+  /// does not, such as the compiler output of a rejected restart; the
+  /// session then keeps running the previous test, and the bundle is restored
+  /// so a later restart reruns it.
+  Future<String?> restartInto(
+    String target, {
+    Duration timeout = const Duration(minutes: 2),
+  }) async {
+    final bundleTarget = _bundleTarget;
+    if (bundleTarget == null) {
+      return 'This develop session runs a bundle it did not generate '
+          '(--no-generate-bundle), so it cannot switch test files.';
+    }
+    if (_device?.targetPlatform == TargetPlatform.web) {
+      return 'Switching test files in a running session is not supported on '
+          'web yet.';
+    }
+
+    final String testFile;
+    try {
+      testFile = _testFinderFactory
+          .create(bundleTarget.testDirectory)
+          .findTest(target, bundleTarget.testFileSuffix);
+    } on ToolExit catch (err) {
+      return err.message;
+    }
+
+    final bundle = _testBundler.getBundledTestFile(bundleTarget.testDirectory);
+    final previousBundle = bundle.existsSync()
+        ? bundle.readAsStringSync()
+        : null;
+    _testBundler.createDevelopTestBundle(bundleTarget.testDirectory, testFile);
+
+    final outcome = Completer<String?>();
+    _acceptLogEntries = false;
+    _flutterTool.hotRestart(
+      onCompleted: () {
+        if (!outcome.isCompleted) {
+          outcome.complete(null);
+        }
+      },
+      onFailed: (compilerOutput) {
+        if (!outcome.isCompleted) {
+          outcome.complete(
+            compilerOutput.isEmpty
+                ? 'flutter attach rejected the hot restart.'
+                : compilerOutput,
+          );
+        }
+      },
+    );
+
+    String? failure;
+    try {
+      failure = await outcome.future.timeout(timeout);
+    } on TimeoutException {
+      failure =
+          'The hot restart into $target did not finish within '
+          '${timeout.inSeconds}s.';
+    } finally {
+      _acceptLogEntries = true;
+    }
+
+    if (failure != null && previousBundle != null) {
+      bundle.writeAsStringSync(previousBundle);
+    }
+    return failure;
+  }
+
   /// Runs the full develop flow: discover device, read config, bundle test,
   /// build, execute, and attach for hot restart.
   Future<void> run(DevelopOptions options) async {
@@ -178,8 +264,13 @@ class DevelopService {
       throwToolExit('Cannot use release build mode with develop');
     }
 
+    _bundleTarget = null;
     if (options.generateBundle) {
       _testBundler.createDevelopTestBundle(testDirectory, target);
+      _bundleTarget = (
+        testDirectory: testDirectory,
+        testFileSuffix: config.testFileSuffix,
+      );
     }
 
     final androidFlavor = options.flavor ?? config.android.flavor;
@@ -546,8 +637,10 @@ class DevelopService {
     // `flutter attach` reports the restart into the requested target as
     // COMPLETED. Logcat delivery is asynchronous, so opening the gate when the
     // restart is merely requested could still let a buffered entry of the
-    // placeholder through.
-    var prebuiltTargetActive = prebuiltApksDir == null;
+    // placeholder through. [restartInto] closes the same gate for the test it
+    // replaces.
+    _acceptLogEntries = prebuiltApksDir == null;
+    final gatedOnLogEntry = onLogEntry == null ? null : _onBackendLogEntry;
 
     switch (device.targetPlatform) {
       case TargetPlatform.android:
@@ -561,7 +654,7 @@ class DevelopService {
                 clearTestSteps: clearTestSteps,
                 onLogEntry: onLogEntry,
                 videoConfig: videoConfig,
-                acceptLogEntries: () => prebuiltTargetActive,
+                acceptLogEntries: () => _acceptLogEntries,
               )
             : () => _androidTestBackend.execute(
                 android,
@@ -571,7 +664,7 @@ class DevelopService {
                 hideTestSteps: hideTestSteps,
                 flavor: flutterOpts.flavor,
                 clearTestSteps: clearTestSteps,
-                onLogEntry: onLogEntry,
+                onLogEntry: gatedOnLogEntry,
                 videoConfig: videoConfig,
               );
         final package = android.packageName;
@@ -600,7 +693,7 @@ class DevelopService {
           showFlutterLogs: flutterLogs.showFlutterLogs,
           hideTestSteps: hideTestSteps,
           clearTestSteps: clearTestSteps,
-          onLogEntry: onLogEntry,
+          onLogEntry: gatedOnLogEntry,
           onVmServiceUrl: vmServiceUrlCompleter == null
               ? null
               : (url) {
@@ -741,12 +834,12 @@ class DevelopService {
             'in at build time; hot restarting with the requested target...',
           );
           _flutterTool.hotRestart(
-            onCompleted: () => prebuiltTargetActive = true,
+            onCompleted: () => _acceptLogEntries = true,
             // The placeholder is gone once a restart was attempted, so open
             // the gate anyway; otherwise a compile error in the target would
             // keep every later entry (after the user's fix + `r`) hidden.
-            onFailed: () {
-              prebuiltTargetActive = true;
+            onFailed: (_) {
+              _acceptLogEntries = true;
               _logger.warn(
                 'Hot restart into the requested target failed. Fix the '
                 'error above and press r.',

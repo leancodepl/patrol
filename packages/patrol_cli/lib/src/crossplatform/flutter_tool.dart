@@ -22,6 +22,7 @@ class FlutterTool {
     this.onQuit,
     required this._onExit,
     @visibleForTesting this._adbTimeout = const Duration(seconds: 5),
+    @visibleForTesting this._restartRejectionGrace = const Duration(seconds: 2),
   }) : _disposeScope = DisposeScope() {
     _disposeScope.disposedBy(parentDisposeScope);
   }
@@ -43,6 +44,13 @@ class FlutterTool {
 
   final Duration _adbTimeout;
 
+  /// How long a restart that printed compiler errors waits for `flutter
+  /// attach` to report it rejected. Its full restart prints 'Restarted
+  /// application' whether or not the program compiled, and the rejection only
+  /// after that.
+  final Duration _restartRejectionGrace;
+  Timer? _restartSettleTimer;
+
   var _hotRestartActive = false;
   var _logsActive = false;
   var _logsSkipped = false;
@@ -50,7 +58,8 @@ class FlutterTool {
   io.Process? _attachProcess;
   var _pendingHotRestart = false;
   void Function()? _onRestartCompleted;
-  void Function()? _onRestartFailed;
+  void Function(String compilerOutput)? _onRestartFailed;
+  StringBuffer? _restartErrors;
 
   /// Sends a Hot Restart to the attached app - the same as pressing `r`.
   ///
@@ -61,11 +70,19 @@ class FlutterTool {
   /// [onCompleted] fires once `flutter attach` reports the restart as
   /// completed ('Restarted application ...'), not when it is requested.
   /// Callers use it to tell output of the old and the new program apart.
-  /// [onFailed] fires instead when the restart is rejected (compile error);
-  /// exactly one of the two fires, at most once.
-  void hotRestart({void Function()? onCompleted, void Function()? onFailed}) {
+  /// [onFailed] fires instead when the restart is rejected (compile error),
+  /// with what `flutter attach` printed to stderr since the request: the
+  /// compiler's diagnostics. Exactly one of the two fires, at most once; after
+  /// compiler errors, a completed restart is reported up to
+  /// [_restartRejectionGrace] late.
+  void hotRestart({
+    void Function()? onCompleted,
+    void Function(String compilerOutput)? onFailed,
+  }) {
+    _restartSettleTimer?.cancel();
     _onRestartCompleted = onCompleted;
     _onRestartFailed = onFailed;
+    _restartErrors = StringBuffer();
     final process = _attachProcess;
     if (process == null || !_hotRestartActive) {
       _logger.warn(
@@ -78,10 +95,32 @@ class FlutterTool {
     process.stdin.add('R'.codeUnits);
   }
 
-  void _settleRestart(void Function()? callback) {
+  void _onRestartedApplication() {
+    if (_restartErrors?.isEmpty ?? true) {
+      _settleRestart(completed: true);
+      return;
+    }
+    _restartSettleTimer?.cancel();
+    _restartSettleTimer = Timer(
+      _restartRejectionGrace,
+      () => _settleRestart(completed: true),
+    );
+  }
+
+  void _settleRestart({required bool completed}) {
+    _restartSettleTimer?.cancel();
+    _restartSettleTimer = null;
+    final onCompleted = _onRestartCompleted;
+    final onFailed = _onRestartFailed;
+    final errors = _restartErrors?.toString().trim() ?? '';
     _onRestartCompleted = null;
     _onRestartFailed = null;
-    callback?.call();
+    _restartErrors = null;
+    if (completed) {
+      onCompleted?.call();
+    } else {
+      onFailed?.call(errors);
+    }
   }
 
   final _hotRestartReady = Completer<void>();
@@ -399,11 +438,11 @@ class FlutterTool {
             }
 
             if (line.startsWith('Restarted application')) {
-              _settleRestart(_onRestartCompleted);
+              _onRestartedApplication();
             }
 
             if (line.startsWith('Try again after fixing the above error')) {
-              _settleRestart(_onRestartFailed);
+              _settleRestart(completed: false);
             }
 
             if (line.startsWith('The Flutter DevTools debugger and profiler')) {
@@ -427,6 +466,7 @@ class FlutterTool {
               // This is a warning that we can ignore
               return;
             }
+            _restartErrors?.writeln(line);
             _logger.err('\t$line');
           })
           .disposedBy(scope);

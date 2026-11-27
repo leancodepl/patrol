@@ -212,10 +212,9 @@ void main() {
         final process = MockProcess();
         final processStdin = _MockIOSink();
         final processStdout = StreamController<List<int>>();
+        final processStderr = StreamController<List<int>>();
         when(() => process.stdout).thenAnswer((_) => processStdout.stream);
-        when(
-          () => process.stderr,
-        ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
+        when(() => process.stderr).thenAnswer((_) => processStderr.stream);
         when(() => process.stdin).thenReturn(processStdin);
         when(() => processStdin.add(any())).thenReturn(null);
         when(() => process.exitCode).thenAnswer((_) => Completer<int>().future);
@@ -233,19 +232,30 @@ void main() {
         );
         processStdout.add(utf8.encode('Flutter run key commands.\n'));
         await attach;
+        processStderr.add(utf8.encode('an error from before the restart\n'));
+        await Future<void>.delayed(const Duration(milliseconds: 10));
 
         var completed = false;
-        var failed = false;
+        String? failedWith;
         flutterTool.hotRestart(
           onCompleted: () => completed = true,
-          onFailed: () => failed = true,
+          onFailed: (compilerOutput) => failedWith = compilerOutput,
         );
 
+        processStderr.add(
+          utf8.encode(
+            "patrol_test/b_test.dart:3:1: Error: Expected ';' after this.\n",
+          ),
+        );
+        await Future<void>.delayed(const Duration(milliseconds: 10));
         processStdout.add(
           utf8.encode('Try again after fixing the above error(s).\n'),
         );
         await Future<void>.delayed(const Duration(milliseconds: 10));
-        expect(failed, isTrue);
+        expect(
+          failedWith,
+          "patrol_test/b_test.dart:3:1: Error: Expected ';' after this.",
+        );
         expect(completed, isFalse);
 
         // A later successful restart must not fire the stale callback again.
@@ -253,8 +263,55 @@ void main() {
         await Future<void>.delayed(const Duration(milliseconds: 10));
         expect(completed, isFalse);
         await processStdout.close();
+        await processStderr.close();
       },
     );
+    test('hotRestart onFailed fires for a restart reported as done before it '
+        'is rejected', () async {
+      final process = MockProcess();
+      final processStdin = _MockIOSink();
+      final processStdout = StreamController<List<int>>();
+      final processStderr = StreamController<List<int>>();
+      when(() => process.stdout).thenAnswer((_) => processStdout.stream);
+      when(() => process.stderr).thenAnswer((_) => processStderr.stream);
+      when(() => process.stdin).thenReturn(processStdin);
+      when(() => processStdin.add(any())).thenReturn(null);
+      when(() => process.exitCode).thenAnswer((_) => Completer<int>().future);
+      when(() => processManager.start(any())).thenAnswer((_) async => process);
+
+      final attach = flutterTool.attach(
+        flutterCommand: flutterCommand,
+        deviceId: 'testDeviceId',
+        target: 'target',
+        appId: 'appId',
+        dartDefines: {},
+        openBrowser: false,
+      );
+      processStdout.add(utf8.encode('Flutter run key commands.\n'));
+      await attach;
+
+      var completed = false;
+      String? failedWith;
+      flutterTool.hotRestart(
+        onCompleted: () => completed = true,
+        onFailed: (compilerOutput) => failedWith = compilerOutput,
+      );
+      processStderr.add(utf8.encode("b_test.dart:5:22: Error: Expected ';'\n"));
+      await Future<void>.delayed(const Duration(milliseconds: 10));
+      processStdout.add(
+        utf8.encode(
+          'Restarted application in 812ms.\n'
+          'Try again after fixing the above error(s).\n',
+        ),
+      );
+      await Future<void>.delayed(const Duration(milliseconds: 10));
+
+      expect(completed, isFalse);
+      expect(failedWith, "b_test.dart:5:22: Error: Expected ';'");
+      await processStdout.close();
+      await processStderr.close();
+    });
+
     test('attach passes deviceId correctly', () async {
       final process = MockProcess();
       when(

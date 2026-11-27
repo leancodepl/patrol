@@ -36,7 +36,22 @@ class FakeDevelop {
       _runs.add(finished);
       return finished.future;
     });
+    registerFallbackValue(Duration.zero);
+    when(
+      () => service.restartInto(any(), timeout: any(named: 'timeout')),
+    ).thenAnswer((invocation) {
+      final target = invocation.positionalArguments.first as String;
+      restartTargets.add(target);
+      return restartInto(target);
+    });
   }
+
+  /// What a hot restart into another test file answers: null once the app
+  /// runs it, otherwise why it does not.
+  Future<String?> Function(String target) restartInto = (_) async => null;
+
+  /// The test files each switch was asked to restart into.
+  final restartTargets = <String>[];
 
   final service = MockDevelopService();
 

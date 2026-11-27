@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:fake_async/fake_async.dart';
+import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/android/android_test_layout.dart';
@@ -600,6 +601,159 @@ void main() {
         );
         verifyNever(() => androidTestBackend.build(any()));
       });
+    });
+
+    group('restartInto', () {
+      const bundlingOptions = DevelopOptions(
+        target: 'onboarding_test.dart',
+        flutterCommand: FlutterCommand('flutter'),
+        buildMode: BuildMode.debug,
+        testServerPort: 8081,
+        appServerPort: 8080,
+        uninstall: false,
+        checkCompatibility: false,
+      );
+
+      late File bundle;
+      void Function(Entry entry)? backendOnLogEntry;
+      void Function()? restartCompleted;
+      void Function(String compilerOutput)? restartFailed;
+
+      setUp(() {
+        bundle = MemoryFileSystem().file('patrol_test/test_bundle.dart')
+          ..createSync(recursive: true);
+        backendOnLogEntry = null;
+        restartCompleted = null;
+        restartFailed = null;
+
+        when(
+          () => testFinder.findTest('b_test.dart', any()),
+        ).thenReturn('patrol_test/b_test.dart');
+        when(() => testBundler.getBundledTestFile(any())).thenReturn(bundle);
+        when(
+          () => testBundler.createDevelopTestBundle(any(), any()),
+        ).thenAnswer((invocation) {
+          bundle.writeAsStringSync(
+            'bundle of ${invocation.positionalArguments[1]}',
+          );
+        });
+        when(
+          () => androidTestBackend.execute(
+            any(),
+            any(),
+            interruptible: any(named: 'interruptible'),
+            showFlutterLogs: any(named: 'showFlutterLogs'),
+            hideTestSteps: any(named: 'hideTestSteps'),
+            flavor: any(named: 'flavor'),
+            clearTestSteps: any(named: 'clearTestSteps'),
+            onLogEntry: any(named: 'onLogEntry'),
+          ),
+        ).thenAnswer((invocation) {
+          backendOnLogEntry =
+              invocation.namedArguments[#onLogEntry]
+                  as void Function(Entry entry)?;
+          return Completer<void>().future;
+        });
+        when(
+          () => flutterTool.attachForHotRestart(
+            flutterCommand: any(named: 'flutterCommand'),
+            deviceId: any(named: 'deviceId'),
+            target: any(named: 'target'),
+            appId: any(named: 'appId'),
+            dartDefines: any(named: 'dartDefines'),
+            openDevtools: any(named: 'openDevtools'),
+            attachUsingUrl: any(named: 'attachUsingUrl'),
+            debugUrl: any(named: 'debugUrl'),
+            forwardFlutterLogs: any(named: 'forwardFlutterLogs'),
+            removeAdbForwards: any(named: 'removeAdbForwards'),
+            onQuit: any(named: 'onQuit'),
+          ),
+        ).thenAnswer((_) => Completer<void>().future);
+        when(
+          () => flutterTool.hotRestart(
+            onCompleted: any(named: 'onCompleted'),
+            onFailed: any(named: 'onFailed'),
+          ),
+        ).thenAnswer((invocation) {
+          restartCompleted =
+              invocation.namedArguments[#onCompleted] as void Function()?;
+          restartFailed =
+              invocation.namedArguments[#onFailed]
+                  as void Function(String compilerOutput)?;
+        });
+      });
+
+      Future<DevelopService> startSession({
+        DevelopOptions options = bundlingOptions,
+        void Function(Entry entry)? onLogEntry,
+      }) async {
+        final service = buildService(onLogEntry: onLogEntry ?? (_) {});
+        unawaited(service.run(options));
+        await _waitFor(() => backendOnLogEntry != null);
+        return service;
+      }
+
+      test('rewrites the bundle and hot restarts into the new test', () async {
+        final service = await startSession();
+        expect(bundle.readAsStringSync(), contains('onboarding_test.dart'));
+
+        final switched = service.restartInto('b_test.dart');
+        await _waitFor(() => restartCompleted != null);
+        expect(bundle.readAsStringSync(), 'bundle of patrol_test/b_test.dart');
+
+        restartCompleted!();
+        expect(await switched, isNull);
+      });
+
+      test(
+        'drops log entries until the restart into the new test completes',
+        () async {
+          final received = <Entry>[];
+          final service = await startSession(onLogEntry: received.add);
+          final entry = LogEntry(message: 'from the replaced test');
+
+          final switched = service.restartInto('b_test.dart');
+          await _waitFor(() => restartCompleted != null);
+          backendOnLogEntry!(entry);
+          expect(received, isEmpty);
+
+          restartCompleted!();
+          await switched;
+          backendOnLogEntry!(entry);
+          expect(received, [entry]);
+        },
+      );
+
+      test('restores the previous bundle and returns the compiler output when '
+          'the restart is rejected', () async {
+        final service = await startSession();
+        final previous = bundle.readAsStringSync();
+
+        final switched = service.restartInto('b_test.dart');
+        await _waitFor(() => restartFailed != null);
+        restartFailed!("b_test.dart:3:1: Error: Expected ';' after this.");
+
+        expect(
+          await switched,
+          "b_test.dart:3:1: Error: Expected ';' after this.",
+        );
+        expect(bundle.readAsStringSync(), previous);
+      });
+
+      test(
+        'refuses in a session that runs a bundle it did not generate',
+        () async {
+          final service = await startSession(options: options);
+
+          expect(await service.restartInto('b_test.dart'), contains('bundle'));
+          verifyNever(
+            () => flutterTool.hotRestart(
+              onCompleted: any(named: 'onCompleted'),
+              onFailed: any(named: 'onFailed'),
+            ),
+          );
+        },
+      );
     });
 
     test(

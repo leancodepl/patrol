@@ -966,10 +966,35 @@ packages:
     expect(status.toMap()['projectRoot'], projectRoot.path);
   });
 
-  test(
-    'refuses a different test file instead of answering for the loaded one',
-    () async {
-      final fake = FakeDevelop();
+  group('another test file', () {
+    test('is hot restarted into without a new session', () async {
+      final fake = FakeDevelop(hotRestartReady: Future<void>.value());
+      final session = sessionWith(fake);
+      await startSession(session, 'first_test.dart');
+      fake.reportTestsPassed();
+
+      final result = await session.startAndWait(
+        'second_test.dart',
+        timeout: const Duration(milliseconds: 50),
+      );
+
+      expect(result.started, isTrue);
+      expect(fake.restartTargets, ['second_test.dart']);
+      expect(fake.events, [
+        'create',
+      ], reason: 'a switch must reuse the session');
+      expect(result.status.currentTestFile, 'second_test.dart');
+      expect(
+        result.status.testState,
+        TestState.running,
+        reason: 'the result of the previous test must not answer for this one',
+      );
+    });
+
+    test('that does not compile leaves the loaded test running', () async {
+      final fake = FakeDevelop(hotRestartReady: Future<void>.value())
+        ..restartInto = (_) async =>
+            "second_test.dart:3:1: Error: Expected ';' after this.";
       final session = sessionWith(fake);
       await startSession(session, 'first_test.dart');
       fake.reportTestsPassed();
@@ -979,13 +1004,77 @@ packages:
       expect(result.started, isFalse);
       expect(
         result.status.warning,
-        allOf(contains('first_test.dart'), contains('second_test.dart')),
+        allOf(
+          contains('first_test.dart'),
+          contains("Error: Expected ';' after this."),
+        ),
       );
-      // The session is untouched: no second develop service, no restart sent.
+      expect(result.status.currentTestFile, 'first_test.dart');
+      expect(result.status.isDevelopRunning, isTrue);
       expect(fake.events, ['create']);
-      expect(fake.stdinChars, isNot(contains('R')));
-    },
-  );
+    });
+
+    test('is refused while a switch is under way', () async {
+      final switched = Completer<String?>();
+      final fake = FakeDevelop(hotRestartReady: Future<void>.value())
+        ..restartInto = (_) => switched.future;
+      final session = sessionWith(fake);
+      await startSession(session, 'first_test.dart');
+      final switching = session.startAndWait(
+        'second_test.dart',
+        timeout: const Duration(milliseconds: 50),
+      );
+      await pumpEventQueue();
+
+      final third = await session.startAndWait('third_test.dart');
+
+      expect(third.started, isFalse);
+      expect(third.status.warning, contains('switching to "second_test.dart"'));
+      switched.complete(null);
+      expect((await switching).started, isTrue);
+      expect(fake.restartTargets, ['second_test.dart']);
+    });
+
+    test('in another project is refused', () async {
+      final elsewhere = Directory.systemTemp.createTempSync('elsewhere');
+      addTearDown(() => elsewhere.deleteSync(recursive: true));
+      final fake = FakeDevelop(hotRestartReady: Future<void>.value());
+      final session = sessionWith(
+        fake,
+        resolveProjectRoot:
+            ({testFile, requestedRoot, remember = true}) async => (
+              root: testFile == 'first_test.dart'
+                  ? projectRoot.path
+                  : elsewhere.path,
+              testFile: testFile,
+            ),
+      );
+      await startSession(session, 'first_test.dart');
+
+      final result = await session.startAndWait('other_test.dart');
+
+      expect(result.started, isFalse);
+      expect(result.status.warning, contains(elsewhere.path));
+      expect(fake.restartTargets, isEmpty);
+    });
+  });
+
+  test('reset quits the running session and starts a new one', () async {
+    final fake = FakeDevelop(hotRestartReady: Future<void>.value());
+    final session = sessionWith(fake);
+    await startSession(session, 'app_test.dart');
+
+    final result = await session.startAndWait(
+      'app_test.dart',
+      device: 'test-device',
+      timeout: const Duration(milliseconds: 50),
+      reset: true,
+    );
+
+    expect(result.started, isTrue);
+    expect(fake.events, ['create', 'dispose', 'create']);
+    expect(fake.stdinChars, isNot(contains('R')));
+  });
 
   test('refuses a hot restart while attach cannot act on it', () async {
     // hotRestartReady never completes: `flutter attach` would discard the 'R'.

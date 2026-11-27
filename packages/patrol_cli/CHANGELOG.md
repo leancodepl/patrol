@@ -75,6 +75,10 @@
 - Look for a `patrol test`/`patrol develop` target in the project when the path names nothing from
   the directory the command was run in. A relative target still belongs to that directory first,
   which is how `-t ../patrol_test/app_test.dart` works from a subdirectory. (#3369)
+- `patrol mcp`'s `run` switches a running session to another test file of the project with a hot
+  restart instead of refusing it, so trying another file needs no rebuild. A file that does not
+  compile leaves the session on the previous test and returns the compiler output. `reset: true`
+  quits the session and starts a new one with clean app data.
 
 - **BREAKING CHANGE**
   - Remove `--tags` from `patrol develop`. It was accepted but never applied, so a session ran

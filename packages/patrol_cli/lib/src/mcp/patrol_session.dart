@@ -718,16 +718,21 @@ final class PatrolSession {
     String? device,
     String? projectRoot,
     Duration? timeout,
+    bool reset = false,
   }) async {
     if (_starting) {
       return 'A run of "$_startingTestFile" is still starting. Wait for it, '
+          'or quit first.';
+    }
+    if (_switchingTo case final switchingTo?) {
+      return 'The session is switching to "$switchingTo". Wait for that run, '
           'or quit first.';
     }
     if (_suiteLive) {
       return 'A suite is running and holds the device and its ports. Wait for '
           'it with status, or quit to stop it, before running a single test.';
     }
-    if (_isRunning) {
+    if (_isRunning && !reset) {
       return _restart(
         testFile,
         device: device,
@@ -741,6 +746,10 @@ final class PatrolSession {
     _cancelRequested = false;
     final startDone = _startDone = Completer<void>();
     try {
+      if (_isRunning) {
+        // The cold start below waits for this session's teardown.
+        sendCommand(SessionCommand.quit);
+      }
       if (await _anchor(testFile: testFile, requestedRoot: projectRoot)
           case final blocked?) {
         return blocked;
@@ -760,8 +769,9 @@ final class PatrolSession {
     }
   }
 
-  /// Hot-restarts the running session with [testFile], which has to be the one
-  /// it is running: the device cannot change on a hot restart either.
+  /// Hot-restarts the running session with [testFile], which may be another
+  /// test file of the same project: the native app does not depend on it. The
+  /// device cannot change on a hot restart.
   Future<String?> _restart(
     String testFile, {
     required String? device,
@@ -782,11 +792,6 @@ final class PatrolSession {
     }
 
     _deviceSelectionNote = null;
-    if (_currentTestFile != testFile) {
-      return 'Patrol session is already running "$_currentTestFile". '
-          'Cannot start different test "$testFile". '
-          'Use quit first or run the same test file.';
-    }
     if (device != null) {
       _deviceSelectionNote =
           'Device "$device" ignored: hot-restarting the running session on '
@@ -796,7 +801,69 @@ final class PatrolSession {
     if (await _waitForHotRestartReady(within: timeout) case final blocked?) {
       return blocked;
     }
-    sendCommand(SessionCommand.hotRestart);
+    if (_currentTestFile == testFile) {
+      sendCommand(SessionCommand.hotRestart);
+      return null;
+    }
+    _switchingTo = testFile;
+    try {
+      return await _switchTo(
+        testFile,
+        projectRoot: projectRoot,
+        timeout: timeout,
+      );
+    } finally {
+      _switchingTo = null;
+    }
+  }
+
+  /// The test file a hot restart is switching the running session to.
+  String? _switchingTo;
+
+  /// Hot-restarts the running session into another test file of its project.
+  /// The session keeps the test it ran when the restart fails.
+  Future<String?> _switchTo(
+    String testFile, {
+    required String? projectRoot,
+    required Duration? timeout,
+  }) async {
+    final live = _liveSession;
+    final service = _developService;
+    if (live == null || service == null) {
+      return 'No active patrol session';
+    }
+
+    final ResolvedProject resolved;
+    try {
+      resolved = await _resolveProjectRoot(
+        testFile: testFile,
+        requestedRoot: projectRoot,
+        remember: false,
+      );
+    } on ProjectResolutionException catch (err) {
+      return '$err';
+    }
+    final previous = _currentTestFile;
+    if (!_sameDirectory(resolved.root, flutterProjectPath)) {
+      return '"$testFile" belongs to ${resolved.root}, but this session runs '
+          '"$previous" in $flutterProjectPath. Quit that session before '
+          'running it.';
+    }
+
+    final failure = await service.restartInto(
+      resolved.testFile ?? testFile,
+      timeout: timeout ?? const Duration(minutes: 2),
+    );
+    if (!identical(_liveSession, live) || !_isRunning) {
+      return 'The session ended while switching to "$testFile".';
+    }
+    if (failure != null) {
+      return 'Hot restart into "$testFile" failed; the session still runs '
+          '"$previous".\n$failure';
+    }
+    _currentTestFile = testFile;
+    _projectRelativeTestFile = resolved.testFile;
+    _beginRun();
     return null;
   }
 
@@ -1351,20 +1418,26 @@ final class PatrolSession {
         }
         return 'Quit command sent to patrol session';
       case SessionCommand.hotRestart:
-        _outputs.clear();
-        _clearFailure();
-        _lastHeardAt = _now();
-        _lastTestEntry = null;
-        _lastTestEntryAt = null;
-        _testState = TestState.running;
-        _finishWarning = null;
-        // Complete the old completer so any previous waiters are unblocked, then
-        // immediately create a fresh one. This avoids a race where callbacks
-        // could fire between null-ing and lazy re-creation in _waitForFinish.
-        _completeFinish();
-        _finishCompleter = Completer<void>();
+        _beginRun();
         return 'Hot restart sent to patrol session';
     }
+  }
+
+  /// Forgets the previous run's outcome, for a hot restart that started a new
+  /// one.
+  void _beginRun() {
+    _outputs.clear();
+    _clearFailure();
+    _lastHeardAt = _now();
+    _lastTestEntry = null;
+    _lastTestEntryAt = null;
+    _testState = TestState.running;
+    _finishWarning = null;
+    // Complete the old completer so any previous waiters are unblocked, then
+    // immediately create a fresh one. This avoids a race where callbacks
+    // could fire between null-ing and lazy re-creation in _waitForFinish.
+    _completeFinish();
+    _finishCompleter = Completer<void>();
   }
 
   /// How long the running session has heard nothing since its app came up,
@@ -1491,12 +1564,14 @@ final class PatrolSession {
     Duration? timeout,
     String? device,
     String? projectRoot,
+    bool reset = false,
   }) async {
     final refusal = await _start(
       testFile,
       device: device,
       projectRoot: projectRoot,
       timeout: timeout,
+      reset: reset,
     );
     if (refusal != null) {
       return (status: getStatus(overrideWarning: refusal), started: false);

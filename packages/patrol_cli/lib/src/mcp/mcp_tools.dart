@@ -182,11 +182,13 @@ class RunArgs {
   RunArgs.fromJson(Map<String, dynamic> json)
     : testFile = json['testFile'] as String,
       timeout = _parseWait(json['timeoutMinutes'] as num?),
+      reset = json['reset'] == true,
       device = (json['device'] as String?)?.trim().nullIfEmpty,
       projectRoot = (json['projectRoot'] as String?)?.trim().nullIfEmpty;
 
   final String testFile;
   final Duration timeout;
+  final bool reset;
   final String? device;
   final String? projectRoot;
 }
@@ -446,6 +448,7 @@ class McpTools {
       final result = await _session.startAndWait(
         runArgs.testFile,
         timeout: runArgs.timeout,
+        reset: runArgs.reset,
         device: runArgs.device,
         projectRoot: runArgs.projectRoot,
       );
