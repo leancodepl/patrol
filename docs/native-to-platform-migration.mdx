@@ -210,3 +210,6 @@ Fix the rest by hand. `dart analyze` lists them as methods that aren't defined f
 - `getNativeViews()`: use `$.platform.android.getNativeViews(...)` or
   `$.platform.ios.getNativeViews(...)`. `NativeView.fromAndroid` and `NativeView.fromIOS` still map
   the results to `NativeView`.
+- `NativeAutomatorConfig(...).toPlatformAutomatorConfig()`: after `dart fix` it reads
+  `PlatformAutomatorConfig.fromOptions(...).toPlatformAutomatorConfig()`. Drop the
+  `.toPlatformAutomatorConfig()` call.
