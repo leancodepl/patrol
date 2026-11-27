@@ -13,6 +13,7 @@ import 'package:patrol_cli/src/coverage/bind_unused_port.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
 import 'package:patrol_cli/src/devices.dart';
+import 'package:patrol_cli/src/web/chrome_pages.dart';
 import 'package:patrol_cli/src/web/restart_teardown_window.dart';
 import 'package:patrol_cli/src/web/web_devtools_server.dart';
 import 'package:patrol_log/patrol_log.dart';
@@ -48,6 +49,11 @@ class WebTestBackend {
 
   String? get debuggerPort => _debuggerPort;
   String? _debuggerPort;
+
+  /// The DevTools Protocol id of the tab the app runs in. Tests can open more
+  /// tabs, so screenshots look for this one.
+  String? get appPageId => _appPageId;
+  String? _appPageId;
 
   /// The resident `flutter run`; hot restart goes through its stdin.
   Process? _flutterProcess;
@@ -208,6 +214,7 @@ class WebTestBackend {
     // Chosen up front so MCP screenshots can use it before Chrome launches.
     final debuggerPort = await bindUnusedPort<int>((port) => port);
     _debuggerPort = '$debuggerPort';
+    _appPageId = null;
 
     final flutterProcess = await _startFlutterWebServer(
       options,
@@ -731,6 +738,26 @@ class WebTestBackend {
           'Consider increasing the timeout with --web-server-timeout.',
         ),
       );
+    }
+
+    // The app's tab is the only one until a test opens another.
+    _appPageId = await _firstPageId(debuggerPort);
+  }
+
+  Future<String?> _firstPageId(int debuggerPort) async {
+    final client = HttpClient()..connectionTimeout = const Duration(seconds: 2);
+    try {
+      final request = await client.getUrl(
+        Uri.parse('http://127.0.0.1:$debuggerPort/json'),
+      );
+      final body = await (await request.close()).transform(utf8.decoder).join();
+      return pickChromePage(jsonDecode(body) as List<Object?>)?['id']
+          as String?;
+    } on Object catch (err) {
+      _logger.detail('Could not read the app tab from Chrome: $err');
+      return null;
+    } finally {
+      client.close(force: true);
     }
   }
 

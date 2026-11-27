@@ -526,6 +526,9 @@ final class PatrolSession {
   /// The remote debugging port of the Chrome a web session drives.
   String? get webDebuggerPort => _developService?.webDebuggerPort;
 
+  /// The Chrome tab the web session's app runs in.
+  String? get webAppPageId => _developService?.webAppPageId;
+
   var _portForwarded = false;
 
   /// The resolved project's `patrol` incompatibility, read on every call so an

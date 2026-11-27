@@ -7,6 +7,7 @@ import 'package:file/local.dart';
 import 'package:image/image.dart' as img;
 import 'package:mcp_dart/mcp_dart.dart';
 import 'package:patrol_cli/src/devices.dart';
+import 'package:patrol_cli/src/web/chrome_pages.dart';
 import 'package:process/process.dart';
 
 enum ScreenshotPlatform {
@@ -53,9 +54,10 @@ enum ScreenshotPlatform {
       };
 }
 
-/// Captures the page a Chrome instance shows, as PNG bytes, through its
-/// remote debugging port.
-typedef WebPageCapture = Future<Uint8List> Function(String debuggerPort);
+/// Captures a page of a Chrome instance, as PNG bytes, through its remote
+/// debugging port: the tab with [pageId] when Chrome still has it.
+typedef WebPageCapture =
+    Future<Uint8List> Function(String debuggerPort, {String? pageId});
 
 abstract final class ScreenshotService {
   static const _maxHeight = 800;
@@ -63,6 +65,7 @@ abstract final class ScreenshotService {
   static Future<CallToolResult> handleScreenshotRequest(
     Device? device, {
     String? webDebuggerPort,
+    String? webAppPageId,
     WebPageCapture captureWebPage = captureChromePage,
     ProcessManager processManager = const LocalProcessManager(),
     FileSystem fileSystem = const LocalFileSystem(),
@@ -94,7 +97,10 @@ abstract final class ScreenshotService {
             isError: true,
           );
         }
-        final page = await captureWebPage(webDebuggerPort);
+        final page = await captureWebPage(
+          webDebuggerPort,
+          pageId: webAppPageId,
+        );
         _validatePng(page);
         return CallToolResult(
           content: [
@@ -239,10 +245,14 @@ abstract final class ScreenshotService {
   }
 }
 
-/// Captures the first page Chrome lists on [debuggerPort] with the DevTools
-/// Protocol's `Page.captureScreenshot`. Every step is bounded: a browser that
-/// stopped answering fails the call.
-Future<Uint8List> captureChromePage(String debuggerPort) async {
+/// Captures the tab with [pageId] on [debuggerPort], or the first page Chrome
+/// lists when it has no such tab, with the DevTools Protocol's
+/// `Page.captureScreenshot`. Every step is bounded: a browser that stopped
+/// answering fails the call.
+Future<Uint8List> captureChromePage(
+  String debuggerPort, {
+  String? pageId,
+}) async {
   const step = Duration(seconds: 5);
   final httpClient = HttpClient();
   try {
@@ -251,12 +261,10 @@ Future<Uint8List> captureChromePage(String debuggerPort) async {
         .timeout(step);
     final response = await request.close().timeout(step);
     final body = await response.transform(utf8.decoder).join().timeout(step);
-    final page = (jsonDecode(body) as List)
-        .whereType<Map<String, dynamic>>()
-        .firstWhere(
-          (target) => target['type'] == 'page',
-          orElse: () => throw Exception('Chrome lists no page to capture'),
-        );
+    final page = pickChromePage(jsonDecode(body) as List<Object?>, id: pageId);
+    if (page == null) {
+      throw Exception('Chrome lists no page to capture');
+    }
     final socketUrl = page['webSocketDebuggerUrl'] as String?;
     if (socketUrl == null) {
       throw Exception('Chrome gives no debugger URL for the page');

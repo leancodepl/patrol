@@ -141,6 +141,7 @@ class McpTools {
     () => ScreenshotService.handleScreenshotRequest(
       _session.device,
       webDebuggerPort: _session.webDebuggerPort,
+      webAppPageId: _session.webAppPageId,
       processManager: _processManager,
     ),
     projectRequired: false,

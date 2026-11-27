@@ -128,6 +128,9 @@ class DevelopService {
   /// The Chrome debugger port used by the web develop session.
   String? get webDebuggerPort => _webTestBackend.debuggerPort;
 
+  /// The Chrome tab the web develop session's app runs in.
+  String? get webAppPageId => _webTestBackend.appPageId;
+
   /// Fails fast when the SDK predates flutter/flutter#183838. Without it a web
   /// Hot Restart reports success and keeps serving the previous test bundle.
   void _assertWebHotRestartSupported(FlutterCommand flutterCommand) {

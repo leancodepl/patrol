@@ -64,18 +64,22 @@ void main() {
       img.encodePng(img.Image(width: 4, height: 4)),
     );
 
-    test('captures the page through the Chrome debugger port', () async {
-      String? asked;
+    test('captures the app tab through the Chrome debugger port', () async {
+      String? askedPort;
+      String? askedPage;
       final result = await ScreenshotService.handleScreenshotRequest(
         web,
         webDebuggerPort: '9222',
-        captureWebPage: (port) async {
-          asked = port;
+        webAppPageId: 'APP',
+        captureWebPage: (port, {pageId}) async {
+          askedPort = port;
+          askedPage = pageId;
           return png;
         },
       );
 
-      expect(asked, '9222');
+      expect(askedPort, '9222');
+      expect(askedPage, 'APP');
       expect(result.isError, isNot(true));
       expect(result.content.single, isA<ImageContent>());
     });
@@ -83,7 +87,7 @@ void main() {
     test('says so when the browser has no debugger port yet', () async {
       final result = await ScreenshotService.handleScreenshotRequest(
         web,
-        captureWebPage: (_) => throw StateError('must not be called'),
+        captureWebPage: (_, {pageId}) => throw StateError('must not be called'),
       );
 
       expect(result.isError, isTrue);
@@ -97,7 +101,8 @@ void main() {
       final result = await ScreenshotService.handleScreenshotRequest(
         web,
         webDebuggerPort: '9222',
-        captureWebPage: (_) async => throw Exception('Chrome lists no page'),
+        captureWebPage: (_, {pageId}) async =>
+            throw Exception('Chrome lists no page'),
       );
 
       expect(result.isError, isTrue);
