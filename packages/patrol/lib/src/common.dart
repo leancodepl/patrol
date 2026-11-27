@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:boolean_selector/boolean_selector.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart' show EditableText;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol/src/binding.dart';
@@ -90,6 +91,15 @@ void patrolTearDown(dynamic Function() body) {
 ///    },
 /// );
 /// ```
+///
+/// ### Text cursor
+///
+/// By default the text cursor doesn't blink during the test
+/// ([EditableText.debugDeterministicCursor]). On iOS, and with
+/// `CupertinoTextField` on any platform, the blink animation keeps scheduling
+/// frames, so every action that settles while a text field is focused waits
+/// several seconds and [finders.SettlePolicy.settle] can time out. Set
+/// [deterministicCursor] to false to keep the blinking cursor.
 @isTest
 void patrolTest(
   String description,
@@ -105,6 +115,7 @@ void patrolTest(
   PlatformAutomatorConfig? platformAutomatorConfig,
   LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
       LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
+  bool deterministicCursor = true,
 }) {
   if (constants.testDiscoveryEnabled) {
     // Build-time discovery (host `flutter test`): only register the test so it
@@ -184,7 +195,10 @@ void patrolTest(
         entrypointArgs: patrolBinding.entrypointArgs,
       );
       try {
-        await callback(patrolTester);
+        await runWithDeterministicCursor(
+          enabled: deterministicCursor,
+          body: () => callback(patrolTester),
+        );
       } catch (err, st) {
         // Capture the failing screen before teardown pumps the next frame.
         if (constants.screenshotOnFailureEnabled) {
@@ -278,6 +292,22 @@ void patrolTest(
       }
     },
   );
+}
+
+/// Runs [body] with [EditableText.debugDeterministicCursor] set to [enabled],
+/// then restores the previous value.
+@internal
+Future<void> runWithDeterministicCursor({
+  required bool enabled,
+  required Future<void> Function() body,
+}) async {
+  final previous = EditableText.debugDeterministicCursor;
+  EditableText.debugDeterministicCursor = enabled;
+  try {
+    await body();
+  } finally {
+    EditableText.debugDeterministicCursor = previous;
+  }
 }
 
 /// Creates a DartGroupEntry by visiting the subgroups of [parentGroup].

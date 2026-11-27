@@ -4,6 +4,7 @@ import 'package:args/command_runner.dart';
 import 'package:file/memory.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:path/path.dart' show join;
+import 'package:patrol_cli/src/android/android_test_layout.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/commands/build_android.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
@@ -32,6 +33,7 @@ void main() {
         appServerPort: 8080,
         testServerPort: 8081,
         uninstall: false,
+        testLayout: AndroidTestLayout.selfInstrumenting,
       ),
     );
     registerFallbackValue(
@@ -107,6 +109,9 @@ void main() {
       );
 
       when(() => mockAndroidTestBackend.build(any())).thenAnswer((_) async {});
+      when(
+        () => mockAndroidTestBackend.detectTestLayout(),
+      ).thenReturn(AndroidTestLayout.selfInstrumenting);
 
       when(
         () => mockCompatibilityChecker.checkVersionsCompatibilityForBuild(
@@ -607,8 +612,28 @@ void main() {
     });
 
     group('printApkPaths', () {
+      test('prints in-app androidTest path', () {
+        command.printApkPaths(
+          buildMode: 'debug',
+          testLayout: AndroidTestLayout.inApp,
+        );
+
+        verifyInOrder([
+          () => mockLogger.info(
+            '${join('build', 'app', 'outputs', 'apk', 'debug', 'app-debug.apk')} '
+            '(app under test)',
+          ),
+          () => mockLogger.info(
+            '${join('build', 'app', 'outputs', 'apk', 'androidTest', 'debug', 'app-debug-androidTest.apk')} (test instrumentation app)',
+          ),
+        ]);
+      });
+
       test('prints correct paths for debug build without flavor', () {
-        command.printApkPaths(buildMode: 'debug');
+        command.printApkPaths(
+          buildMode: 'debug',
+          testLayout: AndroidTestLayout.selfInstrumenting,
+        );
 
         verify(
           () => mockLogger.info(
@@ -617,13 +642,16 @@ void main() {
         ).called(1);
         verify(
           () => mockLogger.info(
-            '${join('build', 'app', 'outputs', 'apk', 'androidTest', 'debug', 'app-debug-androidTest.apk')} (test instrumentation app)',
+            '${join('build', 'patrolTest', 'outputs', 'apk', 'debug', 'patrolTest-debug.apk')} (test instrumentation app)',
           ),
         ).called(1);
       });
 
       test('prints correct paths for release build without flavor', () {
-        command.printApkPaths(buildMode: 'release');
+        command.printApkPaths(
+          buildMode: 'release',
+          testLayout: AndroidTestLayout.selfInstrumenting,
+        );
 
         verify(
           () => mockLogger.info(
@@ -632,13 +660,17 @@ void main() {
         ).called(1);
         verify(
           () => mockLogger.info(
-            '${join('build', 'app', 'outputs', 'apk', 'androidTest', 'release', 'app-release-androidTest.apk')} (test instrumentation app)',
+            '${join('build', 'patrolTest', 'outputs', 'apk', 'release', 'patrolTest-release.apk')} (test instrumentation app)',
           ),
         ).called(1);
       });
 
       test('prints correct paths for debug build with flavor', () {
-        command.printApkPaths(flavor: 'dev', buildMode: 'debug');
+        command.printApkPaths(
+          flavor: 'dev',
+          buildMode: 'debug',
+          testLayout: AndroidTestLayout.selfInstrumenting,
+        );
 
         verify(
           () => mockLogger.info(
@@ -647,13 +679,17 @@ void main() {
         ).called(1);
         verify(
           () => mockLogger.info(
-            '${join('build', 'app', 'outputs', 'apk', 'androidTest', 'dev', 'debug', 'app-dev-debug-androidTest.apk')} (test instrumentation app)',
+            '${join('build', 'patrolTest', 'outputs', 'apk', 'dev', 'debug', 'patrolTest-dev-debug.apk')} (test instrumentation app)',
           ),
         ).called(1);
       });
 
       test('prints correct paths for release build with flavor', () {
-        command.printApkPaths(flavor: 'prod', buildMode: 'release');
+        command.printApkPaths(
+          flavor: 'prod',
+          buildMode: 'release',
+          testLayout: AndroidTestLayout.selfInstrumenting,
+        );
 
         verify(
           () => mockLogger.info(
@@ -662,13 +698,16 @@ void main() {
         ).called(1);
         verify(
           () => mockLogger.info(
-            '${join('build', 'app', 'outputs', 'apk', 'androidTest', 'prod', 'release', 'app-prod-release-androidTest.apk')} (test instrumentation app)',
+            '${join('build', 'patrolTest', 'outputs', 'apk', 'prod', 'release', 'patrolTest-prod-release.apk')} (test instrumentation app)',
           ),
         ).called(1);
       });
 
       test('prints correct paths for custom build mode without flavor', () {
-        command.printApkPaths(buildMode: 'profile');
+        command.printApkPaths(
+          buildMode: 'profile',
+          testLayout: AndroidTestLayout.selfInstrumenting,
+        );
 
         verify(
           () => mockLogger.info(
@@ -677,13 +716,17 @@ void main() {
         ).called(1);
         verify(
           () => mockLogger.info(
-            '${join('build', 'app', 'outputs', 'apk', 'androidTest', 'profile', 'app-profile-androidTest.apk')} (test instrumentation app)',
+            '${join('build', 'patrolTest', 'outputs', 'apk', 'profile', 'patrolTest-profile.apk')} (test instrumentation app)',
           ),
         ).called(1);
       });
 
       test('prints correct paths for custom build mode with flavor', () {
-        command.printApkPaths(flavor: 'staging', buildMode: 'profile');
+        command.printApkPaths(
+          flavor: 'staging',
+          buildMode: 'profile',
+          testLayout: AndroidTestLayout.selfInstrumenting,
+        );
 
         verify(
           () => mockLogger.info(
@@ -692,13 +735,16 @@ void main() {
         ).called(1);
         verify(
           () => mockLogger.info(
-            '${join('build', 'app', 'outputs', 'apk', 'androidTest', 'staging', 'profile', 'app-staging-profile-androidTest.apk')} (test instrumentation app)',
+            '${join('build', 'patrolTest', 'outputs', 'apk', 'staging', 'profile', 'patrolTest-staging-profile.apk')} (test instrumentation app)',
           ),
         ).called(1);
       });
 
       test('handles uppercase build mode correctly', () {
-        command.printApkPaths(buildMode: 'DEBUG');
+        command.printApkPaths(
+          buildMode: 'DEBUG',
+          testLayout: AndroidTestLayout.selfInstrumenting,
+        );
 
         verify(
           () => mockLogger.info(
@@ -707,13 +753,17 @@ void main() {
         ).called(1);
         verify(
           () => mockLogger.info(
-            '${join('build', 'app', 'outputs', 'apk', 'androidTest', 'debug', 'app-debug-androidTest.apk')} (test instrumentation app)',
+            '${join('build', 'patrolTest', 'outputs', 'apk', 'debug', 'patrolTest-debug.apk')} (test instrumentation app)',
           ),
         ).called(1);
       });
 
       test('handles mixed case build mode correctly with flavor', () {
-        command.printApkPaths(flavor: 'Dev', buildMode: 'Release');
+        command.printApkPaths(
+          flavor: 'Dev',
+          buildMode: 'Release',
+          testLayout: AndroidTestLayout.selfInstrumenting,
+        );
 
         verify(
           () => mockLogger.info(
@@ -722,13 +772,17 @@ void main() {
         ).called(1);
         verify(
           () => mockLogger.info(
-            '${join('build', 'app', 'outputs', 'apk', 'androidTest', 'Dev', 'release', 'app-Dev-release-androidTest.apk')} (test instrumentation app)',
+            '${join('build', 'patrolTest', 'outputs', 'apk', 'Dev', 'release', 'patrolTest-Dev-release.apk')} (test instrumentation app)',
           ),
         ).called(1);
       });
 
       test('handles complex flavor names correctly', () {
-        command.printApkPaths(flavor: 'staging-prod', buildMode: 'release');
+        command.printApkPaths(
+          flavor: 'staging-prod',
+          buildMode: 'release',
+          testLayout: AndroidTestLayout.selfInstrumenting,
+        );
 
         verify(
           () => mockLogger.info(
@@ -737,13 +791,16 @@ void main() {
         ).called(1);
         verify(
           () => mockLogger.info(
-            '${join('build', 'app', 'outputs', 'apk', 'androidTest', 'staging-prod', 'release', 'app-staging-prod-release-androidTest.apk')} (test instrumentation app)',
+            '${join('build', 'patrolTest', 'outputs', 'apk', 'staging-prod', 'release', 'patrolTest-staging-prod-release.apk')} (test instrumentation app)',
           ),
         ).called(1);
       });
 
       test('handles null flavor correctly', () {
-        command.printApkPaths(buildMode: 'debug');
+        command.printApkPaths(
+          buildMode: 'debug',
+          testLayout: AndroidTestLayout.selfInstrumenting,
+        );
 
         verify(
           () => mockLogger.info(
@@ -752,13 +809,17 @@ void main() {
         ).called(1);
         verify(
           () => mockLogger.info(
-            '${join('build', 'app', 'outputs', 'apk', 'androidTest', 'debug', 'app-debug-androidTest.apk')} (test instrumentation app)',
+            '${join('build', 'patrolTest', 'outputs', 'apk', 'debug', 'patrolTest-debug.apk')} (test instrumentation app)',
           ),
         ).called(1);
       });
 
       test('prints paths in correct order', () {
-        command.printApkPaths(flavor: 'dev', buildMode: 'debug');
+        command.printApkPaths(
+          flavor: 'dev',
+          buildMode: 'debug',
+          testLayout: AndroidTestLayout.selfInstrumenting,
+        );
 
         final captured = verify(() => mockLogger.info(captureAny())).captured;
         expect(captured.length, 2);
@@ -767,13 +828,20 @@ void main() {
       });
 
       test('calls logger info exactly twice per invocation', () {
-        command.printApkPaths(buildMode: 'debug');
+        command.printApkPaths(
+          buildMode: 'debug',
+          testLayout: AndroidTestLayout.selfInstrumenting,
+        );
 
         verify(() => mockLogger.info(any())).called(2);
       });
 
       test('checks proper paths for flavor and build mode', () {
-        command.printApkPaths(flavor: 'dev', buildMode: 'debug');
+        command.printApkPaths(
+          flavor: 'dev',
+          buildMode: 'debug',
+          testLayout: AndroidTestLayout.selfInstrumenting,
+        );
 
         final captured = verify(() => mockLogger.info(captureAny())).captured;
         expect(
@@ -783,28 +851,28 @@ void main() {
         expect(
           captured[1],
           contains(
-            join(
-              'build',
-              'app',
-              'outputs',
-              'apk',
-              'androidTest',
-              'dev',
-              'debug',
-            ),
+            join('build', 'patrolTest', 'outputs', 'apk', 'dev', 'debug'),
           ),
         );
       });
 
       test('generates consistent APK names for same parameters', () {
-        command.printApkPaths(flavor: 'prod', buildMode: 'release');
+        command.printApkPaths(
+          flavor: 'prod',
+          buildMode: 'release',
+          testLayout: AndroidTestLayout.selfInstrumenting,
+        );
         final firstCall = verify(() => mockLogger.info(captureAny())).captured;
 
         // Reset mock
         reset(mockLogger);
         when(() => mockLogger.info(any())).thenReturn(null);
 
-        command.printApkPaths(flavor: 'prod', buildMode: 'release');
+        command.printApkPaths(
+          flavor: 'prod',
+          buildMode: 'release',
+          testLayout: AndroidTestLayout.selfInstrumenting,
+        );
         final secondCall = verify(() => mockLogger.info(captureAny())).captured;
 
         expect(firstCall, equals(secondCall));

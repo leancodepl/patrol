@@ -9,7 +9,7 @@ tocExtra:
     url: "#android-setup"
     depth: 3
     after: "#setup"
-  - title: Old Android setup
+  - title: In-app Android runner
     url: "#old-android-setup"
     depth: 3
     after: "#setup"
@@ -163,19 +163,77 @@ Check out our video version of this tutorial on YouTube!
 <Accordions>
 <Accordion defaultOpen id="android-setup" title="Android setup (for projects using Kotlin DSL)">
   <Steps>
-    <Step id="create-androidtest-dir">
-      Go to **android/app/src/androidTest/java/com/example/myapp/** in your project
-         directory. If there are no such folders, create them. **Remember to replace
-         `/com/example/myapp/` with the path created by your app's package name.**
+    <Step id="include-patrol-test-modules">
+      Add the Patrol test APK and Patrol's Android test library to
+      `android/settings.gradle.kts`. The library path is resolved from Flutter's
+      existing `:patrol` plugin project, so it also works when Patrol is installed
+      from the pub cache.
+
+      ```kotlin title="android/settings.gradle.kts"
+      include(":app", ":patrolTest")
+
+      include(":patrol_android_test")
+      project(":patrol_android_test").projectDir =
+          project(":patrol").projectDir.resolve("../android_test")
+      ```
+
+      For `settings.gradle` (Groovy), use:
+
+      ```groovy title="android/settings.gradle"
+      include ':app', ':patrolTest'
+
+      include ':patrol_android_test'
+      project(':patrol_android_test').projectDir =
+          new File(project(':patrol').projectDir, '../android_test')
+      ```
     </Step>
-    
+
+    <Step id="create-patrol-test-module">
+      Create `android/patrolTest/build.gradle.kts`. This is a self-instrumenting
+      test-only APK. `patrol_test.gradle` copies the app's flavor dimensions,
+      product flavors, build types, and SDK levels, wires the orchestrator, and
+      assigns each test APK a package ID plus the matching app variant's
+      `applicationId` and clear-data setting as manifest metadata.
+
+      ```kotlin title="android/patrolTest/build.gradle.kts"
+      plugins {
+          id("com.android.test")
+      }
+
+      apply(from = project(":patrol_android_test").projectDir.resolve("patrol_test.gradle"))
+      ```
+
+      For `build.gradle` (Groovy), use:
+
+      ```groovy title="android/patrolTest/build.gradle"
+      plugins {
+          id 'com.android.test'
+      }
+
+      apply from: new File(
+          project(':patrol_android_test').projectDir,
+          'patrol_test.gradle'
+      )
+      ```
+
+      The script defaults `clearPackageData` to `true` (Patrol wipes the **app's**
+      data before each test, including runtime permissions). Override after the
+      `apply` if you need a different value. The orchestrator gives every Dart
+      test a fresh instrumentation process and a freshly launched app.
+      `:patrol_android_test` contributes the test APK's required `INTERNET`
+      and `QUERY_ALL_PACKAGES` permissions.
+    </Step>
+
     <Step id="create-mainactivitytest">
-      Create a file named `MainActivityTest.java` and copy there the code below.
+      Create
+      `android/patrolTest/src/main/java/com/example/myapp/patrol_test/MainActivityTest.java`.
+      Replace the package declaration and directory with
+      `<your applicationId>.patrol_test`.
       Patrol runs your tests through this class, so `patrol test` and
       `patrol build` stop with an error when it's missing.
 
       ```java title="MainActivityTest.java"
-      package com.example.myapp; // replace "com.example.myapp" with your app's package
+      package com.example.myapp.patrol_test;
 
       import androidx.test.platform.app.InstrumentationRegistry;
       import org.junit.Test;
@@ -189,10 +247,7 @@ Check out our video version of this tutorial on YouTube!
           @Parameters(name = "{0}")
           public static Object[] testCases() {
               PatrolJUnitRunner instrumentation = (PatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
-              // replace "MainActivity.class" with "io.flutter.embedding.android.FlutterActivity.class" 
-              // if in AndroidManifest.xml in manifest/application/activity you have
-              //     android:name="io.flutter.embedding.android.FlutterActivity"
-              instrumentation.setUp(MainActivity.class);
+              instrumentation.setUp();
               instrumentation.waitForPatrolAppService();
               return instrumentation.listDartTests();
           }
@@ -212,67 +267,12 @@ Check out our video version of this tutorial on YouTube!
       ```
     </Step>
 
-    <Step id="open-build-gradle">
-      Go to the **build.gradle.kts** file, located in **android/app** folder in your
-         project directory.
-    </Step>
-
-    <Step id="set-test-runner">
-      Add these 2 lines to the `defaultConfig` section:
-
-      ```kotlin title="android/app/build.gradle.kts"
-        testInstrumentationRunner = "pl.leancode.patrol.PatrolJUnitRunner"
-        testInstrumentationRunnerArguments["clearPackageData"] = "true"
-      ```
-    </Step>
-
-    <Step id="enable-test-orchestrator">
-      Add this section to the `android` section:
-
-      ```kotlin title="android/app/build.gradle.kts"
-        testOptions {
-          execution = "ANDROIDX_TEST_ORCHESTRATOR"
-        }
-      ```
-    </Step>
-
-    <Step id="add-orchestrator-dependency">
-      Add this line to `dependencies` section:
-
-      ```kotlin title="android/app/build.gradle.kts"
-        androidTestUtil("androidx.test:orchestrator:1.5.1")
-      ```
-    </Step>
   </Steps>
-
-<Warning>
-  To run tests in release mode (`patrol test --release`), set `testBuildType` and add Patrol to
-  the release build. Flutter leaves `dev_dependencies` plugins out of release builds, so without
-  `releaseImplementation` the test sources do not compile.
-  ```kotlin title="android/app/build.gradle.kts"
-    android {
-      ...
-      testBuildType = "release"
-    }
-
-    dependencies {
-      ...
-      releaseImplementation(project(":patrol"))
-    }
-  ```
-  These lines also put Patrol into your release build, so remove them, or put them behind a
-  Gradle property, before you build the app you publish. Patrol ships its own R8 keep rules, so
-  you don't need to add any for Patrol when minification is enabled.
-
-  If `integration_test` is also in your `dev_dependencies` and the release build fails to compile
-  `GeneratedPluginRegistrant` with `package dev.flutter.plugins.integration_test does not exist`,
-  remove `integration_test` from `pubspec.yaml`, since Patrol doesn't need it. If your app does
-  need it, add `releaseImplementation(project(":integration_test"))` next to the Patrol line.
-</Warning>
 
 </Accordion>
 
-<Accordion id="old-android-setup" title="Old Android setup (for projects using Groovy build configuration files)">
+<Accordion id="old-android-setup" title="In-app Android runner">
+  This layout runs instrumentation from `:app`'s `androidTest` source set.
   <Steps>
     <Step id="create-androidtest-dir">
       Go to **android/app/src/androidTest/java/com/example/myapp/** in your project
@@ -323,43 +323,62 @@ Check out our video version of this tutorial on YouTube!
       ```
     </Step>
 
-    <Step id="open-build-gradle">
-      Go to the **build.gradle** file, located in **android/app** folder in your
-         project directory.
-    </Step>
+    <Step id="configure-in-app-runner">
+      Keep the runner and Orchestrator configuration in `android/app/build.gradle.kts`
+      (or `build.gradle`):
 
-    <Step id="set-test-runner">
-      Add these 2 lines to the `defaultConfig` section:
+      ```kotlin title="android/app/build.gradle.kts"
+      android {
+          defaultConfig {
+              testInstrumentationRunner = "pl.leancode.patrol.PatrolJUnitRunner"
+              testInstrumentationRunnerArguments["clearPackageData"] = "true"
+          }
+          testOptions {
+              execution = "ANDROIDX_TEST_ORCHESTRATOR"
+          }
+      }
 
-      ```groovy title="android/app/build.gradle"
-        testInstrumentationRunner "pl.leancode.patrol.PatrolJUnitRunner"
-        testInstrumentationRunnerArguments clearPackageData: "true"
+      dependencies {
+          androidTestUtil("androidx.test:orchestrator:1.5.1")
+      }
       ```
-    </Step>
-
-    <Step id="enable-test-orchestrator">
-      Add this section to the `android` section:
 
       ```groovy title="android/app/build.gradle"
-        testOptions {
-          execution "ANDROIDX_TEST_ORCHESTRATOR"
-        }
-      ```
-    </Step>
+      android {
+          defaultConfig {
+              testInstrumentationRunner "pl.leancode.patrol.PatrolJUnitRunner"
+              testInstrumentationRunnerArguments clearPackageData: "true"
+          }
+          testOptions {
+              execution "ANDROIDX_TEST_ORCHESTRATOR"
+          }
+      }
 
-    <Step id="add-orchestrator-dependency">
-      Add this line to `dependencies` section:
-
-      ```groovy title="android/app/build.gradle"
-        androidTestUtil "androidx.test:orchestrator:1.5.1"
+      dependencies {
+          androidTestUtil "androidx.test:orchestrator:1.5.1"
+      }
       ```
     </Step>
   </Steps>
 
 <Warning>
-  To run tests in release mode (`patrol test --release`), set `testBuildType` and add Patrol to
-  the release build. Flutter leaves `dev_dependencies` plugins out of release builds, so without
-  `releaseImplementation` the test sources do not compile.
+  To run tests in release mode (`patrol test --release`) with the **in-app** layout, set
+  `testBuildType` and add Patrol to the release build. Flutter leaves `dev_dependencies`
+  plugins out of release builds, so without `releaseImplementation` the test sources do not
+  compile.
+
+  ```kotlin title="android/app/build.gradle.kts"
+  android {
+      // ...
+      testBuildType = "release"
+  }
+
+  dependencies {
+      // ...
+      releaseImplementation(project(":patrol"))
+  }
+  ```
+
   ```groovy title="android/app/build.gradle"
     android {
       ...
@@ -371,6 +390,7 @@ Check out our video version of this tutorial on YouTube!
       releaseImplementation project(":patrol")
     }
   ```
+
   These lines also put Patrol into your release build, so remove them, or put them behind a
   Gradle property, before you build the app you publish. Patrol ships its own R8 keep rules, so
   you don't need to add any for Patrol when minification is enabled.
@@ -378,7 +398,11 @@ Check out our video version of this tutorial on YouTube!
   If `integration_test` is also in your `dev_dependencies` and the release build fails to compile
   `GeneratedPluginRegistrant` with `package dev.flutter.plugins.integration_test does not exist`,
   remove `integration_test` from `pubspec.yaml`, since Patrol doesn't need it. If your app does
-  need it, add `releaseImplementation project(":integration_test")` next to the Patrol line.
+  need it, add `releaseImplementation(project(":integration_test"))` (Kotlin) or
+  `releaseImplementation project(":integration_test")` (Groovy) next to the Patrol line.
+
+  With the self-instrumenting `:patrolTest` layout, `patrol_test.gradle` debug-signs every test
+  build type, so `patrol test --release` does not need these `:app` lines for the test APK.
 </Warning>
 
 </Accordion>

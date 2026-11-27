@@ -1,3 +1,5 @@
+import 'package:patrol/src/platform/mobile/patrol_runtime_ports.dart';
+
 /// Base URI of the Patrol native automation server — the same server that
 /// backs `$.platform.mobile.*` (default `localhost:8081`).
 ///
@@ -9,6 +11,6 @@
 /// The host/port resolution matches core Patrol (`PATROL_HOST` /
 /// `PATROL_TEST_SERVER_PORT`), so `patrol test` port-forwarding just works.
 Uri get patrolNativeServerUri => Uri.http(
-  '${const String.fromEnvironment('PATROL_HOST', defaultValue: 'localhost')}:'
-  '${const String.fromEnvironment('PATROL_TEST_SERVER_PORT', defaultValue: '8081')}',
+  '${PatrolRuntimePorts.nativeServerHost()}:'
+  '${PatrolRuntimePorts.testServerPort() ?? const int.fromEnvironment('PATROL_TEST_SERVER_PORT', defaultValue: 8081)}',
 );

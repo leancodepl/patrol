@@ -16,7 +16,7 @@ Update `patrol` and `patrol_cli` together: Patrol 5.0 is `patrol` 5.x with
 | `patrol` | 5.x | |
 | `patrol_cli` | 5.x | |
 | `patrol_mcp` | discontinued | replaced by the `patrol mcp` command of `patrol_cli`, see below |
-| `patrol_finders` | 4.x | `pumpAndSettle()` returns `Future<int>`, see below |
+| `patrol_finders` | 4.x | `pumpAndSettle()` returns `Future<int>` and other API changes, see below |
 | `patrol_log` | 0.10.x, no change so far | |
 
 To try a prerelease, pin it explicitly, since pub doesn't pick prereleases on
@@ -128,6 +128,29 @@ instead of `Future<void>`: the number of frames it pumped, the same value
   `pumpAndSettle()`, e.g. the value of `WidgetTester.pumpAndSettle()`.
 - **A mock that stubs `pumpAndSettle()`:** answer with an `int`, e.g.
   `thenAnswer((_) async => 1)`; `thenAnswer((_) async {})` no longer compiles.
+
+## `pumpWidget()` takes named arguments, `pumpWidgetAndSettle()` returns frames
+
+**Packages:** `patrol_finders`, `patrol`
+
+`PatrolTester.pumpWidget()` takes `duration` and `phase` as named parameters
+instead of positional ones, and both `pumpWidget()` and `pumpWidgetAndSettle()`
+take `wrapWithView`, like `WidgetTester.pumpWidget()`.
+`pumpWidgetAndSettle()` returns `Future<int>`, the number of frames pumped while
+settling. Tests that only find, tap and pump with one argument compile
+unchanged.
+
+**What to do:**
+
+- **`$.pumpWidget(app, duration)` or `$.pumpWidget(app, duration, phase)`:**
+  name the arguments: `$.pumpWidget(app, duration: duration, phase: phase)`.
+- **A subclass or implementation of `PatrolTester` that overrides
+  `pumpWidget()` or `pumpWidgetAndSettle()`:** take `duration` and `phase` as
+  named parameters, add `bool wrapWithView = true`, and return `Future<int>`
+  from `pumpWidgetAndSettle()`, e.g. the value of `super.pumpWidgetAndSettle()`.
+- **A mock that stubs them:** match `duration` and `phase` by name, e.g.
+  `mock.pumpWidget(any(), duration: any(named: 'duration'))`, and answer
+  `pumpWidgetAndSettle()` with an `int`, e.g. `thenAnswer((_) async => 1)`.
 
 ## Build-time test discovery is the default
 
@@ -260,6 +283,30 @@ gets no 5.x release.
    `patrol mcp -- --flavor dev`. `PROJECT_ROOT`, `PATROL_FLAGS` and
    `SHOW_TERMINAL` keep working.
 
+## The text cursor doesn't blink in `patrolTest`
+
+**Packages:** `patrol` (#3439)
+
+`patrolTest` sets `EditableText.debugDeterministicCursor` while the test body
+runs. On iOS, and with `CupertinoTextField` on any platform, the blinking cursor
+kept scheduling frames, so every action that settled while a text field was
+focused waited several seconds (up to the settle timeout). These actions now
+return as soon as the app settles.
+
+**What to do:**
+
+- **Most tests:** nothing, they get faster.
+- **A test that passed only because of that wait** (for example a bare
+  `expect(...)` right after typing, while a request is still loading): wait for
+  the result explicitly, e.g. `await $('Welcome').waitUntilVisible()`.
+- **Screenshot or video comparisons with a focused field:** the cursor is now
+  always visible; update the baselines once.
+- **A focused `obscureText` field that gets a single new character** (for
+  example `enterText('a')` into an empty field with `hideKeyboard: false`):
+  that character stays visible until the field loses focus.
+- **To keep the blinking cursor:** pass `deterministicCursor: false` to
+  `patrolTest`.
+
 ## Inbox
 
 Short notes on changes that don't have a section yet, one line each: the PR or
@@ -267,6 +314,15 @@ branch, the packages, what changed and what users have to do (`TODO` when that
 isn't known yet). A line leaves the Inbox when it becomes a section above. Empty
 the Inbox before 5.0.0 is released.
 
+- #3280, `patrol` + `patrol_cli`: optional self-instrumenting `:patrolTest` layout. Migrating CI:
+  test APK `build/patrolTest/outputs/apk/<variant>/patrolTest-<variant>.apk`, test package
+  `<appId>.patrol_test`, reports under `build/patrolTest/reports`, generated classes under
+  `android/patrolTest/src/main`, and apply `patrol_test.gradle` from `:patrol_android_test`
+  (defaults `clearPackageData`; farms can still pass the runtime flag, which Patrol maps to
+  app-data clear). Projects that keep `app/src/androidTest` need no change. Dart/JaCoCo
+  coverage still needs the in-app layout. In `:patrolTest` the host must call `setUp()` with no
+  activity class (`MainActivity.class` is not on the test APK). Update `patrol` and
+  `patrol_cli` together.
 - #3382, `patrol_cli`: `patrol develop` no longer accepts `--tags`, which it never applied. Remove
   `--tags` from `patrol develop` commands and scripts; `patrol test` keeps it.
 - #3040, `patrol_cli`: `patrol develop` on web requires Flutter 3.47.0 or newer, since hot restart

@@ -13,9 +13,20 @@
 - **Breaking:** With build-time test discovery, a test the app registers that discovery didn't find
   (for example one behind `Platform.isAndroid`) fails every test of the run with the list of
   missing tests, instead of silently never running. Requires `patrol_cli` 5.0. (#3425)
+- **Breaking:** `patrolTest` stops the text cursor from blinking, so actions no longer wait several
+  seconds, or time out with `SettlePolicy.settle`, while a text field is focused on iOS (or a
+  `CupertinoTextField` on any platform). To keep the blinking cursor, pass
+  `deterministicCursor: false`. See `migration5.md`. (#3439)
+- Add the optional self-instrumenting Android `:patrolTest` layout, which runs
+  JUnit outside the app process. The in-app `androidTest` layout remains
+  supported. Needs a matching `patrol_cli` release: an older CLI still runs the
+  empty `:app` androidTest, and a newer CLI with an older `patrol` fails without
+  `android_test`. (#3280)
 - Add `$.entrypointArgs` with the Dart entrypoint arguments the native side of the app passes to
   the test bundle (`dartEntrypointArgs` on Android, `entrypointArgs` on iOS and macOS). Needs a
   `patrol_cli` release that includes this change. (#3366)
+- Agent skills: `patrol-write-test` now covers the state a restart of a running session keeps,
+  assertions that cannot fail, and `settlePolicy` on screens with never-ending animations.
 - Fix web tests failing on Ubuntu 26.04 (now `ubuntu-latest` on GitHub Actions) with "Playwright does
   not support chromium on ubuntu26.04-x64", by updating Playwright to 1.61.1, which also moves web
   tests to Chromium 149. This also fixes `npx playwright install` hanging while extracting Chromium

@@ -136,6 +136,10 @@ Future<void> main([List<String> args = const []]) async {
     platformAutomator = PlatformAutomator(
       config: PlatformAutomatorConfig.defaultConfig(),
     );
+    // Host DNS + UiAutomation init must finish before the Live binding is
+    // installed. Awaiting after ensureInitialized and before test()/group()
+    // lets the framework start with an empty suite ("All tests skipped").
+    await PatrolRuntimePorts.resolveNativeServerHost();
     await platformAutomator.initialize();
     binding = PatrolBinding.ensureInitialized(platformAutomator)
       ..entrypointArgs = args;
@@ -196,6 +200,7 @@ ${generateGroupsCode(testDirectory, testFilePaths).split('\n').map((e) => '  $e'
     manifestTests: _patrolManifestTests,
   );
   binding.patrolAppService = appService;
+  // iOS/macOS ports need the binding's method channel; load after explorer.
   await PatrolRuntimePorts.ensureLoaded();
   await runAppService(appService);
 
@@ -277,8 +282,8 @@ Future<void> main([List<String> args = const []]) async {
   final platformAutomator = PlatformAutomator(
     config: PlatformAutomatorConfig.defaultConfig(),
   );
+  await PatrolRuntimePorts.resolveNativeServerHost();
   await platformAutomator.initialize();
-
   PatrolBinding.ensureInitialized(platformAutomator)
     ..entrypointArgs = args
     ..workaroundDebugDefaultTargetPlatformOverride =
