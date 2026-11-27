@@ -80,7 +80,6 @@ LinuxAppOptions _options({int appServerPort = 8082, String? flavor}) =>
         buildNumber: null,
       ),
       appServerPort: appServerPort,
-      testServerPort: 8081,
     );
 
 class _RecordingLogger extends Logger {

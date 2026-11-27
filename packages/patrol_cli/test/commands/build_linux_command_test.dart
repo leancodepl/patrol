@@ -28,7 +28,6 @@ void main() {
           buildNumber: null,
         ),
         appServerPort: 8082,
-        testServerPort: 8081,
       ),
     );
   });
@@ -112,8 +111,6 @@ void main() {
         'staging',
         '--app-server-port',
         '9000',
-        '--test-server-port',
-        '9001',
       ]);
 
       expect(result, 0);
@@ -124,21 +121,32 @@ void main() {
       expect(options.flutter.flavor, 'staging');
       expect(options.flutter.target, 'patrol_test/test_bundle.dart');
       expect(options.appServerPort, 9000);
-      expect(options.testServerPort, 9001);
       expect(options.flutter.dartDefines, containsPair('FROM_FILE', 'yes'));
       expect(
         options.flutter.dartDefines,
         containsPair('PATROL_APP_SERVER_PORT', '9000'),
       );
+      // Linux has no native test server, so there is no port to pass.
       expect(
         options.flutter.dartDefines,
-        containsPair('PATROL_TEST_SERVER_PORT', '9001'),
+        isNot(contains('PATROL_TEST_SERVER_PORT')),
       );
       verify(
         () =>
             logger.info('build/linux/x64/staging/release/bundle (app bundle)'),
       ).called(1);
     });
+
+    test(
+      'rejects --test-server-port: Linux has no native test server',
+      () async {
+        await expectLater(
+          () => run(['--test-server-port', '9001']),
+          throwsA(isA<UsageException>()),
+        );
+        verifyNever(() => linuxTestBackend.build(any()));
+      },
+    );
 
     test('passes --no-tree-shake-icons to flutter build linux', () async {
       final result = await run(['--no-tree-shake-icons']);

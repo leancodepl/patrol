@@ -30,7 +30,7 @@ class BuildLinuxCommand extends PatrolCommand {
     usesDartDefineOption();
     usesDartDefineFromFileOption();
     usesLabelOption();
-    usesPortOptions();
+    usesAppServerPortOption();
     usesTagsOption();
     usesExcludeTagsOption();
     usesCheckCompatibilityOption();
@@ -133,7 +133,6 @@ class BuildLinuxCommand extends PatrolCommand {
       'PATROL_TEST_LABEL_ENABLED': displayLabel.toString(),
       'PATROL_TEST_DIRECTORY': config.testDirectory,
       'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
-      'PATROL_TEST_SERVER_PORT': super.testServerPort.toString(),
       'PATROL_APP_SERVER_PORT': super.appServerPort.toString(),
     }.withNullsRemoved();
 
@@ -166,7 +165,6 @@ class BuildLinuxCommand extends PatrolCommand {
     final linuxOpts = LinuxAppOptions(
       flutter: flutterOpts,
       appServerPort: super.appServerPort,
-      testServerPort: super.testServerPort,
     );
 
     try {

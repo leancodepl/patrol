@@ -496,15 +496,10 @@ class MacOSAppOptions {
 }
 
 class LinuxAppOptions {
-  const LinuxAppOptions({
-    required this.flutter,
-    required this.appServerPort,
-    required this.testServerPort,
-  });
+  const LinuxAppOptions({required this.flutter, required this.appServerPort});
 
   final FlutterAppOptions flutter;
   final int appServerPort;
-  final int testServerPort;
 
   String get description {
     return 'app with entrypoint ${basename(flutter.target)} for linux';

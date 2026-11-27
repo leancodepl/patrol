@@ -710,7 +710,6 @@ void main() {
           noTreeShakeIcons: true,
         ),
         appServerPort: 8082,
-        testServerPort: 8081,
       );
 
       expect(
@@ -746,7 +745,6 @@ void main() {
           dartDefineFromFilePaths: ['config/dev.json'],
         ),
         appServerPort: 8082,
-        testServerPort: 8081,
       );
 
       expect(

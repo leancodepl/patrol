@@ -374,7 +374,6 @@ class DevelopService {
     final linuxOpts = LinuxAppOptions(
       flutter: flutterOpts,
       appServerPort: options.appServerPort,
-      testServerPort: options.testServerPort,
     );
 
     try {

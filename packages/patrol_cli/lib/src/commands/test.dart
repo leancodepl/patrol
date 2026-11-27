@@ -368,7 +368,6 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     final linuxOpts = LinuxAppOptions(
       flutter: flutterOpts,
       appServerPort: super.appServerPort,
-      testServerPort: super.testServerPort,
     );
 
     final webCoverageDataDir = coverageMode == CoverageMode.web

@@ -288,8 +288,14 @@ class LinuxTestBackend {
         );
       }
 
+      // A client that this run creates is closed with it, so pooled
+      // connections to app processes that are gone don't outlive the run.
+      final httpClient = _httpClient ?? http.Client();
+      if (_httpClient == null) {
+        scope.addDispose(httpClient.close);
+      }
       final client = PatrolAppServiceClient(
-        httpClient: _httpClient ?? http.Client(),
+        httpClient: httpClient,
         port: appServerPort,
       );
 

@@ -423,7 +423,6 @@ void main() {
               buildNumber: null,
             ),
             appServerPort: 8080,
-            testServerPort: 8081,
           ),
         );
         registerFallbackValue(MockFlutterTool());
