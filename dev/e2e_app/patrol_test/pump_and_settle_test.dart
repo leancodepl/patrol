@@ -8,9 +8,10 @@ void main() {
 
     expect(await $.pumpAndSettle(), greaterThanOrEqualTo(1));
 
-    await $(K.atFinderScreenButton).scrollTo();
-    // Tap without settling, so the route transition is left for pumpAndSettle.
-    await $.tester.tap(find.byKey(K.atFinderScreenButton));
+    // noSettle leaves the route transition for pumpAndSettle to count.
+    await $(
+      K.atFinderScreenButton,
+    ).scrollTo().tap(settlePolicy: SettlePolicy.noSettle);
     final frames = await $.pumpAndSettle();
 
     expect(frames, greaterThan(1));

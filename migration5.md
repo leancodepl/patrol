@@ -16,7 +16,7 @@ Update `patrol` and `patrol_cli` together: Patrol 5.0 is `patrol` 5.x with
 | `patrol` | 5.x | |
 | `patrol_cli` | 5.x | |
 | `patrol_mcp` | not released yet | needs a release that depends on `patrol_cli` 5.x; until then it resolves `patrol_cli` 4.x |
-| `patrol_finders` | TODO | `pumpAndSettle()` return type changed, see Inbox |
+| `patrol_finders` | 4.x | `pumpAndSettle()` returns `Future<int>`, see below |
 | `patrol_log` | 0.10.x, no change so far | |
 
 To try a prerelease, pin it explicitly, since pub doesn't pick prereleases on
@@ -80,6 +80,26 @@ already meets them, unless it sets lower values explicitly.
   '10.15'` in `macos/Podfile`, and **macOS Deployment Target** of both `Runner`
   and `RunnerUITests` in Xcode.
 
+## `pumpAndSettle()` returns the number of pumped frames
+
+**Packages:** `patrol_finders`, `patrol`
+
+`PatrolTester.pumpAndSettle()` (`$.pumpAndSettle()`) returns `Future<int>`
+instead of `Future<void>`: the number of frames it pumped, the same value
+`WidgetTester.pumpAndSettle()` returns. This makes `patrol_finders` 4.x, and
+`patrol` 5.x depends on it.
+
+**What to do:**
+
+- **`await $.pumpAndSettle()`:** nothing, it compiles unchanged.
+- **`patrol_finders` in your own `pubspec.yaml`:** change the constraint to
+  `^4.0.0`, otherwise it conflicts with `patrol` 5.x.
+- **A subclass that overrides `pumpAndSettle()`, or a class that implements
+  `PatrolTester`:** return `Future<int>`, e.g. the value of
+  `super.pumpAndSettle()`.
+- **A mock that stubs `pumpAndSettle()`:** answer with an `int`, e.g.
+  `thenAnswer((_) async => 1)`; `thenAnswer((_) async {})` now fails at runtime.
+
 ## Inbox
 
 Short notes on changes that don't have a section yet, one line each: the PR or
@@ -93,6 +113,3 @@ the Inbox before 5.0.0 is released.
   needs flutter/flutter#183838; every other platform and `patrol test` on web keep the 3.44 floor.
   Upgrade Flutter, or point patrol at a newer SDK with `--flutter-command`, to keep using
   `patrol develop -d chrome`.
-- #3414, `patrol_finders` (and `patrol` through `$`):
-  `pumpAndSettle()` returns `Future<int>` (number of pumped frames) instead of `Future<void>`.
-  Callers need no change; classes that override `pumpAndSettle()` must return `Future<int>`.
