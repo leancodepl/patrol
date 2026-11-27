@@ -285,7 +285,7 @@ class McpCommand extends PatrolCommand {
         ),
         outputSchema: sessionStatusSchema,
         annotations: const ToolAnnotations(title: 'Run Patrol Tests'),
-        callback: (args, extra) => _withProject(
+        callback: (args, extra) => withProject(
           session,
           () => _run(session, args, extra),
           testFile: (args['testFile'] as String?)?.trim().nullIfEmpty,
@@ -298,7 +298,7 @@ class McpCommand extends PatrolCommand {
             'List attached devices patrol can run on (Android, iOS). Use '
             'to resolve a device name/id to pass as `device` to run.',
         annotations: const ToolAnnotations(title: 'List Devices'),
-        callback: (args, extra) => _withProject(
+        callback: (args, extra) => withProject(
           session,
           () => _devices(session),
           projectRequired: false,
@@ -309,7 +309,7 @@ class McpCommand extends PatrolCommand {
         description: 'Quit the active patrol session gracefully',
         annotations: const ToolAnnotations(title: 'Quit Patrol'),
         callback: (args, extra) =>
-            _withProject(session, projectRequired: false, () async {
+            withProject(session, projectRequired: false, () async {
               if (!session.isRunning) {
                 return const CallToolResult(
                   content: [
@@ -337,7 +337,7 @@ class McpCommand extends PatrolCommand {
           readOnlyHint: true,
           idempotentHint: true,
         ),
-        callback: (args, extra) => _withProject(
+        callback: (args, extra) => withProject(
           session,
           () async => _statusResult(session.getStatus()),
           projectRequired: false,
@@ -352,7 +352,7 @@ class McpCommand extends PatrolCommand {
           title: 'Capture Screenshot',
           readOnlyHint: true,
         ),
-        callback: (args, extra) => _withProject(
+        callback: (args, extra) => withProject(
           session,
           () => ScreenshotService.handleScreenshotRequest(
             session.device,
@@ -371,7 +371,7 @@ class McpCommand extends PatrolCommand {
           readOnlyHint: true,
         ),
         callback: (args, extra) =>
-            _withProject(session, projectRequired: false, () async {
+            withProject(session, projectRequired: false, () async {
               try {
                 await session.ensureNativeAutomatorReachable();
               } catch (err) {
@@ -389,38 +389,6 @@ class McpCommand extends PatrolCommand {
               );
             }),
       );
-  }
-
-  /// Resolves the project before a tool touches the session, and reports a
-  /// resolution failure as the tool's error with the signals that were tried.
-  ///
-  /// [testFile] and [requestedRoot] are what the call itself said about the
-  /// project; for a server started outside any Dart package they are the only
-  /// signals.
-  Future<CallToolResult> _withProject(
-    PatrolSession session,
-    Future<CallToolResult> Function() body, {
-    String? testFile,
-    String? requestedRoot,
-    bool projectRequired = true,
-  }) async {
-    try {
-      await session.ensureProjectResolved(
-        testFile: testFile,
-        requestedRoot: requestedRoot,
-      );
-    } on ProjectResolutionException catch (err) {
-      if (projectRequired) {
-        return CallToolResult(
-          content: [TextContent(text: '$err')],
-          isError: true,
-        );
-      }
-      // Only a run needs a project. A tool that reports on the session, or lists
-      // what is attached, answers without one.
-      session.noteProjectUnresolved('$err');
-    }
-    return body();
   }
 
   Future<CallToolResult> _run(
@@ -580,4 +548,37 @@ class _ExitSignal {
       subscription.cancel();
     }
   }
+}
+
+/// Resolves the project before a tool touches the session, and reports a
+/// resolution failure as the tool's error with the signals that were tried.
+///
+/// [testFile] and [requestedRoot] are what the call itself said about the
+/// project; for a server started outside any Dart package they are the only
+/// signals.
+@visibleForTesting
+Future<CallToolResult> withProject(
+  PatrolSession session,
+  Future<CallToolResult> Function() body, {
+  String? testFile,
+  String? requestedRoot,
+  bool projectRequired = true,
+}) async {
+  try {
+    await session.ensureProjectResolved(
+      testFile: testFile,
+      requestedRoot: requestedRoot,
+    );
+  } on ProjectResolutionException catch (err) {
+    if (projectRequired) {
+      return CallToolResult(
+        content: [TextContent(text: '$err')],
+        isError: true,
+      );
+    }
+    // Only a run needs a project. A tool that reports on the session, or lists
+    // what is attached, answers without one.
+    session.noteProjectUnresolved('$err');
+  }
+  return body();
 }

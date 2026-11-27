@@ -395,14 +395,35 @@ void main() {
       },
     );
 
-    test('hotRestartReady stays pending until then', () async {
-      // A hot restart requested in this window is only queued, so a caller
-      // must not read a pending future as readiness.
-      await expectLater(
-        flutterTool.hotRestartReady.timeout(const Duration(milliseconds: 100)),
-        throwsA(isA<TimeoutException>()),
-      );
-    });
+    test(
+      'hotRestartReady stays pending while attach is still starting up',
+      () async {
+        _stubAttach(
+          processManager,
+          stdoutLines: ['Syncing files to device...'],
+        );
+
+        unawaited(
+          flutterTool.attach(
+            flutterCommand: flutterCommand,
+            deviceId: 'testDeviceId',
+            target: 'target',
+            appId: 'appId',
+            dartDefines: {},
+            openBrowser: false,
+          ),
+        );
+
+        // A hot restart requested in this window is only queued, so callers
+        // must not read a pending future as readiness.
+        await expectLater(
+          flutterTool.hotRestartReady.timeout(
+            const Duration(milliseconds: 200),
+          ),
+          throwsA(isA<TimeoutException>()),
+        );
+      },
+    );
   });
 
   group('getObservationUrl', () {

@@ -210,6 +210,58 @@ void main() {
       );
     });
 
+    test("does not look for a requested root's test file elsewhere", () async {
+      final requested = project('requested');
+      final started = project('started');
+      testFile(started, 'patrol_test/login_test.dart');
+
+      final resolved = await resolver(cwd: started).resolve(
+        requestedRoot: requested,
+        testFile: p.join('patrol_test', 'login_test.dart'),
+      );
+
+      expect(resolved.root, requested);
+      expect(resolved.testFile, p.join('patrol_test', 'login_test.dart'));
+    });
+
+    test(
+      'reaches a package below the requested root by a relative path',
+      () async {
+        final repo = project('repo');
+        final app = project(p.join('repo', 'app'));
+        testFile(app, 'patrol_test/login_test.dart');
+
+        final resolved = await resolver().resolve(
+          requestedRoot: repo,
+          testFile: p.join('app', 'patrol_test', 'login_test.dart'),
+        );
+
+        expect(resolved.root, app);
+        expect(resolved.testFile, p.join('patrol_test', 'login_test.dart'));
+      },
+    );
+
+    test(
+      'reads a relative requested root from where the server started',
+      () async {
+        final started = project('started');
+        final other = project('other');
+        var cwd = started;
+        final r = ProjectResolver(
+          readRoots: () async => const [],
+          environment: const {},
+          currentDirectory: () => cwd,
+        );
+        cwd = other;
+
+        expect(
+          await r.resolve(requestedRoot: p.join('..', 'other')).root,
+          other,
+        );
+        expect(await r.resolve(requestedRoot: '.').root, started);
+      },
+    );
+
     test(
       'takes a package below the requested root from its test file',
       () async {

@@ -44,13 +44,11 @@ class ProjectResolver {
     String? projectRootOverride,
     Map<String, String>? environment,
     String Function()? currentDirectory,
-    FileSystem? fileSystem,
-  }) : _fs = fileSystem ?? const LocalFileSystem(),
+    FileSystem fileSystem = const LocalFileSystem(),
+  }) : _fs = fileSystem,
        _env = environment ?? Platform.environment,
        _currentDirectory =
-           currentDirectory ??
-           (() =>
-               (fileSystem ?? const LocalFileSystem()).currentDirectory.path) {
+           currentDirectory ?? (() => fileSystem.currentDirectory.path) {
     // Configured paths are pinned to the directory the server started in.
     // Resolving a project enters it, and a relative path read afterwards would
     // point somewhere else — or nowhere.
@@ -103,11 +101,14 @@ class ProjectResolver {
       return (root: cached, testFile: _relativeTestFile(cached, testFile));
     }
     final attempts = <String>[];
+    final requested = requestedRoot == null
+        ? null
+        : _path.normalize(_path.join(_startDirectory, requestedRoot));
 
     // 1. What the caller named for this request, then the server's own flags.
-    var hit = _trySignal('projectRoot', requestedRoot, testFile, attempts);
-    if (hit != null && testFile != null) {
-      _requireInside(requestedRoot!, hit, testFile);
+    var hit = _trySignal('projectRoot', requested, testFile, attempts);
+    if (requested != null && hit != null && testFile != null) {
+      _requireInside(requested, hit, testFile);
     }
     hit ??= _trySignal(
       '--project-root',
@@ -138,12 +139,26 @@ class ProjectResolver {
     if (remember) {
       _cached = root;
     }
-    return (root: root, testFile: _relativeTestFile(root, testFile));
+    return (
+      root: root,
+      testFile: _relativeTestFile(
+        root,
+        testFile,
+        searchIn: requested == null ? null : [requested],
+      ),
+    );
   }
 
   /// [testFile] as [root] sees it: a caller naming a file against a workspace
   /// root above the project gives a path the project itself cannot open.
-  String? _relativeTestFile(String root, String? testFile) {
+  ///
+  /// A file not under [root] is looked up in [searchIn], every signal's
+  /// directory by default. A requested root is the only place its file may be.
+  String? _relativeTestFile(
+    String root,
+    String? testFile, {
+    List<String>? searchIn,
+  }) {
     if (testFile == null || testFile.trim().isEmpty) {
       return testFile;
     }
@@ -153,7 +168,7 @@ class ProjectResolver {
     if (_fs.file(_path.join(root, testFile)).existsSync()) {
       return testFile;
     }
-    for (final dir in _signalDirectories()) {
+    for (final dir in searchIn ?? _signalDirectories()) {
       final candidate = _path.join(dir, testFile);
       if (_fs.file(candidate).existsSync()) {
         return _path.relative(_path.canonicalize(candidate), from: root);

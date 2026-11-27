@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart';
+import 'package:mcp_dart/mcp_dart.dart' hide Logger;
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/commands/develop_options.dart';
 import 'package:patrol_cli/src/commands/develop_service.dart';
@@ -9,6 +10,7 @@ import 'package:patrol_cli/src/commands/mcp.dart';
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/mcp/patrol_session.dart';
+import 'package:patrol_cli/src/mcp/project_resolver.dart';
 import 'package:patrol_log/patrol_log.dart';
 import 'package:test/test.dart';
 
@@ -328,33 +330,45 @@ packages:
     expect(result.status.output, isNot(contains('backend exited')));
   });
 
-  test('the previous session cannot report on the current one', () async {
-    final other = Directory.systemTemp.createTempSync('patrol_other_project');
-    addTearDown(() => other.deleteSync(recursive: true));
-    File('${other.path}/pubspec.yaml').writeAsStringSync('name: other\n');
-    final fake = _FakeDevelop();
-    final session = sessionWith(fake);
-    await startSession(session, 'app_test.dart');
-    await session.quit();
+  group('a tool without a project', () {
+    ProjectRootResolver unresolvable() =>
+        ({testFile, requestedRoot, remember = true}) async =>
+            throw ProjectResolutionException(['cwd=/nowhere']);
 
-    final second = session.startAndWait(
-      'app_test.dart',
-      device: 'test-device',
-      projectRoot: other.path,
-      timeout: const Duration(seconds: 5),
-    );
-    await Future<void>.delayed(const Duration(milliseconds: 50));
-    // The first session's backend reports its exit late, while the second one
-    // is building.
-    fake.completions.first?.call(
-      const TestCompletionResult(success: false, error: 'backend exited'),
-    );
-    fake.reportTestsPassed();
+    test('status answers and says why there is no project', () async {
+      final session = sessionWith(
+        _FakeDevelop(),
+        resolveProjectRoot: unresolvable(),
+      );
 
-    final result = await second;
-    expect(result.status.testState, TestState.finishedPassed);
-    expect(result.status.warning, isNull);
-    expect(result.status.output, isNot(contains('backend exited')));
+      final result = await withProject(
+        session,
+        () async => const CallToolResult(content: []),
+        projectRequired: false,
+      );
+
+      expect(result.isError, isNot(true));
+      expect(session.getStatus().warning, contains('cwd=/nowhere'));
+    });
+
+    test('run fails with the signals that were tried', () async {
+      final session = sessionWith(
+        _FakeDevelop(),
+        resolveProjectRoot: unresolvable(),
+      );
+
+      final result = await withProject(
+        session,
+        () async => fail('a run must not start without a project'),
+        testFile: 'app_test.dart',
+      );
+
+      expect(result.isError, isTrue);
+      expect(
+        (result.content.single as TextContent).text,
+        contains('cwd=/nowhere'),
+      );
+    });
   });
 
   test('quit answers once the session has released its resources', () async {
