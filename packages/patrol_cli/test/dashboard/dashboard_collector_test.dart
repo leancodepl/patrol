@@ -306,8 +306,8 @@ void main() {
     });
 
     test('does not duplicate an exception the entry already carried', () {
-      // `patrol` 4.10.0+ puts the exception on the failure entry. Older
-      // versions send it separately, which the test above covers.
+      // `patrol` sends the exception separately (covered above), but an entry
+      // that carries it must not get it twice.
       final sut = collector()
         ..handleEntry(
           TestEntry(

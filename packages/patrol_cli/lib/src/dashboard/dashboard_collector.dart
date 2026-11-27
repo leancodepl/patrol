@@ -29,9 +29,9 @@ class DashboardCollector {
 
   /// Test whose failure details are still arriving.
   ///
-  /// Older `patrol` versions log the failure entry without an error and send
-  /// the exception separately, one [ErrorEntry] per line. Newer versions put it
-  /// on the entry, so this only kicks in for the older wire format.
+  /// `patrol` logs the failure entry without an error and sends the exception
+  /// right after it, one [ErrorEntry] per line: Android's logcat cuts a log
+  /// line at about 1 KB, and a cut `PATROL_LOG` line loses the whole entry.
   DashboardTest? _failureDetailsTarget;
 
   /// Returns an `onLogEntry` callback that feeds this collector and then

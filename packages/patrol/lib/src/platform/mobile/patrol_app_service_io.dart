@@ -264,15 +264,12 @@ class PatrolAppService extends PatrolAppServiceServer {
     final testExecutionResult = await testExecutionCompleted;
 
     if (!testExecutionResult.passed) {
-      // The details go on the entry itself, so whoever reads the log gets the
-      // exception attached to the test it belongs to.
       _patrolLog.log(
-        TestEntry(
-          name: request.name,
-          status: TestEntryStatus.failure,
-          error: testExecutionResult.details,
-        ),
+        TestEntry(name: request.name, status: TestEntryStatus.failure),
       );
+      testExecutionResult.details
+          ?.split('\n')
+          .forEach((e) => _patrolLog.log(ErrorEntry(message: e)));
     } else {
       _patrolLog.log(
         TestEntry(name: request.name, status: TestEntryStatus.success),
