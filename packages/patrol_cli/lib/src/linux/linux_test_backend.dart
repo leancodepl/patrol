@@ -12,9 +12,10 @@ import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/coverage/bind_unused_port.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
-import 'package:patrol_cli/src/crossplatform/hot_restart_stdin.dart';
+import 'package:patrol_cli/src/crossplatform/stop_flutter_run.dart';
 import 'package:patrol_cli/src/crossplatform/test_manifest.dart';
 import 'package:patrol_cli/src/devices.dart';
+import 'package:patrol_cli/src/linux/develop_keys.dart';
 import 'package:patrol_cli/src/linux/patrol_app_service_client.dart';
 import 'package:patrol_log/patrol_log.dart';
 import 'package:patrol_log/patrol_log_reader.dart';
@@ -42,6 +43,8 @@ class LinuxTestBackend {
     @visibleForTesting this._pollInterval = const Duration(milliseconds: 500),
     @visibleForTesting this._readyTimeout = const Duration(seconds: 60),
     @visibleForTesting this._killTimeout = const Duration(seconds: 5),
+    @visibleForTesting
+    this._flutterRunStopTimeout = const Duration(seconds: 10),
   }) : _disposeScope = DisposeScope(),
        _resolveAppServerPort = resolveAppServerPort ?? _freeAppServerPort {
     _disposeScope.disposedBy(parentDisposeScope);
@@ -57,6 +60,7 @@ class LinuxTestBackend {
   final Duration _pollInterval;
   final Duration _readyTimeout;
   final Duration _killTimeout;
+  final Duration _flutterRunStopTimeout;
 
   /// Runs `flutter build linux` for [options].
   Future<void> build(LinuxAppOptions options) async {
@@ -110,16 +114,31 @@ class LinuxTestBackend {
     void Function(Entry entry)? onLogEntry,
   }) async {
     await _disposeScope.run((scope) async {
-      // Not in a shell: SIGTERM must reach `flutter run`, which then stops
-      // the app.
+      // Not in a shell, so the SIGKILL fallback of [stopFlutterRun] reaches
+      // `flutter run` itself.
       final process = await _processManager.start(
         options.toFlutterRunInvocation(deviceId: device.id),
       );
+      var exited = false;
+      unawaited(process.exitCode.then((_) => exited = true));
+
+      // Quit (`q`) and dispose (Ctrl+C) both stop `flutter run` the way web
+      // develop does: `q`, so it stops the app, then SIGKILL if it hangs.
       var quitRequested = false;
-      scope.addDispose(() {
-        process.kill();
+      Future<void>? stopping;
+      Future<void> stop() {
         quitRequested = true;
-      });
+        if (exited) {
+          return Future.value();
+        }
+        return stopping ??= stopFlutterRun(
+          process,
+          logger: _logger,
+          timeout: _flutterRunStopTimeout,
+        );
+      }
+
+      scope.addDispose(stop);
 
       // `process.stdout` takes a single listener, so fan it out to the
       // detail log and the log reader.
@@ -153,14 +172,14 @@ class LinuxTestBackend {
         }
       }
 
-      final keysSubscription = forwardHotRestartKeys(
+      final keysSubscription = forwardDevelopKeys(
         flutterProcess: process,
         stdin: stdin,
         logger: _logger,
         revertInteractiveMode: revertInteractiveMode,
-        // Killing `flutter run` ends this method, so the develop session
+        // Stopping `flutter run` ends this method, so the develop session
         // cleans up and returns instead of exiting the CLI here.
-        onQuit: () => quitRequested = true,
+        onQuit: stop,
       );
 
       try {

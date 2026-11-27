@@ -205,6 +205,7 @@ set(APPLICATION_ID "pl.leancode.example_app")
       pollInterval: const Duration(milliseconds: 5),
       readyTimeout: readyTimeout,
       killTimeout: const Duration(milliseconds: 200),
+      flutterRunStopTimeout: const Duration(milliseconds: 200),
     );
   }
 
@@ -652,10 +653,11 @@ set(APPLICATION_ID "pl.leancode.example_app")
 
       stdin.add('q'.codeUnits);
       await pumpEventQueue();
-      // flutter run stops the app on SIGTERM; here it exits like it was
-      // killed.
-      expect(flutterRun.signals, [io.ProcessSignal.sigterm]);
-      flutterRun.exit(-15);
+      // Quit goes to flutter run as `q`, after the pending hot restart, so
+      // flutter run stops the app itself. No signal is needed.
+      expect(flutterRun.stdinText, 'Rq');
+      expect(flutterRun.signals, isEmpty);
+      flutterRun.exit(0);
 
       // Quitting is not an error.
       await develop;
@@ -672,6 +674,50 @@ set(APPLICATION_ID "pl.leancode.example_app")
         ('example_test taps', TestEntryStatus.start),
       ]);
       await stdin.close();
+    });
+
+    test('kills flutter run when it does not stop after q', () async {
+      final flutterRun = FakeProcess(exitOnSigterm: false);
+      when(() => processManager.start(any())).thenAnswer((_) async {
+        return flutterRun;
+      });
+      final stdin = StreamController<List<int>>();
+
+      final develop = createBackend(
+        appServer(),
+      ).develop(flutterTool(), _options(), _linuxDevice, stdin: stdin.stream);
+      await pumpEventQueue();
+      stdin.add('q'.codeUnits);
+
+      // Quitting is not an error, even when flutter run has to be killed.
+      await develop;
+      expect(flutterRun.stdinText, 'q');
+      expect(flutterRun.signals, [io.ProcessSignal.sigkill]);
+      await stdin.close();
+    });
+
+    test('stops flutter run with q when the session is interrupted', () async {
+      final flutterRun = FakeProcess(exitOnSigterm: false);
+      when(() => processManager.start(any())).thenAnswer((_) async {
+        return flutterRun;
+      });
+
+      final develop = createBackend(appServer()).develop(
+        flutterTool(),
+        _options(),
+        _linuxDevice,
+        stdin: const Stream.empty(),
+      );
+      await pumpEventQueue();
+
+      // Ctrl+C disposes the scope, which waits for flutter run to stop.
+      final disposed = disposeScope.dispose();
+      await pumpEventQueue();
+      expect(flutterRun.stdinText, 'q');
+      flutterRun.exit(0);
+      await disposed;
+      await develop;
+      expect(flutterRun.signals, isEmpty);
     });
 
     test('fails when flutter run exits on its own with an error', () async {

@@ -86,5 +86,8 @@ class _RecordingIOSink implements io.IOSink {
   void add(List<int> data) => bytes.addAll(data);
 
   @override
+  Future<void> flush() async {}
+
+  @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
