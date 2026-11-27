@@ -171,7 +171,7 @@ abstract interface class IOSAutomator implements MobileAutomator {
   /// [appId] optionally specifies the application ID to target.
   ///
   /// This is equivalent to:
-  /// $.native.swipe(
+  /// $.platform.ios.swipe(
   ///    from: Offset(0, dy),
   ///    to: Offset(1, dy),
   ///    appId: appId,

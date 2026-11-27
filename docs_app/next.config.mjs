@@ -39,6 +39,11 @@ const config = {
   redirects: async () => [
     ...getDispatchRedirects(),
     {
+      source: "/documentation/native/native2",
+      destination: "/native-to-platform-migration",
+      permanent: false,
+    },
+    {
       source: "/patrol/native/feature-parity",
       destination: "/native/feature-parity",
       permanent: false,

@@ -6,6 +6,7 @@ analyzer:
   exclude:
     - lib/**/*.g.dart
     - build/**
+    - test_fixes/**
     - android/**
     - ios/**
     - web/**

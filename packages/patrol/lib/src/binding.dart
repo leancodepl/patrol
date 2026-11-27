@@ -286,11 +286,6 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
     Future<void> Function() testBody,
     VoidCallback invariantTester, {
     String description = '',
-    @Deprecated(
-      'This parameter has no effect. Use the `timeout` parameter on `testWidgets` instead. '
-      'This feature was deprecated after v2.6.0-1.0.pre.',
-    )
-    Duration? timeout,
   }) async {
     await super.runTest(
       // If we're in develop mode, we cannot overwrite FlutterError.onError

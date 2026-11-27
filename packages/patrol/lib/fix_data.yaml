@@ -1,0 +1,128 @@
+# Data-driven fixes applied by `dart fix`.
+# See https://dart.dev/tools/pub/data-driven-fixes
+#
+# Tests live in test_fixes/. Run them from the package root with:
+#   dart fix test_fixes --compare-to-golden
+version: 1
+transforms:
+  # Patrol 5.0: $.native and $.native2 were removed in favor of $.platform.
+  - title: "Migrate to 'platform.mobile'"
+    date: 2026-11-27
+    element:
+      uris: ['patrol.dart']
+      getter: 'native'
+      inClass: 'PatrolIntegrationTester'
+    changes:
+      - kind: 'rename'
+        newName: 'platform.mobile'
+
+  - title: "Migrate to 'platform.mobile'"
+    date: 2026-11-27
+    element:
+      uris: ['patrol.dart']
+      getter: 'native2'
+      inClass: 'PatrolIntegrationTester'
+    changes:
+      - kind: 'rename'
+        newName: 'platform.mobile'
+
+  - title: "Migrate to 'platformAutomator.mobile'"
+    date: 2026-11-27
+    element:
+      uris: ['patrol.dart']
+      field: 'nativeAutomator'
+      inClass: 'PatrolIntegrationTester'
+    changes:
+      - kind: 'rename'
+        newName: 'platformAutomator.mobile'
+
+  - title: "Migrate to 'platformAutomator.mobile'"
+    date: 2026-11-27
+    element:
+      uris: ['patrol.dart']
+      field: 'nativeAutomator2'
+      inClass: 'PatrolIntegrationTester'
+    changes:
+      - kind: 'rename'
+        newName: 'platformAutomator.mobile'
+
+  - title: "Migrate to 'MobileSelector'"
+    date: 2026-11-27
+    element:
+      uris: ['patrol.dart']
+      class: 'NativeSelector'
+    changes:
+      - kind: 'rename'
+        newName: 'MobileSelector'
+
+  - title: "Migrate to 'MobileAutomator'"
+    date: 2026-11-27
+    element:
+      uris: ['patrol.dart']
+      constructor: ''
+      inClass: 'NativeAutomator'
+    changes:
+      - kind: 'renameParameter'
+        oldName: 'platformAutomator'
+        newName: 'platform'
+
+  - title: "Migrate to 'MobileAutomator'"
+    date: 2026-11-27
+    element:
+      uris: ['patrol.dart']
+      constructor: ''
+      inClass: 'NativeAutomator2'
+    changes:
+      - kind: 'renameParameter'
+        oldName: 'platformAutomator'
+        newName: 'platform'
+
+  - title: "Migrate to 'MobileAutomator'"
+    date: 2026-11-27
+    element:
+      uris: ['patrol.dart']
+      class: 'NativeAutomator'
+    changes:
+      - kind: 'rename'
+        newName: 'MobileAutomator'
+
+  - title: "Migrate to 'MobileAutomator'"
+    date: 2026-11-27
+    element:
+      uris: ['patrol.dart']
+      class: 'NativeAutomator2'
+    changes:
+      - kind: 'rename'
+        newName: 'MobileAutomator'
+
+  - title: "Migrate to 'PlatformAutomatorConfig.fromOptions'"
+    date: 2026-11-27
+    element:
+      uris: ['patrol.dart']
+      constructor: ''
+      inClass: 'NativeAutomatorConfig'
+    changes:
+      - kind: 'replacedBy'
+        newElement:
+          uris: ['patrol.dart']
+          constructor: 'fromOptions'
+          inClass: 'PlatformAutomatorConfig'
+
+  - title: "Migrate to 'PlatformAutomatorConfig'"
+    date: 2026-11-27
+    element:
+      uris: ['patrol.dart']
+      class: 'NativeAutomatorConfig'
+    changes:
+      - kind: 'rename'
+        newName: 'PlatformAutomatorConfig'
+
+  - title: "Rename to 'platformAutomatorConfig'"
+    date: 2026-11-27
+    element:
+      uris: ['patrol.dart']
+      function: 'patrolTest'
+    changes:
+      - kind: 'renameParameter'
+        oldName: 'nativeAutomatorConfig'
+        newName: 'platformAutomatorConfig'

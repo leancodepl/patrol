@@ -126,7 +126,7 @@ Take a look at this simple Flutter integration tests using Patrol:
 void main() {
   patrolTest(
     'counter state is the same after going to Home and switching apps',
-    nativeAutomatorConfig: NativeAutomatorConfig(
+    platformAutomatorConfig: PlatformAutomatorConfig.fromOptions(
       packageName: 'pl.leancode.patrol.example',
       bundleId: 'pl.leancode.patrol.Example',
     ),

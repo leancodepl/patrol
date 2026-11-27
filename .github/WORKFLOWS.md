@@ -8,17 +8,17 @@ This document describes all GitHub Actions workflows used in the Patrol project.
 
 | Workflow name | Triggered | Device name | API level | Flutter version | Tags | Description |
 |--------------|-----------|-------------|-----------|----------------|------|-------------|
-| [test android device][test-android-device] | Weekly Mon 06:00 UTC | Pixel 8 Pro (shiba) | 35 | Flutter 3.44.x (stable) | `android && physical_device` | Runs E2E tests on Firebase Test Lab physical devices. Excludes `native_tests/` to reduce test duration. |
+| [test android device][test-android-device] | Weekly Mon 06:00 UTC | Pixel 8 Pro (shiba) | 35 | Flutter 3.44.x (stable) | `android && physical_device` | Runs E2E tests on Firebase Test Lab physical devices. |
 | [test android emulator][test-android-emulator] | PR, every 12h | Pixel7 | 36, 35, 34, 33, 32 | Flutter 3.44.x (stable) | `android && emulator` | Runs E2E tests on emulator.wtf emulators across multiple API levels. Excludes `volume_test.dart` due to emulator instability issues. |
 | [test android emulator webview][test-android-emulator-webview] | PR, daily at 23:00 | Pixel7 | 31 | Flutter 3.44.x (stable) | `webview && android` | Runs webview-specific E2E tests on emulator.wtf. |
 | [test flutter beta channel][test-flutter-beta] | Daily at 8:00, manual | Pixel7 | 35 | Flutter beta | — | Runs smoke test on Flutter beta channel using `example_test.dart` to verify Patrol compatibility with beta Flutter releases. |
-| [test locales on android device][test-android-locales] | Every 12h | MediumPhone.arm | 36 | Flutter 3.44.x (stable) | `locale_testing_android` | Tests locale support on Firebase Test Lab for English, French, German, Polish, and Japanese locales. Excludes `web/`, `native_tests/`, and `volume_test.dart`. |
+| [test locales on android device][test-android-locales] | Every 12h | MediumPhone.arm | 36 | Flutter 3.44.x (stable) | `locale_testing_android` | Tests locale support on Firebase Test Lab for English, French, German, Polish, and Japanese locales. Excludes `web/` and `volume_test.dart`. |
 
 ### iOS Testing
 
 | Workflow name | Triggered | Device name | iOS version | Flutter version | Tags | Description |
 |--------------|-----------|-------------|-------------|----------------|------|-------------|
-| [test ios device][test-ios-device] | Weekly Mon 06:00 UTC | iPhone 16 Pro | 18.3 | Flutter 3.44.x (stable) | `ios && physical_device` | Runs E2E tests on Firebase Test Lab physical devices. Excludes `native_tests/`, `overflow_test.dart`, and specific permission tests (`clear_permissions_test.dart`, `deny_many_permissions_test.dart`, `deny_many_permissions_twice_test.dart`) because camera permissions are not cleared between tests on physical devices. |
+| [test ios device][test-ios-device] | Weekly Mon 06:00 UTC | iPhone 16 Pro | 18.3 | Flutter 3.44.x (stable) | `ios && physical_device` | Runs E2E tests on Firebase Test Lab physical devices. Excludes `overflow_test.dart` and specific permission tests (`clear_permissions_test.dart`, `deny_many_permissions_test.dart`, `deny_many_permissions_twice_test.dart`) because camera permissions are not cleared between tests on physical devices. |
 | [test ios simulator][test-ios-simulator] | PR only | iPhone 17 | 26.2 | Flutter 3.44.x (stable) | `ios && simulator` | Runs E2E tests on iOS simulator. Triggers on PR for changes to packages, e2e_app, and schema (excludes docs). Excludes `web/` directory, `volume_test.dart`, `service_bluetooth_test.dart`, and permission tests (`clear_permissions_test.dart`, `deny_many_permissions_twice_test.dart`, `permissions_many_test.dart`). Records one MP4 per test case via `patrol test --record-video` (saved to `dev/e2e_app/videos`, uploaded as artifacts with a download link in the job summary) plus simulator logs. Uses xcresultparser to generate JUnit reports and converts them to CTRF format for test reporting. Pins iOS runtime via `--ios 26.2` during `patrol test` and runs with `--full-isolation`. Timeout: 30 minutes. |
 | [test ios simulator webview][test-ios-simulator-webview] | Monthly on 1st | iPhone 17 Pro | 26.2 | Flutter 3.44.x (stable) | `webview && ios` | Runs webview-specific E2E tests on iOS simulator (`macos-latest`, 40 min timeout). Uses the same `patrol test --record-video` per-test recording and xcresult → JUnit → CTRF reporting flow as [test ios simulator][test-ios-simulator]. Excludes `web_example_test.dart` and `volume_test.dart`. |
 | [test locales on ios device][test-ios-locales] | No | iPhone 16 Pro | 18.3 | Flutter 3.44.x (stable) | `locale_testing_ios` | Tests locale support on Firebase Test Lab for English, French, German (de_DE), Polish, and Japanese locales. Excludes `web_example_test.dart`. Currently disabled for PR triggers. |
@@ -37,7 +37,7 @@ This document describes all GitHub Actions workflows used in the Patrol project.
 
 | Workflow name | Triggered | Dart/Flutter version | Description |
 |--------------|---------|---------------------|-------------|
-| [patrol prepare][patrol-prepare] | PR (on patrol package changes), manual | Flutter 3.44.x (stable) | Runs CI checks for the `patrol` package: Android builds (Windows/Linux), Darwin code formatting (swift-format, clang-format), Flutter tests, analyzer, formatter, schema regeneration, and a [pana][pana-score-action] pub.dev score check (non-blocking). |
+| [patrol prepare][patrol-prepare] | PR (on patrol package changes), manual | Flutter 3.44.x (stable) | Runs CI checks for the `patrol` package: Android builds (Windows/Linux), Darwin code formatting (swift-format, clang-format), Flutter tests, `dart fix` golden tests for `lib/fix_data.yaml`, analyzer, formatter, schema regeneration, and a [pana][pana-score-action] pub.dev score check (non-blocking). |
 | [patrol_cli prepare][patrol_cli-prepare] | PR (on patrol_cli changes), manual | Flutter 3.44.x (stable) | Runs CI checks for `patrol_cli` package on Ubuntu and Windows: builds executable, runs tests, analyzer, formatter, pub publish dry-run, and a [pana][pana-score-action] pub.dev score check (non-blocking). |
 | [patrol_finders prepare][patrol_finders-prepare] | PR (on patrol_finders changes), manual | Flutter 3.44.x (stable) | Runs CI checks for `patrol_finders` package: tests, analyzer, formatter, pub publish dry-run, and a [pana][pana-score-action] pub.dev score check (non-blocking). |
 | [patrol_log prepare][patrol_log-prepare] | PR (on patrol_log changes), manual | Flutter 3.44.x (stable) | Runs CI checks for `patrol_log` package: analyzer, formatter, pub publish dry-run, and a [pana][pana-score-action] pub.dev score check (non-blocking). |
@@ -132,8 +132,6 @@ All three use the local [check-semver][check-semver-action] composite action. It
 
 Test workflows use a tag-based system to select which tests to run. Tests are tagged in their source files using the `tags` parameter.
 
-All tests in both the main `patrol_test` directory and the `patrol_test/native_tests` directory use the same tagging system.
-
 **Common tags:**
 - **Platform**: `android`, `ios`, `web`, `macos`
 - **Environment**: `physical_device`, `emulator`, `simulator`
@@ -150,13 +148,8 @@ Workflows use the `--tags` flag with boolean expressions to select which tests t
 
 A test is selected if it matches ALL conditions in the boolean expression (AND operator). Tests can declare multiple tags in their `tags` parameter array, and the workflow filter will match tests that satisfy the expression.
 
-**Test directories:**
-- `dev/e2e_app/patrol_test/` - Main test directory with platform.mobile API tests
-- `dev/e2e_app/patrol_test/native_tests/` - Tests using deprecated native/native2 API (both directories use the same tagging system)
-
-**Test exclusions for physical device workflows:**
-- Physical device workflows ([test android device][test-android-device], [test ios device][test-ios-device]) exclude the entire `patrol_test/native_tests/` directory to reduce test duration on expensive cloud testing infrastructure
-- This is configured using the `--exclude` flag: `--exclude=patrol_test/web/,patrol_test/native_tests/,patrol_test/volume_test.dart`
+**Test exclusions:**
+- Workflows skip tests with the `--exclude` flag, for example `--exclude=patrol_test/web/,patrol_test/volume_test.dart`
 
 <!-- Link definitions -->
 [test-android-device]: workflows/test-android-device.yaml

@@ -1,0 +1,5 @@
+# Files here use removed APIs on purpose, to test lib/fix_data.yaml.
+# The package's analysis_options.yaml excludes this directory.
+analyzer:
+  errors:
+    unused_local_variable: ignore
