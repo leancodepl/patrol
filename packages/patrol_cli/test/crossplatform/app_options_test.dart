@@ -348,7 +348,7 @@ void main() {
               ...['-xctestrun', xcTestRunPath],
               ...['-only-testing', 'RunnerUITests/RunnerUITests'],
               ...['-destination', 'platform=iOS,id=$iosDeviceId'],
-              ...['-destination-timeout', '1'],
+              ...['-destination-timeout', '120'],
               ...['-resultBundlePath', ''],
             ]),
           );
@@ -435,7 +435,7 @@ void main() {
               ...['-xctestrun', xcTestRunPath],
               ...['-only-testing', 'RunnerUITests/RunnerUITests'],
               ...['-destination', 'platform=iOS,id=$iosDeviceId'],
-              ...['-destination-timeout', '1'],
+              ...['-destination-timeout', '120'],
               ...['-resultBundlePath', ''],
             ]),
           );
@@ -562,7 +562,7 @@ void main() {
             ...['-xctestrun', xcTestRunPath],
             ...['-only-testing', 'RunnerUITests/RunnerUITests'],
             ...['-destination', 'platform=iOS,id=$iosDeviceId'],
-            ...['-destination-timeout', '1'],
+            ...['-destination-timeout', '120'],
             ...['-resultBundlePath', ''],
           ]),
         );
@@ -599,6 +599,32 @@ void main() {
       );
       // The base class holds no tests, so it must not be selected.
       expect(invocation, isNot(contains('RunnerUITests/RunnerUITests')));
+    });
+
+    test('fails fast on simulators, waits for a busy physical device', () {
+      const simulator = Device(
+        name: 'iPhone 17',
+        id: 'B1C2',
+        targetPlatform: TargetPlatform.iOS,
+        real: false,
+      );
+
+      expect(
+        options.testWithoutBuildingInvocation(
+          simulator,
+          xcTestRunPath: 'run.xctestrun',
+          resultBundlePath: '',
+        ),
+        containsAllInOrder(['-destination-timeout', '1']),
+      );
+      expect(
+        options.testWithoutBuildingInvocation(
+          realDevice,
+          xcTestRunPath: 'run.xctestrun',
+          resultBundlePath: '',
+        ),
+        containsAllInOrder(['-destination-timeout', '120']),
+      );
     });
 
     test('static runner with nothing selected leaves the run unrestricted', () {
