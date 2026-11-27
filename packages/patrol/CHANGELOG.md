@@ -19,7 +19,7 @@
 - Fix actions waiting several seconds, or `SettlePolicy.settle` timing out, while a text field is
   focused on iOS (or a `CupertinoTextField` on any platform): `patrolTest` now stops the cursor
   from blinking. To keep the blinking cursor, pass `deterministicCursor: false`. See the
-  [docs](https://patrol.leancode.co/documentation/finders/advanced#text-cursor-and-settling).
+  [docs](https://patrol.leancode.co/documentation/finders/advanced#text-cursor-and-settling). (#3439)
 - Fix web tests failing on Ubuntu 26.04 (now `ubuntu-latest` on GitHub Actions) with "Playwright does
   not support chromium on ubuntu26.04-x64", by updating Playwright to 1.61.1, which also moves web
   tests to Chromium 149. This also fixes `npx playwright install` hanging while extracting Chromium
