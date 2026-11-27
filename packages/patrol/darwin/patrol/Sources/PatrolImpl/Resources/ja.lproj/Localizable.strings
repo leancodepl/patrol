@@ -25,6 +25,6 @@
 "add" = "追加";
 
 /* Uninstall app */
-"remove_app" = "アプリを取り除く";
+"remove_app" = "アプリを削除";
 "delete_app" = "アプリを削除";
 "delete" = "削除";
