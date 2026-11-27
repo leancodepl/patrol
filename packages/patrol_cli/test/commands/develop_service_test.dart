@@ -571,6 +571,7 @@ void main() {
             ),
           ),
         );
+        verifyNever(() => logger.err(any(that: contains('please report it'))));
         verifyNever(
           () => flutterTool.hotRestart(
             onCompleted: any(named: 'onCompleted'),
