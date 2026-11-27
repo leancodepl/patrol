@@ -272,6 +272,9 @@ class PatrolLogReader {
           // Print the log entry to the console.
           log(entry.pretty());
 
+        case WarningEntry(:final retriedTest?):
+          _dropOpenSingleEntry(retriedTest);
+          log(entry.pretty());
         case ErrorEntry():
         case WarningEntry():
           log(entry.pretty());
@@ -303,6 +306,15 @@ class PatrolLogReader {
     }
 
     return singleEntry;
+  }
+
+  /// Forgets the oldest open entry of [testName], so it isn't counted. Used
+  /// when the attempt it belongs to will be retried.
+  void _dropOpenSingleEntry(String testName) {
+    final singleEntry = _takeOpenSingleEntry(testName);
+    if (singleEntry != null) {
+      _singleEntries.remove(singleEntry);
+    }
   }
 
   /// Finish entries on web/mobile may contain a prefix, e.g. `web.some_test`

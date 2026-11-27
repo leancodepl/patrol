@@ -1,3 +1,9 @@
+## Unreleased
+
+- Add `WarningEntry.retriedTest`. When it is set, `PatrolLogReader` drops the open entry of that
+  test, so a web test that started, timed out and was retried is counted once, for its last
+  attempt. (#3408)
+
 ## 0.10.2
 
 - Allow `equatable` 3.x by widening the constraint to `>=2.1.0 <4.0.0`. Apps still on `equatable` 2.x keep resolving. (#3322)

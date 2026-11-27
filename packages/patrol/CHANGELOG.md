@@ -3,7 +3,10 @@
 - Fix web tests that fail before the Dart test reports a result (e.g. the page fixture or the test
   times out while the app starts) being left out of `patrol test`'s summary, which could print
   `Failed: 0` for a failing run. The web runner now reports them as failed. With `--web-retries`,
-  only the last attempt is reported, so a test that passes on a retry doesn't fail the run. (#3408)
+  only the last attempt is reported, so a test that passes on a retry doesn't fail the run; an earlier
+  attempt is shown as a "Retrying" warning. An earlier attempt that had started is no longer counted
+  as an extra test once `patrol_cli` uses the `patrol_log` release with `WarningEntry.retriedTest`.
+  (#3408)
 
 ## 4.12.0
 

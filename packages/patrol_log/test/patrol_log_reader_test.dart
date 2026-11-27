@@ -464,6 +464,104 @@ void main() {
           'Test timeout of 2000ms exceeded.',
         );
       });
+
+      // With retries, an attempt that started and then timed out is retried.
+      // The runner prints a warning naming the test, so the reader forgets
+      // that attempt's open start and counts only the last attempt.
+      group('when an attempt is retried', () {
+        const retried =
+            'PATROL_LOG {"type":"warning","message":"Retrying cookies",'
+            '"retriedTest":"web.web_example_cookies_test cookies"}';
+        const lastAttemptFailed =
+            'PATROL_LOG {"type":"test","name":"web.web_example_cookies_test cookies",'
+            '"status":"failure","error":"Test timeout of 2000ms exceeded."}';
+
+        test('counts a last attempt that never started once', () async {
+          reader
+            ..parse(
+              _patrolLogLine(_testEntryJson(name: 'cookies', status: 'start')),
+            )
+            ..parse(retried)
+            ..parse(
+              'PATROL_LOG {"type":"test","name":"web.web_example_cookies_test cookies",'
+              '"status":"start"}',
+            )
+            ..parse(lastAttemptFailed);
+
+          await pumpEventQueue();
+
+          expect(reader.totalTests, 1);
+          expect(reader.failedTestsCount, 1);
+          expect(reader.successfulTests, 0);
+        });
+
+        test('counts a last attempt that started once', () async {
+          reader
+            ..parse(
+              _patrolLogLine(_testEntryJson(name: 'cookies', status: 'start')),
+            )
+            ..parse(retried)
+            ..parse(
+              _patrolLogLine(_testEntryJson(name: 'cookies', status: 'start')),
+            )
+            ..parse(lastAttemptFailed);
+
+          await pumpEventQueue();
+
+          expect(reader.totalTests, 1);
+          expect(reader.failedTestsCount, 1);
+        });
+
+        test('counts a retry that passes as successful', () async {
+          reader
+            ..parse(
+              _patrolLogLine(_testEntryJson(name: 'cookies', status: 'start')),
+            )
+            ..parse(retried)
+            ..parse(
+              _patrolLogLine(_testEntryJson(name: 'cookies', status: 'start')),
+            )
+            ..parse(
+              _patrolLogLine(
+                _testEntryJson(
+                  name: 'web.web_example_cookies_test cookies',
+                  status: 'success',
+                ),
+              ),
+            );
+
+          await pumpEventQueue();
+
+          expect(reader.totalTests, 1);
+          expect(reader.successfulTests, 1);
+          expect(reader.failedTestsCount, 0);
+        });
+
+        test('prints the warning', () async {
+          final logs = <String>[];
+          final reader = _buildReader(capturedLogs: logs);
+          await reader.readEntries();
+          reader.parse(retried);
+          await pumpEventQueue();
+          reader.close();
+
+          expect(logs.single, contains('Retrying cookies'));
+        });
+
+        test('leaves other open tests alone when no test is named', () async {
+          reader
+            ..parse(
+              _patrolLogLine(_testEntryJson(name: 'cookies', status: 'start')),
+            )
+            ..parse(
+              'PATROL_LOG {"type":"warning","message":"Retrying cookies"}',
+            );
+
+          await pumpEventQueue();
+
+          expect(reader.totalTests, 1);
+        });
+      });
     });
 
     group('_clearLines', () {

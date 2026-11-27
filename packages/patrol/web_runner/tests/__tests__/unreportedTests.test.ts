@@ -104,13 +104,42 @@ test.describe("unreportedFailureLines", () => {
   })
 
   test("reports the last attempt when retries are on", () => {
-    expect(unreportedFailureLines(test1, progress(false, false), info("failed", "passed", "boom", 0, 2))).toEqual([])
-    expect(unreportedFailureLines(test1, progress(false, false), info("failed", "passed", "boom", 1, 2))).toEqual([])
+    for (const retry of [0, 1]) {
+      expect(
+        parse(unreportedFailureLines(test1, progress(false, false), info("failed", "passed", "boom", retry, 2), now)),
+      ).toEqual([
+        {
+          type: "warning",
+          message: "Retrying web_example_test opens the app: boom",
+          timestamp: "2026-01-02T03:04:05.000Z",
+        },
+      ])
+    }
     expect(
       parse(unreportedFailureLines(test1, progress(false, false), info("failed", "passed", "boom", 2, 2))).map(
         e => e.status,
       ),
     ).toEqual(["start", "failure"])
+  })
+
+  test("names the test in the warning when a retried attempt's Dart test started", () => {
+    // The app printed a start for this attempt; Patrol must drop it, or the last attempt's entries
+    // would close it and leave the last attempt open (Total: 2 for one test).
+    const lines = unreportedFailureLines(
+      test1,
+      progress(true, false),
+      info("timedOut", "passed", "Test timeout of 2000ms exceeded.", 0, 1),
+      now,
+    )
+
+    expect(parse(lines)).toEqual([
+      {
+        type: "warning",
+        message: "Retrying web_example_test opens the app: Test timeout of 2000ms exceeded.",
+        timestamp: "2026-01-02T03:04:05.000Z",
+        retriedTest: "web_example_test opens the app",
+      },
+    ])
   })
 
   test("reports an interrupted attempt even when retries are left", () => {

@@ -91,6 +91,7 @@ const _$TestEntryStatusEnumMap = {
 
 WarningEntry _$WarningEntryFromJson(Map<String, dynamic> json) => WarningEntry(
   message: json['message'] as String,
+  retriedTest: json['retriedTest'] as String?,
   timestamp: json['timestamp'] == null
       ? null
       : DateTime.parse(json['timestamp'] as String),
@@ -101,6 +102,7 @@ Map<String, dynamic> _$WarningEntryToJson(WarningEntry instance) =>
       'timestamp': instance.timestamp.toIso8601String(),
       'type': _$EntryTypeEnumMap[instance.type]!,
       'message': instance.message,
+      'retriedTest': instance.retriedTest,
     };
 
 ConfigEntry _$ConfigEntryFromJson(Map<String, dynamic> json) => ConfigEntry(
