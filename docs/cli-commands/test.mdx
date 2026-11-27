@@ -180,7 +180,7 @@ one, on simulators and physical devices:
 - The OS authorization status of the resources reachable through
   `XCUIProtectedResource` (location, camera, microphone, photos, contacts and
   others) goes back to "not determined", so the next request shows the system
-  dialog again.
+  dialog again, also after the user denied it.
 - App-side permission caches are cleared too. Some permission plugins remember
   in `NSUserDefaults` that they already asked. For example, `permission_handler`
   doesn't request location Always a second time, so without this the "Change to
