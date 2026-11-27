@@ -147,13 +147,6 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
               key: K.locationPermissionTile,
             ),
             _PermissionTile(
-              name: 'Location Always',
-              icon: Icons.my_location,
-              granted: _locationAlwaysPermissionGranted,
-              onTap: _requestLocationAlwaysPermission,
-              key: K.locationAlwaysPermissionTile,
-            ),
-            _PermissionTile(
               name: 'Gallery',
               icon: Icons.photo_library,
               granted: _galleryPermissionGranted,
@@ -166,6 +159,14 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
               granted: _batteryPermissionGranted,
               onTap: _requestBatteryPermission,
               key: K.batteryPermissionTile,
+            ),
+            // Last, so the tiles above keep their on-screen positions.
+            _PermissionTile(
+              name: 'Location Always',
+              icon: Icons.my_location,
+              granted: _locationAlwaysPermissionGranted,
+              onTap: _requestLocationAlwaysPermission,
+              key: K.locationAlwaysPermissionTile,
             ),
           ],
         ),

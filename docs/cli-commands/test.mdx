@@ -175,12 +175,13 @@ patrol test --full-isolation
 ### Clearing permissions on iOS
 
 `--clear-permissions` resets permissions before every test except the first
-one, on simulators and physical devices:
+one:
 
-- The OS authorization status of the resources reachable through
+- Patrol asks iOS to reset the authorization status of the resources in
   `XCUIProtectedResource` (location, camera, microphone, photos, contacts and
-  others) goes back to "not determined", so the next request shows the system
-  dialog again, also after the user denied it.
+  others). iOS decides what actually resets: location goes back to "not
+  determined", also after a denial, but camera permission is not reset on
+  physical devices.
 - App-side permission caches are cleared too. Some permission plugins remember
   in `NSUserDefaults` that they already asked. For example, `permission_handler`
   doesn't request location Always a second time, so without this the "Change to
