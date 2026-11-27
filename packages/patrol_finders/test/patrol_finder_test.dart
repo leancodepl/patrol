@@ -1,5 +1,7 @@
 // It's just a test. We can ignore this rule here.
 // ignore_for_file: avoid_single_child_in_multi_child_widgets
+// The legacy Finder API (description, apply, precache) is tested on purpose.
+// ignore_for_file: deprecated_member_use
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol_finders/src/custom_finders/custom_finders.dart';
@@ -212,6 +214,74 @@ void main() {
           flutterFinder.toString(describeSelf: true),
           patrolFinder.toString(describeSelf: true),
         );
+      });
+    });
+
+    group('as a Flutter Finder', () {
+      const app = MaterialApp(
+        home: Column(
+          key: Key('column'),
+          children: [
+            Text('first', key: Key('text')),
+            Text('second'),
+          ],
+        ),
+      );
+
+      patrolWidgetTest('is a Finder, not a MatchFinder', ($) async {
+        expect($(#column), isA<Finder>());
+        expect($(#column), isNot(isA<MatchFinder>()));
+        expect($(#column).$(Text).first, isA<Finder>());
+      });
+
+      patrolWidgetTest('describes itself like the wrapped finder', ($) async {
+        expect($(#text).description, find.byKey(const Key('text')).description);
+        expect(
+          $(#column).$(Text).description,
+          find
+              .descendant(
+                of: find.byKey(const Key('column')),
+                matching: find.byType(Text),
+              )
+              .description,
+        );
+      });
+
+      patrolWidgetTest('works as the parent of Flutter finders', ($) async {
+        await $.pumpWidget(app);
+
+        final ofChained = find.descendant(
+          of: $(#column).$(#text),
+          matching: find.byType(RichText),
+        );
+        final ofFirst = find.ancestor(
+          of: $(#column).$(Text).first,
+          matching: find.byKey(const Key('column')),
+        );
+        final ofAt = find.descendant(
+          of: $(MaterialApp),
+          matching: $(Text).at(1),
+        );
+
+        expect(ofChained, findsOneWidget);
+        expect(ofFirst, findsOneWidget);
+        expect(ofAt, findsOneWidget);
+        expect($.tester.widget<Text>(ofAt).data, 'second');
+      });
+
+      patrolWidgetTest('keeps the legacy apply() and precache()', ($) async {
+        await $.pumpWidget(app);
+
+        final finder = $(#column).$(Text).at(1);
+        final candidates = finder.allCandidates;
+
+        expect(
+          finder.apply(candidates).single,
+          finder.finder.findInCandidates(candidates).single,
+        );
+        expect(finder.precache(), isTrue);
+        expect(finder.evaluate().single.widget, isA<Text>());
+        expect($(#missing).precache(), isFalse);
       });
     });
 

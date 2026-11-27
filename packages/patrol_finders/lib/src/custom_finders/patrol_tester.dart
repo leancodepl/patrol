@@ -238,11 +238,17 @@ class PatrolTester {
 
   /// See [WidgetTester.pumpWidget].
   Future<void> pumpWidget(
-    Widget widget, [
+    Widget widget, {
     Duration? duration,
     EnginePhase phase = EnginePhase.sendSemanticsUpdate,
-  ]) async {
-    await tester.pumpWidget(widget, duration: duration, phase: phase);
+    bool wrapWithView = true,
+  }) async {
+    await tester.pumpWidget(
+      widget,
+      duration: duration,
+      phase: phase,
+      wrapWithView: wrapWithView,
+    );
   }
 
   /// See [WidgetTester.pump].
@@ -299,19 +305,26 @@ class PatrolTester {
 
   /// Pumps [widget] and then calls [WidgetTester.pumpAndSettle].
   ///
+  /// Returns the number of frames that [pumpAndSettle] pumped after
+  /// [pumpWidget].
+  ///
   /// This is a convenience method combining [WidgetTester.pumpWidget] and
   /// [WidgetTester.pumpAndSettle].
-  Future<void> pumpWidgetAndSettle(
+  Future<int> pumpWidgetAndSettle(
     Widget widget, {
     Duration? duration,
     EnginePhase phase = EnginePhase.sendSemanticsUpdate,
+    bool wrapWithView = true,
     Duration? timeout,
   }) async {
-    await tester.pumpWidget(widget, duration: duration, phase: phase);
-    await _performPump(
-      settlePolicy: SettlePolicy.settle,
-      settleTimeout: timeout,
+    await tester.pumpWidget(
+      widget,
+      duration: duration,
+      phase: phase,
+      wrapWithView: wrapWithView,
     );
+    final frames = await pumpAndSettle(timeout: timeout);
+    return frames;
   }
 
   /// Waits until this finder finds at least 1 visible widget and then taps on

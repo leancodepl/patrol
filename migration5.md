@@ -16,7 +16,7 @@ Update `patrol` and `patrol_cli` together: Patrol 5.0 is `patrol` 5.x with
 | `patrol` | 5.x | |
 | `patrol_cli` | 5.x | |
 | `patrol_mcp` | not released yet | needs a release that depends on `patrol_cli` 5.x; until then it resolves `patrol_cli` 4.x |
-| `patrol_finders` | 4.x | `pumpAndSettle()` returns `Future<int>`, see below |
+| `patrol_finders` | 4.x | `pumpAndSettle()` returns `Future<int>` and other API changes, see below |
 | `patrol_log` | 0.10.x, no change so far | |
 
 To try a prerelease, pin it explicitly, since pub doesn't pick prereleases on
@@ -128,6 +128,25 @@ instead of `Future<void>`: the number of frames it pumped, the same value
   `pumpAndSettle()`, e.g. the value of `WidgetTester.pumpAndSettle()`.
 - **A mock that stubs `pumpAndSettle()`:** answer with an `int`, e.g.
   `thenAnswer((_) async => 1)`; `thenAnswer((_) async {})` no longer compiles.
+
+## Other `patrol_finders` 4.x API changes
+
+**Packages:** `patrol_finders`, `patrol`
+
+Tests that only find, tap and pump with one argument compile unchanged.
+
+**What to do:**
+
+- **`$.pumpWidget(app, duration)` or `$.pumpWidget(app, duration, phase)`:**
+  name the arguments: `$.pumpWidget(app, duration: duration, phase: phase)`.
+  `pumpWidget()` also takes `wrapWithView`, like `WidgetTester.pumpWidget()`.
+- **A `PatrolFinder` stored as `MatchFinder`:** use `Finder`. `PatrolFinder`
+  now extends `Finder` and is no longer a `MatchFinder`.
+- **`$(...).matches(element)`:** removed. Use
+  `$(...).evaluate().contains(element)`.
+- **Overrides, implementations or mocks of `pumpWidgetAndSettle()`:** return
+  `Future<int>`, the number of frames pumped while settling, as for
+  `pumpAndSettle()` above.
 
 ## Build-time test discovery is the default
 

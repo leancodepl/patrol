@@ -3,6 +3,14 @@
 - **Breaking:** `PatrolTester.pumpAndSettle()` returns `Future<int>`, the number of pumped frames,
   like `WidgetTester.pumpAndSettle()`. Overrides, implementations and mocks of it must return
   `Future<int>`. (#3414)
+- **Breaking:** `PatrolFinder` extends `Finder` instead of implementing `MatchFinder`. `matches()`
+  is gone: it threw a `TypeError` on chained finders and on `first`, `last` and `at()`. Code that
+  types a `PatrolFinder` as `MatchFinder` must use `Finder`. (#PR)
+- **Breaking:** `PatrolTester.pumpWidget()` takes `duration` and `phase` as named parameters, like
+  `pumpWidgetAndSettle()`, and gets `wrapWithView` from `WidgetTester.pumpWidget()`. (#PR)
+- **Breaking:** `PatrolTester.pumpWidgetAndSettle()` returns `Future<int>`, the number of frames
+  pumped while settling, and gets `wrapWithView`. Overrides, implementations and mocks of it must
+  return `Future<int>`. (#PR)
 
 ## 3.7.1
 
