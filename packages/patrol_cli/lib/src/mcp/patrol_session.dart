@@ -1001,8 +1001,8 @@ final class PatrolSession {
               _finishWarning = err.message;
               _pushOutput(err.message);
             } else {
-              _logger.warn('Develop session error: $err\n$st');
               _pushOutput('ERROR: $err');
+              _logger.detail('$st');
             }
             if (_testState == TestState.running) {
               _testState = TestState.finishedFailed;
@@ -1238,7 +1238,6 @@ final class PatrolSession {
     final error = result.error;
     if (error != null) {
       _pushOutput('ERROR: $error');
-      _logger.err('Backend exit error: $error');
     }
     _finishWarning =
         'The app stopped without the test reporting completion, so there is no '
