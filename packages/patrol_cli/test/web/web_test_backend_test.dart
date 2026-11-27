@@ -112,6 +112,33 @@ void main() {
     });
   });
 
+  group('runnerSupportsRemoteBrowser', () {
+    late Directory runner;
+
+    setUp(() => runner = Directory.systemTemp.createTempSync('web_runner'));
+    tearDown(() => runner.deleteSync(recursive: true));
+
+    test('is true when the config reads the endpoint variable', () {
+      File('${runner.path}/playwright.config.ts').writeAsStringSync(
+        'const wsEndpoint = envString("PATROL_WEB_CONNECT_WS_ENDPOINT")',
+      );
+
+      expect(WebTestBackend.runnerSupportsRemoteBrowser(runner.path), isTrue);
+    });
+
+    test('is false for a runner from an older patrol release', () {
+      File(
+        '${runner.path}/playwright.config.ts',
+      ).writeAsStringSync('const headless = envBool("PATROL_WEB_HEADLESS")');
+
+      expect(WebTestBackend.runnerSupportsRemoteBrowser(runner.path), isFalse);
+    });
+
+    test('is false when there is no config', () {
+      expect(WebTestBackend.runnerSupportsRemoteBrowser(runner.path), isFalse);
+    });
+  });
+
   group('describeEndpoint', () {
     test('keeps the scheme, host and port', () {
       expect(

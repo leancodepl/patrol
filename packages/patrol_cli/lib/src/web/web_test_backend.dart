@@ -438,6 +438,17 @@ class WebTestBackend {
         Platform.environment,
       );
       if (remoteEndpoint != null) {
+        // An older `patrol` package ships a web runner that ignores the
+        // endpoint and launches a local browser, which this run doesn't
+        // install. Stop with a clear message instead.
+        if (!runnerSupportsRemoteBrowser(webRunnerPath)) {
+          throw Exception(
+            "The web runner in this project's `patrol` package does not "
+            'support remote browsers (--web-connect-ws-endpoint or '
+            'PATROL_WEB_CONNECT_WS_ENDPOINT). Upgrade `patrol` to a version '
+            'that supports them, or run without a remote endpoint.',
+          );
+        }
         _logger.info(
           'Using the remote browser at ${describeEndpoint(remoteEndpoint)}',
         );
@@ -713,6 +724,16 @@ class WebTestBackend {
         options.connectWsEndpoint ??
         environment['PATROL_WEB_CONNECT_WS_ENDPOINT'];
     return (endpoint == null || endpoint.isEmpty) ? null : endpoint;
+  }
+
+  /// Whether the web runner at [webRunnerPath] connects to a remote browser
+  /// server, i.e. its Playwright config reads `PATROL_WEB_CONNECT_WS_ENDPOINT`.
+  /// Runners from older `patrol` releases don't, and launch a local browser.
+  @visibleForTesting
+  static bool runnerSupportsRemoteBrowser(String webRunnerPath) {
+    final config = File('$webRunnerPath/playwright.config.ts');
+    return config.existsSync() &&
+        config.readAsStringSync().contains('PATROL_WEB_CONNECT_WS_ENDPOINT');
   }
 
   /// Describes [endpoint] for logs without its user info, path or query,
