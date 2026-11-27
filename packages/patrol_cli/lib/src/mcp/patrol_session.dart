@@ -168,6 +168,7 @@ class PatrolStatus {
     this.currentTestFile,
     this.warning,
     this.deviceSelectionNote,
+    this.error,
     this.deviceName,
     this.deviceId,
     this.devicePlatform,
@@ -187,6 +188,9 @@ class PatrolStatus {
   final String? currentTestFile;
   final String? warning;
   final String? deviceSelectionNote;
+
+  /// The failure details the test reported, when it failed.
+  final String? error;
   final String? deviceName;
   final String? deviceId;
   final String? devicePlatform;
@@ -201,6 +205,7 @@ class PatrolStatus {
     'currentTestFile': ?currentTestFile,
     'warning': ?warning,
     'deviceSelectionNote': ?deviceSelectionNote,
+    'error': ?error,
     'deviceName': ?deviceName,
     'deviceId': ?deviceId,
     'devicePlatform': ?devicePlatform,
@@ -276,6 +281,7 @@ final class PatrolSession {
   var _isRunning = false;
   String? _currentTestFile;
   final _outputs = <String>[];
+  final _errorDetails = <String>[];
   TestState _testState = TestState.idle;
 
   /// Set while quitting so a backend exit we caused isn't reported as a crash.
@@ -302,8 +308,8 @@ final class PatrolSession {
 
   var _portForwarded = false;
 
-  /// Read once per server: the answer cannot change while it runs.
-  late final String? _versionWarning = patrolIncompatibility(
+  /// Read on every call, so a `patrol` upgraded while the server runs counts.
+  String? get _versionWarning => patrolIncompatibility(
     PubspecReader(
       projectRoot: const LocalFileSystem().directory(flutterProjectPath),
     ).getPatrolVersion(),
@@ -312,9 +318,8 @@ final class PatrolSession {
   /// Makes the native automator reachable on `localhost:[testServerPort]`.
   ///
   /// Android needs an `adb forward`; iOS simulator traffic is already local. The
-  /// forward is torn down with the session, because a leftover one keeps the
-  /// host port pointing at the Android device — a later iOS session then reads
-  /// that device's tree instead of the simulator's, with no error to show for it.
+  /// forward ends with the session, since it would keep the host port pointing
+  /// at the Android device for a later iOS session.
   Future<void> ensureNativeAutomatorReachable() async {
     final device = this.device;
     final scope = _disposeScope;
@@ -326,13 +331,19 @@ final class PatrolSession {
     }
 
     final port = _testServerPort ?? _defaultTestServerPort;
-    scope.addDispose(
-      await Adb().forwardPorts(
-        fromHost: port,
-        toDevice: port,
-        device: device.id,
-      ),
+    final removeForward = await Adb().forwardPorts(
+      fromHost: port,
+      toDevice: port,
+      device: device.id,
     );
+    // A disposer that throws stops the rest of the session's teardown.
+    scope.addDispose(() async {
+      try {
+        await removeForward();
+      } catch (err) {
+        _logger.detail('Failed to remove adb forward of port $port: $err');
+      }
+    });
     _portForwarded = true;
   }
 
@@ -377,12 +388,10 @@ final class PatrolSession {
     // that `patrol develop` accepts.
     final flagParts = [
       ...developArgs,
-      // With the check on, every Android run measured here ended with no
-      // PATROL_LOG entries at all and a failure the test never had. It spawns
-      // `flutter doctor --verbose` before the build, which is the suspected
-      // cause, but only the effect is established. Opt back in by passing
-      // `--check-compatibility` to the command.
-      '--no-check-compatibility',
+      // The check runs `flutter doctor --verbose` before the build, and Android
+      // runs with it end without PATROL_LOG entries.
+      if (!developArgs.contains('--check-compatibility'))
+        '--no-check-compatibility',
     ];
 
     final flutterResolution = FlutterCommandResolver().resolve(
@@ -501,6 +510,7 @@ final class PatrolSession {
     _quitRequested = false;
     _finishWarning = null;
     _outputs.clear();
+    _errorDetails.clear();
     // Create the completer eagerly so callbacks can signal it even if
     // test completion happens before _waitForFinish is called.
     _finishCompleter = Completer<void>();
@@ -534,10 +544,8 @@ final class PatrolSession {
             unawaited(_cleanup());
           })
           .catchError((Object err, StackTrace st) {
-            // patrol_cli throws ToolExit for expected, actionable failures such
-            // as a `patrol` version the CLI can't drive. Those carry a message
-            // written for the user, so surface it as the status warning rather
-            // than a stack trace the agent has to interpret.
+            // A ToolExit carries a message written for the user, such as a
+            // `patrol` version the CLI can't drive, so it is the warning.
             if (err is ToolExit) {
               _finishWarning = err.message;
               _pushOutput(err.message);
@@ -595,10 +603,8 @@ final class PatrolSession {
       _logger.detail('Error disposing scope: $err');
     }
     await stdinController?.close();
-    // Drop the service, or `device` would keep naming the dead session's device
-    // and screenshot/native-tree would act on it instead of reporting that there
-    // is no session. Guarded: a session started while we were awaiting owns the
-    // field now.
+    // `device` reports no session once this one ends. A session started while
+    // we were awaiting owns the field now.
     if (_developService == service) {
       _developService = null;
     }
@@ -620,9 +626,17 @@ final class PatrolSession {
   /// Structured signal from patrol framework (via PATROL_LOG ConfigEntry) that
   /// all tests were executed in develop mode.
   void _handleEntry(Entry entry) {
+    if (entry is ErrorEntry) {
+      _errorDetails.add(entry.message);
+      return;
+    }
+
     if (entry is TestEntry &&
         entry.status == TestEntryStatus.failure &&
         _testState == TestState.running) {
+      if (entry.error case final error?) {
+        _errorDetails.add(error);
+      }
       _testState = TestState.finishedFailed;
       _completeFinish();
       return;
@@ -669,12 +683,8 @@ final class PatrolSession {
   /// Returns null once a hot restart will be acted on, or a message explaining
   /// why it will not be sent.
   ///
-  /// `flutter attach` becomes ready only after it prints its key-commands
-  /// banner, which races the test completion signal — that one travels on the
-  /// separate `flutter logs` stream and wins on iOS. A restart sent in that
-  /// window is discarded, so without this wait the tool would report a restart
-  /// it never performed and the run would then time out or be blamed on the app
-  /// exiting.
+  /// `flutter attach` drops a restart sent before its key-commands banner, and
+  /// on iOS that banner can come after the test completion signal.
   Future<String?> _waitForHotRestartReady() async {
     final service = _developService;
     if (service == null) {
@@ -722,6 +732,7 @@ final class PatrolSession {
       }
 
       _outputs.clear();
+      _errorDetails.clear();
       _testState = TestState.running;
       _finishWarning = null;
       // Complete the old completer so any previous waiters are unblocked, then
@@ -747,6 +758,7 @@ final class PatrolSession {
       currentTestFile: _currentTestFile,
       warning: overrideWarning ?? _finishWarning,
       deviceSelectionNote: _deviceSelectionNote,
+      error: _errorDetails.isNotEmpty ? _errorDetails.join('\n') : null,
       deviceName: dev?.name,
       deviceId: dev?.id,
       devicePlatform: dev?.targetPlatform.name,

@@ -350,11 +350,9 @@ To install a specific version of Patrol CLI, run:
   /// Whether this invocation is `patrol mcp`.
   ///
   /// Has to be decided before [parse], because [_handleFirstRun] runs first and
-  /// its greeting plus doctor report would land in the JSON-RPC channel. A plain
-  /// `contains` rather than "first non-flag argument": an option value can look
-  /// like a command name (`--flutter-command 'fvm flutter' mcp`), and
-  /// guessing wrong towards "not the server" corrupts the channel, while
-  /// guessing wrong the other way only sends this run's logs to stderr.
+  /// its greeting plus doctor report would land in the JSON-RPC channel. Any
+  /// `mcp` argument counts: a false match only sends this run's logs to stderr,
+  /// a miss corrupts the channel.
   static bool _isMcpServer(Iterable<String> args) =>
       args.contains(McpCommand.commandName);
 

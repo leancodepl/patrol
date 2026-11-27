@@ -115,14 +115,14 @@ void main() {
     test('skips a signal with no pubspec and uses the next one', () async {
       final noPubspec = io.Directory(p.join(tmp.path, 'empty'))
         ..createSync(recursive: true);
-      final workspace = project('app');
+      final cwd = project('app');
 
       final root = await resolver(
-        env: {'PROJECT_ROOT': noPubspec.path},
-        roots: [workspace],
+        env: {'CLAUDE_PROJECT_DIR': noPubspec.path},
+        cwd: cwd,
       ).resolve();
 
-      expect(root, workspace);
+      expect(root, cwd);
     });
 
     test(
@@ -166,17 +166,28 @@ void main() {
       final r = ProjectResolver(
         readRoots: () async {
           rootsCalls++;
-          return const [];
+          return [first];
         },
-        environment: {'PROJECT_ROOT': first},
+        environment: const {},
         currentDirectory: () => tmp.path,
       );
 
       expect(await r.resolve(), first);
       expect(await r.resolve(), first);
-      // Cached: the (non-explicit) roots reader is only consulted on the first
-      // resolve, and here never, since PROJECT_ROOT hits first.
-      expect(rootsCalls, 0);
+      expect(rootsCalls, 1);
+    });
+
+    test('fails on an explicit root that has no project', () async {
+      final r = ProjectResolver(
+        readRoots: () async => const [],
+        environment: {'PROJECT_ROOT': '${tmp.path}/missing'},
+        currentDirectory: () => project('app'),
+      );
+
+      await expectLater(
+        r.resolve(),
+        throwsA(isA<ProjectResolutionException>()),
+      );
     });
   });
 }

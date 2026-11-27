@@ -2,19 +2,10 @@ import 'dart:io';
 
 import 'package:test/test.dart';
 
-/// `lib/patrol_cli.dart` is consumed by published `patrol_mcp` 0.2.x and
-/// 0.3.0-dev, which accept any `patrol_cli` in their range and import the
-/// barrel whole — so a user's next `pub get` picks up whatever this package
-/// exports today. Removing or renaming an entry breaks that package from our
-/// side, with nothing in this repo failing.
-///
-/// The check is the exported URIs and the names they show: what those symbols
-/// look like inside — a renamed parameter, a dropped field — needs that package
-/// built against this one.
-///
-/// Update the list only by adding to it, or once `patrol_mcp` is retired.
+/// `lib/patrol_cli.dart` is public API, so this pins the URIs it exports and the
+/// names they show. Update the list only by adding to it.
 void main() {
-  test('the public barrel keeps exporting what patrol_mcp imports', () {
+  test('the public barrel keeps exporting what it exported', () {
     const expected = <String, Set<String>?>{
       'package:patrol_log/patrol_log.dart': {
         'ConfigEntry',

@@ -52,7 +52,10 @@ void main() {
       final message = patrolIncompatibility(patrol);
 
       if (maxCli != null) {
-        expect(message, contains('$maxCli'));
+        expect(
+          message,
+          contains('\n   dart pub global activate patrol_cli $maxCli\n'),
+        );
       }
     });
 

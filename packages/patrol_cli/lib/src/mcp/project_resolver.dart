@@ -21,6 +21,9 @@ typedef RootsReader = Future<List<String>> Function();
 ///   3. `CLAUDE_PROJECT_DIR` env — set by Claude Code/Desktop for stdio servers.
 ///   4. The current working directory.
 ///
+/// An explicit override that leads to no `pubspec.yaml` fails the resolution;
+/// the other signals are skipped when they lead to none.
+///
 /// The result is cached: resolution happens once per server lifetime (most
 /// clients spawn a separate server per window, so a single resolve is enough).
 class ProjectResolver {
@@ -59,6 +62,10 @@ class ProjectResolver {
     // 1. Explicit overrides win over client-automatic signals.
     var hit = _tryDir('--project-root', _projectRootOverride, attempts);
     hit ??= _tryDir('PROJECT_ROOT', _env['PROJECT_ROOT'], attempts);
+    // An explicit root that finds no project is an error: the user named it.
+    if (hit == null && attempts.isNotEmpty) {
+      throw ProjectResolutionException(attempts);
+    }
     // 2. Client-advertised workspace roots (only read if not already resolved).
     hit ??= await _tryRoots(attempts);
     // 3. Claude sets this for stdio servers.
@@ -125,7 +132,7 @@ class ProjectResolver {
 class ProjectResolutionException implements Exception {
   ProjectResolutionException(this.attempts);
 
-  /// The signals that were tried, in order (e.g. `PROJECT_ROOT=./app`, `cwd=/x`).
+  /// The signals that were tried, in order, as `label=value`.
   final List<String> attempts;
 
   @override

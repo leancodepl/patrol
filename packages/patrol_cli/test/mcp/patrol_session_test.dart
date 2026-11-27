@@ -5,6 +5,7 @@ import 'package:dispose_scope/dispose_scope.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/commands/develop_options.dart';
 import 'package:patrol_cli/src/commands/develop_service.dart';
+import 'package:patrol_cli/src/commands/mcp.dart';
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/mcp/patrol_session.dart';
@@ -245,5 +246,84 @@ packages:
     expect(session.device, isNull);
     expect(session.getStatus().deviceName, isNull);
     expect(fake.stdinChars, contains('Q'));
+  });
+
+  test('lets the develop args turn the compatibility check back on', () async {
+    final fake = _FakeDevelop();
+    await startSession(
+      sessionWith(fake, developArgs: ['--check-compatibility']),
+      'app_test.dart',
+    );
+
+    final options =
+        verify(() => fake.service.run(captureAny())).captured.single
+            as DevelopOptions;
+    expect(options.checkCompatibility, isTrue);
+  });
+
+  test('turns the compatibility check off by default', () async {
+    final fake = _FakeDevelop();
+    await startSession(sessionWith(fake), 'app_test.dart');
+
+    final options =
+        verify(() => fake.service.run(captureAny())).captured.single
+            as DevelopOptions;
+    expect(options.checkCompatibility, isFalse);
+  });
+
+  test('runs once the project upgrades patrol, without a restart', () async {
+    writeIncompatibleLock();
+    final fake = _FakeDevelop();
+    final session = sessionWith(fake);
+
+    final refused = await session.startAndWait(
+      'app_test.dart',
+      device: 'test-device',
+    );
+    expect(refused.started, isFalse);
+
+    File('${projectRoot.path}/pubspec.lock').deleteSync();
+    await startSession(session, 'app_test.dart');
+  });
+
+  test('reports the failure details the test logged', () async {
+    final fake = _FakeDevelop();
+    final session = sessionWith(fake);
+    await startSession(session, 'app_test.dart');
+
+    fake.onLogEntry?.call(ErrorEntry(message: 'Expected: true'));
+    fake.onLogEntry?.call(
+      TestEntry(
+        name: 'app_test',
+        status: TestEntryStatus.failure,
+        error: 'Actual: false',
+      ),
+    );
+
+    final status = session.getStatus();
+    expect(status.testState, TestState.finishedFailed);
+    expect(status.error, 'Expected: true\nActual: false');
+  });
+
+  test('the status schema lists every key a status can carry', () {
+    const status = PatrolStatus(
+      isDevelopRunning: true,
+      projectRoot: '/app',
+      testState: TestState.running,
+      versionWarning: 'w',
+      output: 'o',
+      currentTestFile: 'a_test.dart',
+      warning: 'w',
+      deviceSelectionNote: 'n',
+      error: 'e',
+      deviceName: 'd',
+      deviceId: 'i',
+      devicePlatform: 'p',
+    );
+
+    expect(
+      sessionStatusSchema.properties!.keys.toSet(),
+      status.toMap().keys.toSet(),
+    );
   });
 }

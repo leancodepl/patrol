@@ -21,7 +21,8 @@ const _defaultTimeoutMinutes = 5.0;
 
 /// Output schema for `run` and `status` -- a serialized [PatrolStatus].
 /// Keys mirror `PatrolStatus.toMap`.
-const _sessionStatusSchema = JsonObject(
+@visibleForTesting
+const sessionStatusSchema = JsonObject(
   properties: {
     'isDevelopRunning': JsonBoolean(),
     'projectRoot': JsonString(
@@ -42,6 +43,9 @@ const _sessionStatusSchema = JsonObject(
     'currentTestFile': JsonString(),
     'warning': JsonString(),
     'deviceSelectionNote': JsonString(),
+    'error': JsonString(
+      description: 'The failure details the test reported, when it failed.',
+    ),
     'deviceName': JsonString(),
     'deviceId': JsonString(),
     'devicePlatform': JsonString(),
@@ -154,8 +158,8 @@ class McpCommand extends PatrolCommand {
   Future<int> run() async {
     final env = io.Platform.environment;
 
-    // Resolved before the redirect below, so a resolution failure is reported on
-    // the real stderr rather than swallowed.
+    // Resolved before the redirect below, so a resolution failure reaches the
+    // real stderr.
     final projectRoot = await ProjectResolver(
       // TODO(mcp-roots): read the client's advertised workspace roots.
       readRoots: () async => const [],
@@ -236,7 +240,7 @@ class McpCommand extends PatrolCommand {
           },
           required: ['testFile'],
         ),
-        outputSchema: _sessionStatusSchema,
+        outputSchema: sessionStatusSchema,
         annotations: const ToolAnnotations(title: 'Run Patrol Tests'),
         callback: (args, extra) => _run(session, args, extra),
       )
@@ -276,7 +280,7 @@ class McpCommand extends PatrolCommand {
         'status',
         description:
             'Get the current status of the patrol session and recent output',
-        outputSchema: _sessionStatusSchema,
+        outputSchema: sessionStatusSchema,
         annotations: const ToolAnnotations(
           title: 'Get Status',
           readOnlyHint: true,
@@ -306,7 +310,14 @@ class McpCommand extends PatrolCommand {
           readOnlyHint: true,
         ),
         callback: (args, extra) async {
-          await session.ensureNativeAutomatorReachable();
+          try {
+            await session.ensureNativeAutomatorReachable();
+          } catch (err) {
+            return CallToolResult(
+              content: [TextContent(text: 'Failed to fetch native tree: $err')],
+              isError: true,
+            );
+          }
           return NativeTreeService.handleGetNativeTreeRequest(
             session.device,
             session.testServerPort,
