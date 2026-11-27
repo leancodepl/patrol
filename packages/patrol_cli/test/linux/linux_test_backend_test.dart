@@ -263,7 +263,6 @@ set(APPLICATION_ID "pl.leancode.example_app")
       expect(environment, {
         'DISPLAY': ':99',
         'HOME': '/home/runner',
-        'PATROL_TEST_SERVER_PORT': '8081',
         'PATROL_APP_SERVER_PORT': '9000',
       });
     }

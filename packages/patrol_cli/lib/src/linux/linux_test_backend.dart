@@ -213,7 +213,6 @@ class LinuxTestBackend {
 
       final environment = {
         ..._platform.environment,
-        'PATROL_TEST_SERVER_PORT': options.testServerPort.toString(),
         'PATROL_APP_SERVER_PORT': appServerPort.toString(),
       };
 
