@@ -29,7 +29,7 @@ class DashboardCollector {
 
   /// Test whose failure details are still arriving.
   ///
-  /// `patrol` before 4.10.0 logged the failure entry without an error and sent
+  /// Older `patrol` versions log the failure entry without an error and send
   /// the exception separately, one [ErrorEntry] per line. Newer versions put it
   /// on the entry, so this only kicks in for the older wire format.
   DashboardTest? _failureDetailsTarget;

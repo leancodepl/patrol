@@ -4,8 +4,8 @@ import 'dart:io' as io;
 import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart';
-import 'package:meta/meta.dart';
 import 'package:file/file.dart' as fs;
+import 'package:meta/meta.dart';
 import 'package:package_config/package_config.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
