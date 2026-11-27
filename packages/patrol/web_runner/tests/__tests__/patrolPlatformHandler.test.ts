@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test"
 import { EventEmitter } from "events"
+import { actions } from "../actions"
 import { exposePatrolPlatformHandler, handlePatrolPlatformAction } from "../patrolPlatformHandler"
 import { PageManager } from "../pageManager"
 import type { ActionParams, PatrolNativeRequest } from "../contracts"
@@ -95,17 +96,13 @@ test.describe("patrolPlatformHandler", () => {
     const { initialPage, manager } = buildPageManager()
 
     // Replace enableDarkMode with a spy so we can verify the page and params
-    const actionsModule = await import("../actions")
-    const originalAction = actionsModule.actions.enableDarkMode
+    const originalAction = actions.enableDarkMode
 
     let receivedActivePage: unknown
     let receivedParams: unknown
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ;(actionsModule.actions as any).enableDarkMode = async ({
-      pageManager,
-      params,
-    }: ActionParams<PatrolNativeRequest>) => {
+    ;(actions as any).enableDarkMode = async ({ pageManager, params }: ActionParams<PatrolNativeRequest>) => {
       receivedActivePage = pageManager.activePage
       receivedParams = params
     }
@@ -121,7 +118,7 @@ test.describe("patrolPlatformHandler", () => {
       await handlePatrolPlatformAction(manager, request)
     } finally {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ;(actionsModule.actions as any).enableDarkMode = originalAction
+      ;(actions as any).enableDarkMode = originalAction
     }
 
     // The handler should resolve the active page from PageManager and pass it
