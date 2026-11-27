@@ -745,12 +745,14 @@ class WebTestBackend {
   }
 
   Future<String?> _firstPageId(int debuggerPort) async {
-    final client = HttpClient()..connectionTimeout = const Duration(seconds: 2);
+    const step = Duration(seconds: 2);
+    final client = HttpClient()..connectionTimeout = step;
     try {
       final request = await client.getUrl(
         Uri.parse('http://127.0.0.1:$debuggerPort/json'),
       );
-      final body = await (await request.close()).transform(utf8.decoder).join();
+      final response = await request.close().timeout(step);
+      final body = await response.transform(utf8.decoder).join().timeout(step);
       return pickChromePage(jsonDecode(body) as List<Object?>)?['id']
           as String?;
     } on Object catch (err) {

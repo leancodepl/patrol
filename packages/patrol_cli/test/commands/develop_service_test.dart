@@ -675,6 +675,24 @@ void main() {
       },
     );
 
+    test(
+      'is ready for a web session asked before run picks the device',
+      () async {
+        final webReady = Completer<void>();
+        when(
+          () => webTestBackend.hotRestartReady,
+        ).thenAnswer((_) => webReady.future);
+        when(
+          () => flutterTool.hotRestartReady,
+        ).thenAnswer((_) => Completer<void>().future);
+
+        final ready = buildService().hotRestartReady;
+        webReady.complete();
+
+        await expectLater(ready.timeout(const Duration(seconds: 1)), completes);
+      },
+    );
+
     test('starts the adb server before anything that runs adb', () async {
       var executed = false;
       when(

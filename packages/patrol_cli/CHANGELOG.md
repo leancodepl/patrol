@@ -66,7 +66,7 @@
   from a globally activated CLI or as `dart run patrol_cli:main mcp` from a dev dependency, with
   develop flags after `--`; `PATROL_FLAGS` is split as a shell would (#3026). See the
   [docs](https://patrol.leancode.co/documentation/other/patrol-mcp), migrating off `patrol_mcp`
-  included. (#3368)
+  included. (#3368, #3371)
 - Look for a `patrol test`/`patrol develop` target in the project when the path names nothing from
   the directory the command was run in. A relative target still belongs to that directory first,
   which is how `-t ../patrol_test/app_test.dart` works from a subdirectory. (#3369)
