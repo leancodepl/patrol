@@ -6,6 +6,10 @@ on:
     paths:
       - 'packages/patrol/**'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   prepare-android-on-windows:
     runs-on: ${{ matrix.os }}
