@@ -4,8 +4,9 @@
   what a failed run leaves behind, assertions that cannot fail, steps a test does not need, and
   `settlePolicy` on screens with never-ending animations.
 - Stop shipping Patrol's iOS/macOS test server in normal (e.g. release) app builds: all `PatrolImpl`
-  Swift sources now compile only with `PATROL_ENABLED`, which the patrol CLI sets, and such builds
-  no longer link or embed CocoaAsyncSocket. Building the `RunnerUITests` target
+  Swift sources now compile only with `PATROL_ENABLED`, which the patrol CLI sets. With SwiftPM,
+  such builds also no longer link CocoaAsyncSocket. iOS extension packages (e.g. patrol_axe) keep
+  compiling in such builds, but their registration is a no-op. Building the `RunnerUITests` target
   without the patrol CLI (e.g. from Xcode or with a plain `xcodebuild`) now fails with "use of
   undeclared identifier 'PatrolServer'" or "Undefined symbol: _OBJC_CLASS_$_PatrolServer"; add
   `-D PATROL_ENABLED` to `OTHER_SWIFT_FLAGS` (CocoaPods) or set `PATROL_ENABLED=1` (SwiftPM) for
