@@ -67,12 +67,14 @@ class TestCompletionResult {
 ///
 /// xcodebuild launches the app, so discovery is unreliable on the iOS
 /// simulator; physical iOS devices keep discovery. macOS always uses the URL,
-/// Android and web use discovery.
+/// Android, web, and Windows use discovery.
 @visibleForTesting
 bool shouldAttachUsingUrl(Device device) => switch (device.targetPlatform) {
   TargetPlatform.macOS => true,
   TargetPlatform.iOS => !device.real,
-  TargetPlatform.android || TargetPlatform.web => false,
+  TargetPlatform.android ||
+  TargetPlatform.web ||
+  TargetPlatform.windows => false,
 };
 
 /// Orchestrates a patrol develop session.
@@ -226,6 +228,10 @@ class DevelopService {
     final signalSubscriptions = _registerProxyCleanupOnSignals(testDirectory);
     Future<void> cleanupProxy() async {
       _testBundler.deleteEntrypointProxy(testDirectory);
+    }
+
+    if (device.targetPlatform == TargetPlatform.windows) {
+      throwToolExit('Windows is not supported with develop');
     }
 
     _logger.detail('Received device: ${device.name} (${device.id})');
@@ -422,6 +428,8 @@ class DevelopService {
       TargetPlatform.iOS => () => _iosTestBackend.build(iosOpts),
       TargetPlatform.macOS => () => _macosTestBackend.build(macosOpts),
       TargetPlatform.web => () => _webTestBackend.buildForDevelop(webOpts),
+      TargetPlatform.windows =>
+        () => throwToolExit('Windows is not supported with develop'),
     };
 
     try {
@@ -464,6 +472,7 @@ class DevelopService {
         }
       case TargetPlatform.macOS:
       case TargetPlatform.web:
+      case TargetPlatform.windows:
     }
 
     try {
@@ -620,6 +629,8 @@ class DevelopService {
           onLogEntry: onLogEntry,
           openDevtools: openDevtools,
         );
+      case TargetPlatform.windows:
+        throwToolExit('Windows is not supported with develop');
     }
 
     // Set once the user quits. Stopping the instrumentation ends the build,

@@ -297,3 +297,8 @@ the Inbox before 5.0.0 is released.
   needs flutter/flutter#183838; every other platform and `patrol test` on web keep the 3.44 floor.
   Upgrade Flutter, or point patrol at a newer SDK with `--flutter-command`, to keep using
   `patrol develop -d chrome`.
+- #3183, `patrol` / `patrol_cli`: experimental Windows support (`patrol test -d windows`). Needs the
+  MSVC Desktop C++ workload (same as Flutter Windows) so the CLI can build the C++ automator sidecar.
+  `PlatformAction.safe()` now requires a `windows:` callback, and exhaustive switches over
+  `PatrolTargetPlatform` / CLI `TargetPlatform` need a Windows case — update call sites even if you
+  do not run on Windows yet.

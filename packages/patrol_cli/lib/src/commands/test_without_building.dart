@@ -205,6 +205,7 @@ class TestWithoutBuildingCommand extends PatrolCommand {
           );
         case TargetPlatform.macOS:
         case TargetPlatform.web:
+        case TargetPlatform.windows:
           return 1; // unreachable, guarded above
       }
     } catch (err, st) {
