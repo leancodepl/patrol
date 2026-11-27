@@ -77,6 +77,16 @@ patrol build ios --full-isolation
 
 The `--full-isolation` flag enables full isolation between test runs on iOS Simulator.
 
+**To reset permissions between tests on iOS**
+
+```
+patrol build ios --clear-permissions
+```
+
+The `--clear-permissions` flag resets iOS permissions, and app-side permission
+caches such as `permission_handler`'s, before every test except the first one.
+See [`patrol test`](/cli-commands/test#clearing-permissions-on-ios) for details.
+
 ### Build-time test discovery
 
 With the experimental `--emit-test-manifest` flag (or `patrol.emit_test_manifest:
