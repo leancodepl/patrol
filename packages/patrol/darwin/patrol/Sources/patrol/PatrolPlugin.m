@@ -5,7 +5,34 @@
 static NSString *const kChannelName = @"pl.leancode.patrol/main";
 static NSString *const kGetRuntimePortsMethod = @"getRuntimePorts";
 
+#if TARGET_OS_IOS
+// NSUserDefaults keys where permission plugins remember they already asked.
+// `resetAuthorizationStatusForResource:` does not touch them.
+static NSArray<NSString *> *PatrolPermissionCacheKeys(void) {
+  return @[
+    // permission_handler_apple: skips the location Always request once set.
+    @"org.baseflow.permission_handler_apple.permission_requested",
+  ];
+}
+
+// The runner sets PATROL_CLEAR_PERMISSIONS on the launch after it reset permissions.
+static void PatrolClearPermissionCachesIfRequested(void) {
+  if (![[NSProcessInfo processInfo].environment[@"PATROL_CLEAR_PERMISSIONS"] isEqualToString:@"1"]) {
+    return;
+  }
+  NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+  for (NSString *key in PatrolPermissionCacheKeys()) {
+    [defaults removeObjectForKey:key];
+  }
+  NSLog(@"Patrol: cleared app-side permission caches: %@", PatrolPermissionCacheKeys());
+}
+#endif
+
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
+#if TARGET_OS_IOS
+  PatrolClearPermissionCachesIfRequested();
+#endif
+
 #if TARGET_OS_OSX
   id<FlutterBinaryMessenger> messenger = [registrar messenger];
 #else
