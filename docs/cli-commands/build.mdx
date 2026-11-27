@@ -166,6 +166,21 @@ develop` — edit the test (or Dart app code), press `r`, repeat. Also works fro
   still require a new build. Android only.
 </Info>
 
+### Compiling only the Dart code
+
+`--kernel-only` compiles just the Dart code of a debug build (`kernel_blob.bin`), with the same
+dart-defines as a full build, and prints its path. Put it into a debug build of the same native
+code to run other tests without building it again. This is what
+[`patrol test --reuse-build`](/cli-commands/test) does.
+
+```bash
+patrol build android --kernel-only --target patrol_test/example_test.dart
+```
+
+The file goes to `assets/flutter_assets/` in the app APK (then `zipalign` and `apksigner`), or to
+`Frameworks/App.framework/flutter_assets/` in both `Runner.app` and the UI test runner on iOS
+simulators.
+
 ### Under the hood
 
 The `patrol build` command walks through hierarchy of the `patrol_test`

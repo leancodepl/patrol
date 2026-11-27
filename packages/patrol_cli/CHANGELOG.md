@@ -1,5 +1,13 @@
 ## Unreleased
 
+- Add `patrol test --reuse-build`, which skips the native build when only Dart code changed since the
+  last `--reuse-build` run: it compiles the Dart code and puts it into that build. Works on Android
+  and iOS simulators (debug) and physical iOS devices (release, where `App.framework` is built
+  again and signed). `--reuse-build-from` uses a build from another directory, such as
+  the APKs from `patrol build android --develop`. See the
+  [docs](https://patrol.leancode.co/cli-commands/test#reusing-the-native-build).
+- Add `--kernel-only` to `patrol build android` and `patrol build ios`, which only compiles the
+  Dart code of a debug build and prints its path.
 - Fix the generated test bundle dropping the Dart entrypoint arguments passed by the native side of
   the app: `main` now takes them and passes them to tests as `$.entrypointArgs`. Needs a `patrol`
   release that includes this change. (#3366)

@@ -354,6 +354,50 @@ features such as reporting. To see the full list of supported arguments, run `pa
 - `--clear-permissions`: Not applicable to web platform
 - `--full-isolation`: Not applicable to web platform
 
+### Reusing the native build
+
+With `--reuse-build`, `patrol test` skips the native build when only Dart code changed since the last
+`--reuse-build` run. It compiles the Dart code and puts it into the last build, instead of running
+Gradle or `xcodebuild`. The first run builds in full and remembers that build.
+
+On Android and iOS simulators (debug builds) the compiled Dart code (`kernel_blob.bin`, about 10 s)
+replaces the one in the build. On physical iOS devices (release builds) Dart is compiled to machine
+code, so `App.framework` is built again with `flutter assemble` and signed with the same
+identity as the rest of the app.
+
+```bash
+patrol test --reuse-build --target patrol_test/login_test.dart
+patrol test --reuse-build --target patrol_test/checkout_test.dart # no native build
+```
+
+A full build runs again, with the reason printed, when any of these changed: files in `android/`
+or `ios/`, `pubspec.yaml`, `pubspec.lock`, the native code of path dependencies, assets and fonts
+declared in `pubspec.yaml`, the Flutter version, or options such as `--flavor`, `--build-name`
+and the ports.
+
+To use a build from elsewhere, pass `--reuse-build-from` with its directory. Nothing checks that it
+matches your project:
+
+- Android: a directory with one app APK and one `*-androidTest.apk`, for example from
+  [`patrol build android --develop`](/cli-commands/build).
+- iOS: the `Build/Products` directory with the `.xctestrun` file, as `patrol build ios` writes it.
+
+```bash
+patrol test --reuse-build-from path/to/apks --target patrol_test/login_test.dart
+```
+
+Limitations:
+
+- Debug builds on Android and iOS simulators, release builds on physical iOS devices.
+- On physical iOS devices, the signing identity of the last build must be in your keychain.
+- Not with build-time test discovery (`emit_test_manifest`).
+- On Android the APKs are signed again with the debug key (`~/.android/debug.keystore`), and the
+  tests run through the Android Test Orchestrator without Gradle, so the Gradle HTML report isn't
+  written. `clearPackageData` is passed when your `build.gradle` sets it.
+- macOS and Linux hosts only.
+- Changes that native build scripts read from dart-defines, and assets of path dependencies, aren't
+  detected. Run without `--reuse-build` after changing them.
+
 ### Running without rebuilding
 
 With [build-time test discovery][discovery] (the default), already-built tests

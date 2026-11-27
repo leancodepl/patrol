@@ -35,6 +35,10 @@ import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/macos/macos_test_backend.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
+import 'package:patrol_cli/src/reuse_build/android_kernel_swapper.dart';
+import 'package:patrol_cli/src/reuse_build/build_reuse.dart';
+import 'package:patrol_cli/src/reuse_build/ios_build_patcher.dart';
+import 'package:patrol_cli/src/reuse_build/kernel_compiler.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart' show addGlobalFlags;
 import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
@@ -165,6 +169,31 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
 
     final testFinderFactory = TestFinderFactory(rootDirectory: rootDirectory);
 
+    final kernelCompiler = KernelCompiler(
+      processManager: _processManager,
+      rootDirectory: rootDirectory,
+      logger: _logger,
+    );
+    final buildReuseTools = BuildReuseTools(
+      cache: BuildReuseCache(
+        rootDirectory: rootDirectory,
+        processManager: _processManager,
+        platform: _platform,
+        logger: _logger,
+      ),
+      kernelCompiler: kernelCompiler,
+      androidSwapper: AndroidKernelSwapper(
+        processManager: _processManager,
+        platform: _platform,
+        rootDirectory: rootDirectory,
+        logger: _logger,
+      ),
+      iosPatcher: IOSBuildPatcher(
+        processManager: _processManager,
+        logger: _logger,
+      ),
+    );
+
     final deviceFinder = DeviceFinder(
       processManager: _processManager,
       parentDisposeScope: _disposeScope,
@@ -183,6 +212,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         webTestBackend: webTestBackend,
         projectRoot: rootDirectory,
         fs: _fs,
+        kernelCompiler: kernelCompiler,
         compatibilityChecker: CompatibilityChecker(
           projectRoot: rootDirectory,
           processManager: _processManager,
@@ -258,6 +288,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
           rootDirectory: rootDirectory,
           logger: _logger,
         ),
+        buildReuseTools: buildReuseTools,
         analytics: _analytics,
         logger: _logger,
       ),

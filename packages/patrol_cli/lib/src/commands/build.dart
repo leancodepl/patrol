@@ -11,6 +11,7 @@ import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/macos/macos_test_backend.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
+import 'package:patrol_cli/src/reuse_build/kernel_compiler.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
@@ -28,6 +29,7 @@ class BuildCommand extends PatrolCommand {
     required WebTestBackend webTestBackend,
     required Directory projectRoot,
     required FileSystem fs,
+    required KernelCompiler kernelCompiler,
     required Analytics analytics,
     required CompatibilityChecker compatibilityChecker,
     required Logger logger,
@@ -39,6 +41,7 @@ class BuildCommand extends PatrolCommand {
         dartDefinesReader: dartDefinesReader,
         pubspecReader: pubspecReader,
         androidTestBackend: androidTestBackend,
+        kernelCompiler: kernelCompiler,
         compatibilityChecker: compatibilityChecker,
         analytics: analytics,
         logger: logger,
@@ -51,6 +54,7 @@ class BuildCommand extends PatrolCommand {
         dartDefinesReader: dartDefinesReader,
         pubspecReader: pubspecReader,
         iosTestBackend: iosTestBackend,
+        kernelCompiler: kernelCompiler,
         compatibilityChecker: compatibilityChecker,
         analytics: analytics,
         logger: logger,
