@@ -1,0 +1,63 @@
+name: Check dependency floors
+description: >
+  Analyze a package against the lowest versions of its sibling dependencies
+  that its constraints allow, resolved from pub.dev, with
+  tool/check_dependency_floors.sh. Fail only on `release/*` branches.
+
+inputs:
+  package:
+    description: Package directory name in packages/.
+    required: true
+
+runs:
+  using: composite
+
+  steps:
+    # Outside release/* branches a failure is only reported: code may use
+    # sibling API that isn't released yet, and the floor can be raised to it
+    # only in the package's release PR, once the sibling is on pub.dev.
+    #
+    # The script resolves a floor that isn't on pub.dev yet from the sibling's
+    # path, bypassing the other constraints on it. A release PR is opened only
+    # after the siblings it needs are published, so there that fails too.
+    - name: Analyze against the lowest published sibling versions
+      shell: bash
+      env:
+        PACKAGE: ${{ inputs.package }}
+        BRANCH: ${{ github.head_ref || github.ref_name }}
+      run: |
+        log="$RUNNER_TEMP/dependency-floors-$PACKAGE.txt"
+        if ! "$GITHUB_WORKSPACE/tool/check_dependency_floors.sh" "$PACKAGE" 2>&1 | tee "$log"; then
+          problem="$PACKAGE doesn't resolve or analyze against the lowest sibling versions its constraints allow"
+        elif grep -q 'is not on pub.dev yet' "$log"; then
+          problem="$PACKAGE requires a sibling version that isn't on pub.dev yet; publish the sibling first"
+        else
+          exit 0
+        fi
+
+        is_release_branch=false
+        case "$BRANCH" in
+          release/*) is_release_branch=true ;;
+        esac
+
+        {
+          echo "## Dependency floors of $PACKAGE: failed"
+          echo
+          echo "$problem."
+          echo
+          if [ "$is_release_branch" = true ]; then
+            echo "Branch \`$BRANCH\` is a release branch, so this fails the check."
+          else
+            echo "Branch \`$BRANCH\` is not a release branch, so this doesn't fail the check, but the release PR must fix it."
+          fi
+          echo
+          echo '```'
+          grep -v '^   info - ' "$log" || true
+          echo '```'
+        } >> "$GITHUB_STEP_SUMMARY"
+
+        if [ "$is_release_branch" = true ]; then
+          echo "::error title=dependency floors ($PACKAGE)::$problem"
+          exit 1
+        fi
+        echo "::warning title=dependency floors ($PACKAGE)::$problem. Not enforced outside release/* branches; the release PR must fix it."

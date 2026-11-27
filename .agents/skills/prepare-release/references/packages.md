@@ -75,20 +75,23 @@ What CI resolves against pub.dev:
 
 | Job | Resolves | Catches a too-low floor |
 |---|---|---|
-| patrol-prepare `Resolve against published dependencies` | the newest published siblings | no: only API missing from the newest release, or a constraint pub.dev can't satisfy |
+| `Dependency floors` in the patrol, patrol_finders, patrol_cli and patrol_mcp prepare workflows | every sibling at its floor | yes; fails on `release/*` only, a warning elsewhere |
 | patrol_mcp-prepare `Smoke (floor patrol_cli)` | patrol_cli at its floor | for patrol_cli only |
 
-Nothing covers patrol_finders, patrol_cli, or patrol_mcp's `adb`, so run
-`tool/check_dependency_floors.sh <pkg>` before opening a release PR. It removes
+`Dependency floors` runs `tool/check_dependency_floors.sh <pkg>`, which removes
 the overrides, downgrades every sibling to its floor and analyzes `lib/` and
-`bin/`. Since a dependent's release PR waits until the sibling it needs is
-published, every floor should be on pub.dev. The script still accepts a floor
-equal to the sibling's version in the tree (a branch stacked on the sibling's
-release branch), and says so.
+`bin/`. Run it locally before opening a release PR too, so a too-low floor
+doesn't wait for CI. Since a dependent's release PR waits until the sibling it
+needs is published, every floor should be on pub.dev. The script still accepts
+a floor equal to the sibling's version in the tree (a branch stacked on the
+sibling's release branch), resolving it from its path, and says so. That path
+override bypasses the other constraints on the sibling, so on `release/*` the
+job fails on it.
 
-Both jobs above fail in pub get with "doesn't match any versions" when a
-constraint points at a sibling version that isn't on pub.dev yet: the PR was
-opened before that sibling was published.
+When a constraint points at a sibling version that isn't on pub.dev yet, the
+PR was opened before that sibling was published: `Dependency floors` reports
+"not on pub.dev yet", and `Smoke (… patrol_cli)` fails in pub get with "doesn't
+match any versions".
 
 ### When to bump a sibling constraint
 

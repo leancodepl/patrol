@@ -15,7 +15,8 @@
 # A floor that isn't on pub.dev yet is accepted only if it is the sibling's
 # version in this tree, i.e. on a branch stacked on the sibling's release,
 # which is published first. It is then resolved from its path, and so are its
-# own unpublished siblings.
+# own unpublished siblings. The override bypasses the other constraints on that
+# sibling, so CI fails such a floor on release/* branches.
 #
 # Rewrites the package's pubspec_overrides.yaml, pubspec.lock and
 # analysis_options.yaml. Undo with `melos bootstrap` and

@@ -5,6 +5,8 @@ on:
   pull_request:
     paths:
       - 'packages/patrol_mcp/**'
+      - 'tool/check_dependency_floors.sh'
+      - '.github/actions/check-dependency-floors/**'
 
 jobs:
   smoke_test:
@@ -45,6 +47,33 @@ jobs:
 
       - name: Unit tests
         run: dart test
+
+  dependency-floors:
+    name: Dependency floors
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        flutter-version: ['3.38.x']
+        flutter-channel: ['stable']
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          channel: ${{ matrix.flutter-channel }}
+
+      # No `melos bootstrap` on purpose: its pubspec_overrides.yaml would
+      # resolve the siblings from their paths, which users don't get.
+      - name: Check dependency floors
+        uses: ./.github/actions/check-dependency-floors
+        with:
+          package: patrol_mcp
 
   pana-score:
     name: pana score
