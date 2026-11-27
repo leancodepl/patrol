@@ -141,9 +141,8 @@ Tests that only find, tap and pump with one argument compile unchanged.
   name the arguments: `$.pumpWidget(app, duration: duration, phase: phase)`.
   `pumpWidget()` also takes `wrapWithView`, like `WidgetTester.pumpWidget()`.
 - **A `PatrolFinder` stored as `MatchFinder`:** use `Finder`. `PatrolFinder`
-  now extends `Finder` and is no longer a `MatchFinder`.
-- **`$(...).matches(element)`:** removed. Use
-  `$(...).evaluate().contains(element)`.
+  now extends `Finder` and is no longer a `MatchFinder`; `$(...).matches()`
+  still works.
 - **Overrides, implementations or mocks of `pumpWidgetAndSettle()`:** return
   `Future<int>`, the number of frames pumped while settling, as for
   `pumpAndSettle()` above.

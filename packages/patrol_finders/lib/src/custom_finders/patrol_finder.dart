@@ -556,6 +556,20 @@ class PatrolFinder extends Finder {
   /// Returns true if this finder finds at least 1 widget.
   bool get exists => evaluate().isNotEmpty;
 
+  /// Returns true if [candidate] is one of the widgets this finder finds.
+  ///
+  /// Simple finders (key, type, text, ...) check only [candidate], like
+  /// [MatchFinder.matches]. Chained finders, such as `$(#a).$(#b)`, [first],
+  /// [last] and [at], need the widget tree and check [evaluate] instead.
+  bool matches(Element candidate) {
+    final finder = this.finder;
+    if (finder is MatchFinder) {
+      return finder.matches(candidate);
+    }
+
+    return evaluate().contains(candidate);
+  }
+
   @override
   String describeMatch(Plurality plurality) => finder.describeMatch(plurality);
 
