@@ -279,7 +279,9 @@ final class PatrolSession {
 
     void Function(String root)? enterProjectDirectory,
     this._hotRestartReadyTimeout = const Duration(seconds: 90),
-    this._teardownTimeout = const Duration(seconds: 30),
+    // Above the develop service's 30 s bound on the uninstall, so a slow but
+    // healthy uninstall finishes inside it.
+    this._teardownTimeout = const Duration(seconds: 45),
     DateTime Function()? now,
   }) : _platform = platform ?? NativePlatform.current!,
        _now = now ?? DateTime.now,
@@ -388,11 +390,12 @@ final class PatrolSession {
     } on ProjectResolutionException catch (err) {
       return '$err';
     }
-    if (_sameDirectory(requested.root, flutterProjectPath)) {
+    // A session that ended during the awaits above has nothing left to
+    // protect; the caller starts cold.
+    if (!_isRunning || _sameDirectory(requested.root, flutterProjectPath)) {
       return null;
     }
-    return 'This server is ${_isRunning ? 'running' : 'starting'} '
-        '"${_currentTestFile ?? _startingTestFile}" in $flutterProjectPath. '
+    return 'This server is running "$_currentTestFile" in $flutterProjectPath. '
         'Quit that session before running in ${requested.root}.';
   }
 
@@ -466,6 +469,18 @@ final class PatrolSession {
   /// When the session last heard anything from the run, and the last test entry
   /// it saw.
   DateTime? _lastHeardAt;
+
+  /// Whether the running session's app has come up. The build before it logs
+  /// nothing without `--verbose`, so quiet counts only from here.
+  bool _appUp = false;
+
+  void _markAppUp() {
+    if (!_appUp) {
+      _appUp = true;
+      _lastHeardAt = _now();
+    }
+  }
+
   DateTime? _lastTestEntryAt;
   String? _lastTestEntry;
   TestState _testState = TestState.idle;
@@ -617,6 +632,14 @@ final class PatrolSession {
         case final blocked?) {
       return blocked;
     }
+    if (!_isRunning) {
+      return _start(
+        testFile,
+        device: device,
+        projectRoot: projectRoot,
+        timeout: timeout,
+      );
+    }
 
     _deviceSelectionNote = null;
     if (_currentTestFile != testFile) {
@@ -755,6 +778,9 @@ final class PatrolSession {
     }
     _testServerPort = options.testServerPort;
 
+    if (_cancelRequested) {
+      return _cancelled;
+    }
     // Opened only for a session that starts: a refused run has no cleanup to
     // close it.
     await _startLogStreamingAndTerminal();
@@ -769,6 +795,7 @@ final class PatrolSession {
     // a completer, because the server outlives every session it runs.
     final exitCompleter = Completer<void>();
     if (_cancelRequested) {
+      await _logStreaming.stopLogging();
       return _cancelled;
     }
 
@@ -805,8 +832,16 @@ final class PatrolSession {
     _outputs.clear();
     _errorDetails.clear();
     _lastHeardAt = _now();
+    _appUp = false;
     _lastTestEntryAt = null;
     _lastTestEntry = null;
+    unawaited(
+      live.service.hotRestartReady.then((_) {
+        if (identical(_liveSession, live)) {
+          _markAppUp();
+        }
+      }, onError: (_) {}),
+    );
     // Create the completer eagerly so callbacks can signal it even if
     // test completion happens before _waitForFinish is called.
     _finishCompleter = Completer<void>();
@@ -990,6 +1025,7 @@ final class PatrolSession {
   /// Structured signal from patrol framework (via PATROL_LOG ConfigEntry) that
   /// all tests were executed in develop mode.
   void _handleEntry(Entry entry) {
+    _markAppUp();
     _lastHeardAt = _now();
     if (entry is TestEntry) {
       _lastTestEntry = entry.name;
@@ -1121,10 +1157,10 @@ final class PatrolSession {
     }
   }
 
-  /// How long the running session has heard nothing, absent when no run is
-  /// waiting on the device.
+  /// How long the running session has heard nothing since its app came up,
+  /// absent before that and when no run is waiting on the device.
   Duration? get _quietFor {
-    if (!_isRunning || _testState != TestState.running) {
+    if (!_isRunning || !_appUp || _testState != TestState.running) {
       return null;
     }
     final since = _lastHeardAt;
@@ -1206,6 +1242,7 @@ final class PatrolSession {
       return getStatus(
         overrideWarning: [
           'Run timed out, but the test is still running in the background.',
+          if (!_appUp) 'The app is still building.',
           ?stalled,
           'Call status to check progress, or quit to stop it.',
         ].join(' '),

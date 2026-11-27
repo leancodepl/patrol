@@ -146,10 +146,11 @@ MCP gives the agent the tools, while a skill teaches it how to use them to write
 
 ## A run that goes quiet
 
-Every `run` and `status` result carries `quietForSeconds` -- how long the session has heard nothing
-from the device -- and `lastTestEntry`, the last test it saw. Once the quiet passes three minutes the
-result also carries a `stallNote` naming it, and a `run` that reaches its timeout says how long the
-quiet lasted. `quit` stops such a run; the next `run` starts a fresh session.
+Once the app is up and while a run is in progress, `run` and `status` results carry
+`quietForSeconds` — how long the session has heard nothing from the device — and `lastTestEntry`,
+the last test it saw. A build that is still going doesn't count as quiet. Once the quiet passes
+three minutes the result also carries a `stallNote` naming it, and a `run` that reaches its timeout
+says how long the quiet lasted. `quit` stops such a run; the next `run` starts a fresh session.
 
 ## Troubleshooting
 

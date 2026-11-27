@@ -182,6 +182,39 @@ packages:
     expect(fake.events, ['create']);
   });
 
+  test(
+    'starts cold in another project when the session ends meanwhile',
+    () async {
+      final other = Directory.systemTemp.createTempSync('patrol_other_project');
+      addTearDown(() => other.deleteSync(recursive: true));
+      final fake = FakeDevelop();
+      late PatrolSession session;
+      session = sessionWith(
+        fake,
+        resolveProjectRoot: ({testFile, requestedRoot, remember = true}) async {
+          if (!remember) {
+            // The app stops while the request is being resolved.
+            fake.endRun(0);
+            await Future<void>.delayed(const Duration(milliseconds: 50));
+          }
+          return (root: requestedRoot ?? projectRoot.path, testFile: testFile);
+        },
+      );
+      await startSession(session, 'app_test.dart');
+
+      final result = await session.startAndWait(
+        'app_test.dart',
+        projectRoot: other.path,
+        timeout: const Duration(seconds: 5),
+      );
+
+      expect(result.status.warning ?? '', isNot(contains('Quit that session')));
+      expect(fake.events.where((e) => e == 'create'), hasLength(2));
+      expect(fake.options.last, isNotNull);
+      await session.dispose();
+    },
+  );
+
   test('runs the test file as the project sees it', () async {
     final fake = FakeDevelop();
     final session = sessionWith(
@@ -837,7 +870,8 @@ packages:
     await session.dispose();
   });
 
-  test('says a quiet run has reported no test at all', () async {
+  test('does not call a silent build stalled', () async {
+    // The app never comes up: hotRestartReady stays pending.
     final fake = FakeDevelop();
     var clock = DateTime(2026, 8, 18, 12);
     final session = sessionWith(fake, now: () => clock);
@@ -845,7 +879,22 @@ packages:
 
     clock = clock.add(const Duration(minutes: 6));
 
-    // The signature of a run that builds and installs but never reports a step.
+    final status = session.getStatus();
+    expect(status.stallNote, isNull);
+    expect(status.quietFor, isNull);
+
+    await session.dispose();
+  });
+
+  test('says a quiet run has reported no test at all', () async {
+    final fake = FakeDevelop(hotRestartReady: Future<void>.value());
+    var clock = DateTime(2026, 8, 18, 12);
+    final session = sessionWith(fake, now: () => clock);
+    await startSession(session, 'app_test.dart');
+
+    clock = clock.add(const Duration(minutes: 6));
+
+    // The signature of an app that comes up but never reports a step.
     expect(
       session.getStatus().stallNote,
       contains('no test has been reported yet'),
