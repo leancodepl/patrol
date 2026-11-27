@@ -79,10 +79,13 @@ pass a JSON list of the arguments to skip instead.
 #### Starting a Playwright server
 
 Any server that speaks Playwright's protocol works. To host one yourself, run
-Playwright's `run-server` command with Node.js:
+Playwright's `run-server` command with Node.js. On a fresh machine, install the
+browser first (`--with-deps` also installs the system libraries it needs on
+Linux):
 
 ```bash
-npx playwright@1.56.0 run-server --port 3000 --host 0.0.0.0
+npx -y playwright@1.56.0 install --with-deps chromium
+npx -y playwright@1.56.0 run-server --port 3000 --host 0.0.0.0
 ```
 
 or use the official Docker image:
