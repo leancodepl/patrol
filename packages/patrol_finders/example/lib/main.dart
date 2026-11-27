@@ -76,63 +76,68 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             ),
           ),
           SizedBox(height: 8),
-          Container(
+          // Material, not a coloured Container: ListTile paints on the nearest Material.
+          Material(
             key: const Key('box1'),
             color: Theme.of(context).colorScheme.surface,
-            padding: const EdgeInsets.all(8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('box 1'),
-                ListTile(
-                  onTap: () => _incrementCounter(10),
-                  key: const Key('tile1'),
-                  title: const Text('Add'),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.add, key: Key('icon1')),
-                    onPressed: _incrementCounter,
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('box 1'),
+                  ListTile(
+                    onTap: () => _incrementCounter(10),
+                    key: const Key('tile1'),
+                    title: const Text('Add'),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.add, key: Key('icon1')),
+                      onPressed: _incrementCounter,
+                    ),
                   ),
-                ),
-                ListTile(
-                  onTap: () => _decrementCounter(10),
-                  key: const Key('tile2'),
-                  title: const Text('Subtract'),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.remove, key: Key('icon2')),
-                    onPressed: _decrementCounter,
+                  ListTile(
+                    onTap: () => _decrementCounter(10),
+                    key: const Key('tile2'),
+                    title: const Text('Subtract'),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.remove, key: Key('icon2')),
+                      onPressed: _decrementCounter,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 16),
-          Container(
+          Material(
             key: const Key('box2'),
             color: Theme.of(context).colorScheme.surface,
-            padding: const EdgeInsets.all(8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('box 2'),
-                ListTile(
-                  onTap: () => _incrementCounter(10),
-                  key: const Key('tile1'),
-                  title: const Text('Add'),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.add, key: Key('icon1')),
-                    onPressed: _incrementCounter,
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('box 2'),
+                  ListTile(
+                    onTap: () => _incrementCounter(10),
+                    key: const Key('tile1'),
+                    title: const Text('Add'),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.add, key: Key('icon1')),
+                      onPressed: _incrementCounter,
+                    ),
                   ),
-                ),
-                ListTile(
-                  onTap: () => _decrementCounter(10),
-                  key: const Key('tile2'),
-                  title: const Text('Subtract'),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.remove, key: Key('icon2')),
-                    onPressed: _decrementCounter,
+                  ListTile(
+                    onTap: () => _decrementCounter(10),
+                    key: const Key('tile2'),
+                    title: const Text('Subtract'),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.remove, key: Key('icon2')),
+                      onPressed: _decrementCounter,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           TextButton(
