@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' as io;
-import 'dart:io' show exit;
 
 import 'package:dispose_scope/dispose_scope.dart' hide ProcessDisposed;
 import 'package:meta/meta.dart';
@@ -20,7 +19,7 @@ class FlutterTool {
     required DisposeScope parentDisposeScope,
     required this._logger,
     this.onQuit,
-    this._onExit,
+    required this._onExit,
     @visibleForTesting this._adbTimeout = const Duration(seconds: 5),
   }) : _disposeScope = DisposeScope() {
     _disposeScope.disposedBy(parentDisposeScope);
@@ -32,16 +31,10 @@ class FlutterTool {
   final DisposeScope _disposeScope;
   final Logger _logger;
   final Future<void> Function()? onQuit;
-  final Future<void> Function()? _onExit;
 
-  /// Disposes the processes this tool started before the process exits.
-  Future<void> _exit() async {
-    if (_onExit case final onExit?) {
-      return onExit();
-    }
-    await _disposeScope.dispose();
-    exit(0);
-  }
+  /// Runs when the user quits. It owns disposing what the session started:
+  /// this tool knows only its own processes, not the backends'.
+  final Future<void> Function() _onExit;
 
   final Duration _adbTimeout;
 
@@ -352,7 +345,7 @@ class FlutterTool {
               }
 
               try {
-                await _exit();
+                await _onExit();
               } catch (err) {
                 _logger.err('Failed during exit: $err');
               }

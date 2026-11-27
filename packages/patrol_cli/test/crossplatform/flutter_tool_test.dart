@@ -35,6 +35,7 @@ void main() {
       processManager: processManager,
       platform: platform,
       stdin: stdin.stream,
+      onExit: () async {},
     );
   });
 
@@ -536,6 +537,7 @@ void main() {
         processManager: processManager,
         platform: platform,
         stdin: const Stream<List<int>>.empty(),
+        onExit: () async {},
         adbTimeout: const Duration(milliseconds: 10),
       );
       stubAttachProcess();
