@@ -42,6 +42,12 @@ class MobileAutomatorConfig {
   /// Port on [host] on which Patrol server instrumentation is running.
   String get port => _portOverride ?? _defaultPort();
 
+  /// The explicitly configured host, if any.
+  ///
+  /// Unlike [host], reading this does not resolve the default host, so it can
+  /// be copied between configs before the runtime ports are loaded.
+  String? get hostOverride => _hostOverride;
+
   /// The explicitly configured port, if any.
   ///
   /// Unlike [port], reading this does not resolve the default port, so it can

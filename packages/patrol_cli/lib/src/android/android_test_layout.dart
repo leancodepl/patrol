@@ -37,7 +37,7 @@ class AndroidTestLayoutDetector {
           .map((line) => line.split('//').first)
           .join('\n');
       return RegExp(
-        r'''include\s*\(?[^)]*["']:patrolTest["']''',
+        r'''include\s*\(?[^)]*["']:?patrolTest["']''',
       ).hasMatch(withoutComments);
     });
     if (!includesPatrolTest) {

@@ -93,7 +93,7 @@ jobs:
         run: |
           mkdir -p "$RUNNER_TEMP/apks"
           cp build/app/outputs/apk/debug/app-debug.apk "$RUNNER_TEMP/apks/"
-          cp build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk "$RUNNER_TEMP/apks/"
+          cp build/patrolTest/outputs/apk/debug/patrolTest-debug.apk "$RUNNER_TEMP/apks/"
 
       - name: Upload APKs
         uses: actions/upload-artifact@v4

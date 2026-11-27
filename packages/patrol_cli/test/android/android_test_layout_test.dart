@@ -32,6 +32,22 @@ void main() {
     );
   });
 
+  test('accepts include without a leading colon', () {
+    final android = fs.directory('android');
+    android.childDirectory('patrolTest').createSync(recursive: true);
+    android
+        .childFile('settings.gradle.kts')
+        .writeAsStringSync('include("app", "patrolTest")');
+    android
+        .childFile('patrolTest/src/main/java/example/MainActivityTest.java')
+        .createSync(recursive: true);
+
+    expect(
+      AndroidTestLayoutDetector(android).detect(),
+      AndroidTestLayout.selfInstrumenting,
+    );
+  });
+
   test('fails when patrolTest exists but is not included', () {
     final android = fs.directory('android');
     android.childDirectory('patrolTest').createSync(recursive: true);

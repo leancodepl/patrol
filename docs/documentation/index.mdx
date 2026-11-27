@@ -362,9 +362,23 @@ Check out our video version of this tutorial on YouTube!
   </Steps>
 
 <Warning>
-  To run tests in release mode (`patrol test --release`), set `testBuildType` and add Patrol to
-  the release build. Flutter leaves `dev_dependencies` plugins out of release builds, so without
-  `releaseImplementation` the test sources do not compile.
+  To run tests in release mode (`patrol test --release`) with the **in-app** layout, set
+  `testBuildType` and add Patrol to the release build. Flutter leaves `dev_dependencies`
+  plugins out of release builds, so without `releaseImplementation` the test sources do not
+  compile.
+
+  ```kotlin title="android/app/build.gradle.kts"
+  android {
+      // ...
+      testBuildType = "release"
+  }
+
+  dependencies {
+      // ...
+      releaseImplementation(project(":patrol"))
+  }
+  ```
+
   ```groovy title="android/app/build.gradle"
     android {
       ...
@@ -376,6 +390,7 @@ Check out our video version of this tutorial on YouTube!
       releaseImplementation project(":patrol")
     }
   ```
+
   These lines also put Patrol into your release build, so remove them, or put them behind a
   Gradle property, before you build the app you publish. Patrol ships its own R8 keep rules, so
   you don't need to add any for Patrol when minification is enabled.
@@ -383,7 +398,11 @@ Check out our video version of this tutorial on YouTube!
   If `integration_test` is also in your `dev_dependencies` and the release build fails to compile
   `GeneratedPluginRegistrant` with `package dev.flutter.plugins.integration_test does not exist`,
   remove `integration_test` from `pubspec.yaml`, since Patrol doesn't need it. If your app does
-  need it, add `releaseImplementation project(":integration_test")` next to the Patrol line.
+  need it, add `releaseImplementation(project(":integration_test"))` (Kotlin) or
+  `releaseImplementation project(":integration_test")` (Groovy) next to the Patrol line.
+
+  With the self-instrumenting `:patrolTest` layout, `patrol_test.gradle` debug-signs every test
+  build type, so `patrol test --release` does not need these `:app` lines for the test APK.
 </Warning>
 
 </Accordion>

@@ -110,7 +110,7 @@ class AndroidAppOptions {
     required this.appServerPort,
     required this.testServerPort,
     required this.uninstall,
-    this.testLayout = AndroidTestLayout.selfInstrumenting,
+    required this.testLayout,
     this.emitTestManifest = false,
   });
 

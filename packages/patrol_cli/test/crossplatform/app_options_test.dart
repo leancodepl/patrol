@@ -95,6 +95,7 @@ void main() {
           appServerPort: 1,
           testServerPort: 2,
           uninstall: false,
+          testLayout: AndroidTestLayout.selfInstrumenting,
         );
 
         final invocation = options.toGradleAssembleTestInvocation(
@@ -130,6 +131,7 @@ void main() {
           appServerPort: 1,
           testServerPort: 2,
           uninstall: false,
+          testLayout: AndroidTestLayout.selfInstrumenting,
         );
 
         final invocation = options.toGradleAssembleTestInvocation(
@@ -173,6 +175,7 @@ void main() {
           appServerPort: 1,
           testServerPort: 2,
           uninstall: true,
+          testLayout: AndroidTestLayout.selfInstrumenting,
         );
 
         final invocation = options.toGradleAssembleTestInvocation(
@@ -208,6 +211,7 @@ void main() {
           appServerPort: 1,
           testServerPort: 2,
           uninstall: true,
+          testLayout: AndroidTestLayout.selfInstrumenting,
         );
 
         final invocation = options.toGradleAssembleTestInvocation(
@@ -243,6 +247,7 @@ void main() {
           appServerPort: 1,
           testServerPort: 2,
           uninstall: false,
+          testLayout: AndroidTestLayout.selfInstrumenting,
         );
 
         final invocation = options.toGradleConnectedTestInvocation(
@@ -279,6 +284,7 @@ void main() {
           appServerPort: 1,
           testServerPort: 2,
           uninstall: true,
+          testLayout: AndroidTestLayout.selfInstrumenting,
         );
 
         final invocation = options.toGradleConnectedTestInvocation(

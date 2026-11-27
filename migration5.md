@@ -297,7 +297,9 @@ the Inbox before 5.0.0 is released.
   `android/patrolTest/src/main`, and apply `patrol_test.gradle` from `:patrol_android_test`
   (defaults `clearPackageData`; farms can still pass the runtime flag, which Patrol maps to
   app-data clear). Projects that keep `app/src/androidTest` need no change. Dart/JaCoCo
-  coverage still needs the in-app layout. Update `patrol` and `patrol_cli` together.
+  coverage still needs the in-app layout. In `:patrolTest` the host must call `setUp()` with no
+  activity class (`MainActivity.class` is not on the test APK). Update `patrol` and
+  `patrol_cli` together.
 - #3382, `patrol_cli`: `patrol develop` no longer accepts `--tags`, which it never applied. Remove
   `--tags` from `patrol develop` commands and scripts; `patrol test` keeps it.
 - #3040, `patrol_cli`: `patrol develop` on web requires Flutter 3.47.0 or newer, since hot restart

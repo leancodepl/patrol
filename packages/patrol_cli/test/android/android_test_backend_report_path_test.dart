@@ -29,6 +29,7 @@ void main() {
           rootPath: rootPath,
           buildMode: buildMode,
           flavor: flavor,
+          testLayout: AndroidTestLayout.selfInstrumenting,
         );
 
         final expectedPath = buildExpectedPath(

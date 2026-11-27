@@ -486,7 +486,15 @@ class AndroidTestBackend {
       final onlyTestClass = generatedClasses.isEmpty
           ? null
           : generatedClasses.join(',');
-      final targetAppId = _resolveBuiltApplicationId(options);
+      // Optional: in-app doesn't need it, and :patrolTest bakes APP_ID into the
+      // test APK. A failed lookup (custom buildDir, no package_name) must not
+      // abort a successful build.
+      String? targetAppId;
+      try {
+        targetAppId = _resolveBuiltApplicationId(options);
+      } on ToolExit {
+        targetAppId = null;
+      }
 
       // Start from a clean slate so the screenshots pulled after this run
       // belong to it. Leftovers from an aborted run or from `develop` (which
@@ -706,7 +714,11 @@ class AndroidTestBackend {
     }
 
     final (instrumentPackage, instrumentRunner) =
-        await _resolvePatrolInstrumentation(packageName, device);
+        await _resolvePatrolInstrumentation(
+          packageName,
+          device,
+          testLayout: options.testLayout,
+        );
 
     await _disposeScope.run((scope) async {
       final processLogcat =
@@ -717,14 +729,8 @@ class AndroidTestBackend {
             )
             ..disposedByTree(scope);
 
-      final path = generateTestReportPath(
-        rootPath: _rootDirectory.path,
-        buildMode: options.flutter.buildMode,
-        flavor: options.flutter.flavor,
-      );
-      final reportPath = _platform.isWindows
-          ? path.replaceAll(r'\', '/')
-          : path;
+      // No Gradle run, so there is no HTML report to point at.
+      const reportPath = '';
 
       AndroidVideoRecordingManager? videoRecordingManager;
       if (videoConfig?.enabled ?? false) {
@@ -886,6 +892,12 @@ class AndroidTestBackend {
       // `am instrument -w` exits 0 even when tests fail, so detect failure from
       // its textual output instead of the exit code.
       var failed = false;
+      String? targetAppId;
+      try {
+        targetAppId = _resolveBuiltApplicationId(options);
+      } on ToolExit {
+        targetAppId = null;
+      }
       final process =
           await _adb.instrument(
               packageName: instrumentPackage,
@@ -893,7 +905,7 @@ class AndroidTestBackend {
               device: device.id,
               arguments: {
                 'class': classArg,
-                'patrolAppId': _resolveBuiltApplicationId(options),
+                'patrolAppId': ?targetAppId,
               },
             )
             ..disposedByTree(scope);
@@ -1062,10 +1074,13 @@ class AndroidTestBackend {
 
   Future<(String, String)> _resolvePatrolInstrumentation(
     String appPackageName,
-    Device device,
-  ) async {
-    final inAppTestPackage = '$appPackageName.test';
-    final fallback = (inAppTestPackage, 'pl.leancode.patrol.PatrolJUnitRunner');
+    Device device, {
+    required AndroidTestLayout testLayout,
+  }) async {
+    final expectedPackage = testLayout == AndroidTestLayout.selfInstrumenting
+        ? '$appPackageName.patrol_test'
+        : '$appPackageName.test';
+    final fallback = (expectedPackage, 'pl.leancode.patrol.PatrolJUnitRunner');
 
     final entries = await _listInstrumentation(device);
     if (entries == null) {
@@ -1080,30 +1095,35 @@ class AndroidTestBackend {
         .where((entry) => entry.runner.contains('PatrolJUnitRunner'))
         .toList();
 
-    for (final entry in patrol) {
-      if (entry.package == inAppTestPackage) {
-        _logger.detail(
-          'Using instrumentation component ${entry.package}/${entry.runner} '
-          '(target=${entry.target})',
-        );
-        return (entry.package, entry.runner);
+    if (testLayout == AndroidTestLayout.selfInstrumenting) {
+      for (final entry in patrol) {
+        if (entry.package == expectedPackage) {
+          _logger.detail(
+            'Using instrumentation component ${entry.package}/${entry.runner} '
+            '(target=${entry.target})',
+          );
+          return (entry.package, entry.runner);
+        }
       }
-    }
-
-    final selfInstrumenting = patrol
-        .where((entry) => entry.package != appPackageName)
-        .toList();
-    if (selfInstrumenting.isNotEmpty) {
-      selfInstrumenting.sort((a, b) {
-        int rank(_Instrumentation e) => e.target == e.package ? 0 : 1;
-        return rank(a).compareTo(rank(b));
-      });
-      final chosen = selfInstrumenting.first;
-      _logger.detail(
-        'Using instrumentation component ${chosen.package}/${chosen.runner} '
-        '(target=${chosen.target})',
-      );
-      return (chosen.package, chosen.runner);
+    } else {
+      for (final entry in patrol) {
+        if (entry.target == appPackageName) {
+          _logger.detail(
+            'Using instrumentation component ${entry.package}/${entry.runner} '
+            '(target=${entry.target})',
+          );
+          return (entry.package, entry.runner);
+        }
+      }
+      for (final entry in patrol) {
+        if (entry.package == expectedPackage) {
+          _logger.detail(
+            'Using instrumentation component ${entry.package}/${entry.runner} '
+            '(target=${entry.target})',
+          );
+          return (entry.package, entry.runner);
+        }
+      }
     }
 
     if (patrol.isNotEmpty) {
@@ -1165,12 +1185,27 @@ class AndroidTestBackend {
   }
 
   Future<void> uninstall(AndroidAppOptions options, Device device) async {
-    final appId = _resolveBuiltApplicationId(options);
-    final testAppId = _resolveBuiltTestApplicationId(options);
-    _logger.detail('Uninstalling $appId from ${device.name}');
-    await _adb.uninstall(appId, device: device.id);
-    _logger.detail('Uninstalling $testAppId from ${device.name}');
-    await _adb.uninstall(testAppId, device: device.id);
+    String? appId;
+    String? testAppId;
+    try {
+      appId = _resolveBuiltApplicationId(options);
+    } on ToolExit catch (err) {
+      _logger.detail('Skipping app uninstall: $err');
+    }
+    try {
+      testAppId = _resolveBuiltTestApplicationId(options);
+    } on ToolExit catch (err) {
+      _logger.detail('Skipping test APK uninstall: $err');
+    }
+
+    if (appId != null) {
+      _logger.detail('Uninstalling $appId from ${device.name}');
+      await _adb.uninstall(appId, device: device.id);
+    }
+    if (testAppId != null) {
+      _logger.detail('Uninstalling $testAppId from ${device.name}');
+      await _adb.uninstall(testAppId, device: device.id);
+    }
   }
 
   /// Where patrol writes native screenshots on the device.
@@ -1303,10 +1338,10 @@ class AndroidTestBackend {
           .applicationId;
     } on ToolExit {
       final packageName = options.packageName;
-      if (packageName != null &&
-          packageName.isNotEmpty &&
-          options.testLayout == AndroidTestLayout.inApp) {
-        return '$packageName.test';
+      if (packageName != null && packageName.isNotEmpty) {
+        return options.testLayout == AndroidTestLayout.selfInstrumenting
+            ? '$packageName.patrol_test'
+            : '$packageName.test';
       }
       rethrow;
     }
@@ -1319,7 +1354,7 @@ class AndroidTestBackend {
   static String generateTestReportPath({
     required String rootPath,
     required BuildMode buildMode,
-    AndroidTestLayout testLayout = AndroidTestLayout.selfInstrumenting,
+    required AndroidTestLayout testLayout,
     String? flavor,
   }) {
     var buildModeAndFlavorPath = '';

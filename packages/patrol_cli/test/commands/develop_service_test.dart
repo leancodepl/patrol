@@ -72,6 +72,7 @@ void main() {
           appServerPort: 8080,
           testServerPort: 8081,
           uninstall: false,
+          testLayout: AndroidTestLayout.selfInstrumenting,
         ),
       );
       registerFallbackValue(

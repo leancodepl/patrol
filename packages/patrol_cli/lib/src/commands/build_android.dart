@@ -283,7 +283,7 @@ class BuildAndroidCommand extends PatrolCommand {
   void printApkPaths({
     String? flavor,
     required String buildMode,
-    AndroidTestLayout testLayout = AndroidTestLayout.selfInstrumenting,
+    required AndroidTestLayout testLayout,
   }) {
     // Standard Android APK output paths (relative to project root)
     final baseApkPath = join('build', 'app', 'outputs', 'apk');
