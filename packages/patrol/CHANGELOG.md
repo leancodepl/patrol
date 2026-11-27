@@ -8,6 +8,10 @@
   tests to Chromium 149. This also fixes `npx playwright install` hanging while extracting Chromium
   on Node.js 26 and newer Node.js 24 releases. With `--web-reporter junit`, some failures are now
   reported as `<error>` instead of `<failure>` in the XML.
+- `--full-isolation` deletes the app on iOS in seconds instead of minutes. Patrol no longer waits
+  for the home screen to stop animating after every step, and waits for each button of the deletion
+  instead. When it cannot delete the app, the test fails instead of running in the previous install.
+  (#3416)
 - Add native screenshots on iOS: `screenshot_on_failure: true` and `$.takeNativeScreenshot('tag')`
   now work on simulators and physical devices. See the
   [docs](https://patrol.leancode.co/cli-commands/test#on-ios). (#3271)
