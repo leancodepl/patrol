@@ -83,27 +83,80 @@ void main() {
       addTearDown(process.kill);
       process.disposedByTree(scope);
 
-      // The shell needs a moment before its child shows up in the process list.
-      var children = <int>[];
-      for (var i = 0; i < 50 && children.isEmpty; i++) {
-        await Future<void>.delayed(const Duration(milliseconds: 100));
-        children = await _childrenOf(process.pid);
-      }
-      expect(
-        children,
-        isNotEmpty,
-        reason: 'no child was spawned, so this proves nothing',
-      );
+      final children = await _waitForChildren(process.pid);
 
       await scope.dispose();
 
-      for (final child in children) {
-        expect(
-          await _isAlive(child),
-          isFalse,
-          reason: 'child $child is still running',
-        );
-      }
+      await _expectGone(children);
+    });
+
+    test('tells the caller when it kills a running process', () async {
+      final scope = DisposeScope();
+      final process = await _startSleeper();
+      addTearDown(process.kill);
+      var killed = false;
+      process.disposedByTree(scope, onKill: () => killed = true);
+
+      await scope.dispose();
+
+      expect(killed, isTrue);
+    });
+
+    test('does not report a kill for a process that exited', () async {
+      final scope = DisposeScope();
+      final process = Platform.isWindows
+          ? await Process.start('cmd.exe', ['/c', 'exit 0'])
+          : await Process.start('sh', ['-c', 'true']);
+      var killed = false;
+      process.disposedByTree(scope, onKill: () => killed = true);
+
+      await process.exitCode;
+      await scope.dispose();
+
+      expect(killed, isFalse);
     });
   });
+
+  group('killTree', () {
+    test('kills the processes that the process spawned', () async {
+      final process = await _startSleeper();
+      addTearDown(process.kill);
+      final children = await _waitForChildren(process.pid);
+
+      await process.killTree();
+
+      await expectLater(process.exitCode, completes);
+      await _expectGone(children);
+    });
+  });
+}
+
+/// Waits for [pid]'s children to show up; a shell needs a moment to spawn them.
+Future<List<int>> _waitForChildren(int pid) async {
+  var children = <int>[];
+  for (var i = 0; i < 50 && children.isEmpty; i++) {
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+    children = await _childrenOf(pid);
+  }
+  expect(
+    children,
+    isNotEmpty,
+    reason: 'no child was spawned, so this proves nothing',
+  );
+  return children;
+}
+
+/// Waits for every one of [pids] to be gone. A killed child stays visible until
+/// it is reaped, so a single check can still see it.
+Future<void> _expectGone(List<int> pids) async {
+  for (final pid in pids) {
+    var alive = true;
+    for (var i = 0; i < 50 && alive; i++) {
+      alive = await _isAlive(pid);
+      if (alive) {
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+      }
+    }
+    expect(alive, isFalse, reason: 'child $pid is still running');
+  }
 }

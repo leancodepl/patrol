@@ -155,14 +155,14 @@ class AndroidVideoRecordingManager extends VideoRecordingManager {
     try {
       await _currentRecordingProcess!.exitCode.timeout(
         const Duration(seconds: 10),
-        onTimeout: () {
-          _currentRecordingProcess?.kill();
+        onTimeout: () async {
+          await _currentRecordingProcess?.killTree();
           return -1;
         },
       );
     } catch (err) {
       _logger.detail('Error while waiting for screenrecord to exit: $err');
-      _currentRecordingProcess?.kill();
+      await _currentRecordingProcess?.killTree();
     }
 
     // Give the device a moment to finish writing the file to disk.

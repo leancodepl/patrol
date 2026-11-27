@@ -134,16 +134,15 @@ class IOSTestBackend {
       // flutter build ios --config-only
 
       var flutterBuildKilled = false;
-      process = await _processManager.start(
-        options.toFlutterBuildInvocation(options.flutter.buildMode),
-        runInShell: true,
-      );
-      scope.addDispose(() {
-        process.kill();
-        flutterBuildKilled = true; // `flutter build` has exit code 0 on SIGINT
-      });
-      process.listenStdOut((l) => _logger.info('\t$l')).disposedBy(scope);
-      process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
+      process =
+          await _processManager.start(
+              options.toFlutterBuildInvocation(options.flutter.buildMode),
+              runInShell: true,
+            )
+            // `flutter build` has exit code 0 on SIGINT.
+            ..disposedByTree(scope, onKill: () => flutterBuildKilled = true)
+            ..listenStdOut((l) => _logger.info('\t$l')).disposedBy(scope)
+            ..listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
       var exitCode = await process.exitCode;
       final flutterCommand = options.flutter.command;
       if (exitCode != 0) {

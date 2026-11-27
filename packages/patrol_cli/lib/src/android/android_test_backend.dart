@@ -511,7 +511,7 @@ class AndroidTestBackend {
 
       final exitCode = await process.exitCode;
       patrolLogReader.stopTimer();
-      processLogcat.kill();
+      await processLogcat.killTree();
 
       // Cleanup video recording manager
       await videoRecordingManager?.dispose();
@@ -744,7 +744,7 @@ class AndroidTestBackend {
 
       final exitCode = await process.exitCode;
       patrolLogReader.stopTimer();
-      processLogcat.kill();
+      await processLogcat.killTree();
 
       // Stops and saves any in-flight recording (e.g. the session was quit
       // mid-test).
@@ -866,7 +866,7 @@ class AndroidTestBackend {
 
       final exitCode = await process.exitCode;
       patrolLogReader.stopTimer();
-      processLogcat.kill();
+      await processLogcat.killTree();
       _logger.info(patrolLogReader.summary);
 
       if (exitCode == 0 && !failed) {
@@ -1152,6 +1152,10 @@ class AndroidTestBackend {
   /// Runs [stop] when this backend is disposed, so an interrupted session
   /// also ends what it started on the device.
   void stopOnDispose(Future<void> Function() stop) {
+    if (_disposeScope.disposed) {
+      unawaited(stop());
+      return;
+    }
     _disposeScope.addDispose(stop);
   }
 

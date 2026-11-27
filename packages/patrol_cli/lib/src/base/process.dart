@@ -107,7 +107,10 @@ extension ProcessTreeDisposers on Process {
   /// a `flutter` shell script elsewhere - and its children outlive it. There is
   /// no process group to signal, so the descendants have to be named: `taskkill
   /// /T` walks them on Windows, `pgrep -P` elsewhere.
-  void disposedByTree(DisposeScope disposeScope) {
+  ///
+  /// [onKill] runs when disposing finds the process still running, right before
+  /// it is killed.
+  void disposedByTree(DisposeScope disposeScope, {void Function()? onKill}) {
     var exited = false;
     unawaited(exitCode.then((_) => exited = true));
 
@@ -117,32 +120,40 @@ extension ProcessTreeDisposers on Process {
       if (exited) {
         return;
       }
-
-      if (!NativePlatform.current!.isWindows) {
-        // Collected before anything dies; once the parent is gone its children
-        // are reparented and `pgrep -P` no longer reports them.
-        (await _descendants(pid)).forEach(Process.killPid);
-        kill();
-        return;
-      }
-
-      // /F because gradlew.bat and friends ignore the graceful request.
-      // taskkill reports refusals (e.g. access denied) through its exit code,
-      // so fall back on those too.
-      var killedTree = false;
-      try {
-        final result = await Process.run('taskkill', [
-          ...['/PID', '$pid'],
-          '/T',
-          '/F',
-        ]).timeout(const Duration(seconds: 10));
-        killedTree = result.exitCode == 0;
-      } catch (_) {}
-
-      if (!killedTree) {
-        kill();
-      }
+      onKill?.call();
+      await killTree();
     });
+  }
+
+  /// Kills this process together with any processes it spawned.
+  ///
+  /// Call it while the process runs: [kill] alone stops only a wrapper, and once
+  /// the wrapper is gone its PID may belong to an unrelated process.
+  Future<void> killTree() async {
+    if (!NativePlatform.current!.isWindows) {
+      // Collected before anything dies; once the parent is gone its children
+      // are reparented and `pgrep -P` no longer reports them.
+      (await _descendants(pid)).forEach(Process.killPid);
+      kill();
+      return;
+    }
+
+    // /F because gradlew.bat and friends ignore the graceful request.
+    // taskkill reports refusals (e.g. access denied) through its exit code,
+    // so fall back on those too.
+    var killedTree = false;
+    try {
+      final result = await Process.run('taskkill', [
+        ...['/PID', '$pid'],
+        '/T',
+        '/F',
+      ]).timeout(const Duration(seconds: 10));
+      killedTree = result.exitCode == 0;
+    } catch (_) {}
+
+    if (!killedTree) {
+      kill();
+    }
   }
 }
 
