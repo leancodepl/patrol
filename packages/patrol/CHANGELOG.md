@@ -9,7 +9,6 @@
   for the home screen to stop animating after every step, and waits for each button of the deletion
   instead. When it cannot delete the app, the test fails instead of running in the previous install.
   (#3416)
-- Find the "Remove App" button on a Japanese iOS 26 home screen, which now reads "アプリを削除". (#3416)
 
 ## 4.12.0
 
