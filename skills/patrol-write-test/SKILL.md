@@ -23,7 +23,7 @@ When working with Patrol tests:
 - Use `patrol-run({ "testFile": "patrol_test/your_test.dart" })` to run tests and wait for completion
 - If no session running: starts new session with specified test file
 - If session already running: automatically restarts current tests
-- A restart is a hot restart: app data and granted permissions stay from the previous run, so a test must not assume a fresh install. Reset the state the app persists (secure storage, local databases, shared preferences) in the helper that starts the app, before the app starts
+- A restart is a hot restart: app data and the answers given to permission dialogs stay from the previous run, so a test must not assume a fresh install. Reset the state the app persists (secure storage, local databases, shared preferences) in the helper that starts the app, before the app starts
 - Use `patrol-screenshot({ "platform": "android" })` or `patrol-screenshot({ "platform": "ios" })` to capture screenshots for debugging test failures
 - Use `patrol-quit({})` to quit the session gracefully
 - Use `patrol-status({})` to check current status and recent output
@@ -66,7 +66,7 @@ When working with Patrol tests:
 - ALWAYS handle native dialogs that appear during the flow:
   - Handle dialogs immediately after the action that triggers them
   - For native permissions prefer `$.platform.mobile.grantPermissionWhenInUse` over `$.platform.mobile.tap`
-  - A permission stays granted across restarts of a running session, so check `$.platform.mobile.isPermissionDialogVisible()` before handling its dialog
+  - A restart of a running session does not reset permissions, so a dialog the previous run answered may not appear again. Check `$.platform.mobile.isPermissionDialogVisible()` before handling it
 
 # Test Keys
 
