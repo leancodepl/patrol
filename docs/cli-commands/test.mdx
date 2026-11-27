@@ -370,6 +370,11 @@ patrol test --reuse-build --target patrol_test/login_test.dart
 patrol test --reuse-build --target patrol_test/checkout_test.dart # no native build
 ```
 
+With [build-time test discovery][discovery] (the default), each run discovers the tests first,
+because their native classes are part of the build. Changing what a test does reuses the build.
+Adding, removing or renaming a test, or picking other `--target`s, changes those classes and builds
+in full.
+
 A full build runs again, with the reason printed, when any of these changed: files in `android/`
 or `ios/`, `pubspec.yaml`, `pubspec.lock`, the native code of path dependencies, assets and fonts
 declared in `pubspec.yaml`, the Flutter version, or options such as `--flavor`, `--build-name`
@@ -390,7 +395,6 @@ Limitations:
 
 - Debug builds on Android and iOS simulators, release builds on physical iOS devices.
 - On physical iOS devices, the signing identity of the last build must be in your keychain.
-- Not with build-time test discovery (`emit_test_manifest`).
 - On Android the APKs are signed again with the debug key (`~/.android/debug.keystore`), and the
   tests run through the Android Test Orchestrator without Gradle, so the Gradle HTML report isn't
   written. `clearPackageData` is passed when your `build.gradle` sets it.

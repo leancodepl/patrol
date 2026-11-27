@@ -85,7 +85,8 @@ class NativeBuildInputs {
 /// Hashes the inputs of a native build so a later run can tell whether the
 /// native part of the last build is still current.
 ///
-/// Covered: the `android/` or `ios/` directory, `pubspec.yaml`,
+/// Covered: the `android/` or `ios/` directory (with the native tests that
+/// build-time test discovery generates there), `pubspec.yaml`,
 /// `pubspec.lock`, the native plugin list, the native code of plugins that
 /// live outside the pub cache (path dependencies), the app's own assets
 /// declared in `pubspec.yaml`, the Flutter revision and [NativeBuildInputs].
@@ -125,10 +126,6 @@ class NativeFingerprinter {
     'GeneratedPluginRegistrant.h',
     'GeneratedPluginRegistrant.swift',
   };
-
-  /// Prefix of the files patrol generates for build-time test discovery.
-  /// Whether they exist is captured by [NativeBuildInputs.emitTestManifest].
-  static const _generatedPrefix = 'PatrolGenerated';
 
   NativeFingerprint compute(
     NativeBuildInputs inputs, {
@@ -191,7 +188,7 @@ class NativeFingerprinter {
     void walk(Directory current) {
       for (final entity in current.listSync(followLinks: false)) {
         final name = p.basename(entity.path);
-        if (_skippedNames.contains(name) || name.startsWith(_generatedPrefix)) {
+        if (_skippedNames.contains(name)) {
           continue;
         }
         if (entity is Directory) {

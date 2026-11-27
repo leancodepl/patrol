@@ -69,17 +69,23 @@ flutter:
     expect(compute(), isNot(before));
   });
 
-  test('ignores Dart code, build outputs and generated files', () {
+  test('ignores Dart code and build outputs', () {
     final before = compute();
     write('lib/main.dart', 'void main() { print(1); }');
     write('android/app/build/outputs/apk/debug/app-debug.apk', 'apk');
     write('android/.gradle/cache', 'x');
     write('android/local.properties', 'sdk.dir=/sdk');
-    write(
-      'android/app/src/androidTest/java/PatrolGeneratedTests_a.java',
-      'class',
-    );
     expect(compute(), before);
+  });
+
+  test('changes when the generated native tests change', () {
+    const path = 'android/app/src/androidTest/java/PatrolGeneratedTests_a.java';
+    write(path, 'class A { void test_one() {} }');
+    final before = compute();
+    write(path, 'class A { void test_one() {} }');
+    expect(compute(), before);
+    write(path, 'class A { void test_one() {} void test_two() {} }');
+    expect(compute(), isNot(before));
   });
 
   test('ignores the other platform', () {

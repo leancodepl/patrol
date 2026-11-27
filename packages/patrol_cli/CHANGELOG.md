@@ -3,7 +3,8 @@
 - Add `patrol test --reuse-build`, which skips the native build when only Dart code changed since the
   last `--reuse-build` run: it compiles the Dart code and puts it into that build. Works on Android
   and iOS simulators (debug) and physical iOS devices (release, where `App.framework` is built
-  again and signed). `--reuse-build-from` uses a build from another directory, such as
+  again and signed). With build-time test discovery, adding, removing or renaming a test builds
+  in full. `--reuse-build-from` uses a build from another directory, such as
   the APKs from `patrol build android --develop`. See the
   [docs](https://patrol.leancode.co/cli-commands/test#reusing-the-native-build).
 - Add `--kernel-only` to `patrol build android` and `patrol build ios`, which only compiles the

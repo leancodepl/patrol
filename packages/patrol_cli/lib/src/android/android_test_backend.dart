@@ -65,49 +65,7 @@ class AndroidTestBackend {
       Process process;
       int exitCode;
 
-      // Build-time test discovery + static JUnit codegen. Runs a host
-      // `flutter test` in discovery mode to obtain a manifest of the Dart test
-      // tree, then generates a static JUnit class so each Dart test becomes a
-      // real, individually-selectable native @Test (and shows up under its own
-      // name in reports, not under the parameterized `runDartTest[...]`
-      // wrapper).
-      // Always start from a clean slate: remove any previously generated class
-      // so a stale one can't linger after a failed discovery or an opt-out
-      // (which would double-run tests alongside the runtime host class).
-      final codegen = AndroidTestCodegen(_rootDirectory.fileSystem);
-      final androidDir = _rootDirectory.childDirectory('android');
-      codegen.deleteGenerated(androidDir);
-
-      if (options.emitTestManifest) {
-        final manifestPath =
-            await TestManifestGenerator(
-              processManager: _processManager,
-              rootDirectory: _rootDirectory,
-              logger: _logger,
-            ).generate(
-              options.flutter,
-              scope,
-              targetPlatform: TargetPlatform.android,
-            );
-        if (manifestPath == null) {
-          throwToolExit(
-            'Build-time test discovery failed; fix the errors above, or pass '
-            '--no-emit-test-manifest to use runtime discovery.',
-          );
-        }
-        final result = codegen.generate(
-          manifestPath: manifestPath,
-          androidDir: androidDir,
-        );
-        if (result == null) {
-          throwToolExit(missingAndroidHostTestMessage);
-        }
-        _logger.info(
-          'Generated ${result.testCount} static JUnit test method(s) in '
-          '${result.fullyQualifiedClassNames.length} class(es) → '
-          '${result.directoryPath}',
-        );
-      }
+      await _prepareTestDiscovery(options, scope);
 
       // :app:assembleDebug
 
@@ -168,6 +126,63 @@ class AndroidTestBackend {
         throw Exception(cause);
       }
     });
+  }
+
+  /// Runs build-time test discovery and generates the static JUnit tests,
+  /// or removes the generated tests when [AndroidAppOptions.emitTestManifest]
+  /// is off, as the start of [build] does. `patrol test --reuse-build` runs
+  /// it first, so the generated tests count in its check of the native
+  /// inputs.
+  Future<void> prepareTestDiscovery(AndroidAppOptions options) =>
+      _disposeScope.run((scope) => _prepareTestDiscovery(options, scope));
+
+  Future<void> _prepareTestDiscovery(
+    AndroidAppOptions options,
+    DisposeScope scope,
+  ) async {
+    // Build-time test discovery + static JUnit codegen. Runs a host
+    // `flutter test` in discovery mode to obtain a manifest of the Dart test
+    // tree, then generates a static JUnit class so each Dart test becomes a
+    // real, individually-selectable native @Test (and shows up under its own
+    // name in reports, not under the parameterized `runDartTest[...]`
+    // wrapper).
+    // Always start from a clean slate: remove any previously generated class
+    // so a stale one can't linger after a failed discovery or an opt-out
+    // (which would double-run tests alongside the runtime host class).
+    final codegen = AndroidTestCodegen(_rootDirectory.fileSystem);
+    final androidDir = _rootDirectory.childDirectory('android');
+    codegen.deleteGenerated(androidDir);
+
+    if (options.emitTestManifest) {
+      final manifestPath =
+          await TestManifestGenerator(
+            processManager: _processManager,
+            rootDirectory: _rootDirectory,
+            logger: _logger,
+          ).generate(
+            options.flutter,
+            scope,
+            targetPlatform: TargetPlatform.android,
+          );
+      if (manifestPath == null) {
+        throwToolExit(
+          'Build-time test discovery failed; fix the errors above, or pass '
+          '--no-emit-test-manifest to use runtime discovery.',
+        );
+      }
+      final result = codegen.generate(
+        manifestPath: manifestPath,
+        androidDir: androidDir,
+      );
+      if (result == null) {
+        throwToolExit(missingAndroidHostTestMessage);
+      }
+      _logger.info(
+        'Generated ${result.testCount} static JUnit test method(s) in '
+        '${result.fullyQualifiedClassNames.length} class(es) → '
+        '${result.directoryPath}',
+      );
+    }
   }
 
   /// Verifies that Gradle will be able to locate the Android SDK before it is
@@ -883,6 +898,14 @@ class AndroidTestBackend {
     final (instrumentPackage, instrumentRunner) =
         await _resolveInstrumentationComponent(packageName, device);
 
+    // As in [execute]: with build-time discovery, run only the generated
+    // classes, or the runtime host class would run every test again.
+    final generatedClasses = options.emitTestManifest
+        ? AndroidTestCodegen(
+            _rootDirectory.fileSystem,
+          ).findGeneratedClassNames(_rootDirectory.childDirectory('android'))
+        : const <String>[];
+
     await _executeInstrumentation(
       options,
       device,
@@ -890,6 +913,13 @@ class AndroidTestBackend {
       instrumentRunner: instrumentRunner,
       orchestrator: true,
       clearPackageData: _setsClearPackageData(),
+      classArg: generatedClasses.isEmpty ? null : generatedClasses.join(','),
+      executedTestsCheck: ExecutedTestsCheck.forRun(
+        _rootDirectory,
+        _logger,
+        platform: TargetPlatform.android,
+        emitTestManifest: options.emitTestManifest,
+      ),
       flavor: options.flutter.flavor,
       showFlutterLogs: showFlutterLogs,
       hideTestSteps: hideTestSteps,
@@ -1125,6 +1155,7 @@ class AndroidTestBackend {
                     orchestratorInvocation(
                       instrumentation: '$instrumentPackage/$instrumentRunner',
                       clearPackageData: clearPackageData,
+                      classArg: classArg,
                     ),
                   ])
                 : await _adb.instrument(
@@ -1508,12 +1539,15 @@ class AndroidTestBackend {
   static String orchestratorInvocation({
     required String instrumentation,
     required bool clearPackageData,
+    String? classArg,
   }) {
     return [
       r'CLASSPATH=$(pm path androidx.test.services)',
       'app_process / androidx.test.services.shellexecutor.ShellMain',
       'am instrument -w',
       if (clearPackageData) '-e clearPackageData true',
+      // Class names hold no characters the device shell would interpret.
+      if (classArg != null) '-e class $classArg',
       '-e targetInstrumentation $instrumentation',
       '$_orchestratorPackage/androidx.test.orchestrator.AndroidTestOrchestrator',
     ].join(' ');

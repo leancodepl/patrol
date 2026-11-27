@@ -242,6 +242,20 @@ void main() {
       );
     });
 
+    test('runs only the given classes', () {
+      expect(
+        AndroidTestBackend.orchestratorInvocation(
+          instrumentation: 'a/b',
+          clearPackageData: false,
+          classArg: 'com.example.PatrolGeneratedTests_a,com.example.B',
+        ),
+        contains(
+          '-e class com.example.PatrolGeneratedTests_a,com.example.B '
+          '-e targetInstrumentation a/b',
+        ),
+      );
+    });
+
     test('leaves clearPackageData out when the app does not set it', () {
       expect(
         AndroidTestBackend.orchestratorInvocation(

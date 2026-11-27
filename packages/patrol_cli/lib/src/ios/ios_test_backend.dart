@@ -101,27 +101,10 @@ class IOSTestBackend {
         );
       }
 
-      // Reset on every build, so a stale .inc never runs old tests.
-      _resetGeneratedInc();
       if (_discoveryModeFile.existsSync()) {
         _discoveryModeFile.deleteSync();
       }
-      _verifyRunnerSetup(emitTestManifest: options.emitTestManifest);
-
-      if (options.emitTestManifest) {
-        final manifestPath = await TestManifestGenerator(
-          processManager: _processManager,
-          rootDirectory: _rootDirectory,
-          logger: _logger,
-        ).generate(options.flutter, scope, targetPlatform: TargetPlatform.iOS);
-        if (manifestPath == null) {
-          throwToolExit(
-            'Build-time test discovery failed; fix the errors above, or pass '
-            '--no-emit-test-manifest to use runtime discovery.',
-          );
-        }
-        _generateXcodeTests(manifestPath);
-      }
+      await _prepareTestDiscovery(options, scope);
 
       // flutter build ios --config-only
 
@@ -315,6 +298,37 @@ class IOSTestBackend {
       ...selection.classNames,
       ...selection.tests.map((name) => name.selector),
     ];
+  }
+
+  /// Runs build-time test discovery and generates the static XCTest methods,
+  /// or resets them when [IOSAppOptions.emitTestManifest] is off, as the
+  /// start of [build] does. `patrol test --reuse-build` runs it first, so the
+  /// generated tests count in its check of the native inputs.
+  Future<void> prepareTestDiscovery(IOSAppOptions options) =>
+      _disposeScope.run((scope) => _prepareTestDiscovery(options, scope));
+
+  Future<void> _prepareTestDiscovery(
+    IOSAppOptions options,
+    DisposeScope scope,
+  ) async {
+    // Reset on every build, so a stale .inc never runs old tests.
+    _resetGeneratedInc();
+    _verifyRunnerSetup(emitTestManifest: options.emitTestManifest);
+
+    if (options.emitTestManifest) {
+      final manifestPath = await TestManifestGenerator(
+        processManager: _processManager,
+        rootDirectory: _rootDirectory,
+        logger: _logger,
+      ).generate(options.flutter, scope, targetPlatform: TargetPlatform.iOS);
+      if (manifestPath == null) {
+        throwToolExit(
+          'Build-time test discovery failed; fix the errors above, or pass '
+          '--no-emit-test-manifest to use runtime discovery.',
+        );
+      }
+      _generateXcodeTests(manifestPath);
+    }
   }
 
   /// Every generated class, as an `-only-testing` selector, so a run restricted

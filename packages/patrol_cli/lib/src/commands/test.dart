@@ -715,15 +715,14 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
         '${platform == ReusePlatform.iosDevice ? 'physical iOS devices' : 'this device'}.',
       );
     }
-    final emitTestManifest = platform.isIOS
-        ? iosOpts.emitTestManifest
-        : androidOpts.emitTestManifest;
-    if (emitTestManifest) {
-      throwToolExit(
-        '--reuse-build does not work with build-time test discovery, which builds '
-        'the test list into the native test runner. Pass '
-        '--no-emit-test-manifest.',
-      );
+    // Build-time test discovery generates native test classes, one per Dart
+    // test file. Generate them first, as a build would, so they count as
+    // native inputs: changing a test's body reuses the build, adding or
+    // renaming a test builds in full.
+    if (platform.isIOS) {
+      await _iosTestBackend.prepareTestDiscovery(iosOpts);
+    } else {
+      await _androidTestBackend.prepareTestDiscovery(androidOpts);
     }
 
     final inputs = NativeBuildInputs(
@@ -737,6 +736,9 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       clearPermissions: iosOpts.clearIOSPermissions,
       screenshotOnFailure: iosOpts.screenshotOnFailure,
       noTreeShakeIcons: flutterOpts.noTreeShakeIcons,
+      emitTestManifest: platform.isIOS
+          ? iosOpts.emitTestManifest
+          : androidOpts.emitTestManifest,
     );
 
     final _BuiltArtifacts base;
