@@ -8,7 +8,7 @@ environment:
   flutter: ">=3.38.0"
 
 dependencies:
-  app_links: ^6.1.1
+  app_links: ^7.0.0
   cupertino_icons: ^1.0.6
   file_picker: ^10.3.3
   file_saver: ^0.3.1
@@ -56,6 +56,7 @@ flutter:
 
 patrol:
   app_name: Patrol example
+  screenshot_on_failure: true
   android:
     package_name: pl.leancode.patrol.e2e_app
   ios:

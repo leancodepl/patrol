@@ -9,6 +9,9 @@
   for the home screen to stop animating after every step, and waits for each button of the deletion
   instead. When it cannot delete the app, the test fails instead of running in the previous install.
   (#3416)
+- Add native screenshots on iOS: `screenshot_on_failure: true` and `$.takeNativeScreenshot('tag')`
+  now work on simulators and physical devices. See the
+  [docs](https://patrol.leancode.co/cli-commands/test#on-ios). (#3271)
 
 ## 4.12.0
 

@@ -7,6 +7,11 @@
 //  5. Copy the macro back here
 //  6. Go back to using a macro in RunnerUITests.m
 
+// Set by patrol_cli from `screenshot_on_failure`; off when built without it.
+#ifndef PATROL_SCREENSHOT_ON_FAILURE
+#define PATROL_SCREENSHOT_ON_FAILURE 0
+#endif
+
 #import <objc/runtime.h>
 
 // XCTest waits until an app is idle before it reads or acts on its elements.
@@ -273,6 +278,7 @@ static inline void PatrolWithoutQuiescenceWait(void (^block)(void)) {
   +(BOOL)isPatrolDevelopMode {                                                                                      \
     return [[NSProcessInfo processInfo].environment[@"PATROL_DEVELOP"] isEqualToString:@"1"];                       \
   }                                                                                                                 \
+                                                                                                                    \
   +(void)launchPatrolAppWithServer : (PatrolServer *)server {                                                       \
     server.appReady = NO;                                                                                           \
     XCUIApplication *app = [[XCUIApplication alloc] init];                                                          \
@@ -469,6 +475,8 @@ static inline void PatrolWithoutQuiescenceWait(void (^block)(void)) {
         if (skip) {                                                                                                 \
           XCTSkip(@"Skip that test \"%@\"", dartTestName);                                                          \
         }                                                                                                           \
+        /* A capture that landed after the previous test's drain isn't ours. */                                     \
+        [[PatrolScreenshotBuffer sharedBuffer] discardPending];                                                     \
                                                                                                                     \
         if (CLEAR_PERMISSIONS && i > 0) {                                                                           \
           [self resetPermissions];                                                                                  \
@@ -487,8 +495,11 @@ static inline void PatrolWithoutQuiescenceWait(void (^block)(void)) {
                                                                                                                     \
         [__test_class launchPatrolAppWithServer:server];                                                            \
         BOOL appReady = [__test_class waitForPatrolAppReadyWithServer:server];                                      \
-        XCTAssertTrue(appReady, @"Patrol app did not become ready on port %ld", (long)server.boundAppPort);         \
         if (!appReady) {                                                                                            \
+          if (PATROL_SCREENSHOT_ON_FAILURE) {                                                                       \
+            [PatrolScreenshotBuffer attachCurrentScreenNamed:@"patrol_failure" to:_self];                           \
+          }                                                                                                         \
+          XCTFail(@"Patrol app did not become ready on port %ld", (long)server.boundAppPort);                       \
           return;                                                                                                   \
         }                                                                                                           \
                                                                                                                     \
@@ -515,6 +526,11 @@ static inline void PatrolWithoutQuiescenceWait(void (^block)(void)) {
         NSString *details = response ? response.details : @"(no details - app likely crashed)";                     \
         if (response && response.skipped) {                                                                         \
           XCTSkip(@"%@", details);                                                                                  \
+        }                                                                                                           \
+        [[PatrolScreenshotBuffer sharedBuffer] drainAttachingTo:_self];                                             \
+        /* The app died mid-test, so the Dart failure hook never captured. */                                       \
+        if (!response && PATROL_SCREENSHOT_ON_FAILURE) {                                                            \
+          [PatrolScreenshotBuffer attachCurrentScreenNamed:@"patrol_failure" to:_self];                             \
         }                                                                                                           \
         XCTAssertTrue(passed, @"%@", details);                                                                      \
       });                                                                                                           \
@@ -620,6 +636,8 @@ static inline void PatrolWithoutQuiescenceWait(void (^block)(void)) {
     if (skip) {                                                                                                        \
       XCTSkip(@"Skip that test \"%@\"", dartTestName);                                                                 \
     }                                                                                                                  \
+    /* A capture that landed after the previous test's drain isn't ours. */                                            \
+    [[PatrolScreenshotBuffer sharedBuffer] discardPending];                                                            \
     if (CLEAR_PERMISSIONS && _patrolStaticTestIndex > 0) {                                                             \
       [[self class] resetPermissions];                                                                                 \
       NSLog(@"App permissions cleared");                                                                               \
@@ -640,6 +658,9 @@ static inline void PatrolWithoutQuiescenceWait(void (^block)(void)) {
     NSDate *_patrolReadyDeadline = [NSDate dateWithTimeIntervalSinceNow:180.0];                                        \
     while (!_patrolStaticServer.appReady) {                                                                            \
       if ([[NSDate date] compare:_patrolReadyDeadline] == NSOrderedDescending) {                                       \
+        if (PATROL_SCREENSHOT_ON_FAILURE) {                                                                            \
+          [PatrolScreenshotBuffer attachCurrentScreenNamed:@"patrol_failure" to:self];                                 \
+        }                                                                                                              \
         XCTFail(@"App did not report PatrolAppService readiness on port %ld", (long)_patrolStaticServer.boundAppPort); \
         return;                                                                                                        \
       }                                                                                                                \
@@ -664,6 +685,11 @@ static inline void PatrolWithoutQuiescenceWait(void (^block)(void)) {
     NSString *details = response ? response.details : @"(no details - app likely crashed)";                            \
     if (response && response.skipped) {                                                                                \
       XCTSkip(@"%@", details);                                                                                         \
+    }                                                                                                                  \
+    [[PatrolScreenshotBuffer sharedBuffer] drainAttachingTo:self];                                                     \
+    /* The app died mid-test, so the Dart failure hook never captured. */                                              \
+    if (!response && PATROL_SCREENSHOT_ON_FAILURE) {                                                                   \
+      [PatrolScreenshotBuffer attachCurrentScreenNamed:@"patrol_failure" to:self];                                     \
     }                                                                                                                  \
     XCTAssertTrue(passed, @"%@", details);                                                                             \
   }
