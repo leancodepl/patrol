@@ -64,8 +64,9 @@ class PatrolTesterConfig {
   /// on and the settle between drags doesn't wait for it to coast to a stop.
   ///
   /// To reach about as far as a step and its fling did, each drag then moves
-  /// the view by exactly 3 steps. Scrollables that need a fling to move, such
-  /// as a [PageView], may not scroll at all.
+  /// the view by exactly 3 steps. Scrollables that snap to their items, such
+  /// as a [PageView] or a carousel, snap back without a fling and don't scroll
+  /// at all: pass `dragWithoutFling: false` to the call that scrolls them.
   ///
   /// The scrolling methods also take a `dragWithoutFling` argument, which
   /// overrides this setting for a single call.

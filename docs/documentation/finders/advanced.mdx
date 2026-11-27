@@ -226,6 +226,37 @@ This is because the [ListView] widget doesn't extend [Scrollable] – instead, i
 builds a subclass of [Scrollable] itself. [This is a known Flutter
 problem](https://github.com/flutter/flutter/issues/88762).
 
+**Scrolling faster with `dragWithoutFling`**
+
+Each drag of `scrollTo()` ends with a fling, and before the next drag Patrol
+waits for the scroll to coast to a stop. On a long screen that wait takes most
+of the time. If your tests scroll a lot, turn on `dragWithoutFling` in the
+config:
+
+```dart
+patrolTest(
+  'scrolls without waiting for flings',
+  config: const PatrolTesterConfig(dragWithoutFling: true),
+  ($) async {
+    // ...
+  },
+);
+```
+
+With it, each drag covers 3 steps and ends without a fling, so there is nothing
+to wait for. A scrollable that snaps to its items, such as a [PageView] or a
+carousel, needs a fling to move to the next item: without one it snaps back,
+and `scrollTo()` fails with `WaitUntilVisibleTimeoutException`. Pass
+`dragWithoutFling: false` when you scroll such a widget:
+
+```dart
+await $('page 3').scrollTo(
+  view: $(#carousel).$(Scrollable),
+  dragWithoutFling: false,
+);
+```
+
 [listview]: https://api.flutter.dev/flutter/widgets/ListView-class.html
+[pageview]: https://api.flutter.dev/flutter/widgets/PageView-class.html
 [scrollable]: https://api.flutter.dev/flutter/widgets/Scrollable-class.html
 [pumpAndSettle()]: https://api.flutter.dev/flutter/flutter_test/WidgetTester/pumpAndSettle.html
