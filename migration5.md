@@ -98,7 +98,9 @@ Removed APIs, deprecated since Patrol 4.0:
 
 1. Run `dart fix --apply`. It rewrites `$.native` and `$.native2` to `$.platform.mobile`, and
    `NativeSelector` to `MobileSelector`, among others. It only fixes files that import
-   `package:patrol/patrol.dart` directly.
+   `package:patrol/patrol.dart` directly. On Dart 3.14+, `dart migrate --apply` applies the same
+   fixes, but only when it bumps your `environment.sdk`. A package already at the latest SDK is
+   skipped, so run `dart fix --apply` there.
 2. Run `dart analyze` and fix what's left by hand: Android-only calls (`pressBack()`,
    `enableLocation()`, ...) move to `$.platform.android`, iOS-only calls to `$.platform.ios`.
 3. Remove `timeout:` from overrides or calls of `PatrolBinding.runTest`; use `timeout` on

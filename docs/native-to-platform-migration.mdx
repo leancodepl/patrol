@@ -176,6 +176,12 @@ run:
 dart fix --apply
 ```
 
+<Info>
+  On Dart 3.14 (Flutter 3.50) and later, `dart migrate --apply` applies the same fixes, but only
+  when it bumps `environment.sdk` in your `pubspec.yaml`. A package already at the latest SDK is
+  skipped, so run `dart fix --apply` there.
+</Info>
+
 It rewrites:
 
 | Before | After |
