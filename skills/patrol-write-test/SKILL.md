@@ -59,7 +59,7 @@ When working with Patrol tests:
 - Prefer using `waitUntilVisible` as assertion at the end of the test
 - Use `expect()` for assertions only when `waitUntilVisible` is not enough
 - An assertion must be able to fail. Before asserting that something is not visible, assert something only the expected screen shows: an absence check also passes on the wrong screen
-- Don't assert a value the app already had before the test acted. Pick a value different from the starting one, or assert the starting value before the first action
+- Don't assert a value the app already had before the test acted: an action that does nothing would pass. Pick an expected value different from the starting one. When a flow returns to its starting value on purpose, also assert the value in between
 
 ## Native Dialog Handling
 
