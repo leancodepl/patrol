@@ -1,10 +1,10 @@
 ## Unreleased
 
 - Add `PatrolAppLaunch.cleanInstall()`, which reinstalls the app before a
-  phase. Supported on Android and the iOS Simulator.
+  phase. Supported on Android and the iOS Simulator. (#3415)
 - `--full-isolation` deletes the app on iOS in seconds instead of minutes.
   Patrol no longer waits for the home screen to stop animating after every
-  step.
+  step. (#3415)
 - Add `PatrolAppLaunch.attach()`, which starts a phase in the running app. The
   test continues when the app restarts its Flutter engine without a process
   death, e.g. when Android recreates the activity for a deep link. A test that
