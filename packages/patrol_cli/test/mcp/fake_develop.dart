@@ -19,8 +19,10 @@ class FakeDevelop {
     this.quitEndsRun = true,
     this.runOutlivesExit = false,
     Object? runError,
+    String? webDebuggerPort,
   }) {
     when(() => service.device).thenReturn(device);
+    when(() => service.webDebuggerPort).thenReturn(webDebuggerPort);
     when(
       () => service.hotRestartReady,
     ).thenAnswer((_) => hotRestartReady ?? Completer<void>().future);

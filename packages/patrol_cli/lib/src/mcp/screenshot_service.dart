@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io' show HttpClient, WebSocket;
 import 'dart:typed_data';
 
 import 'package:file/file.dart';
@@ -6,6 +7,7 @@ import 'package:file/local.dart';
 import 'package:image/image.dart' as img;
 import 'package:mcp_dart/mcp_dart.dart';
 import 'package:patrol_cli/src/devices.dart';
+import 'package:patrol_cli/src/web/chrome_pages.dart';
 import 'package:process/process.dart';
 
 enum ScreenshotPlatform {
@@ -52,11 +54,19 @@ enum ScreenshotPlatform {
       };
 }
 
+/// Captures a page of a Chrome instance, as PNG bytes, through its remote
+/// debugging port: the tab with [pageId] when Chrome still has it.
+typedef WebPageCapture =
+    Future<Uint8List> Function(String debuggerPort, {String? pageId});
+
 abstract final class ScreenshotService {
   static const _maxHeight = 800;
 
   static Future<CallToolResult> handleScreenshotRequest(
     Device? device, {
+    String? webDebuggerPort,
+    String? webAppPageId,
+    WebPageCapture captureWebPage = captureChromePage,
     ProcessManager processManager = const LocalProcessManager(),
     FileSystem fileSystem = const LocalFileSystem(),
   }) async {
@@ -71,6 +81,34 @@ abstract final class ScreenshotService {
             ),
           ],
           isError: true,
+        );
+      }
+
+      if (device.targetPlatform == TargetPlatform.web) {
+        if (webDebuggerPort == null) {
+          return const CallToolResult(
+            content: [
+              TextContent(
+                text:
+                    'The web session has no Chrome debugger port yet. '
+                    'Wait for the run to start the browser and try again.',
+              ),
+            ],
+            isError: true,
+          );
+        }
+        final page = await captureWebPage(
+          webDebuggerPort,
+          pageId: webAppPageId,
+        );
+        _validatePng(page);
+        return CallToolResult(
+          content: [
+            ImageContent(
+              data: base64Encode(_resizeImage(page)),
+              mimeType: 'image/png',
+            ),
+          ],
         );
       }
 
@@ -204,5 +242,99 @@ abstract final class ScreenshotService {
     } on Exception {
       return bytes;
     }
+  }
+}
+
+/// Captures the tab in front on [debuggerPort], as a phone screenshot captures
+/// what is on screen, with the DevTools Protocol's `Page.captureScreenshot`.
+/// When Chrome cannot tell which tab is in front, it captures the tab with
+/// [pageId], then the first page. Every step is bounded: a browser that stopped
+/// answering fails the call.
+Future<Uint8List> captureChromePage(
+  String debuggerPort, {
+  String? pageId,
+}) async {
+  const step = Duration(seconds: 5);
+  final httpClient = HttpClient();
+  try {
+    final request = await httpClient
+        .getUrl(Uri.parse('http://127.0.0.1:$debuggerPort/json'))
+        .timeout(step);
+    final response = await request.close().timeout(step);
+    final body = await response.transform(utf8.decoder).join().timeout(step);
+    final targets = jsonDecode(body) as List<Object?>;
+
+    final visibleIds = <String>{};
+    for (final page in chromePages(targets)) {
+      final socketUrl = page['webSocketDebuggerUrl'] as String?;
+      final id = page['id'] as String?;
+      if (socketUrl == null || id == null) {
+        continue;
+      }
+      try {
+        final result = await _callPage(socketUrl, 'Runtime.evaluate', {
+          'expression': 'document.visibilityState',
+        }, timeout: step);
+        final value = (result['result'] as Map<String, dynamic>?)?['value'];
+        if (value == 'visible') {
+          visibleIds.add(id);
+        }
+      } on Object {
+        // A page that does not answer is not the one in front.
+      }
+    }
+
+    final page = pickFrontPage(
+      targets,
+      visibleIds: visibleIds,
+      fallbackId: pageId,
+    );
+    if (page == null) {
+      throw Exception('Chrome lists no page to capture');
+    }
+    final socketUrl = page['webSocketDebuggerUrl'] as String?;
+    if (socketUrl == null) {
+      throw Exception('Chrome gives no debugger URL for the page');
+    }
+    final result = await _callPage(
+      socketUrl,
+      'Page.captureScreenshot',
+      const {},
+      timeout: step * 2,
+    );
+    final data = result['data'];
+    if (data is! String) {
+      throw Exception('Page.captureScreenshot returned no data');
+    }
+    return base64Decode(data);
+  } finally {
+    httpClient.close(force: true);
+  }
+}
+
+/// Sends [method] to the page at [socketUrl] and returns its result, or throws
+/// with Chrome's error.
+Future<Map<String, dynamic>> _callPage(
+  String socketUrl,
+  String method,
+  Map<String, Object?> params, {
+  required Duration timeout,
+}) async {
+  final socket = await WebSocket.connect(socketUrl).timeout(timeout);
+  try {
+    socket.add(jsonEncode({'id': 1, 'method': method, 'params': params}));
+    await for (final message in socket.timeout(timeout)) {
+      final reply = jsonDecode(message as String) as Map<String, dynamic>;
+      if (reply['id'] != 1) {
+        continue;
+      }
+      if (reply['result'] case final Map<String, dynamic> result) {
+        return result;
+      }
+      throw Exception('$method failed: ${reply['error'] ?? 'no result'}');
+    }
+    throw Exception('Chrome closed the connection before answering $method');
+  } finally {
+    await socket.close();
   }
 }

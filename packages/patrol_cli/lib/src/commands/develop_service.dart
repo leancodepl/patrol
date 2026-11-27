@@ -128,6 +128,9 @@ class DevelopService {
   /// The Chrome debugger port used by the web develop session.
   String? get webDebuggerPort => _webTestBackend.debuggerPort;
 
+  /// The Chrome tab the web develop session's app runs in.
+  String? get webAppPageId => _webTestBackend.appPageId;
+
   /// Fails fast when the SDK predates flutter/flutter#183838. Without it a web
   /// Hot Restart reports success and keeps serving the previous test bundle.
   void _assertWebHotRestartSupported(FlutterCommand flutterCommand) {
@@ -152,8 +155,14 @@ class DevelopService {
     }
   }
 
-  /// Completes once the session will act on a hot restart.
-  Future<void> get hotRestartReady => _flutterTool.hotRestartReady;
+  /// Completes once the session will act on a hot restart. A web session is
+  /// driven by its own `flutter run`, the others by `flutter attach`; only the
+  /// session's own one ever completes, and callers ask before [run] has picked
+  /// the device.
+  Future<void> get hotRestartReady => Future.any([
+    _webTestBackend.hotRestartReady,
+    _flutterTool.hotRestartReady,
+  ]);
 
   /// Runs the full develop flow: discover device, read config, bundle test,
   /// build, execute, and attach for hot restart.

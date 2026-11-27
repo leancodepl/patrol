@@ -523,6 +523,12 @@ final class PatrolSession {
   Device? get device => _developService?.device;
   int? get testServerPort => _testServerPort;
 
+  /// The remote debugging port of the Chrome a web session drives.
+  String? get webDebuggerPort => _developService?.webDebuggerPort;
+
+  /// The Chrome tab the web session's app runs in.
+  String? get webAppPageId => _developService?.webAppPageId;
+
   var _portForwarded = false;
 
   /// The resolved project's `patrol` incompatibility, read on every call so an
@@ -743,7 +749,8 @@ final class PatrolSession {
       final selected = autoSelectDevice(attached);
       if (selected == null) {
         return 'No Android or iOS device detected. Start an emulator or '
-            'simulator (or connect a device) and try again.';
+            'simulator (or connect a device) and try again, or pass '
+            'device: "chrome" to run in a browser.';
       }
       flagParts.addAll(['--device', selected.id]);
       if (supportedDevices(attached).length > 1) {
