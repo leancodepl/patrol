@@ -184,7 +184,7 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
     override fun doubleTap(request: AndroidTapRequest) {
         automation.doubleTap(
             uiSelector = request.selector.toUiSelector(),
-            bySelector = request.selector.toBySelector(),
+            bySelector = request.selector.copy(instance = null).toBySelector(),
             index = request.selector.instance?.toInt() ?: 0,
             timeout = request.timeoutMillis,
             delayBetweenTaps = request.delayBetweenTapsMillis
@@ -212,7 +212,7 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
             automation.enterText(
                 text = request.data,
                 uiSelector = request.selector.toUiSelector(),
-                bySelector = request.selector.toBySelector(),
+                bySelector = request.selector.copy(instance = null).toBySelector(),
                 index = request.selector.instance?.toInt() ?: 0,
                 keyboardBehavior = request.keyboardBehavior,
                 timeout = request.timeoutMillis,
@@ -237,7 +237,7 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
     override fun waitUntilVisible(request: AndroidWaitUntilVisibleRequest) {
         automation.waitUntilVisible(
             uiSelector = request.selector.toUiSelector(),
-            bySelector = request.selector.toBySelector(),
+            bySelector = request.selector.copy(instance = null).toBySelector(),
             index = request.selector.instance?.toInt() ?: 0,
             timeout = request.timeoutMillis
         )
