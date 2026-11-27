@@ -3,6 +3,12 @@
 - Agent skills: `patrol-write-test` now covers the state a restart of a running session keeps,
   what a failed run leaves behind, assertions that cannot fail, steps a test does not need, and
   `settlePolicy` on screens with never-ending animations.
+- Fix the location "Change to Always Allow" dialog showing only in the first test with
+  `--clear-permissions` on iOS. The reset now also clears app-side permission caches, such as
+  the "already asked" flag that `permission_handler` keeps in `NSUserDefaults`. See the
+  [docs](https://patrol.leancode.co/cli-commands/test#clearing-permissions-on-ios). (#3431)
+- Fix `--clear-permissions` and `--full-isolation` on iOS skipping the reset for the first test
+  declared in Dart instead of the first test that runs, when the two differ. (#3431)
 - Fix web tests failing on Ubuntu 26.04 (now `ubuntu-latest` on GitHub Actions) with "Playwright does
   not support chromium on ubuntu26.04-x64", by updating Playwright to 1.61.1, which also moves web
   tests to Chromium 149. This also fixes `npx playwright install` hanging while extracting Chromium

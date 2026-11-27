@@ -172,6 +172,29 @@ To achieve full isolation between test runs:
 patrol test --full-isolation
 ```
 
+### Clearing permissions on iOS
+
+`--clear-permissions` resets permissions before every test except the one that
+runs first (XCTest runs tests in name order):
+
+- Patrol asks iOS to reset the authorization status of the resources in
+  `XCUIProtectedResource` (location, camera, microphone, photos, contacts and
+  others). iOS decides what actually resets: location goes back to "not
+  determined", also after a denial, but camera permission is not reset on
+  physical devices.
+- App-side permission caches are cleared too. Some permission plugins remember
+  in `NSUserDefaults` that they already asked. For example, `permission_handler`
+  doesn't request location Always a second time, so without this the "Change to
+  Always Allow" dialog would show only in the first test. Patrol removes these
+  keys on the launch right after the reset, before your app's `main` runs.
+
+Other app data is kept. The first test runs with whatever state the device
+already has, so start from a fresh install to get a clean first test.
+
+```bash
+patrol test --clear-permissions
+```
+
 ### iOS Simulator version
 
 On iOS Simulator, Patrol asks `xcodebuild` for the `latest` iOS version, which

@@ -22,6 +22,10 @@
   @implementation __test_class                                                                                      \
                                                                                                                     \
   static NSMutableOrderedSet<NSString *> *_selectedTestNames = nil;                                                 \
+  /* Set by +resetPermissions; tells the next launch to clear app-side caches. */                                   \
+  static BOOL _patrolClearPermissionCachesOnLaunch = NO;                                                            \
+  /* Tests that have started, in run order: XCTest sorts them by name, not by Dart order. */                        \
+  static NSUInteger _patrolStartedTestCount = 0;                                                                    \
                                                                                                                     \
   +(NSArray<NSString *> *)selectedTestNames {                                                                       \
     return _selectedTestNames.array;                                                                                \
@@ -54,6 +58,12 @@
     environment[@"PATROL_TEST_SERVER_PORT"] = [NSString stringWithFormat:@"%ld", (long)server.boundTestPort];       \
     environment[@"PATROL_APP_SERVER_PORT"] = [NSString stringWithFormat:@"%ld", (long)server.boundAppPort];         \
     environment[@"PATROL_HOST_SERVER_PORT"] = NSProcessInfo.processInfo.environment[@"PATROL_HOST_PORT"];           \
+    if (_patrolClearPermissionCachesOnLaunch) {                                                                     \
+      environment[@"PATROL_CLEAR_PERMISSIONS"] = @"1";                                                              \
+      _patrolClearPermissionCachesOnLaunch = NO;                                                                    \
+    } else {                                                                                                        \
+      [environment removeObjectForKey:@"PATROL_CLEAR_PERMISSIONS"];                                                 \
+    }                                                                                                               \
     app.launchEnvironment = environment;                                                                            \
     [app launch];                                                                                                   \
   }                                                                                                                 \
@@ -163,6 +173,7 @@
   }                                                                                                                 \
   +(void)resetPermissions {                                                                                         \
     NSLog(@"Clearing permissions");                                                                                 \
+    _patrolClearPermissionCachesOnLaunch = YES;                                                                     \
     XCUIApplication *app = [[XCUIApplication alloc] init];                                                          \
     if (@available(iOS 13.4, *)) {                                                                                  \
       [app resetAuthorizationStatusForResource:XCUIProtectedResourceLocation];                                      \
@@ -323,13 +334,14 @@
         NSLog(@"RunnerUITests running Dart test: %@", dartTestName);                                                \
         /* A capture that landed after the previous test's drain isn't ours. */                                     \
         [[PatrolScreenshotBuffer sharedBuffer] discardPending];                                                     \
+        BOOL isFirstTest = _patrolStartedTestCount++ == 0;                                                          \
                                                                                                                     \
-        if (CLEAR_PERMISSIONS && i > 0) {                                                                           \
+        if (CLEAR_PERMISSIONS && !isFirstTest) {                                                                    \
           [self resetPermissions];                                                                                  \
           NSLog(@"App permissions cleared");                                                                        \
         }                                                                                                           \
                                                                                                                     \
-        if (FULL_ISOLATION && i > 0) {                                                                              \
+        if (FULL_ISOLATION && !isFirstTest) {                                                                       \
           NSLog(@"Uninstalling app");                                                                               \
           [self uninstallApp];                                                                                      \
           NSLog(@"App uninstallation completed, launching fresh app instance");                                     \
@@ -411,6 +423,8 @@
   static PatrolServer *_patrolStaticServer = nil;                                                                      \
   static ObjCPatrolAppServiceClient *_patrolStaticClient = nil;                                                        \
   static int _patrolStaticTestIndex = 0;                                                                               \
+  /* Set by +resetPermissions; tells the next launch to clear app-side caches. */                                      \
+  static BOOL _patrolStaticClearPermissionCachesOnLaunch = NO;                                                         \
                                                                                                                        \
   /* XCTest calls +setUp once per class, and the generated per-file classes all                                        \
    * share one server and one port. */                                                                                 \
@@ -443,12 +457,19 @@
     environment[@"PATROL_APP_SERVER_PORT"] =                                                                           \
         [NSString stringWithFormat:@"%ld", (long)_patrolStaticServer.boundAppPort];                                    \
     environment[@"PATROL_HOST_SERVER_PORT"] = NSProcessInfo.processInfo.environment[@"PATROL_HOST_PORT"];              \
+    if (_patrolStaticClearPermissionCachesOnLaunch) {                                                                  \
+      environment[@"PATROL_CLEAR_PERMISSIONS"] = @"1";                                                                 \
+      _patrolStaticClearPermissionCachesOnLaunch = NO;                                                                 \
+    } else {                                                                                                           \
+      [environment removeObjectForKey:@"PATROL_CLEAR_PERMISSIONS"];                                                    \
+    }                                                                                                                  \
     app.launchEnvironment = environment;                                                                               \
     [app launch];                                                                                                      \
   }                                                                                                                    \
                                                                                                                        \
   +(void)resetPermissions {                                                                                            \
     NSLog(@"Clearing permissions");                                                                                    \
+    _patrolStaticClearPermissionCachesOnLaunch = YES;                                                                  \
     XCUIApplication *app = [[XCUIApplication alloc] init];                                                             \
     if (@available(iOS 13.4, *)) {                                                                                     \
       [app resetAuthorizationStatusForResource:XCUIProtectedResourceLocation];                                         \
