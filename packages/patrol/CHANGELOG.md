@@ -35,6 +35,9 @@
 - Add native screenshots on iOS: `screenshot_on_failure: true` and `$.takeNativeScreenshot('tag')`
   now work on simulators and physical devices. See the
   [docs](https://patrol.leancode.co/cli-commands/test#on-ios). (#3271)
+- **Breaking:** Bump `patrol_finders` to `^4.0.0-dev.1`: `$.pumpAndSettle()` and
+  `$.pumpWidgetAndSettle()` return the number of pumped frames, and `$.pumpWidget()` takes named
+  arguments. See the `patrol_finders` changelog.
 
 ## 5.0.0-dev.1
 
