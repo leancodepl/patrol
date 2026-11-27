@@ -53,7 +53,7 @@ When working with Patrol tests:
 - Don't write try catch blocks unless absolutely necessary
 - After writing test check if it works by running it with MCP server, fix it if it fails
 - If test fails because element was not found, check if it need to be scrolled to in the app code and adjust the test if needed
-- Give a test only the steps its journey needs. A step copied from another test, such as signing in, costs every run its time and can fail for reasons the test is not about
+- Give a test only the steps its journey needs. A step copied from another test, such as logging in, costs every run its time and can fail for reasons the test is not about
 - On a screen with an animation that never ends (a spinner, a looping animation), every action waits out the settle timeout (10 seconds by default) and `$.pumpAndSettle` fails. Pass `settlePolicy: SettlePolicy.noSettle` to the actions on that screen instead of adding waits
 
 ## Assertion Rules
