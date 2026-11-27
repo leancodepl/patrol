@@ -282,4 +282,17 @@ public class MainActivityTest {}
     );
     expect(result, isNull);
   });
+
+  test('hasHostTest tells whether the Patrol test class exists', () {
+    final bare = MemoryFileSystem.test();
+
+    expect(
+      AndroidTestCodegen(fs).hasHostTest(fs.directory('/android')),
+      isTrue,
+    );
+    expect(
+      AndroidTestCodegen(bare).hasHostTest(bare.directory('/android')),
+      isFalse,
+    );
+  });
 }

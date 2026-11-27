@@ -10,6 +10,9 @@
   discovery: followed by `#include "PatrolGeneratedTests.inc"`, it runs the generated tests when the
   file declares any, and discovers tests at runtime otherwise. `..._STATIC_BASE` is a deprecated
   alias, and the 4.7.0 `..._STATIC_BEGIN`/`_END` macros are removed. See `migration5.md`.
+- **Breaking:** With build-time test discovery, a test the app registers that discovery didn't find
+  (for example one behind `Platform.isAndroid`) fails every test of the run with the list of
+  missing tests, instead of silently never running. Requires `patrol_cli` 5.0. (#3425)
 - Add `$.entrypointArgs` with the Dart entrypoint arguments the native side of the app passes to
   the test bundle (`dartEntrypointArgs` on Android, `entrypointArgs` on iOS and macOS). Needs a
   `patrol_cli` release that includes this change. (#3366)
@@ -18,6 +21,9 @@
   tests to Chromium 149. This also fixes `npx playwright install` hanging while extracting Chromium
   on Node.js 26 and newer Node.js 24 releases. With `--web-reporter junit`, some failures are now
   reported as `<error>` instead of `<failure>` in the XML.
+- Add native screenshots on iOS: `screenshot_on_failure: true` and `$.takeNativeScreenshot('tag')`
+  now work on simulators and physical devices. See the
+  [docs](https://patrol.leancode.co/cli-commands/test#on-ios). (#3271)
 
 ## 5.0.0-dev.1
 

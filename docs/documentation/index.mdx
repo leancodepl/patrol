@@ -135,7 +135,7 @@ Check out our video version of this tutorial on YouTube!
     <Info>
         **Native failure screenshots (device farms)**: set
         `screenshot_on_failure: true` to capture the failing screen and collect
-        it from your device-farm run (Android only, off by default). See
+        it from your device-farm run (Android and iOS, off by default). See
         [Screenshots](/cli-commands/test#screenshots) for setup and the per-farm
         details.
     </Info>
@@ -171,6 +171,8 @@ Check out our video version of this tutorial on YouTube!
     
     <Step id="create-mainactivitytest">
       Create a file named `MainActivityTest.java` and copy there the code below.
+      Patrol runs your tests through this class, so `patrol test` and
+      `patrol build` stop with an error when it's missing.
 
       ```java title="MainActivityTest.java"
       package com.example.myapp; // replace "com.example.myapp" with your app's package
@@ -280,6 +282,8 @@ Check out our video version of this tutorial on YouTube!
     
     <Step id="create-mainactivitytest">
       Create a file named `MainActivityTest.java` and copy there the code below.
+      Patrol runs your tests through this class, so `patrol test` and
+      `patrol build` stop with an error when it's missing.
 
       ```java title="MainActivityTest.java"
       package com.example.myapp; // replace "com.example.myapp" with your app's package

@@ -58,7 +58,11 @@ class PatrolAppService extends PatrolAppServiceServer {
   PatrolAppService({
     required this.topLevelDartTestGroup,
     this.reuseAcrossTests = _reuseAcrossTestsDefault,
-  });
+    List<String>? manifestTests,
+  }) : _missingFromManifest = switch (manifestTests) {
+         null => const [],
+         final tests => testsMissingFromManifest(topLevelDartTestGroup, tests),
+       };
 
   /// Port the server will use to listen for incoming HTTP traffic.
   int get port => _resolveAppServerPort();
@@ -77,6 +81,9 @@ class PatrolAppService extends PatrolAppServiceServer {
   /// The ambient test group that wraps all the other groups and tests in the
   /// bundled Dart test file.
   final DartGroupEntry topLevelDartTestGroup;
+
+  /// Tests this app registered that the build-time manifest doesn't list.
+  final List<String> _missingFromManifest;
 
   /// Whether one process serves more than one Dart test against this single
   /// [PatrolAppService] instance.
@@ -235,6 +242,19 @@ class PatrolAppService extends PatrolAppServiceServer {
     // registered (a `skip:` that depends on the platform, for example). Such a
     // test never runs, so nothing would ever complete the request and the native
     // runner would wait for it forever.
+    // A test missing from the manifest has no native test, so it would never
+    // run and the run would still pass.
+    if (_missingFromManifest.isNotEmpty) {
+      final message = missingFromManifestError(_missingFromManifest);
+      _patrolLog
+        ..log(TestEntry(name: request.name, status: TestEntryStatus.failure))
+        ..log(ErrorEntry(message: message));
+      return RunDartTestResponse(
+        result: RunDartTestResponseResult.failure,
+        details: message,
+      );
+    }
+
     final requestedTest = _findTest(request.name);
     if (requestedTest == null) {
       const hint =
