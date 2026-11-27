@@ -950,6 +950,34 @@ void main() {
           expect(quitDone, isTrue);
         });
       });
+
+      test(
+        'gives up on the uninstall when the device goes away without a quit',
+        () {
+          fakeAsync((async) {
+            stubSession();
+            var uninstalls = 0;
+            when(() => androidTestBackend.uninstall(any(), any())).thenAnswer(
+              // The first uninstall is the one before the tests start.
+              (_) =>
+                  uninstalls++ == 0 ? Future.value() : Completer<void>().future,
+            );
+            unawaited(runSession().then((_) {}, onError: (_) {}));
+            async.elapse(const Duration(seconds: 1));
+
+            // The backend ends on its own, as it does when the device is gone.
+            backend.complete();
+            async.elapse(const Duration(seconds: 1));
+            expect(uninstalls, 2);
+            verifyNever(() => logger.warn(any()));
+
+            async.elapse(const Duration(seconds: 30));
+            verify(
+              () => logger.warn(any(that: contains('did not finish'))),
+            ).called(1);
+          });
+        },
+      );
     });
 
     group('iOS logs', () {

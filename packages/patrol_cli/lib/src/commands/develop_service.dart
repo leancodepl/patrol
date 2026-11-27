@@ -700,13 +700,7 @@ class DevelopService {
             final done = quit = Completer<void>();
             try {
               await stopOnDevice?.call();
-              await finalizer?.call().timeout(
-                _quitUninstallTimeout,
-                onTimeout: () => _logger.warn(
-                  'Uninstalling the app did not finish within '
-                  '${_quitUninstallTimeout.inSeconds}s, quitting anyway.',
-                ),
-              );
+              await _boundedUninstall(finalizer);
             } finally {
               try {
                 await onQuitCleanup();
@@ -777,7 +771,7 @@ class DevelopService {
     } finally {
       try {
         if (quit == null) {
-          await finalizer?.call();
+          await _boundedUninstall(finalizer);
         }
       } catch (err) {
         _logger.err('Failed to call finalizer: $err');
@@ -786,7 +780,19 @@ class DevelopService {
     }
   }
 
-  static const _quitUninstallTimeout = Duration(seconds: 30);
+  /// Runs [finalizer], the uninstall, for at most [_uninstallTimeout]: a device
+  /// that is gone never answers it.
+  Future<void> _boundedUninstall(Future<void> Function()? finalizer) async {
+    await finalizer?.call().timeout(
+      _uninstallTimeout,
+      onTimeout: () => _logger.warn(
+        'Uninstalling the app did not finish within '
+        '${_uninstallTimeout.inSeconds}s, moving on.',
+      ),
+    );
+  }
+
+  static const _uninstallTimeout = Duration(seconds: 30);
 
   static const _defaultFailureMessage =
       'See the logs above to learn what happened. Also consider running with '
