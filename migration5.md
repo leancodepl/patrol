@@ -16,7 +16,7 @@ Update `patrol` and `patrol_cli` together: Patrol 5.0 is `patrol` 5.x with
 | `patrol` | 5.x | |
 | `patrol_cli` | 5.x | |
 | `patrol_mcp` | not released yet | needs a release that depends on `patrol_cli` 5.x; until then it resolves `patrol_cli` 4.x |
-| `patrol_finders` | 3.x, no change so far | |
+| `patrol_finders` | 4.x | `pumpAndSettle()` returns `Future<int>`, see below |
 | `patrol_log` | 0.10.x, no change so far | |
 
 To try a prerelease, pin it explicitly, since pub doesn't pick prereleases on
@@ -79,6 +79,27 @@ already meets them, unless it sets lower values explicitly.
 - **macOS:** set the deployment target to 10.15 or higher: `platform :osx,
   '10.15'` in `macos/Podfile`, and **macOS Deployment Target** of both `Runner`
   and `RunnerUITests` in Xcode.
+
+## `pumpAndSettle()` returns the number of pumped frames
+
+**Packages:** `patrol_finders`, `patrol`
+
+`PatrolTester.pumpAndSettle()` (`$.pumpAndSettle()`) returns `Future<int>`
+instead of `Future<void>`: the number of frames it pumped, the same value
+`WidgetTester.pumpAndSettle()` returns. This makes `patrol_finders` 4.x, and
+`patrol` 5.x depends on it.
+
+**What to do:**
+
+- **`await $.pumpAndSettle()`:** nothing, it compiles unchanged.
+- **`patrol_finders` in your own `pubspec.yaml`:** change the constraint to
+  `^4.0.0`, otherwise it conflicts with `patrol` 5.x.
+- **A subclass that overrides `pumpAndSettle()`:** return `Future<int>`, e.g.
+  the value of `super.pumpAndSettle()`.
+- **A class that implements `PatrolTester`:** return `Future<int>` from
+  `pumpAndSettle()`, e.g. the value of `WidgetTester.pumpAndSettle()`.
+- **A mock that stubs `pumpAndSettle()`:** answer with an `int`, e.g.
+  `thenAnswer((_) async => 1)`; `thenAnswer((_) async {})` no longer compiles.
 
 ## Inbox
 

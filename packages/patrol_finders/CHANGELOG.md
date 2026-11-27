@@ -1,3 +1,9 @@
+## Unreleased
+
+- **Breaking:** `PatrolTester.pumpAndSettle()` returns `Future<int>`, the number of pumped frames,
+  like `WidgetTester.pumpAndSettle()`. Overrides, implementations and mocks of it must return
+  `Future<int>`. (#3414)
+
 ## 3.7.1
 
 - Fix the duration in the timeout exception that `dragUntilExists()` and `dragUntilVisible()` throw after running out of iterations: it now reports the time spent dragging instead of `settleBetweenScrollsTimeout`. (#3300)
