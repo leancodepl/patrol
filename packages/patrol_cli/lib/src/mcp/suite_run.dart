@@ -4,6 +4,7 @@ import 'dart:io' as io;
 
 import 'package:args/args.dart';
 import 'package:dispose_scope/dispose_scope.dart' hide ProcessDisposed;
+import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/base/command_line.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/commands/develop_arg_parser.dart';
@@ -169,7 +170,8 @@ final class SuiteRun {
 
   /// Starts [command], a `patrol test` command line, in [projectRoot].
   ///
-  /// [onOutput] gets every line the run prints, stdout and stderr alike.
+  /// [onOutput] gets every line the run prints, stdout and stderr alike. The
+  /// run sends no analytics, since the server reports the call itself.
   static Future<SuiteRun> start({
     required ProcessManager processManager,
     required List<String> command,
@@ -186,6 +188,7 @@ final class SuiteRun {
     final process = await processManager.start(
       command,
       workingDirectory: projectRoot,
+      environment: {Analytics.enabledEnvName: 'false'},
     );
     final run = SuiteRun._(
       process: process,

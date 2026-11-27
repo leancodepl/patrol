@@ -51,7 +51,7 @@ Future<int> patrolCommandRunner(List<String> args) async {
   final platform = NativePlatform.current!;
   final processManager = LoggingLocalProcessManager(logger: logger);
   final isCI = ci.isCI;
-  final analyticsEnv = p.Platform.environment[_patrolAnalyticsEnvName];
+  final analyticsEnv = p.Platform.environment[Analytics.enabledEnvName];
   final analyticsEnabled = bool.tryParse(analyticsEnv ?? '');
 
   final runner = PatrolCommandRunner(
@@ -91,7 +91,6 @@ Future<int> patrolCommandRunner(List<String> args) async {
 
 const _gaTrackingId = 'G-W8XN8GS5BC';
 const _gaApiSecret = 'CUIwI1nCQWGJQAK8E0AIfg';
-const _patrolAnalyticsEnvName = 'PATROL_ANALYTICS_ENABLED';
 const _helloPatrol = '''
 +---------------------------------------------------+
 |             Patrol - Ready for action!            |
@@ -524,7 +523,7 @@ To install a specific version of Patrol CLI, run:
     /// use it to determine if the command should be sent.
     /// If not, analytics will be enabled by default.
     final patrolAnalyticsEnabled =
-        p.Platform.environment[_patrolAnalyticsEnvName];
+        p.Platform.environment[Analytics.enabledEnvName];
     _analytics.enabled =
         bool.tryParse(patrolAnalyticsEnabled ?? 'true') ?? true;
     if (_analytics.enabled) {

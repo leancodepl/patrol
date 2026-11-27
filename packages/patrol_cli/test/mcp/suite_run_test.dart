@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/mcp/suite_run.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:patrol_log/patrol_log.dart';
@@ -155,6 +156,24 @@ void main() {
         throwsFormatException,
       );
     });
+  });
+
+  test('starts the run with analytics turned off', () async {
+    final processManager = _RecordingProcessManager();
+
+    final run = await SuiteRun.start(
+      processManager: processManager,
+      command: const ['patrol', 'test'],
+      projectRoot: Directory.systemTemp.path,
+      resultsFile: '${Directory.systemTemp.path}/no_such_results.jsonl',
+      targets: const [],
+      droppedFlags: const [],
+      onOutput: (_) {},
+    );
+    await run.done;
+
+    expect(processManager.environment, {'PATROL_ANALYTICS_ENABLED': 'false'});
+    expect(processManager.includeParentEnvironment, isTrue);
   });
 
   group(
@@ -395,4 +414,42 @@ void main() {
     },
     skip: Platform.isWindows ? 'The runs are POSIX shell scripts.' : null,
   );
+}
+
+final class _RecordingProcessManager extends Fake implements ProcessManager {
+  Map<String, String>? environment;
+  bool? includeParentEnvironment;
+
+  @override
+  Future<Process> start(
+    List<Object> command, {
+    String? workingDirectory,
+    Map<String, String>? environment,
+    bool includeParentEnvironment = true,
+    bool runInShell = false,
+    ProcessStartMode mode = ProcessStartMode.normal,
+  }) async {
+    this.environment = environment;
+    this.includeParentEnvironment = includeParentEnvironment;
+    return _FinishedProcess();
+  }
+}
+
+final class _FinishedProcess extends Fake implements Process {
+  @override
+  Stream<List<int>> get stdout => const Stream.empty();
+
+  @override
+  Stream<List<int>> get stderr => const Stream.empty();
+
+  @override
+  IOSink get stdin => _ClosedSink();
+
+  @override
+  Future<int> get exitCode => Future.value(0);
+}
+
+final class _ClosedSink extends Fake implements IOSink {
+  @override
+  Future<void> close() async {}
 }
