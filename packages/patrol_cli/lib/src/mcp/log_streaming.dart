@@ -28,6 +28,9 @@ final class LogStreaming {
     if (sink == null) {
       return;
     }
+    // Detached before the first await: a session's cleanup and the next
+    // session's start can both stop the shared sink, and a second close while
+    // the first flush is pending throws.
     _logSink = null;
     _logFile = null;
 

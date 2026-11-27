@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:dispose_scope/dispose_scope.dart' hide ProcessDisposed;
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/base/process.dart';
+import 'package:platform/testing.dart' show TestNativePlatform;
 import 'package:test/test.dart';
 
 import '../src/mocks.dart';
@@ -181,6 +182,38 @@ void main() {
 
       await expectLater(process.exitCode, completes);
       await _expectGone(children);
+    });
+  });
+
+  group('watchStopSignals', () {
+    // SIGTERM cannot be watched on Windows: it throws an async SignalException
+    // that no try/catch sees, so a server watching it there would crash.
+    test('watches SIGINT and SIGTERM elsewhere', testOn: '!windows', () {
+      final subscriptions = watchStopSignals(
+        (_) {},
+        platform: TestNativePlatform(operatingSystem: 'linux'),
+      );
+      addTearDown(() {
+        for (final subscription in subscriptions) {
+          subscription.cancel();
+        }
+      });
+
+      expect(subscriptions, hasLength(2));
+    });
+
+    test('watches only SIGINT on Windows', () {
+      final subscriptions = watchStopSignals(
+        (_) {},
+        platform: TestNativePlatform(operatingSystem: 'windows'),
+      );
+      addTearDown(() {
+        for (final subscription in subscriptions) {
+          subscription.cancel();
+        }
+      });
+
+      expect(subscriptions, hasLength(1));
     });
   });
 }
