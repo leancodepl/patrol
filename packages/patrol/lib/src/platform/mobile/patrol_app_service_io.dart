@@ -59,9 +59,10 @@ class PatrolAppService extends PatrolAppServiceServer {
     required this.topLevelDartTestGroup,
     this.reuseAcrossTests = _reuseAcrossTestsDefault,
     List<String>? manifestTests,
-  }) : _missingFromManifest = manifestTests == null
-           ? const []
-           : testsMissingFromManifest(topLevelDartTestGroup, manifestTests);
+  }) : _missingFromManifest = switch (manifestTests) {
+         null => const [],
+         final tests => testsMissingFromManifest(topLevelDartTestGroup, tests),
+       };
 
   /// Port the server will use to listen for incoming HTTP traffic.
   int get port => _resolveAppServerPort();
