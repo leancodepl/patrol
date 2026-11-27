@@ -33,16 +33,37 @@ void main() {
       ).$(K.statusText).$('Granted').waitUntilVisible();
 
       await $(K.requestLocationAlwaysPermissionButton).scrollTo().tap();
-      await $.platform.ios.tap(
-        IOSSelector(label: 'Change to Always Allow'),
-        appId: 'com.apple.springboard',
-        timeout: _dialogTimeout,
-      );
+      await _tapChangeToAlwaysAllow($);
       // permission_handler completes the Always request before the user
       // answers, so read the status again instead of trusting the tile.
       expect(await _waitForLocationAlways(), isTrue);
     }, tags: ['ios', 'clear_permissions_location_always']);
   }
+}
+
+// Patrol has no API for the Always upgrade dialog; tap its button by label.
+const _changeToAlwaysAllowLabels = [
+  'Change to Always Allow',
+  'Zmień na Zawsze pozwalaj',
+];
+
+Future<void> _tapChangeToAlwaysAllow(PatrolIntegrationTester $) async {
+  final deadline = DateTime.now().add(_dialogTimeout);
+  while (DateTime.now().isBefore(deadline)) {
+    for (final label in _changeToAlwaysAllowLabels) {
+      try {
+        await $.platform.ios.tap(
+          IOSSelector(label: label),
+          appId: 'com.apple.springboard',
+          timeout: const Duration(seconds: 1),
+        );
+        return;
+      } on Exception {
+        // Not this language, or the dialog isn't up yet.
+      }
+    }
+  }
+  fail('"Change to Always Allow" dialog not shown');
 }
 
 Future<bool> _waitForLocationAlways() async {
