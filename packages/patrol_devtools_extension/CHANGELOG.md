@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Point a code comment at `NativeView`'s new location in `patrol`. (#3417)
 - Allow `equatable` 3.x by widening the constraint to `>=2.1.0 <4.0.0`.
 - Regenerate API contracts (adds `AndroidGetNativeViewsRequest.includeInvisibleNodes` and `AndroidNativeView.isVisibleToUser`). Show `isVisibleToUser` in the native view details. (#3287)
 - Regenerate API contracts for the new Android `ConfigureRequest` accessibility flag. (#3227)

@@ -87,7 +87,7 @@ jobs:
         run: flutter build apk --config-only
 
       - name: patrol build android
-        run: patrol build android --tags='webview && android' --exclude patrol_test/web/,patrol_test/volume_test.dart,patrol_test/native_tests/volume_test.dart --verbose
+        run: patrol build android --tags='webview && android' --exclude patrol_test/web/,patrol_test/volume_test.dart --verbose
 
       - name: Collect APKs
         run: |

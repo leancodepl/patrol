@@ -34,12 +34,12 @@ This includes changes to:
 
 ## Test Exclusions for Physical Device Workflows
 
-Physical device workflows (`test-android-device.yaml`, `test-ios-device.yaml`) should exclude the entire `native_tests/` directory to reduce test duration and costs on cloud testing infrastructure.
+Physical device workflows (`test-android-device.yaml`, `test-ios-device.yaml`) exclude the web tests and `volume_test.dart`.
 
 ### Standard Exclusion Pattern
 
 ```yaml
---exclude=patrol_test/web/,patrol_test/native_tests/,patrol_test/volume_test.dart
+--exclude=patrol_test/web/,patrol_test/volume_test.dart
 ```
 
 ### Examples
@@ -48,7 +48,7 @@ Physical device workflows (`test-android-device.yaml`, `test-ios-device.yaml`) s
 ```yaml
 - name: Build tests
   run: |
-    patrol build ios --tags='ios && physical_device' --exclude=patrol_test/web/,patrol_test/native_tests/,patrol_test/volume_test.dart --release --verbose
+    patrol build ios --tags='ios && physical_device' --exclude=patrol_test/web/,patrol_test/volume_test.dart --release --verbose
 ```
 
 **Android device workflow:**
@@ -57,6 +57,6 @@ Physical device workflows (`test-android-device.yaml`, `test-ios-device.yaml`) s
   run: |
     patrol build android \
     --tags='android && physical_device' \
-    --exclude patrol_test/web/,patrol_test/native_tests/,patrol_test/volume_test.dart \
+    --exclude patrol_test/web/,patrol_test/volume_test.dart \
     --verbose
 ```

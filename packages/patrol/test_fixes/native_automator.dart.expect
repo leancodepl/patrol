@@ -1,0 +1,37 @@
+import 'package:patrol/patrol.dart';
+
+void main() {
+  patrolTest(
+    'native API',
+    platformAutomatorConfig: PlatformAutomatorConfig.fromOptions(
+      keyboardBehavior: KeyboardBehavior.alternative,
+      findTimeout: const Duration(seconds: 5),
+    ),
+    ($) async {
+      await $.platform.mobile.pressHome();
+      await $.platform.mobile.tap(Selector(text: 'Allow'));
+      await $.platform.mobile.tap(
+        MobileSelector(
+          android: AndroidSelector(text: 'Allow'),
+          ios: IOSSelector(label: 'Allow'),
+        ),
+      );
+      await $.platformAutomator.mobile.enableWifi();
+      await $.platformAutomator.mobile.disableWifi();
+
+      final MobileAutomator automator = $.platform.mobile;
+      final MobileAutomator automator2 = $.platform.mobile;
+    },
+  );
+
+  final automator = MobileAutomator(
+    platform: PlatformAutomator(
+      config: PlatformAutomatorConfig.defaultConfig(),
+    ),
+  );
+  final automator2 = MobileAutomator(
+    platform: PlatformAutomator(
+      config: PlatformAutomatorConfig.defaultConfig(),
+    ),
+  );
+}

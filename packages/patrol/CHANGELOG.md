@@ -1,5 +1,11 @@
 ## Unreleased
 
+- **Breaking:** Remove the native API deprecated in 4.0: `$.native`, `$.native2`, `NativeAutomator`,
+  `NativeAutomator2`, `NativeAutomatorConfig`, `NativeSelector`, `GetNativeViewsResult` and the
+  `nativeAutomatorConfig` parameter of `patrolTest`. Use `$.platform`. `dart fix --apply` rewrites
+  most of the calls. See `migration5.md`. (#3417)
+- **Breaking:** Remove the `timeout` parameter of `PatrolBinding.runTest`, deprecated since 2.6.
+  (#3417)
 - **Breaking:** `PATROL_INTEGRATION_TEST_IOS_RUNNER` now runs both build-time and runtime test
   discovery: followed by `#include "PatrolGeneratedTests.inc"`, it runs the generated tests when the
   file declares any, and discovers tests at runtime otherwise. `..._STATIC_BASE` is a deprecated

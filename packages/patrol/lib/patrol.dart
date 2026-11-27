@@ -10,7 +10,6 @@ export 'src/binding.dart';
 export 'src/common.dart';
 export 'src/custom_finders/patrol_integration_tester.dart';
 export 'src/extensions/patrol_extension.dart';
-export 'src/native/native.dart';
 export 'src/platform/android/android_automator.dart';
 export 'src/platform/android/android_automator_config.dart';
 export 'src/platform/contracts/contracts.dart'
@@ -32,6 +31,8 @@ export 'src/platform/macos/macos_automator.dart';
 export 'src/platform/macos/macos_automator_config.dart';
 export 'src/platform/mobile/fold_posture.dart';
 export 'src/platform/mobile/mobile_automator_config.dart';
+export 'src/platform/native_view.dart';
+export 'src/platform/patrol_action_exception.dart';
 export 'src/platform/patrol_app_service.dart';
 export 'src/platform/platform_automator.dart';
 export 'src/platform/selector.dart';

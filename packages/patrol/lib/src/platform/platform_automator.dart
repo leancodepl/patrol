@@ -795,7 +795,7 @@ class MobileAutomator {
   /// app under test.
   ///
   /// This is equivalent to:
-  /// $.native.swipe(
+  /// $.platform.mobile.swipe(
   ///    from: Offset(0, dy),
   ///    to: Offset(1, dy),
   ///    appId: appId,
@@ -1090,7 +1090,7 @@ class MobileAutomator {
   ///
   /// Example:
   /// ```dart
-  /// final osVersion = await $.native.getOsVersion();
+  /// final osVersion = await $.platform.mobile.getOsVersion();
   /// if (osVersion >= 30) {
   ///   // Android 11+ specific behavior
   /// }

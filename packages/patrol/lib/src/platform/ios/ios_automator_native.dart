@@ -4,7 +4,6 @@ import 'dart:ui' as ui;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
-import 'package:patrol/src/native/native_automator.dart';
 import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:patrol/src/platform/contracts/ios_automator_client.dart';
 import 'package:patrol/src/platform/ios/ios_automator.dart' as ios_automator;
@@ -12,6 +11,7 @@ import 'package:patrol/src/platform/ios/ios_automator_config.dart';
 import 'package:patrol/src/platform/mobile/fold_posture.dart';
 import 'package:patrol/src/platform/mobile/mobile_automator_native.dart';
 import 'package:patrol/src/platform/mobile/patrol_runtime_ports.dart';
+import 'package:patrol/src/platform/patrol_action_exception.dart';
 import 'package:patrol_log/patrol_log.dart';
 
 extension on KeyboardBehavior {
@@ -408,7 +408,7 @@ class IOSAutomator extends NativeMobileAutomator
   /// [appId] optionally specifies the application ID to target.
   ///
   /// This is equivalent to:
-  /// $.native.swipe(
+  /// $.platform.ios.swipe(
   ///    from: Offset(0, dy),
   ///    to: Offset(1, dy),
   ///    appId: appId,

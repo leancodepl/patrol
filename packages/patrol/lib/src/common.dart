@@ -8,7 +8,6 @@ import 'package:patrol/src/binding.dart';
 import 'package:patrol/src/develop_generation.dart';
 import 'package:patrol/src/develop_view_assertion.dart';
 import 'package:patrol/src/global_state.dart' as global_state;
-import 'package:patrol/src/native/native_automator_config.dart';
 import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:patrol/src/platform/platform_automator.dart';
 import 'package:patrol_finders/patrol_finders.dart' as finders;
@@ -103,11 +102,6 @@ void patrolTest(
   finders.PatrolTesterConfig config = const finders.PatrolTesterConfig(
     printLogs: true,
   ),
-  @Deprecated(
-    'nativeAutomatorConfig is deprecated and will be removed in a future release. '
-    'Please use platformAutomatorConfig instead.',
-  )
-  NativeAutomatorConfig? nativeAutomatorConfig,
   PlatformAutomatorConfig? platformAutomatorConfig,
   LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
       LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
@@ -130,16 +124,8 @@ void patrolTest(
   }
 
   final patrolLog = PatrolLogWriter(config: {'printLogs': config.printLogs});
-  if (nativeAutomatorConfig != null && platformAutomatorConfig != null) {
-    throw StateError(
-      'Cannot use both nativeAutomatorConfig and platformAutomatorConfig',
-    );
-  }
   final platformAutomator = PlatformAutomator(
-    config:
-        nativeAutomatorConfig?.toPlatformAutomatorConfig() ??
-        platformAutomatorConfig ??
-        PlatformAutomatorConfig.defaultConfig(),
+    config: platformAutomatorConfig ?? PlatformAutomatorConfig.defaultConfig(),
   );
   final patrolBinding = PatrolBinding.ensureInitialized(platformAutomator)
     ..framePolicy = framePolicy;

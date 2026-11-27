@@ -80,6 +80,34 @@ already meets them, unless it sets lower values explicitly.
   '10.15'` in `macos/Podfile`, and **macOS Deployment Target** of both `Runner`
   and `RunnerUITests` in Xcode.
 
+## The native API (`$.native`, `$.native2`) is removed
+
+**Packages:** `patrol` (#3417)
+
+Removed APIs, deprecated since Patrol 4.0:
+
+- `$.native`, `$.native2`, `$.nativeAutomator`, `$.nativeAutomator2`
+- `NativeAutomator`, `NativeAutomator2`, `NativeAutomatorConfig`
+- `NativeSelector` and `GetNativeViewsResult`, which only the native API used
+- the `nativeAutomatorConfig` parameter of `patrolTest`
+- the `timeout` parameter of `PatrolBinding.runTest`, which had no effect since Patrol 2.6
+
+`NativeView` and `PatrolActionException` stay.
+
+**What to do:**
+
+1. Run `dart fix --apply`. It rewrites `$.native` and `$.native2` to `$.platform.mobile`, and
+   `NativeSelector` to `MobileSelector`, among others. It only fixes files that import
+   `package:patrol/patrol.dart` directly. On Dart 3.14+, `dart migrate --apply` applies the same
+   fixes, but only when it bumps your `environment.sdk`. A package already at the latest SDK is
+   skipped, so run `dart fix --apply` there.
+2. Run `dart analyze` and fix what's left by hand: Android-only calls (`pressBack()`,
+   `enableLocation()`, ...) move to `$.platform.android`, iOS-only calls to `$.platform.ios`.
+3. Remove `timeout:` from overrides or calls of `PatrolBinding.runTest`; use `timeout` on
+   `patrolTest` instead.
+
+Full list of rewrites and manual steps: [Migrate from native to platform](https://patrol.leancode.co/native-to-platform-migration#dart-fix-in-patrol-50).
+
 ## `pumpAndSettle()` returns the number of pumped frames
 
 **Packages:** `patrol_finders`, `patrol`

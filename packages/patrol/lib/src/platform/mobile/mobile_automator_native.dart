@@ -561,7 +561,7 @@ abstract class NativeMobileAutomator implements MobileAutomator {
   ///
   /// Example:
   /// ```dart
-  /// final osVersion = await $.native.getOsVersion();
+  /// final osVersion = await $.platform.mobile.getOsVersion();
   /// if (osVersion >= 30) {
   ///   // Android 11+ specific behavior
   /// }
