@@ -22,9 +22,7 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
       _config = config {
     _client = http.Client();
     _apiUri = Uri.http('${_config.host}:${_config.port}');
-    _config.logger(
-      'WindowsAutomator client created, port: ${_config.port}',
-    );
+    _config.logger('WindowsAutomator client created, port: ${_config.port}');
   }
 
   final WindowsAutomatorConfig _config;
@@ -57,11 +55,7 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
     windows_automator.WindowsSelector selector, {
     Duration? timeout,
   }) {
-    return _findBasedRequest(
-      'tap',
-      selector,
-      timeout: timeout,
-    );
+    return _findBasedRequest('tap', selector, timeout: timeout);
   }
 
   @override
@@ -69,11 +63,7 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
     windows_automator.WindowsSelector selector, {
     Duration? timeout,
   }) {
-    return _findBasedRequest(
-      'waitUntilVisible',
-      selector,
-      timeout: timeout,
-    );
+    return _findBasedRequest('waitUntilVisible', selector, timeout: timeout);
   }
 
   @override
@@ -87,22 +77,13 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
         ? _requestTimeoutFor(findTimeout)
         : _config.connectionTimeout;
 
-    return _wrapRequest(
-      'isElementVisible',
-      () async {
-        final json = await _sendRequestTimed(
-          'isElementVisible',
-          {
-            ..._selectorBody(selector),
-            if (findTimeout != null)
-              'timeoutMillis': findTimeout.inMilliseconds,
-          },
-          timeout: httpTimeout,
-        );
-        return json['visible'] == true;
-      },
-      requestTimeout: httpTimeout,
-    );
+    return _wrapRequest('isElementVisible', () async {
+      final json = await _sendRequestTimed('isElementVisible', {
+        ..._selectorBody(selector),
+        if (findTimeout != null) 'timeoutMillis': findTimeout.inMilliseconds,
+      }, timeout: httpTimeout);
+      return json['visible'] == true;
+    }, requestTimeout: httpTimeout);
   }
 
   @override
@@ -113,30 +94,22 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
     final findTimeout = timeout ?? _config.findTimeout;
     final httpTimeout = _requestTimeoutFor(findTimeout);
 
-    return _wrapRequest(
-      'findElement',
-      () async {
-        final json = await _sendRequestTimed(
-          'findElement',
-          {
-            ..._selectorBody(selector),
-            'timeoutMillis': findTimeout.inMilliseconds,
-          },
-          timeout: httpTimeout,
-        );
-        final element = json['element'];
-        if (element is! Map<String, dynamic>) {
-          if (element is Map) {
-            return windows_automator.WindowsUiElement.fromJson(
-              Map<String, dynamic>.from(element),
-            );
-          }
-          return null;
+    return _wrapRequest('findElement', () async {
+      final json = await _sendRequestTimed('findElement', {
+        ..._selectorBody(selector),
+        'timeoutMillis': findTimeout.inMilliseconds,
+      }, timeout: httpTimeout);
+      final element = json['element'];
+      if (element is! Map<String, dynamic>) {
+        if (element is Map) {
+          return windows_automator.WindowsUiElement.fromJson(
+            Map<String, dynamic>.from(element),
+          );
         }
-        return windows_automator.WindowsUiElement.fromJson(element);
-      },
-      requestTimeout: httpTimeout,
-    );
+        return null;
+      }
+      return windows_automator.WindowsUiElement.fromJson(element);
+    }, requestTimeout: httpTimeout);
   }
 
   @override
@@ -150,15 +123,11 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
 
     return _wrapRequest(
       'enterText',
-      () => _sendRequestTimed(
-        'enterText',
-        {
-          'text': text,
-          ..._selectorBody(selector),
-          'timeoutMillis': findTimeout.inMilliseconds,
-        },
-        timeout: httpTimeout,
-      ),
+      () => _sendRequestTimed('enterText', {
+        'text': text,
+        ..._selectorBody(selector),
+        'timeoutMillis': findTimeout.inMilliseconds,
+      }, timeout: httpTimeout),
       requestTimeout: httpTimeout,
     );
   }
@@ -187,27 +156,24 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
     String? arguments,
     bool activate = true,
   }) {
-    return _wrapRequest(
-      'launchApp',
-      () async {
-        final json = await _sendRequest('launchApp', {
-          'appPath': appPath,
-          'arguments': ?arguments,
-          'activate': activate,
-        });
-        final pid = json['processId'];
-        if (pid is int) {
-          return pid;
-        }
-        if (pid is num) {
-          return pid.toInt();
-        }
-        throw WindowsAutomatorClientException(
-          200,
-          'launchApp response missing processId: $json',
-        );
-      },
-    );
+    return _wrapRequest('launchApp', () async {
+      final json = await _sendRequest('launchApp', {
+        'appPath': appPath,
+        'arguments': ?arguments,
+        'activate': activate,
+      });
+      final pid = json['processId'];
+      if (pid is int) {
+        return pid;
+      }
+      if (pid is num) {
+        return pid.toInt();
+      }
+      throw WindowsAutomatorClientException(
+        200,
+        'launchApp response missing processId: $json',
+      );
+    });
   }
 
   @override
@@ -245,14 +211,10 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
 
     return _wrapRequest(
       action,
-      () => _sendRequestTimed(
-        action,
-        {
-          ..._selectorBody(selector),
-          'timeoutMillis': findTimeout.inMilliseconds,
-        },
-        timeout: httpTimeout,
-      ),
+      () => _sendRequestTimed(action, {
+        ..._selectorBody(selector),
+        'timeoutMillis': findTimeout.inMilliseconds,
+      }, timeout: httpTimeout),
       requestTimeout: httpTimeout,
     );
   }
@@ -302,7 +264,9 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
     try {
       final result = await request().timeout(timeout);
       if (enablePatrolLog) {
-        _patrolLog.log(StepEntry(action: text, status: StepEntryStatus.success));
+        _patrolLog.log(
+          StepEntry(action: text, status: StepEntryStatus.success),
+        );
       }
       return result;
     } on TimeoutException {

@@ -65,12 +65,14 @@ class TestCompletionResult {
 ///
 /// xcodebuild launches the app, so discovery is unreliable on the iOS
 /// simulator; physical iOS devices keep discovery. macOS always uses the URL,
-/// Android and web use discovery.
+/// Android, web, and Windows use discovery.
 @visibleForTesting
 bool shouldAttachUsingUrl(Device device) => switch (device.targetPlatform) {
   TargetPlatform.macOS => true,
   TargetPlatform.iOS => !device.real,
-  TargetPlatform.android || TargetPlatform.web => false,
+  TargetPlatform.android ||
+  TargetPlatform.web ||
+  TargetPlatform.windows => false,
 };
 
 /// Orchestrates a patrol develop session.

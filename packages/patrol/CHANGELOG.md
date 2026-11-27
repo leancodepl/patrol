@@ -1,5 +1,9 @@
 ## Unreleased
 
+- Experimental Windows support via `$.platform.windows` (out-of-process
+  automator sidecar): find/tap/`enterText`/`pressKey`, `WindowsSelector` with
+  optional `WindowsScope` (defaults to the app under test), and `WindowsKey`
+  helpers. (#3183)
 - Add `$.entrypointArgs` with the Dart entrypoint arguments the native side of the app passes to
   the test bundle (`dartEntrypointArgs` on Android, `entrypointArgs` on iOS and macOS). Needs a
   `patrol_cli` release that includes this change. (#3366)

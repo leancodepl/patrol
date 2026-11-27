@@ -9,7 +9,7 @@ class WindowsAutomatorConfig {
     Duration? connectionTimeout,
     Duration? findTimeout,
     void Function(String)? logger,
-  }) :        // Sidecar binds IPv4 loopback; prefer 127.0.0.1 so Windows does not
+  }) : // Sidecar binds IPv4 loopback; prefer 127.0.0.1 so Windows does not
        // resolve `localhost` to ::1 and miss the server.
        host =
            host ??

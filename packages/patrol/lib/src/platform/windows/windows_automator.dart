@@ -60,11 +60,8 @@ class WindowsScope {
   /// Creates a scope for a specific process and/or window title.
   ///
   /// Provide at least one of [processId], [processName], or [windowName].
-  const WindowsScope({
-    this.processId,
-    this.processName,
-    this.windowName,
-  }) : _kind = _WindowsScopeKind.targeted;
+  const WindowsScope({this.processId, this.processName, this.windowName})
+    : _kind = _WindowsScopeKind.targeted;
 
   const WindowsScope._appUnderTest()
     : processId = null,
@@ -136,7 +133,8 @@ class WindowsScope {
       if (processId != null && processId! > 0) 'processId': processId,
       if (processName != null && processName!.isNotEmpty)
         'processName': processName,
-      if (windowName != null && windowName!.isNotEmpty) 'windowName': windowName,
+      if (windowName != null && windowName!.isNotEmpty)
+        'windowName': windowName,
     };
   }
 
@@ -261,19 +259,13 @@ abstract interface class WindowsAutomator {
   /// Defaults to [WindowsAutomatorConfig.findTimeout] when [timeout] is omit-
   /// ted. [WindowsAutomatorConfig.connectionTimeout] must be longer than the
   /// effective find timeout.
-  Future<void> waitUntilVisible(
-    WindowsSelector selector, {
-    Duration? timeout,
-  });
+  Future<void> waitUntilVisible(WindowsSelector selector, {Duration? timeout});
 
   /// Returns whether a matching desktop UI element currently exists.
   ///
   /// When [timeout] is omitted the sidecar uses a short poll (~500 ms). Pass
   /// an explicit [timeout] to wait longer for the element to appear.
-  Future<bool> isElementVisible(
-    WindowsSelector selector, {
-    Duration? timeout,
-  });
+  Future<bool> isElementVisible(WindowsSelector selector, {Duration? timeout});
 
   /// Finds a matching desktop UI element, or `null` if none within [timeout].
   Future<WindowsUiElement?> findElement(

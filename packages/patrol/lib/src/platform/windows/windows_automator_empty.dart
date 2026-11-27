@@ -29,37 +29,32 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
   Future<void> tap(
     windows_automator.WindowsSelector selector, {
     Duration? timeout,
-  }) =>
-      _unsupported();
+  }) => _unsupported();
 
   @override
   Future<void> waitUntilVisible(
     windows_automator.WindowsSelector selector, {
     Duration? timeout,
-  }) =>
-      _unsupported();
+  }) => _unsupported();
 
   @override
   Future<bool> isElementVisible(
     windows_automator.WindowsSelector selector, {
     Duration? timeout,
-  }) =>
-      _unsupported();
+  }) => _unsupported();
 
   @override
   Future<windows_automator.WindowsUiElement?> findElement(
     windows_automator.WindowsSelector selector, {
     Duration? timeout,
-  }) =>
-      _unsupported();
+  }) => _unsupported();
 
   @override
   Future<void> enterText(
     windows_automator.WindowsSelector selector, {
     required String text,
     Duration? timeout,
-  }) =>
-      _unsupported();
+  }) => _unsupported();
 
   @override
   Future<void> pressKey(
@@ -67,22 +62,19 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
     bool shift = false,
     bool ctrl = false,
     bool alt = false,
-  }) =>
-      _unsupported();
+  }) => _unsupported();
 
   @override
   Future<int> launchApp({
     required String appPath,
     String? arguments,
     bool activate = true,
-  }) =>
-      _unsupported();
+  }) => _unsupported();
 
   @override
   Future<void> activateApp({
     String? processName,
     String? windowName,
     int? processId,
-  }) =>
-      _unsupported();
+  }) => _unsupported();
 }
