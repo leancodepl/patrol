@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Find the "Remove App" button on a Japanese iOS 26 home screen, which now reads "アプリを削除", so
+  `--full-isolation` can delete the app there. (#3426)
 - Fix web tests failing on Ubuntu 26.04 (now `ubuntu-latest` on GitHub Actions) with "Playwright does
   not support chromium on ubuntu26.04-x64", by updating Playwright to 1.61.1, which also moves web
   tests to Chromium 149. This also fixes `npx playwright install` hanging while extracting Chromium
