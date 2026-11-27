@@ -11,6 +11,7 @@ on:
       - 'packages/patrol_cli/**'
       - 'packages/adb/**'
       - 'packages/patrol_gen/**'
+      - 'packages/patrol_mcp/**'
       - 'dev/e2e_app/**'
       - 'schema.dart'
       - 'gen_from_schema'
