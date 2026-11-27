@@ -123,8 +123,7 @@ jobs:
 
   test-web:
     name: Test `patrol develop` on Web
-    # Playwright 1.56 ships no Chromium for ubuntu-latest (26.04).
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 30
 
     steps:

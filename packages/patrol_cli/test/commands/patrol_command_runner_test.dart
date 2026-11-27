@@ -228,6 +228,14 @@ packages:
       verify(() => logger.info(exception.usage)).called(1);
     });
 
+    test('disposes once when asked from several places at once', () async {
+      final first = commandRunner.dispose();
+      final second = commandRunner.dispose();
+
+      expect(identical(first, second), isTrue);
+      await first;
+    });
+
     test('rejects --tags in develop', () async {
       final result = await commandRunner.run(['develop', '--tags', 'smoke']);
       expect(result, equals(1));

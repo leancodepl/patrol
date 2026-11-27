@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show Process;
 
-import 'package:dispose_scope/dispose_scope.dart';
+import 'package:dispose_scope/dispose_scope.dart' hide ProcessDisposed;
 import 'package:file/file.dart';
 import 'package:glob/glob.dart';
 import 'package:path/path.dart' show join;
@@ -83,16 +83,15 @@ class MacOSTestBackend {
       // flutter build macos --config-only
 
       var flutterBuildKilled = false;
-      process = await _processManager.start(
-        options.toFlutterBuildInvocation(options.flutter.buildMode),
-        runInShell: true,
-      );
-      scope.addDispose(() {
-        process.kill();
-        flutterBuildKilled = true; // `flutter build` has exit code 0 on SIGINT
-      });
-      process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
-      process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
+      process =
+          await _processManager.start(
+              options.toFlutterBuildInvocation(options.flutter.buildMode),
+              runInShell: true,
+            )
+            // `flutter build` has exit code 0 on SIGINT.
+            ..disposedByTree(scope, onKill: () => flutterBuildKilled = true)
+            ..listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope)
+            ..listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
       var exitCode = await process.exitCode;
       final flutterCommand = options.flutter.command;
       if (exitCode != 0) {
@@ -115,7 +114,7 @@ class MacOSTestBackend {
               runInShell: true,
               workingDirectory: _rootDirectory.childDirectory('macos').path,
             )
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
       process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
       exitCode = await process.exitCode;
@@ -172,7 +171,7 @@ class MacOSTestBackend {
               },
               workingDirectory: _rootDirectory.childDirectory('macos').path,
             )
-            ..disposedBy(_disposeScope);
+            ..disposedByTree(_disposeScope);
       process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
 

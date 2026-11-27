@@ -1,5 +1,5 @@
 import 'dart:io' as p show Platform;
-import 'dart:io' show ProcessSignal, stdin;
+import 'dart:io' show ProcessSignal, exit, stdin;
 
 import 'package:adb/adb.dart';
 import 'package:args/args.dart';
@@ -83,9 +83,7 @@ Future<int> patrolCommandRunner(List<String> args) async {
 
   final exitCode = await runner.run(args) ?? 0;
 
-  if (!runner._disposeScope.disposed) {
-    await runner.dispose();
-  }
+  await runner.dispose();
 
   return exitCode;
 }
@@ -212,6 +210,12 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
           platform: _platform,
           parentDisposeScope: _disposeScope,
           logger: _logger,
+          // The dispose scope has to run before the process exits, so the
+          // processes it started die with it.
+          onExit: () async {
+            await dispose();
+            exit(0);
+          },
         ),
         androidTestBackend: androidTestBackend,
         iosTestBackend: iosTestBackend,
@@ -305,7 +309,13 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
   final Logger _logger;
   final bool _isCI;
 
-  Future<void> dispose() async {
+  Future<void>? _disposing;
+
+  /// Every caller waits for the same disposal: quitting with `q`, SIGINT and
+  /// the end of [run] can all ask for it at once.
+  Future<void> dispose() => _disposing ??= _dispose();
+
+  Future<void> _dispose() async {
     try {
       await _disposeScope.dispose();
     } catch (err, st) {

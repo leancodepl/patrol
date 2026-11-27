@@ -1,8 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io' as io;
-import 'dart:io' show exit;
 
-import 'package:dispose_scope/dispose_scope.dart';
+import 'package:dispose_scope/dispose_scope.dart' hide ProcessDisposed;
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/base/logger.dart';
@@ -19,9 +19,9 @@ class FlutterTool {
     required DisposeScope parentDisposeScope,
     required this._logger,
     this.onQuit,
-    Future<void> Function()? onExit,
-  }) : _disposeScope = DisposeScope(),
-       _onExit = onExit ?? (() async => exit(0)) {
+    required this._onExit,
+    @visibleForTesting this._adbTimeout = const Duration(seconds: 5),
+  }) : _disposeScope = DisposeScope() {
     _disposeScope.disposedBy(parentDisposeScope);
   }
 
@@ -31,7 +31,12 @@ class FlutterTool {
   final DisposeScope _disposeScope;
   final Logger _logger;
   final Future<void> Function()? onQuit;
+
+  /// Runs when the user quits. It owns disposing what the session started:
+  /// this tool knows only its own processes, not the backends'.
   final Future<void> Function() _onExit;
+
+  final Duration _adbTimeout;
 
   var _hotRestartActive = false;
   var _logsActive = false;
@@ -85,6 +90,7 @@ class FlutterTool {
     bool attachUsingUrl = false,
     Future<String>? debugUrl,
     bool forwardFlutterLogs = true,
+    bool removeAdbForwards = false,
     Future<void> Function()? onQuit,
   }) async {
     _logsSkipped = !forwardFlutterLogs;
@@ -102,8 +108,10 @@ class FlutterTool {
       if (previousStdinModes != null) {
         try {
           revertInteractiveMode(previousStdinModes);
-        } on io.StdinException catch (err) {
-          _logger.detail('Could not restore terminal modes: $err');
+        } catch (err) {
+          // The terminal outlives us; failing to restore it must not stop the
+          // cleanup below, nor be reported as the cleanup failing.
+          _logger.detail('Could not restore the terminal: $err');
         }
       }
       if (onQuit != null) {
@@ -127,6 +135,7 @@ class FlutterTool {
         debugUrl: url,
         dartDefines: dartDefines,
         openBrowser: openDevtools,
+        removeAdbForwards: removeAdbForwards,
         onQuit: onQuitWithRevertInteractiveMode,
       );
     } else {
@@ -139,6 +148,7 @@ class FlutterTool {
           appId: appId,
           dartDefines: dartDefines,
           openBrowser: openDevtools,
+          removeAdbForwards: removeAdbForwards,
           onQuit: onQuitWithRevertInteractiveMode,
         ),
       ]);
@@ -159,6 +169,67 @@ class FlutterTool {
     return urlCompleter.future;
   }
 
+  /// Runs `adb` with [arguments] and returns its stdout, or null when adb is
+  /// missing, fails or does not finish within the adb timeout. A wedged adb
+  /// server never answers, so adb is killed then.
+  Future<String?> _runAdb(List<String> arguments) async {
+    final io.Process process;
+    try {
+      process = await _processManager.start(['adb', ...arguments]);
+    } on Object {
+      return null;
+    }
+    final stdout = process.stdout.transform(utf8.decoder).join();
+    unawaited(process.stderr.drain<void>());
+    try {
+      final exitCode = await process.exitCode.timeout(_adbTimeout);
+      return exitCode == 0 ? await stdout : null;
+    } on TimeoutException {
+      process.kill();
+      stdout.ignore();
+      _logger.detail('adb ${arguments.join(' ')} did not finish in time');
+      return null;
+    }
+  }
+
+  /// The `adb` forwards for [deviceId] as `local remote` pairs, or none when
+  /// adb is not there or knows no such device.
+  Future<Set<String>> _adbForwards(String deviceId) async {
+    final listing = await _runAdb(['forward', '--list']);
+    if (listing == null) {
+      return const {};
+    }
+    return {
+      for (final line in LineSplitter.split(listing))
+        if (line.trim().split(RegExp(r'\s+')) case [
+          final serial,
+          final local,
+          final remote,
+        ] when serial == deviceId)
+          '$local $remote',
+    };
+  }
+
+  /// Removes the VM service forwards among [pairs]. Patrol's own forwards map
+  /// a port to the same port and are removed by the code that made them.
+  Future<void> _removeAttachForwards(String deviceId, Set<String> pairs) async {
+    for (final pair in pairs) {
+      final [local, remote] = pair.split(' ');
+      if (!remote.startsWith('tcp:') || local == remote) {
+        continue;
+      }
+      final removed = await _runAdb([
+        ...['-s', deviceId],
+        'forward',
+        '--remove',
+        local,
+      ]);
+      if (removed != null) {
+        _logger.detail('Removed adb forward $local left by flutter attach');
+      }
+    }
+  }
+
   /// Attaches to the running app. Returns a [Future] that completes when the
   /// connection is ready.
   ///
@@ -174,9 +245,26 @@ class FlutterTool {
     required String? appId,
     required Map<String, String> dartDefines,
     required bool openBrowser,
+    bool removeAdbForwards = false,
     Future<void> Function()? onQuit,
   }) async {
     await _disposeScope.run((scope) async {
+      // `flutter attach` forwards the VM service port for itself and removes
+      // the forward only on its own exit, which a killed tool never reaches.
+      // Its forwards are the ones that appear until it connects; later ones
+      // belong to other tools on the same device.
+      Set<String>? forwardsBefore;
+      Future<Set<String>>? attachForwards;
+      if (removeAdbForwards) {
+        forwardsBefore = await _adbForwards(deviceId);
+        // Registered before the process, so it runs after the process is gone.
+        scope.addDispose(() async {
+          if (attachForwards case final forwards?) {
+            await _removeAttachForwards(deviceId, await forwards);
+          }
+        });
+      }
+
       final process =
           await _processManager.start([
               ...[flutterCommand.executable, ...flutterCommand.arguments],
@@ -193,7 +281,7 @@ class FlutterTool {
                 '${dartDefine.key}=${dartDefine.value}',
               ],
             ])
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
       _attachProcess = process;
 
       final completer = Completer<void>();
@@ -204,6 +292,7 @@ class FlutterTool {
         }
       });
 
+      var quitting = false;
       _stdin
           .listen((event) async {
             final char = String.fromCharCode(event.first);
@@ -237,8 +326,11 @@ class FlutterTool {
 
               _logger.success(helpText.toString());
             } else if (char == 'q' || char == 'Q') {
+              if (quitting) {
+                return;
+              }
+              quitting = true;
               _logger.success('Quitting process...');
-              process.kill();
               if (!completer.isCompleted) {
                 completer.complete();
               }
@@ -273,6 +365,11 @@ class FlutterTool {
                 'q Quit (terminate the process and application on the device)',
               );
               _hotRestartActive = true;
+              if (forwardsBefore case final before?) {
+                attachForwards = _adbForwards(
+                  deviceId,
+                ).then((after) => after.difference(before));
+              }
               if (_pendingHotRestart) {
                 _pendingHotRestart = false;
                 _logger.success('Hot Restart: sending the queued restart');
@@ -341,7 +438,7 @@ class FlutterTool {
               '--device-id',
               deviceId,
             ], runInShell: true)
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
 
       final completer = Completer<void>();
       scope.addDispose(() {
@@ -429,7 +526,9 @@ class FlutterTool {
   }
 
   void revertInteractiveMode(StdinModes stdinModes) {
-    // stdin may already be closed (e.g. after Ctrl+C).
+    // Windows allows setting echoMode only while lineMode is enabled.
+    // stdin may already be closed (e.g. after Ctrl+C); the terminal is going
+    // away anyway, so a failure here is harmless.
     try {
       io.stdin.lineMode = stdinModes.lineMode;
     } on io.StdinException catch (err) {

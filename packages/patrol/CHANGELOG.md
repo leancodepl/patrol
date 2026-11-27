@@ -6,9 +6,18 @@
   most of the calls. See `migration5.md`. (#3417)
 - **Breaking:** Remove the `timeout` parameter of `PatrolBinding.runTest`, deprecated since 2.6.
   (#3417)
+- **Breaking:** `PATROL_INTEGRATION_TEST_IOS_RUNNER` now runs both build-time and runtime test
+  discovery: followed by `#include "PatrolGeneratedTests.inc"`, it runs the generated tests when the
+  file declares any, and discovers tests at runtime otherwise. `..._STATIC_BASE` is a deprecated
+  alias, and the 4.7.0 `..._STATIC_BEGIN`/`_END` macros are removed. See `migration5.md`.
 - Add `$.entrypointArgs` with the Dart entrypoint arguments the native side of the app passes to
   the test bundle (`dartEntrypointArgs` on Android, `entrypointArgs` on iOS and macOS). Needs a
   `patrol_cli` release that includes this change. (#3366)
+- Fix web tests failing on Ubuntu 26.04 (now `ubuntu-latest` on GitHub Actions) with "Playwright does
+  not support chromium on ubuntu26.04-x64", by updating Playwright to 1.61.1, which also moves web
+  tests to Chromium 149. This also fixes `npx playwright install` hanging while extracting Chromium
+  on Node.js 26 and newer Node.js 24 releases. With `--web-reporter junit`, some failures are now
+  reported as `<error>` instead of `<failure>` in the XML.
 
 ## 5.0.0-dev.1
 

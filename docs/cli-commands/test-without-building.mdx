@@ -21,8 +21,8 @@ artifacts. Nothing is bundled, compiled or reinstalled — it only asks the nati
 test runner to execute tests, using `xcodebuild test-without-building` on iOS and
 `adb shell am instrument` on Android.
 
-It requires [build-time test discovery][discovery]
-(`patrol.emit_test_manifest: true`), because selecting individual tests natively
+It requires [build-time test discovery][discovery] (the default, unless
+`patrol.emit_test_manifest: false`), because selecting individual tests natively
 is only possible thanks to the static native tests that discovery generates.
 
 <Info>
@@ -37,7 +37,7 @@ is only possible thanks to the static native tests that discovery generates.
 **Run everything that was built**
 
 ```bash
-patrol build ios --emit-test-manifest
+patrol build ios
 patrol test-without-building
 ```
 

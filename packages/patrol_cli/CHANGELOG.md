@@ -3,6 +3,10 @@
 - Fix the generated test bundle dropping the Dart entrypoint arguments passed by the native side of
   the app: `main` now takes them and passes them to tests as `$.entrypointArgs`. Needs a `patrol`
   release that includes this change. (#3366)
+- When Chromium cannot be installed for web tests because the OS is newer than the Playwright
+  bundled with `patrol`, the error now says to update `patrol` and, on Ubuntu, which
+  `PLAYWRIGHT_HOST_PLATFORM_OVERRIDE` value works as a fallback. On an Ubuntu older than 20.04 it
+  says the OS is too old instead.
 
 ## 5.0.0-dev.1
 
@@ -40,10 +44,25 @@
 - `patrol test-without-building --input <dir>` runs that directory. Patrol serves the app itself,
   with the MIME types and cross-origin headers `flutter run` sends, and accepts the `--web-*` options
   that shape a run, so the same artifact can be sharded across machines.
+- Fix `patrol develop` leaving Gradle and logcat processes behind after quitting with `q`, and the
+  test running on the Android device after Ctrl+C. (#3249)
+- `patrol develop` no longer leaves `adb` port forwards behind on Android devices when the session ends. (#3367)
 
 - **BREAKING CHANGE**
   - Remove `--tags` from `patrol develop`. It was accepted but never applied, so a session ran
     every test in the file. (#3382)
+  - Build-time test discovery is now the default for `patrol test` and `patrol build` on Android and
+    iOS, so native test names change to `PatrolGeneratedTests_<file>/test_<name>`. Pass
+    `--no-emit-test-manifest` or set `patrol.emit_test_manifest: false` to keep runtime discovery.
+    `patrol develop` keeps runtime discovery unless asked. See `migration5.md`.
+  - Tests under `integration_test/` fall back to runtime discovery with a warning, and an explicit
+    `--emit-test-manifest` there fails the build.
+  - On iOS, a `RunnerUITests.m` without the `#include` of the generated tests keeps runtime
+    discovery with a warning that shows the lines to add (an explicit opt-in fails instead). The removed
+    `PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN`/`_END` macros are reported with the
+    replacement. Requires `patrol` 5.0.
+- Show why build-time discovery failed (the failing part of the host `flutter test` output) without
+  `--verbose`.
 
 ## 4.10.0
 

@@ -2,27 +2,20 @@
 title: Build-time test discovery
 ---
 
-Build-time test discovery is an **experimental, opt-in** mode that discovers your
-Dart tests when you build the app — instead of at runtime, when the app first
-launches on the device — and generates a real, statically-declared native test
-method for each Dart test.
+Patrol discovers your Dart tests when you build the app, instead of at runtime
+when the app first launches on the device, and generates a real,
+statically-declared native test method for each Dart test. This is the default
+since Patrol 5.0 on Android and iOS.
 
 The payoff: every Dart test becomes an individually-addressable native test, which
 unlocks per-test sharding, running a single test without rebuilding, cleaner test
 reports, and compatibility with external test-distribution tools.
 
-<Warning>
-  This feature is experimental. Read the [Trade-offs](#trade-offs) section before
-  enabling it — in particular the host-vs-device discovery caveat.
-</Warning>
-
 <Info>
-  **Requires `patrol_cli` 4.8.0 and `patrol` 4.10.0 or newer.** Both sides have to
-  agree on the generated code, so a mismatch fails the build instead of the
-  [compatibility check](/documentation/compatibility-table). The feature first
-  shipped in `patrol_cli` 4.7.0 / `patrol` 4.9.0 with a different iOS runner macro
-  and different generated test names — see [the upgrade note](#setup) if you're
-  coming from that pair.
+  **Default since `patrol_cli` 5.0 and `patrol` 5.0.** Before that it was an
+  opt-in (`patrol_cli` 4.8.0 / `patrol` 4.10.0). If you are upgrading, see
+  [Migrating to Patrol 5.0](#migrating-to-patrol-50). To keep the previous
+  behavior, [turn it off](#turning-it-off).
 </Info>
 
 ## How it works
@@ -61,6 +54,10 @@ when selecting tests through Patrol (e.g. `--only`).
 
 ## Setup
 
+A project created for Patrol 5.0 needs nothing beyond the regular
+[setup](/documentation). The requirements below matter when you upgrade an
+existing project.
+
 <Steps>
 
 ### Keep your tests outside `integration_test/`
@@ -68,7 +65,7 @@ when selecting tests through Patrol (e.g. `--only`).
 Discovery runs your tests as plain widget tests on the host machine. Flutter
 decides what a test *is* purely from its directory: anything under
 `integration_test/` is treated as an integration test, which requires a connected
-device and a direct `integration_test` dependency — so discovery can't run there.
+device and a direct `integration_test` dependency, so discovery can't run there.
 
 Keep your Patrol tests in `patrol_test/` (the default) or any other directory that
 isn't `integration_test/`, and point Patrol at it:
@@ -78,71 +75,63 @@ patrol:
   test_directory: patrol_test
 ```
 
-### Enable it in `pubspec.yaml`
+If your tests stay in `integration_test/`, Patrol uses runtime discovery and
+prints a warning on every build. Set `emit_test_manifest: false` to make that
+choice explicit and hide the warning. Passing `--emit-test-manifest` there fails
+the build.
 
-```yaml
-patrol:
-  emit_test_manifest: true
-```
+### iOS only: include the generated tests in `RunnerUITests.m`
 
-You can also enable it ad-hoc for a single command with the
-`--emit-test-manifest` flag (the flag overrides the pubspec value), or turn it off
-with `--no-emit-test-manifest`.
-
-### iOS only — switch `RunnerUITests.m` to the static runner
-
-The **default** `RunnerUITests.m` uses the runtime macro
-`PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerUITests)`, and that's what you keep for
-normal (runtime-discovery) runs. The generated `PatrolGeneratedTests.inc` is only
-compiled in when the runner uses the static macro, so when you opt in, replace the
-runtime macro in `ios/RunnerUITests/RunnerUITests.m` with:
+`ios/RunnerUITests/RunnerUITests.m` has to compile in the generated tests:
 
 ```objc
 @import XCTest;
 @import patrol;
 @import ObjectiveC.runtime;
 
-PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE(RunnerUITests)
+PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerUITests)
+#if __has_include("PatrolGeneratedTests.inc")
 #include "PatrolGeneratedTests.inc"
+#endif
 ```
 
-`RunnerUITests` is now a base class carrying the shared infrastructure (server,
-app launching, permissions) and holding no tests of its own; the generated
-`.inc`, included after it, declares one subclass per test file.
+The same file works with both discovery modes. With build-time discovery the
+included `PatrolGeneratedTests.inc` declares one `RunnerUITests` subclass per
+test file and `RunnerUITests` runs no tests of its own. With runtime discovery
+the file declares nothing and `RunnerUITests` registers the tests at runtime, as
+before.
 
-<Warning>
-  **Upgrading from the first release of this feature** (`patrol_cli` 4.7.0 /
-  `patrol` 4.9.0). Two things changed. The
-  runner macro pair `PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN`/`_END` is
-  replaced by the single `..._STATIC_BASE` shown above, so update
-  `RunnerUITests.m` or the build fails to compile. And every generated native test
-  was renamed: the file moved from the method name into the class name, methods are
-  named after the test alone, and names are no longer truncated to 80 characters
-  nor suffixed with the test's position in the manifest. Regenerate any saved
-  shard lists, native test filters and dashboard mappings.
-</Warning>
-
-<Warning>
-  This iOS runner change is part of the opt-in — the static macro requires the
-  generated `.inc`, so a build **without** `--emit-test-manifest` won't compile.
-  To go back to runtime discovery you must restore the
-  `PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerUITests)` macro; `--no-emit-test-manifest`
-  alone is not enough on iOS. This covers every command that builds, including
-  `patrol develop` — when the runner and the setting disagree, Patrol says which
-  one to change instead of failing on a missing `.inc`.
-</Warning>
+Patrol never edits this file. When the `#include` is missing, `patrol build ios`
+and `patrol test` use runtime discovery and print a warning with the lines to
+add. If you turned build-time discovery on explicitly (`--emit-test-manifest` or
+`emit_test_manifest: true`), the build stops with the same lines instead.
 
 <Info>
-  If you enable `emit_test_manifest` but forget this step, `patrol build ios`
-  fails fast with an explanatory error rather than silently falling back to
-  runtime discovery. On **Android** no manual change is needed — the generated
-  class is created and selected automatically.
+  `RunnerUITests.m` files set up for the opt-in in Patrol 4.x, with
+  `PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE`, keep working: that macro is now
+  a deprecated alias of `PATROL_INTEGRATION_TEST_IOS_RUNNER`. The 4.7.0 pair
+  `PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN`/`_END` was removed, and the
+  build tells you what to replace it with.
 </Info>
+
+On **Android** no manual change is needed: the generated classes are created and
+selected automatically.
+
+### Ignore the generated files
+
+The generated sources are build output, regenerated on every build. Add them to
+`.gitignore`:
+
+```text
+PatrolGeneratedTests.inc
+PatrolGeneratedTests.java
+PatrolGeneratedTests_*.java
+```
 
 ### Build
 
 ```bash
-patrol build ios --emit-test-manifest    # or: patrol build android
+patrol build ios    # or: patrol build android, patrol test
 ```
 
 After discovery, the CLI prints the discovered tests grouped by source file, and
@@ -163,14 +152,49 @@ Generated 3 static XCTest method(s) → ios/RunnerUITests/PatrolGeneratedTests.i
 Those printed names are the exact Dart test names — pass one of them to `--only`
 when you want to run a single test.
 
-<Info>
-  The generated sources (`ios/RunnerUITests/PatrolGeneratedTests.inc` and
-  `PatrolGeneratedTests.java` plus `PatrolGeneratedTests_*.java` in your
-  `androidTest` source set) are build output. Add them to `.gitignore`; they're
-  regenerated on every build.
-</Info>
+If discovery fails (a test file that throws on the host, for example), the build
+stops and shows the part of the host `flutter test` output that explains why.
 
 </Steps>
+
+## Turning it off
+
+Runtime discovery is still available. Turn build-time discovery off for the
+whole project in `pubspec.yaml`:
+
+```yaml
+patrol:
+  emit_test_manifest: false
+```
+
+or for a single command with `--no-emit-test-manifest` (the flag overrides the
+pubspec value, and `--emit-test-manifest` turns it on again). No other change is
+needed: `RunnerUITests.m` works in both modes.
+
+`patrol develop` uses runtime discovery unless you turn build-time discovery on
+explicitly, because a hot-restart session runs through the runtime runner
+anyway.
+
+## Migrating to Patrol 5.0
+
+Upgrading a project that used runtime discovery:
+
+1. Move your tests out of `integration_test/` if they are there (see
+   [above](#keep-your-tests-outside-integration_test)).
+2. Use [`patrolTargetPlatform`](#platform-dependent-tests) instead of
+   `Platform` or `defaultTargetPlatform` anywhere that decides whether a test is
+   registered or skipped, and make sure no test file throws while it is loaded on
+   your computer.
+3. Add the `#include` [above](#ios-only-include-the-generated-tests-in-runneruitestsm)
+   to `RunnerUITests.m`. Until you do, iOS builds use runtime discovery and
+   print a warning.
+4. Add the generated files to `.gitignore`.
+5. Update anything that depends on native test names: generated tests are named
+   `PatrolGeneratedTests_<file>/test_<name>` instead of the Dart test name under
+   `RunnerUITests` (iOS) or `runDartTest[...]` (Android). See
+   [Sharding & external tools](#sharding--external-tools).
+
+To postpone all of this, set `emit_test_manifest: false`.
 
 ## Platform-dependent tests
 
@@ -221,9 +245,9 @@ mixed. A file wins over its own tests, so passing both runs it once.
 It's a separate command rather than a flag on `patrol test` because nothing is
 bundled, built or reinstalled here — so the options that shape a build
 (`--target`, `--tags`, `--dart-define`, …) don't apply and aren't accepted. It
-needs a prior `patrol build` with `emit_test_manifest`, since selecting individual
-tests natively is only possible thanks to the generated static tests. Under the
-hood it runs
+needs a prior `patrol build` with build-time discovery on, since selecting
+individual tests natively is only possible thanks to the generated static tests.
+Under the hood it runs
 `xcodebuild test-without-building -only-testing …` on iOS and
 `adb shell am instrument -e class <fqcn>#<method> …` on Android — no compilation
 step. This is ideal for a fast edit-nothing / re-run-one-test loop and for
@@ -342,10 +366,10 @@ Then point SauceLabs at it with `shard: concurrency` + `testListFile`. See
   free port pair per run and the app reads it at launch, so shards on one machine
   don't collide. See the [Marathon integration guide](/documentation/integrations/marathon).
   On Android, shard across separate hosts/VMs (one emulator each).
-- **`patrol develop` regenerates for its own target.** A develop session bundles
-  only the single `--target` test file, so the tests it generates (and the
-  manifest) cover just that file. Run `patrol build` again before
-  `patrol test-without-building`.
+- **`patrol develop` regenerates for its own target.** With build-time discovery
+  turned on explicitly, a develop session bundles only the single `--target` test
+  file, so the tests it generates (and the manifest) cover just that file. Run
+  `patrol build` again before `patrol test-without-building`.
 - **Slower initial build.** Discovery adds a host `flutter test` pass to every
   `patrol build`, so the first build takes a bit longer. This cost is paid once —
   subsequent `patrol test-without-building` runs skip building altogether.
@@ -358,4 +382,3 @@ Then point SauceLabs at it with `shard: concurrency` + `testListFile`. See
   to the default `<applicationId>.test` / `PatrolJUnitRunner`, and a flavor
   `applicationIdSuffix` that isn't reflected in `patrol.android.package_name` may
   not match. For those setups, prefer a normal `patrol test`.
-- Experimental: the setup and flags may change.

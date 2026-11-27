@@ -120,7 +120,7 @@ class AndroidAppOptions {
 
   /// Whether to discover Dart tests at build time (host `flutter test`) and
   /// generate static JUnit test methods, so each Dart test becomes a real,
-  /// individually-selectable native test. Experimental, opt-in.
+  /// individually-selectable native test.
   final bool emitTestManifest;
 
   String get description => 'apk with entrypoint ${basename(flutter.target)}';
@@ -284,7 +284,7 @@ class IOSAppOptions {
 
   /// Whether to discover Dart tests at build time (host `flutter test`) and
   /// embed a manifest into the test bundle, so the native runner can skip the
-  /// runtime discovery launch. Experimental, opt-in.
+  /// runtime discovery launch.
   final bool emitTestManifest;
 
   String get description {

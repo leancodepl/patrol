@@ -55,6 +55,27 @@ void main() {
       ).thenAnswer((_) async => process);
     });
 
+    test(
+      'stops right away when asked after the backend was disposed',
+      () async {
+        final parent = DisposeScope();
+        final backend = AndroidTestBackend(
+          adb: adb,
+          processManager: processManager,
+          platform: TestNativePlatform(),
+          rootDirectory: rootDirectory,
+          parentDisposeScope: parent,
+          logger: logger,
+        );
+        await parent.dispose();
+
+        var stopped = false;
+        backend.stopOnDispose(() async => stopped = true);
+
+        expect(stopped, isTrue);
+      },
+    );
+
     group('pullDeviceScreenshots', () {
       test(
         'pulls the device screenshots dir into the output dir and removes it '

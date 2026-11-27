@@ -3,7 +3,7 @@ import 'dart:convert' show LineSplitter;
 import 'dart:io' show Process;
 
 import 'package:adb/adb.dart';
-import 'package:dispose_scope/dispose_scope.dart';
+import 'package:dispose_scope/dispose_scope.dart' hide ProcessDisposed;
 import 'package:file/file.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol_cli/src/android/android_test_codegen.dart';
@@ -61,13 +61,12 @@ class AndroidTestBackend {
       Process process;
       int exitCode;
 
-      // Build-time test discovery + static JUnit codegen (experimental,
-      // opt-in). Runs a host `flutter test` in discovery mode to obtain a
-      // manifest of the Dart test tree, then generates a static JUnit class so
-      // each Dart test becomes a real, individually-selectable native @Test
-      // (and shows up under its own name in reports, not under the parameterized
-      // `runDartTest[...]` wrapper). Failures are non-fatal: the build falls
-      // back to the runtime-discovery host class.
+      // Build-time test discovery + static JUnit codegen. Runs a host
+      // `flutter test` in discovery mode to obtain a manifest of the Dart test
+      // tree, then generates a static JUnit class so each Dart test becomes a
+      // real, individually-selectable native @Test (and shows up under its own
+      // name in reports, not under the parameterized `runDartTest[...]`
+      // wrapper).
       // Always start from a clean slate: remove any previously generated class
       // so a stale one can't linger after a failed discovery or an opt-out
       // (which would double-run tests alongside the runtime host class).
@@ -88,8 +87,8 @@ class AndroidTestBackend {
             );
         if (manifestPath == null) {
           throwToolExit(
-            'Build-time test discovery failed; fix the errors above or disable '
-            'emit_test_manifest.',
+            'Build-time test discovery failed; fix the errors above, or pass '
+            '--no-emit-test-manifest to use runtime discovery.',
           );
         }
         final result = codegen.generate(
@@ -124,7 +123,7 @@ class AndroidTestBackend {
                 _ => {},
               },
             )
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
       process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
       exitCode = await process.exitCode;
@@ -152,7 +151,7 @@ class AndroidTestBackend {
                 _ => {},
               },
             )
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
       process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
 
@@ -258,7 +257,7 @@ class AndroidTestBackend {
               'doctor',
               '--verbose',
             ], runInShell: true)
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
 
       process
           .listenStdOut(
@@ -314,7 +313,7 @@ class AndroidTestBackend {
               '-t',
               options.target,
             ], runInShell: true)
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
 
       process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
@@ -342,7 +341,7 @@ class AndroidTestBackend {
                 _ => {},
               },
             )
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
       process
           .listenStdOut((l) {
             if (l.contains('androidx.test:orchestrator:1.5.0')) {
@@ -428,7 +427,7 @@ class AndroidTestBackend {
               arguments: {'-T': '1'},
               filter: 'PatrolServer:I Patrol:I flutter:I *:S',
             )
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
 
       final path = generateTestReportPath(
         rootPath: _rootDirectory.path,
@@ -495,7 +494,7 @@ class AndroidTestBackend {
               },
               workingDirectory: _rootDirectory.childDirectory('android').path,
             )
-            ..disposedBy(scope);
+            ..disposedByTree(scope, grace: _testRunExitGrace);
       process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
       process
           .listenStdErr((l) {
@@ -511,7 +510,7 @@ class AndroidTestBackend {
 
       final exitCode = await process.exitCode;
       patrolLogReader.stopTimer();
-      processLogcat.kill();
+      await processLogcat.killTree();
 
       // Cleanup video recording manager
       await videoRecordingManager?.dispose();
@@ -589,7 +588,7 @@ class AndroidTestBackend {
                 path,
               ],
             ], runInShell: true)
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
       process.listenStdOut((l) => _logger.detail('	: $l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.err('	$l')).disposedBy(scope);
       final exitCode = await process.exitCode;
@@ -683,7 +682,7 @@ class AndroidTestBackend {
               arguments: {'-T': '1'},
               filter: 'PatrolServer:I Patrol:I flutter:I *:S',
             )
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
 
       final path = generateTestReportPath(
         rootPath: _rootDirectory.path,
@@ -738,13 +737,13 @@ class AndroidTestBackend {
               intentClass: instrumentRunner,
               device: device.id,
             )
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
       process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.detail('\t$l')).disposedBy(scope);
 
       final exitCode = await process.exitCode;
       patrolLogReader.stopTimer();
-      processLogcat.kill();
+      await processLogcat.killTree();
 
       // Stops and saves any in-flight recording (e.g. the session was quit
       // mid-test).
@@ -760,7 +759,7 @@ class AndroidTestBackend {
 
   /// Runs already-built tests without rebuilding, via `adb shell am instrument`
   /// (the true no-rebuild path, no Gradle up-to-date check). Requires a prior
-  /// `patrol build android --emit-test-manifest`, whose generated JUnit classes
+  /// `patrol build android` with build-time discovery, whose generated JUnit classes
   /// make each Dart test an individually-addressable `<class>#<method>`.
   ///
   /// [onlyTests] are Dart test names (as shown by discovery); empty runs the
@@ -788,9 +787,8 @@ class AndroidTestBackend {
     ).findGeneratedClassNames(_rootDirectory.childDirectory('android'));
     if (generatedClassNames.isEmpty) {
       throwToolExit(
-        'No generated test class found. Run `patrol build android '
-        '--emit-test-manifest` (or set patrol.emit_test_manifest in pubspec) '
-        'before `patrol test-without-building`.',
+        'No generated test class found. Run `patrol build android` without '
+        '--no-emit-test-manifest before `patrol test-without-building`.',
       );
     }
 
@@ -813,7 +811,7 @@ class AndroidTestBackend {
               arguments: {'-T': '1'},
               filter: 'PatrolServer:I Patrol:I flutter:I *:S',
             )
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
 
       final path = generateTestReportPath(
         rootPath: _rootDirectory.path,
@@ -851,7 +849,7 @@ class AndroidTestBackend {
               device: device.id,
               arguments: {'class': classArg},
             )
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
       process
           .listenStdOut((l) {
             if (l.contains('FAILURES!!!') ||
@@ -866,7 +864,7 @@ class AndroidTestBackend {
 
       final exitCode = await process.exitCode;
       patrolLogReader.stopTimer();
-      processLogcat.kill();
+      await processLogcat.killTree();
       _logger.info(patrolLogReader.summary);
 
       if (exitCode == 0 && !failed) {
@@ -898,8 +896,8 @@ class AndroidTestBackend {
     final manifest = TestManifest.loadFromBuild(_rootDirectory);
     if (manifest == null) {
       throwToolExit(
-        'No build-time test manifest found. Run `patrol build android '
-        '--emit-test-manifest` before `patrol test-without-building`.',
+        'No build-time test manifest found. Run `patrol build android` '
+        'without --no-emit-test-manifest before `patrol test-without-building`.',
       );
     }
     final tests = manifest.tests;
@@ -941,8 +939,8 @@ class AndroidTestBackend {
 
     if (!apkDir.existsSync()) {
       throwToolExit(
-        'No built APKs found under ${apkDir.path}. Run `patrol build android '
-        '--emit-test-manifest` before `patrol test-without-building`.',
+        'No built APKs found under ${apkDir.path}. Run `patrol build android` '
+        'before `patrol test-without-building`.',
       );
     }
 
@@ -981,8 +979,8 @@ class AndroidTestBackend {
     if (appApk == null || testApk == null) {
       throwToolExit(
         'Could not locate the built app and androidTest APKs under '
-        '${apkDir.path}. Run `patrol build android --emit-test-manifest` '
-        'before `patrol test-without-building`.',
+        '${apkDir.path}. Run `patrol build android` before '
+        '`patrol test-without-building`.',
       );
     }
 
@@ -1141,6 +1139,65 @@ class AndroidTestBackend {
       }
     } catch (err) {
       _logger.warn('Failed to pull screenshots from device: $err');
+    }
+  }
+
+  /// How long disposing waits for a test run to end on its own. Stopping the
+  /// instrumentation or Ctrl+C ends it, and killing its tree mid-way can take
+  /// the Gradle daemon and the test report with it.
+  static const _testRunExitGrace = Duration(seconds: 10);
+
+  /// Starts the adb server from a short-lived `adb start-server`. A server that
+  /// a long-running adb client starts stays that client's child, so quitting
+  /// a session would kill it together with the session's process tree.
+  Future<void> startAdbServer() => _adb.init();
+
+  /// Runs [stop] when this backend is disposed, so an interrupted session
+  /// also ends what it started on the device.
+  void stopOnDispose(Future<void> Function() stop) {
+    if (_disposeScope.disposed) {
+      unawaited(stop());
+      return;
+    }
+    _disposeScope.addDispose(stop);
+  }
+
+  /// Stops [appId] and its instrumentation on [device].
+  ///
+  /// In develop mode the instrumentation stays alive so Hot Restart has
+  /// something to restart, and the Gradle Test Platform waits for it to
+  /// return - so quitting has to end it explicitly.
+  Future<void> stopInstrumentation(String appId, Device device) async {
+    // A custom `testApplicationId` changes the test package name. The lookup
+    // must not abort the shutdown; the conventional name is the fallback.
+    var testPackageName = '$appId.test';
+    try {
+      (testPackageName, _) = await _resolveInstrumentationComponent(
+        appId,
+        device,
+      ).timeout(const Duration(seconds: 10));
+    } catch (err) {
+      _logger.detail('Could not resolve the instrumentation package: $err');
+    }
+
+    for (final packageName in {appId, testPackageName}) {
+      _logger.detail('Stopping $packageName on ${device.name}');
+      try {
+        await _processManager
+            .run([
+              'adb',
+              '-s',
+              device.id,
+              'shell',
+              'am',
+              'force-stop',
+              packageName,
+            ], runInShell: true)
+            .timeout(const Duration(seconds: 10));
+      } catch (err) {
+        // Best effort - the app or the device may already be gone.
+        _logger.detail('Failed to stop $packageName: $err');
+      }
     }
   }
 

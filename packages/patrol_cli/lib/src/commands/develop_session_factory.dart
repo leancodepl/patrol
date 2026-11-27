@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io' show exit;
 
 import 'package:adb/adb.dart';
 import 'package:dispose_scope/dispose_scope.dart';
@@ -33,8 +34,9 @@ class DevelopSessionFactory {
   /// [disposeScope] manages the lifecycle of spawned processes.
   /// [stdin] is the stream that [FlutterTool] reads for interactive commands
   /// (hot restart, quit, etc.).
-  /// [onExit] replaces the default `exit(0)` in [FlutterTool] -- useful for
-  /// keeping the host process alive (e.g. in an MCP server).
+  /// [onExit] runs when the user quits. By default it disposes [disposeScope],
+  /// and with it every process the session started, then exits; pass one to
+  /// keep the host process alive (e.g. in an MCP server).
   /// [onTestsCompleted] is forwarded to [DevelopService] for test completion
   /// notifications.
   /// [onLogEntry] is called for every parsed log entry during the session.
@@ -60,7 +62,12 @@ class DevelopSessionFactory {
       platform: platform,
       parentDisposeScope: disposeScope,
       logger: logger,
-      onExit: onExit,
+      onExit:
+          onExit ??
+          () async {
+            await disposeScope.dispose();
+            exit(0);
+          },
     );
 
     return DevelopService(
