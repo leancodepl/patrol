@@ -561,8 +561,9 @@ class PatrolFinder extends MatchFinder {
   /// Returns true if [candidate] is one of the widgets this finder finds.
   ///
   /// Simple finders (key, type, text, ...) check only [candidate], like
-  /// [MatchFinder.matches]. Chained finders, such as `$(#a).$(#b)`, [first],
-  /// [last] and [at], need the widget tree and check [evaluate] instead.
+  /// [MatchFinder.matches], so offstage widgets match too. Chained finders,
+  /// such as `$(#a).$(#b)`, [first], [last] and [at], check [evaluate] and
+  /// skip offstage widgets, like the finder itself.
   @override
   bool matches(Element candidate) {
     final finder = this.finder;

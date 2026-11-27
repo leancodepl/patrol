@@ -320,6 +320,10 @@ void main() {
         final first = elementOf($.tester, 'first');
         final second = elementOf($.tester, 'second');
 
+        final hidden = elementOf($.tester, 'hidden');
+        expect($(Text).matches(hidden), isTrue);
+        expect($(Column).$(Text).matches(hidden), isFalse);
+
         expect($(#column).$(#text).matches(first), isTrue);
         expect($(#column).$(#text).matches(second), isFalse);
         expect($(#column).$(Text).first.matches(first), isTrue);
