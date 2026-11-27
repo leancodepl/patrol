@@ -48,8 +48,8 @@ void main() {
     setUp(() {
       parentDisposeScope = DisposeScope();
       processManager = MockProcessManager();
-      flutterProcess = MockProcess();
       flutterExitCode = Completer<int>();
+      flutterProcess = _killableProcess(flutterExitCode);
       final logger = MockLogger();
       when(() => logger.info(any())).thenReturn(null);
       when(() => logger.detail(any())).thenReturn(null);
@@ -57,18 +57,6 @@ void main() {
       when(
         () => processManager.start(any()),
       ).thenAnswer((_) async => flutterProcess);
-      when(() => flutterProcess.stdout).thenAnswer((_) => const Stream.empty());
-      when(() => flutterProcess.stderr).thenAnswer((_) => const Stream.empty());
-      when(
-        () => flutterProcess.exitCode,
-      ).thenAnswer((_) => flutterExitCode.future);
-      when(() => flutterProcess.kill(any())).thenAnswer((invocation) {
-        final signal = invocation.positionalArguments.first as ProcessSignal;
-        if (!flutterExitCode.isCompleted) {
-          flutterExitCode.complete(-signal.signalNumber);
-        }
-        return true;
-      });
 
       webTestBackend = WebTestBackend(
         processManager: processManager,
@@ -166,25 +154,6 @@ void main() {
     late Directory projectDir;
     late WebTestBackend webTestBackend;
 
-    MockProcess killableProcess(Completer<int> exitCode, {String? stdout}) {
-      final process = MockProcess();
-      when(() => process.stdout).thenAnswer(
-        (_) => stdout == null
-            ? const Stream.empty()
-            : Stream<List<int>>.value(utf8.encode(stdout)),
-      );
-      when(() => process.stderr).thenAnswer((_) => const Stream.empty());
-      when(() => process.exitCode).thenAnswer((_) => exitCode.future);
-      when(() => process.kill(any())).thenAnswer((invocation) {
-        final signal = invocation.positionalArguments.first as ProcessSignal;
-        if (!exitCode.isCompleted) {
-          exitCode.complete(-signal.signalNumber);
-        }
-        return true;
-      });
-      return process;
-    }
-
     /// A project whose package config resolves `patrol` to a web_runner with
     /// the files the backend requires.
     Directory createProject() {
@@ -236,7 +205,7 @@ void main() {
       when(() => logger.warn(any())).thenReturn(null);
       projectDir = createProject();
 
-      final flutterProcess = killableProcess(
+      final flutterProcess = _killableProcess(
         Completer<int>(),
         stdout: 'lib/main.dart is being served at http://localhost:8080\n',
       );
@@ -252,7 +221,7 @@ void main() {
       ).thenAnswer((_) async => ProcessResult(0, 0, '', ''));
 
       playwrightExitCode = Completer<int>();
-      playwrightProcess = killableProcess(playwrightExitCode);
+      playwrightProcess = _killableProcess(playwrightExitCode);
 
       webTestBackend = _ReadyWebTestBackend(
         processManager: processManager,
@@ -439,6 +408,25 @@ void main() {
       },
     );
   });
+}
+
+MockProcess _killableProcess(Completer<int> exitCode, {String? stdout}) {
+  final process = MockProcess();
+  when(() => process.stdout).thenAnswer(
+    (_) => stdout == null
+        ? const Stream.empty()
+        : Stream<List<int>>.value(utf8.encode(stdout)),
+  );
+  when(() => process.stderr).thenAnswer((_) => const Stream.empty());
+  when(() => process.exitCode).thenAnswer((_) => exitCode.future);
+  when(() => process.kill(any())).thenAnswer((invocation) {
+    final signal = invocation.positionalArguments.first as ProcessSignal;
+    if (!exitCode.isCompleted) {
+      exitCode.complete(-signal.signalNumber);
+    }
+    return true;
+  });
+  return process;
 }
 
 class _ReadyWebTestBackend extends WebTestBackend {
