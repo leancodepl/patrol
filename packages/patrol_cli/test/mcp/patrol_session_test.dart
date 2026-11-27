@@ -232,6 +232,21 @@ packages:
     },
   );
 
+  test('a refused run leaves no log file open', () async {
+    final session = sessionWith(
+      _FakeDevelop(),
+      developArgs: ['--not-a-real-flag'],
+    );
+
+    final result = await session.startAndWait(
+      'app_test.dart',
+      device: 'test-device',
+    );
+
+    expect(result.started, isFalse);
+    expect(File('${projectRoot.path}/patrol.log').existsSync(), isFalse);
+  });
+
   test('forgets the device once the session is gone', () async {
     final fake = _FakeDevelop(
       device: const Device(

@@ -22,19 +22,21 @@ final class LogStreaming {
     return _logFile!.path;
   }
 
+  /// Closes the log file. Writes made while it closes, or after, are dropped.
   Future<void> stopLogging() async {
-    if (_logSink == null) {
+    final sink = _logSink;
+    if (sink == null) {
       return;
     }
-
-    // Flush any pending writes before closing
-    try {
-      await _logSink!.flush();
-    } catch (_) {} // Ignore flush errors
-
-    await _logSink!.close();
     _logSink = null;
     _logFile = null;
+
+    try {
+      await sink.flush();
+      await sink.close();
+    } catch (_) {
+      // The file or its directory may be gone already.
+    }
   }
 
   void writeLog(String message) {

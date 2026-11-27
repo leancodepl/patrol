@@ -376,8 +376,6 @@ final class PatrolSession {
       return null;
     }
 
-    await _startLogStreamingAndTerminal();
-
     final resolvedCwd = p.canonicalize(flutterProjectPath);
 
     // Parse additional flags using the same ArgParser definitions as the CLI.
@@ -474,6 +472,10 @@ final class PatrolSession {
       );
     }
     _testServerPort = options.testServerPort;
+
+    // Opened only for a session that starts: a refused run has no cleanup to
+    // close it.
+    await _startLogStreamingAndTerminal();
 
     // Create a DisposeScope for the session lifecycle
     final disposeScope = DisposeScope();
@@ -573,6 +575,10 @@ final class PatrolSession {
     final cleanup = _cleanupFuture;
     if (cleanup != null) {
       await cleanup;
+    }
+    // The log file stays open until it is closed here or by a session's cleanup.
+    if (!_isRunning) {
+      await _logStreaming.stopLogging();
     }
   }
 
