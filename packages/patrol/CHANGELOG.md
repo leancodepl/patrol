@@ -8,6 +8,8 @@
 - Add native screenshots on iOS: `screenshot_on_failure: true` and `$.takeNativeScreenshot('tag')`
   now work on simulators and physical devices. See the
   [docs](https://patrol.leancode.co/cli-commands/test#on-ios). (#3271)
+- Fix `RunnerUITests` failing to compile and link with native screenshots on iOS under Swift
+  Package Manager. (#3289)
 
 ## 4.12.0
 
