@@ -34,10 +34,14 @@ const userAgent = envString("PATROL_WEB_USER_AGENT") ?? device?.userAgent
 // viewport falls back to the device.
 const viewportOption = envJson<PlaywrightTestOptions["viewport"]>("PATROL_WEB_VIEWPORT")
 const viewport = viewportOption !== undefined ? viewportOption : device?.viewport
-const screen = viewport === null ? undefined : device?.screen
+// Playwright rejects a screen size, a device scale factor and mobile mode
+// without a fixed viewport, so a null viewport drops what the device set for
+// them. Values set explicitly are kept (and Playwright reports the conflict).
+const fromDevice = viewport === null ? undefined : device
+const screen = fromDevice?.screen
 const deviceScaleFactor =
-  envParsed("PATROL_WEB_DEVICE_SCALE_FACTOR", parseDeviceScaleFactor) ?? device?.deviceScaleFactor
-const isMobile = envBool("PATROL_WEB_IS_MOBILE") ?? device?.isMobile
+  envParsed("PATROL_WEB_DEVICE_SCALE_FACTOR", parseDeviceScaleFactor) ?? fromDevice?.deviceScaleFactor
+const isMobile = envBool("PATROL_WEB_IS_MOBILE") ?? fromDevice?.isMobile
 const hasTouch = envBool("PATROL_WEB_HAS_TOUCH") ?? device?.hasTouch
 const shard = envParsed("PATROL_WEB_SHARD", parseShard)
 const headless = envBool("PATROL_WEB_HEADLESS") ?? false

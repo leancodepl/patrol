@@ -57,6 +57,19 @@ test("keeps an explicit null viewport", () => {
   expect(use?.contextOptions).toBeUndefined()
 })
 
+test("drops the device's scale factor and mobile mode with a null viewport", () => {
+  // Playwright rejects both without a fixed viewport.
+  const { use } = loadConfig({ PATROL_WEB_DEVICE: "Pixel 7", PATROL_WEB_VIEWPORT: "null" })
+
+  expect(use?.viewport).toBeNull()
+  expect(use?.deviceScaleFactor).toBeUndefined()
+  expect(use?.isMobile).toBeUndefined()
+  expect(use?.contextOptions).toBeUndefined()
+  // The rest of the device still applies.
+  expect(use?.userAgent).toBe(devices["Pixel 7"].userAgent)
+  expect(use?.hasTouch).toBe(true)
+})
+
 test("does not let a device pick the browser", () => {
   // The iPhone descriptors default to WebKit.
   const { use } = loadConfig({ PATROL_WEB_DEVICE: "iPhone 15" })
