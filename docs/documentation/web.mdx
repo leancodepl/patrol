@@ -49,6 +49,40 @@ patrol test \
   --web-headless
 ```
 
+### Emulating mobile devices
+
+To test how your app behaves in a phone's browser, emulate a device with `--web-device`. It takes a device name from
+[Playwright's device list](https://playwright.dev/docs/emulation#devices), e.g.:
+
+```bash
+patrol test \
+  --device chrome \
+  --target patrol_test/login_test.dart \
+  --web-device "Pixel 7"
+```
+
+The device sets the viewport size, screen size, device pixel ratio, user agent, mobile mode and touch support. Your app
+then sees a phone: `MediaQuery` reports the phone's size and pixel ratio, and `defaultTargetPlatform` is
+`TargetPlatform.android` for Android phones and `TargetPlatform.iOS` for iPhones and iPads. To make that work, Patrol
+sets `navigator.platform` to match a phone's user agent (also one set with `--web-user-agent`), because Flutter reads
+it before the user agent.
+
+To set single values, or override the ones the device sets, use:
+
+- `--web-viewport` and `--web-user-agent`
+- `--web-device-scale-factor` – the device pixel ratio
+- `--[no-]web-is-mobile` – mobile mode, in which the browser takes the page's viewport meta tag into account
+- `--[no-]web-has-touch` – touch screen support
+
+For example, `--web-device "iPhone 15" --web-viewport '{"width": 393, "height": 500}'` emulates an iPhone 15 with a
+shorter screen.
+
+<Info>
+  This is emulation in a desktop browser, not a real phone. The browser engine stays the one Patrol runs, so it
+  doesn't catch bugs that only happen in Safari or in Chrome on a real device. Taps and gestures in your tests are
+  dispatched by Flutter, so they work the same with and without touch emulation.
+</Info>
+
 ### Supported Native Actions on Web
 
 Patrol supports the following platform actions through Playwright:

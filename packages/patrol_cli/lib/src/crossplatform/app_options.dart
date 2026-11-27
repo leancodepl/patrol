@@ -507,6 +507,10 @@ class WebAppOptions {
     this.permissions,
     this.userAgent,
     this.viewport,
+    this.device,
+    this.deviceScaleFactor,
+    this.isMobile,
+    this.hasTouch,
     this.globalTimeout,
     this.shard,
     this.headless,
@@ -549,6 +553,15 @@ class WebAppOptions {
   final String? permissions;
   final String? userAgent;
   final String? viewport;
+
+  /// Name of a Playwright device descriptor, e.g. `Pixel 7`.
+  final String? device;
+
+  /// Kept as text so the web runner reports an invalid value instead of the
+  /// CLI dropping it.
+  final String? deviceScaleFactor;
+  final bool? isMobile;
+  final bool? hasTouch;
   final int? globalTimeout;
   final String? shard;
   final bool? headless;
@@ -597,6 +610,10 @@ class WebAppOptions {
       'PATROL_WEB_PERMISSIONS': permissions,
       'PATROL_WEB_USER_AGENT': userAgent,
       'PATROL_WEB_VIEWPORT': viewport,
+      'PATROL_WEB_DEVICE': device,
+      'PATROL_WEB_DEVICE_SCALE_FACTOR': deviceScaleFactor,
+      'PATROL_WEB_IS_MOBILE': isMobile,
+      'PATROL_WEB_HAS_TOUCH': hasTouch,
       'PATROL_WEB_GLOBAL_TIMEOUT': globalTimeout,
       'PATROL_WEB_SHARD': shard,
       'PATROL_WEB_HEADLESS': headless,

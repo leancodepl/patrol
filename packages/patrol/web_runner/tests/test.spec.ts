@@ -2,6 +2,7 @@ import { test as base } from "@playwright/test"
 import { startCoverage, stopAndSaveCoverage } from "./coverage"
 import { initialise } from "./initialise"
 import { logger } from "./logger"
+import { prepareMobileEmulation } from "./mobileEmulation"
 import { PageManager } from "./pageManager"
 import { exposePatrolPlatformHandler } from "./patrolPlatformHandler"
 import { PatrolTestEntry } from "./types"
@@ -12,7 +13,7 @@ if (tests.length === 0) {
 }
 
 export const patrolTest = base.extend({
-  page: async ({ page, context }, use, testInfo) => {
+  page: async ({ page, context, isMobile, userAgent, baseURL }, use, testInfo) => {
     page.on("console", message => {
       const text = message.text()
       if (text.startsWith("PATROL_LOG")) {
@@ -24,6 +25,8 @@ export const patrolTest = base.extend({
       // eslint-disable-next-line no-console
       console.log(`Playwright: ${text}`)
     })
+
+    await prepareMobileEmulation(context, { userAgent, isMobile, baseURL })
 
     await startCoverage(page)
 

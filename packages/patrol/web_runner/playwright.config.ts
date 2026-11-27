@@ -1,5 +1,6 @@
 import {
   defineConfig,
+  devices,
   LaunchOptions,
   PlaywrightTestOptions,
   PlaywrightWorkerOptions,
@@ -25,8 +26,23 @@ const timezoneId = envString("PATROL_WEB_TIMEZONE")
 const colorScheme = envString("PATROL_WEB_COLOR_SCHEME") as PlaywrightTestOptions["colorScheme"] | undefined
 const geolocation = envJson<PlaywrightTestOptions["geolocation"]>("PATROL_WEB_GEOLOCATION")
 const permissions = envJson<PlaywrightTestOptions["permissions"]>("PATROL_WEB_PERMISSIONS")
-const userAgent = envString("PATROL_WEB_USER_AGENT")
-const viewport = envJson<PlaywrightTestOptions["viewport"]>("PATROL_WEB_VIEWPORT")
+// A device preset fills in the emulation options below. Each explicit option
+// overrides the value the preset set.
+const device = envParsed("PATROL_WEB_DEVICE", parseDevice)
+const userAgent = envString("PATROL_WEB_USER_AGENT") ?? device?.userAgent
+// An explicit null turns Playwright's fixed viewport off, so only an unset
+// viewport falls back to the device.
+const viewportOption = envJson<PlaywrightTestOptions["viewport"]>("PATROL_WEB_VIEWPORT")
+const viewport = viewportOption !== undefined ? viewportOption : device?.viewport
+// Playwright rejects a screen size, a device scale factor and mobile mode
+// without a fixed viewport, so a null viewport drops what the device set for
+// them. Values set explicitly are kept (and Playwright reports the conflict).
+const fromDevice = viewport === null ? undefined : device
+const screen = fromDevice?.screen
+const deviceScaleFactor =
+  envParsed("PATROL_WEB_DEVICE_SCALE_FACTOR", parseDeviceScaleFactor) ?? fromDevice?.deviceScaleFactor
+const isMobile = envBool("PATROL_WEB_IS_MOBILE") ?? fromDevice?.isMobile
+const hasTouch = envBool("PATROL_WEB_HAS_TOUCH") ?? device?.hasTouch
 const shard = envParsed("PATROL_WEB_SHARD", parseShard)
 const headless = envBool("PATROL_WEB_HEADLESS") ?? false
 const channel = envString("PATROL_WEB_CHANNEL")
@@ -64,6 +80,9 @@ export default defineConfig({
     permissions,
     userAgent,
     viewport,
+    deviceScaleFactor,
+    isMobile,
+    hasTouch,
     channel,
     bypassCSP,
     ignoreHTTPSErrors,
@@ -75,6 +94,7 @@ export default defineConfig({
     storageState,
     acceptDownloads,
     launchOptions,
+    contextOptions: screen ? { screen } : undefined,
   },
   globalSetup: require.resolve("./tests/setup"),
   outputDir,
@@ -154,6 +174,39 @@ function parseIgnoreDefaultArgs(value: string): LaunchOptions["ignoreDefaultArgs
   } catch {}
 
   throw new Error("PATROL_WEB_IGNORE_DEFAULT_ARGS must be 'true', 'false' or a JSON array of strings")
+}
+
+function parseDevice(name: string) {
+  if (!Object.hasOwn(devices, name)) {
+    const query = name.toLowerCase()
+    const similar = Object.keys(devices)
+      .filter(deviceName => deviceName.toLowerCase().includes(query))
+      .slice(0, 5)
+    const hint = similar.length > 0 ? ` Similar names: ${similar.map(n => `"${n}"`).join(", ")}.` : ""
+
+    throw new Error(
+      `PATROL_WEB_DEVICE: unknown device "${name}".${hint} ` +
+        "See https://playwright.dev/docs/emulation#devices for the list of device names.",
+    )
+  }
+
+  // The descriptor's defaultBrowserType is left out on purpose: the device sets
+  // what the browser emulates, not which browser runs the tests. Its screen
+  // size is missing from Playwright's DeviceDescriptor type but present at
+  // runtime.
+  const descriptor = devices[name] as (typeof devices)[string] & { screen?: { width: number; height: number } }
+  const { userAgent, viewport, screen, deviceScaleFactor, isMobile, hasTouch } = descriptor
+  return { userAgent, viewport, screen, deviceScaleFactor, isMobile, hasTouch }
+}
+
+function parseDeviceScaleFactor(value: string) {
+  const parsed = Number(value)
+
+  if (!Number.isFinite(parsed) || parsed <= 0) {
+    throw new Error("PATROL_WEB_DEVICE_SCALE_FACTOR must be a positive number")
+  }
+
+  return parsed
 }
 
 function parseShard(shardValue: string) {
