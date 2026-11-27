@@ -651,6 +651,7 @@ class DevelopService {
           attachUsingUrl: attachUsingUrl,
           debugUrl: vmServiceUrlCompleter?.future,
           forwardFlutterLogs: flutterLogs.forwardFlutterLogs,
+          removeAdbForwards: device.targetPlatform == TargetPlatform.android,
           onQuit: onQuitCleanup,
         );
         if (prebuiltApksDir == null) {

@@ -44,6 +44,7 @@
 - `patrol test-without-building --input <dir>` runs that directory. Patrol serves the app itself,
   with the MIME types and cross-origin headers `flutter run` sends, and accepts the `--web-*` options
   that shape a run, so the same artifact can be sharded across machines.
+- `patrol develop` no longer leaves `adb` port forwards behind on Android devices when the session ends. (#3367)
 
 - **BREAKING CHANGE**
   - Remove `--tags` from `patrol develop`. It was accepted but never applied, so a session ran
