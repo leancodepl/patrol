@@ -6,16 +6,24 @@ import '../common.dart';
 const _timeout = Duration(seconds: 5); // to avoid timeouts on CI
 
 void main() {
-  patrol('grants various permissions', ($) async {
-    await createApp($);
-    await _grantVariousPermissions($);
-  }, tags: ['android', 'ios', 'physical_device', 'emulator', 'simulator']);
+  patrol(
+    'grants various permissions',
+    ($) async {
+      await createApp($);
+      await _grantVariousPermissions($);
+    },
+    tags: ['android', 'ios', 'physical_device', 'emulator', 'simulator'],
+  );
 
   // Same steps: whichever runs second fails if permissions aren't cleared.
-  patrol('grants various permissions 2', ($) async {
-    await createApp($);
-    await _grantVariousPermissions($);
-  }, tags: ['android', 'ios', 'physical_device', 'emulator', 'simulator']);
+  patrol(
+    'grants various permissions 2',
+    ($) async {
+      await createApp($);
+      await _grantVariousPermissions($);
+    },
+    tags: ['android', 'ios', 'physical_device', 'emulator', 'simulator'],
+  );
 }
 
 Future<void> _grantVariousPermissions(PatrolIntegrationTester $) async {
