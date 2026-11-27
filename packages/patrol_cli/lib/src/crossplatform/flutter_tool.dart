@@ -460,15 +460,13 @@ class FlutterTool {
         }, onDone: drained.maybeComplete)
         .disposedBy(scope);
 
-    unawaited(
-      process.exitCode.then((code) async {
-        await drained.future.timeout(
-          const Duration(seconds: 1),
-          onTimeout: () {},
-        );
-        onExit(_describeExit(command, code, stderrLines));
-      }),
-    );
+    process.exitCode.then((code) async {
+      await drained.future.timeout(
+        const Duration(seconds: 1),
+        onTimeout: () {},
+      );
+      onExit(_describeExit(command, code, stderrLines));
+    });
   }
 
   static const _maxStderrLines = 20;
