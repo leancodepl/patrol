@@ -9,9 +9,10 @@ import 'package:flutter/services.dart';
 /// Flutter does not expose that to Dart [Platform.environment], so ports are
 /// read from native `ProcessInfo` over a method channel.
 ///
-/// On Linux, the test runner sets ports as process environment variables
-/// (`PATROL_TEST_SERVER_PORT`, `PATROL_APP_SERVER_PORT`), which Dart reads
-/// directly from [Platform.environment].
+/// On Linux, `patrol_cli` sets the `PatrolAppService` port as the process
+/// environment variable `PATROL_APP_SERVER_PORT`, which Dart reads directly
+/// from [Platform.environment]. Linux has no native test server, so there is
+/// no test server port to inject.
 ///
 /// Injected ports take precedence over the `--dart-define` values, which take
 /// precedence over the defaults (8081/8082).
@@ -62,14 +63,13 @@ class PatrolRuntimePorts {
     }
   }
 
-  /// Reads ports from process [environment] variables.
+  /// Reads the app server port from the process [environment].
   ///
-  /// Used on Linux, where the test runner passes ports as environment
-  /// variables of the app process. A missing or malformed value leaves the
-  /// port unset, so the `--dart-define` value or the default is used.
+  /// Used on Linux, where `patrol_cli` passes `PATROL_APP_SERVER_PORT` to the
+  /// app process. A missing, malformed or out-of-range value leaves the port
+  /// unset, so the `--dart-define` value or the default is used.
   @visibleForTesting
   static void loadFromEnvironment(Map<String, String> environment) {
-    _testServerPort = _parsePort(environment['PATROL_TEST_SERVER_PORT']);
     _appServerPort = _parsePort(environment['PATROL_APP_SERVER_PORT']);
   }
 

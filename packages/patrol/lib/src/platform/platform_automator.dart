@@ -16,7 +16,6 @@ import 'package:patrol/src/platform/ios/ios_automator_empty.dart'
 import 'package:patrol/src/platform/ios/ios_automator_empty.dart'
     if (dart.library.io) 'package:patrol/src/platform/ios/ios_automator_native.dart'
     as native_ios_automator;
-import 'package:patrol/src/platform/linux/linux_automator.dart';
 import 'package:patrol/src/platform/macos/macos_automator.dart';
 import 'package:patrol/src/platform/macos/macos_automator_config.dart';
 import 'package:patrol/src/platform/macos/macos_automator_empty.dart'
@@ -240,10 +239,6 @@ class PlatformAutomator {
 
   /// macOS-specific automator.
   late final MacOSAutomator macos;
-
-  /// Linux-specific automator. It has no actions: Linux supports only
-  /// Dart-side (Flutter) interactions.
-  final linux = const LinuxAutomator();
 
   /// Mobile automator that works on both Android and iOS.
   late final MobileAutomator mobile;
@@ -1154,9 +1149,7 @@ class PlatformAction {
     );
 
     if (value == null) {
-      throw UnsupportedError(
-        'This action is not supported on ${_currentPlatformName()}',
-      );
+      throw _unsupported('This action is not supported on $_platformName.');
     }
 
     return value;
@@ -1225,10 +1218,7 @@ class PlatformAction {
       return web();
     } else if (current_platform.isLinux) {
       if (linux == null) {
-        throw UnsupportedError(
-          'This action is not supported on Linux. Patrol supports only '
-          'Dart-side (Flutter) interactions on Linux.',
-        );
+        throw _unsupported('This action is not supported on Linux.');
       }
       return linux();
     }
@@ -1238,9 +1228,9 @@ class PlatformAction {
 
   /// Calls the action for mobile platforms (Android or iOS).
   T mobile<T>({required T Function() android, required T Function() ios}) {
-    T error() => throw UnsupportedError(
+    T error() => throw _unsupported(
       'This action is supported only on Android and iOS, not on '
-      '${_currentPlatformName()}',
+      '$_platformName.',
     );
 
     return safe(
@@ -1252,18 +1242,25 @@ class PlatformAction {
     );
   }
 
-  static String _currentPlatformName() {
-    if (current_platform.isAndroid) {
-      return 'Android';
-    } else if (current_platform.isIOS) {
-      return 'iOS';
-    } else if (current_platform.isMacOS) {
-      return 'macOS';
-    } else if (current_platform.isWeb) {
-      return 'web';
-    } else if (current_platform.isLinux) {
-      return 'Linux';
+  String get _platformName => safe(
+    android: () => 'Android',
+    ios: () => 'iOS',
+    web: () => 'web',
+    macos: () => 'macOS',
+    linux: () => 'Linux',
+  );
+
+  /// Builds the error for an action the current platform doesn't support.
+  ///
+  /// On Linux it adds that only Dart-side (Flutter) interactions work there,
+  /// so every unsupported action on Linux explains why in the same words.
+  static UnsupportedError _unsupported(String message) {
+    if (current_platform.isLinux) {
+      return UnsupportedError(
+        '$message Patrol supports only Dart-side (Flutter) interactions on '
+        'Linux.',
+      );
     }
-    return 'an unknown platform';
+    return UnsupportedError(message);
   }
 }
