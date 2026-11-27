@@ -24,6 +24,16 @@ void main() {
       );
     });
 
+    test('says the OS is too old on Ubuntu older than 20.04', () {
+      final hint = WebTestBackend.playwrightUnsupportedPlatformHint(
+        'Playwright does not support chromium on ubuntu18.04-x64',
+      );
+
+      expect(hint, contains('too old'));
+      expect(hint, isNot(contains('Update the patrol package')));
+      expect(hint, isNot(contains('PLAYWRIGHT_HOST_PLATFORM_OVERRIDE')));
+    });
+
     test('suggests only an update on other platforms', () {
       final hint = WebTestBackend.playwrightUnsupportedPlatformHint(
         'Playwright does not support chromium on <unknown>',

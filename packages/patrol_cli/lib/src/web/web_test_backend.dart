@@ -666,11 +666,19 @@ class WebTestBackend {
       return null;
     }
 
-    final arch = RegExp(r'^ubuntu[\d.]+-(x64|arm64)$').firstMatch(platform);
-    final override = arch == null
+    final ubuntu = RegExp(
+      r'^ubuntu(\d+)\.\d+-(x64|arm64)$',
+    ).firstMatch(platform);
+    final major = int.tryParse(ubuntu?.group(1) ?? '');
+    if (major != null && major < 20) {
+      return 'Playwright has no Chromium build for $platform because this '
+          'Ubuntu version is too old. Run web tests on Ubuntu 20.04 or newer.';
+    }
+
+    final override = ubuntu == null
         ? ''
-        : ', or set PLAYWRIGHT_HOST_PLATFORM_OVERRIDE=ubuntu24.04-${arch.group(1)} '
-              'to use the closest supported Chromium build';
+        : ', or set PLAYWRIGHT_HOST_PLATFORM_OVERRIDE=ubuntu24.04-${ubuntu.group(2)} '
+              'to use a supported Chromium build';
     return 'The Playwright version bundled with the patrol package cannot '
         'install Chromium on $platform. Update the patrol package to the '
         'latest version$override.';
