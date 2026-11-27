@@ -327,10 +327,17 @@ void main() {
 
       final reported = verify(
         () => logger.err(captureAny()),
-      ).captured.map((message) => message.toString()).join('\n');
-      expect(reported, contains('Hot Restart is not available'));
-      expect(reported, contains('exited with code 64'));
-      expect(reported, contains('Could not find an option named "--flavor".'));
+      ).captured.map((message) => message.toString()).toList();
+      expect(
+        reported,
+        contains(
+          'Hot Restart is not available: `flutter attach` exited with code 64',
+        ),
+      );
+      expect(
+        reported.join('\n'),
+        _containsOnce('Could not find an option named "--flavor".'),
+      );
     });
 
     test('attachFailure carries why attach exited before attaching', () async {
@@ -384,10 +391,15 @@ void main() {
 
       final reported = verify(
         () => logger.err(captureAny()),
-      ).captured.map((message) => message.toString()).join('\n');
-      expect(reported, contains('Logs are not available'));
-      expect(reported, contains('exited with code 1'));
-      expect(reported, contains('You must specify a --flavor option'));
+      ).captured.map((message) => message.toString()).toList();
+      expect(
+        reported,
+        contains('Logs are not available: `flutter logs` exited with code 1'),
+      );
+      expect(
+        reported.join('\n'),
+        _containsOnce('You must specify a --flavor option'),
+      );
     });
 
     test('r reports why the attach died', () async {
@@ -411,7 +423,9 @@ void main() {
         () => logger.warn(captureAny()),
       ).captured.map((message) => message.toString()).join('\n');
       expect(warned, contains('Hot Restart is not available'));
+      expect(warned, contains('exited with code 64'));
       expect(warned, isNot(contains('not attached to the app yet')));
+      expect(warned, isNot(contains('Could not find an option')));
     });
 
     test('logs survives stdout arriving after the process exits', () async {
@@ -422,7 +436,10 @@ void main() {
     });
 
     test('logs does not leave the observation URL pending on exit', () async {
-      stubProcess(exitCode: Future.value(1));
+      stubProcess(
+        stderr: ['You must specify a --flavor option to select one.'],
+        exitCode: Future.value(1),
+      );
       final observationUrl = Completer<String?>();
 
       await flutterTool.logs(
@@ -431,7 +448,19 @@ void main() {
         observationUrlCompleter: observationUrl,
       );
 
-      await expectLater(observationUrl.future, throwsA(isA<ToolExit>()));
+      await expectLater(
+        observationUrl.future,
+        throwsA(
+          isA<ToolExit>().having(
+            (e) => e.message,
+            'message',
+            allOf(
+              contains('exited with code 1'),
+              isNot(contains('You must specify a --flavor option')),
+            ),
+          ),
+        ),
+      );
     });
 
     test(
@@ -546,3 +575,8 @@ void main() {
     });
   });
 }
+
+Matcher _containsOnce(String substring) => predicate<String>(
+  (text) => substring.allMatches(text).length == 1,
+  'contains "$substring" exactly once',
+);

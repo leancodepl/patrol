@@ -45,6 +45,7 @@ class FlutterTool {
   var _devtoolsUrl = '';
   io.Process? _attachProcess;
   var _pendingHotRestart = false;
+  int? _attachExitCode;
   String? _attachFailure;
   void Function()? _onRestartCompleted;
   void Function()? _onRestartFailed;
@@ -61,8 +62,8 @@ class FlutterTool {
   /// [onFailed] fires instead when the restart is rejected (compile error);
   /// for a request that is sent, exactly one of the two fires, at most once.
   void hotRestart({void Function()? onCompleted, void Function()? onFailed}) {
-    if (_attachFailure case final failure?) {
-      _logger.warn(failure);
+    if (_attachExitCode case final code?) {
+      _logger.warn(_attachUnavailable(code));
       return;
     }
     _onRestartCompleted = onCompleted;
@@ -88,6 +89,12 @@ class FlutterTool {
   /// Why `flutter attach` exited without attaching, once it has: its exit
   /// code and what it wrote to stderr. Hot restart is unavailable from then on.
   String? get attachFailure => _attachFailure;
+
+  /// The exit code of `flutter attach` once it has exited without attaching.
+  int? get attachExitCode => _attachExitCode;
+
+  static String _attachUnavailable(int code) =>
+      'Hot Restart is not available: ${_exitSummary('flutter attach', code)}';
 
   /// Forwards logs and hot restarts the app when "r" is pressed.
   Future<void> attachForHotRestart({
@@ -225,13 +232,13 @@ class FlutterTool {
         completer.maybeComplete();
       });
 
-      _reportExit(process, scope, 'flutter attach', (reason) {
+      _reportExit(process, scope, 'flutter attach', (code, reason) {
         if (completer.isCompleted) {
           return;
         }
-        final failure = 'Hot Restart is not available: $reason';
-        _attachFailure = failure;
-        _logger.err(failure);
+        _attachExitCode = code;
+        _attachFailure = 'Hot Restart is not available: $reason';
+        _logger.err(_attachUnavailable(code));
         completer.maybeComplete();
       });
 
@@ -240,8 +247,8 @@ class FlutterTool {
             final char = String.fromCharCode(event.first);
             if (char == 'r' || char == 'R') {
               if (!_hotRestartActive) {
-                if (_attachFailure case final failure?) {
-                  _logger.warn(failure);
+                if (_attachExitCode case final code?) {
+                  _logger.warn(_attachUnavailable(code));
                   return;
                 }
                 _logger.warn(
@@ -372,19 +379,17 @@ class FlutterTool {
         observationUrlCompleter?.maybeComplete();
       });
 
-      _reportExit(process, scope, 'flutter logs', (reason) {
+      _reportExit(process, scope, 'flutter logs', (code, _) {
+        final summary = _exitSummary('flutter logs', code);
         if (!completer.isCompleted) {
-          _logger.err('Logs are not available: $reason');
+          _logger.err('Logs are not available: $summary');
           completer.maybeComplete();
         }
 
         if (observationUrlCompleter case final urlCompleter?
             when !urlCompleter.isCompleted) {
           urlCompleter.completeError(
-            ToolExit(
-              'flutter logs exited before reporting the Dart VM service '
-              'URL: $reason',
-            ),
+            ToolExit('$summary before reporting the Dart VM service URL'),
           );
         }
       });
@@ -432,8 +437,8 @@ class FlutterTool {
     });
   }
 
-  /// Forwards the process stderr and, once it exits, hands [onExit] a
-  /// description of that exit.
+  /// Forwards the process stderr and, once it exits, hands [onExit] its exit
+  /// code and a description of that exit that ends with the stderr tail.
   ///
   /// The lines explaining an exit can still be in flight when its exit code
   /// arrives, so the description is built once stderr drains. Only the tail is
@@ -442,7 +447,7 @@ class FlutterTool {
     io.Process process,
     DisposeScope scope,
     String command,
-    void Function(String reason) onExit,
+    void Function(int code, String reason) onExit,
   ) {
     final stderrLines = <String>[];
     final drained = Completer<void>();
@@ -466,7 +471,7 @@ class FlutterTool {
         const Duration(seconds: 1),
         onTimeout: () {},
       );
-      onExit(_describeExit(command, code, stderrLines));
+      onExit(code, _describeExit(command, code, stderrLines));
     });
   }
 
@@ -475,8 +480,11 @@ class FlutterTool {
   String _describeExit(String command, int code, List<String> stderrLines) {
     final lines = stderrLines.where((line) => line.trim().isNotEmpty);
     final reason = lines.isEmpty ? '' : ':\n\t${lines.join('\n\t')}';
-    return '`$command` exited with code $code$reason';
+    return '${_exitSummary(command, code)}$reason';
   }
+
+  static String _exitSummary(String command, int code) =>
+      '`$command` exited with code $code';
 
   /// Enables interactive mode. Returns the previous stdin modes.
   StdinModes enableInteractiveMode() {

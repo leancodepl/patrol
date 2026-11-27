@@ -619,8 +619,12 @@ class DevelopService {
               'connect - the app never came up. See the logs above.',
             );
           }
-          if (_flutterTool.attachFailure case final reason?) {
-            throwToolExit(reason);
+          if (_flutterTool.attachExitCode case final code?) {
+            throwToolExit(
+              '`flutter attach` exited with code $code, so the session ends: '
+              'with --use-prebuilt-apks the requested target starts only '
+              'through a hot restart, which needs `flutter attach`.',
+            );
           }
           _logger.info(
             'Prebuilt APKs: the app launched with the placeholder test baked '

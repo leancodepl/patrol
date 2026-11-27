@@ -555,10 +555,13 @@ void main() {
         },
       );
 
-      test("fails with attach's reason when attach dies first", () async {
-        when(
-          () => flutterTool.attachFailure,
-        ).thenReturn('flutter attach exited with code 64');
+      test("fails with attach's exit code when attach dies first", () async {
+        const stderrLine = 'Could not find an option named "--flavor".';
+        when(() => flutterTool.attachExitCode).thenReturn(64);
+        when(() => flutterTool.attachFailure).thenReturn(
+          'Hot Restart is not available: `flutter attach` exited with code '
+          '64:\n\t$stderrLine',
+        );
         attachCompleter.complete();
 
         await expectLater(
@@ -567,7 +570,11 @@ void main() {
             isA<ToolExit>().having(
               (e) => e.message,
               'message',
-              contains('exited with code 64'),
+              allOf(
+                contains('exited with code 64'),
+                contains('requested target'),
+                isNot(contains(stderrLine)),
+              ),
             ),
           ),
         );
