@@ -95,7 +95,7 @@ internal static class WindowsAppControl
         using var automation = new UIA3Automation();
 
         var window = Retry.WhileNull(
-            () => FindWindow(automation, processName, windowName, processId),
+            () => TryFindWindow(automation, processName, windowName, processId),
             wait,
             interval: TimeSpan.FromMilliseconds(250),
             throwOnTimeout: false,
@@ -114,7 +114,11 @@ internal static class WindowsAppControl
         Console.WriteLine($"WindowsAppControl: activated window \"{window.Name}\"");
     }
 
-    private static Window? FindWindow(
+    /// <summary>
+    /// Resolves a top-level window for scoping finds / activation.
+    /// Returns null when no matching window is present yet.
+    /// </summary>
+    internal static Window? TryFindWindow(
         UIA3Automation automation,
         string? processName,
         string? windowName,

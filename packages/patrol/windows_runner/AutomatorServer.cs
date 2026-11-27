@@ -92,14 +92,6 @@ internal sealed class AutomatorServer
                 (selector, timeout) => WindowsUiAutomation.Tap(selector, timeout)
             ));
 
-        _app.MapPost("/doubleTap", async (HttpRequest request) =>
-            await RunSelectorActionAsync(
-                request,
-                "doubleTap",
-                (selector, timeout) =>
-                    WindowsUiAutomation.DoubleTap(selector, timeout)
-            ));
-
         _app.MapPost("/waitUntilVisible", async (HttpRequest request) =>
             await RunSelectorActionAsync(
                 request,
@@ -156,33 +148,6 @@ internal sealed class AutomatorServer
                     return info is null
                         ? Results.Json(new { element = (object?)null })
                         : Results.Json(new { element = ToJson(info) });
-                }
-                catch (ArgumentException ex)
-                {
-                    return ErrorBadRequest(ex.Message);
-                }
-            }
-        );
-
-        _app.MapPost(
-            "/findElements",
-            async (HttpRequest request) =>
-            {
-                using var doc = await JsonDocument.ParseAsync(
-                    request.Body,
-                    cancellationToken: request.HttpContext.RequestAborted
-                );
-                try
-                {
-                    var root = doc.RootElement;
-                    var selector = ParseSelector(root);
-                    var timeout = ParseTimeout(root);
-                    Console.WriteLine($"AutomatorServer: findElements({selector})");
-                    var elements = WindowsUiAutomation.FindElements(
-                        selector,
-                        timeout
-                    );
-                    return Results.Json(new { elements = elements.Select(ToJson) });
                 }
                 catch (ArgumentException ex)
                 {
@@ -472,7 +437,57 @@ internal sealed class AutomatorServer
             index = indexEl.GetInt32();
         }
 
-        return UiSelector.FromRequest(name, automationId, className, index);
+        var within = ParseScope(root);
+        return UiSelector.FromRequest(name, automationId, className, index, within);
+    }
+
+    private static UiScope? ParseScope(JsonElement root)
+    {
+        if (
+            !root.TryGetProperty("within", out var withinEl)
+            || withinEl.ValueKind != JsonValueKind.Object
+        )
+        {
+            return null;
+        }
+
+        string? processName = null;
+        string? windowName = null;
+        int? processId = null;
+
+        if (
+            withinEl.TryGetProperty("processName", out var pn)
+            && pn.ValueKind == JsonValueKind.String
+        )
+        {
+            processName = pn.GetString();
+        }
+
+        if (
+            withinEl.TryGetProperty("windowName", out var wn)
+            && wn.ValueKind == JsonValueKind.String
+        )
+        {
+            windowName = wn.GetString();
+        }
+
+        if (
+            withinEl.TryGetProperty("processId", out var pidEl)
+            && pidEl.ValueKind == JsonValueKind.Number
+        )
+        {
+            processId = pidEl.GetInt32();
+        }
+
+        var scope = UiScope.FromRequest(processId, processName, windowName);
+        if (scope is null)
+        {
+            throw new ArgumentException(
+                "\"within\" requires at least one of \"processId\", \"processName\", or \"windowName\""
+            );
+        }
+
+        return scope;
     }
 
     private static TimeSpan? ParseTimeout(JsonElement root)

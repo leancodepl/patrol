@@ -49,10 +49,123 @@ class WindowsUiElement {
   final double height;
 }
 
+enum _WindowsScopeKind { targeted, appUnderTest, desktop }
+
+/// Root for desktop UI Automation finds.
+///
+/// Find-based actions default to [WindowsScope.appUnderTest] (the Flutter
+/// process running the test). Override with a targeted scope for another
+/// window/process, or with [WindowsScope.desktop] for a full-desktop search.
+class WindowsScope {
+  /// Creates a scope for a specific process and/or window title.
+  ///
+  /// Provide at least one of [processId], [processName], or [windowName].
+  const WindowsScope({
+    this.processId,
+    this.processName,
+    this.windowName,
+  }) : _kind = _WindowsScopeKind.targeted;
+
+  const WindowsScope._appUnderTest()
+    : processId = null,
+      processName = null,
+      windowName = null,
+      _kind = _WindowsScopeKind.appUnderTest;
+
+  const WindowsScope._desktop()
+    : processId = null,
+      processName = null,
+      windowName = null,
+      _kind = _WindowsScopeKind.desktop;
+
+  /// Scope finds to the Flutter app under test (this process).
+  ///
+  /// This is the default when [WindowsSelector.within] is omitted.
+  static const appUnderTest = WindowsScope._appUnderTest();
+
+  /// Search the entire desktop (no process/window root).
+  ///
+  /// Use for rare cases where the default app scope is too narrow and you
+  /// do not have a better [processId] / [windowName] yet.
+  static const desktop = WindowsScope._desktop();
+
+  final _WindowsScopeKind _kind;
+
+  /// OS process id of the target app.
+  final int? processId;
+
+  /// Process name (with or without `.exe`), e.g. `notepad` or `explorer`.
+  final String? processName;
+
+  /// Top-level window title (exact or substring, case-insensitive).
+  final String? windowName;
+
+  /// Whether this scope means the Flutter app under test.
+  bool get isAppUnderTest => _kind == _WindowsScopeKind.appUnderTest;
+
+  /// Whether this scope means an unscoped desktop search.
+  bool get isDesktop => _kind == _WindowsScopeKind.desktop;
+
+  /// Ensures a targeted scope has at least one identifying field.
+  void validate() {
+    if (_kind != _WindowsScopeKind.targeted) {
+      return;
+    }
+    final hasPid = processId != null && processId! > 0;
+    final hasProcess = processName != null && processName!.isNotEmpty;
+    final hasWindow = windowName != null && windowName!.isNotEmpty;
+    if (!hasPid && !hasProcess && !hasWindow) {
+      throw ArgumentError(
+        'Provide at least one of processId, processName, or windowName',
+      );
+    }
+  }
+
+  /// JSON `within` object for a targeted scope.
+  ///
+  /// Not used for [appUnderTest] / [desktop] — the native client resolves
+  /// those when building the request.
+  Map<String, dynamic> toJson() {
+    validate();
+    if (_kind != _WindowsScopeKind.targeted) {
+      throw StateError(
+        'Only targeted WindowsScope values can be serialized directly',
+      );
+    }
+    return <String, dynamic>{
+      if (processId != null && processId! > 0) 'processId': processId,
+      if (processName != null && processName!.isNotEmpty)
+        'processName': processName,
+      if (windowName != null && windowName!.isNotEmpty) 'windowName': windowName,
+    };
+  }
+
+  @override
+  String toString() {
+    return switch (_kind) {
+      _WindowsScopeKind.appUnderTest => 'WindowsScope.appUnderTest',
+      _WindowsScopeKind.desktop => 'WindowsScope.desktop',
+      _WindowsScopeKind.targeted => () {
+        final parts = <String>[
+          if (processId != null && processId! > 0) 'processId: $processId',
+          if (processName != null && processName!.isNotEmpty)
+            'processName: $processName',
+          if (windowName != null && windowName!.isNotEmpty)
+            'windowName: $windowName',
+        ];
+        return 'WindowsScope(${parts.join(', ')})';
+      }(),
+    };
+  }
+}
+
 /// Finder for desktop UI Automation elements on Windows.
 ///
 /// Selector fields are AND-ed. Provide at least one of [name], [automationId],
 /// or [className]. Optional [index] picks among matches (0-based).
+///
+/// When [within] is omitted, finds default to [WindowsScope.appUnderTest].
+/// Pass [WindowsScope.desktop] or a targeted [WindowsScope] to override.
 class WindowsSelector {
   /// Creates a [WindowsSelector].
   const WindowsSelector({
@@ -60,6 +173,7 @@ class WindowsSelector {
     this.automationId,
     this.className,
     this.index,
+    this.within,
   });
 
   /// UIA Name.
@@ -74,6 +188,9 @@ class WindowsSelector {
   /// 0-based index among matches.
   final int? index;
 
+  /// Search root. Defaults to [WindowsScope.appUnderTest] when omitted.
+  final WindowsScope? within;
+
   /// Ensures at least one identifying field is set and [index] is valid.
   void validate() {
     final hasName = name != null && name!.isNotEmpty;
@@ -87,9 +204,10 @@ class WindowsSelector {
     if (index != null && index! < 0) {
       throw ArgumentError.value(index, 'index', 'must be >= 0');
     }
+    within?.validate();
   }
 
-  /// JSON body fields understood by the Windows automator sidecar.
+  /// JSON body fields for the element identity (no resolved scope).
   Map<String, dynamic> toJson() {
     validate();
     return <String, dynamic>{
@@ -109,6 +227,7 @@ class WindowsSelector {
         'automationId: $automationId',
       if (className != null && className!.isNotEmpty) 'className: $className',
       if (index != null) 'index: $index',
+      'within: ${within ?? WindowsScope.appUnderTest}',
     ];
     return 'WindowsSelector(${parts.join(', ')})';
   }
@@ -137,9 +256,6 @@ abstract interface class WindowsAutomator {
   /// ted.
   Future<void> tap(WindowsSelector selector, {Duration? timeout});
 
-  /// Double-taps / double-invokes a matching desktop UI element.
-  Future<void> doubleTap(WindowsSelector selector, {Duration? timeout});
-
   /// Waits until a matching desktop UI element exists.
   ///
   /// Defaults to [WindowsAutomatorConfig.findTimeout] when [timeout] is omit-
@@ -161,12 +277,6 @@ abstract interface class WindowsAutomator {
 
   /// Finds a matching desktop UI element, or `null` if none within [timeout].
   Future<WindowsUiElement?> findElement(
-    WindowsSelector selector, {
-    Duration? timeout,
-  });
-
-  /// Finds all matching desktop UI elements (waits up to [timeout] for any).
-  Future<List<WindowsUiElement>> findElements(
     WindowsSelector selector, {
     Duration? timeout,
   });

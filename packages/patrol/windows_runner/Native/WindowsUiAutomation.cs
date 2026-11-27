@@ -7,6 +7,64 @@ using FlaUI.UIA3;
 namespace Patrol.WindowsRunner.Native;
 
 /// <summary>
+/// Optional root for desktop UI Automation lookups.
+/// When set, finds search descendants of a matching top-level window.
+/// </summary>
+internal readonly record struct UiScope(
+    int? ProcessId,
+    string? ProcessName,
+    string? WindowName
+)
+{
+    public bool IsEmpty =>
+        ProcessId is not > 0
+        && string.IsNullOrWhiteSpace(ProcessName)
+        && string.IsNullOrWhiteSpace(WindowName);
+
+    public static UiScope? FromRequest(
+        int? processId,
+        string? processName,
+        string? windowName
+    )
+    {
+        var hasPid = processId is > 0;
+        var hasProcess = !string.IsNullOrWhiteSpace(processName);
+        var hasWindow = !string.IsNullOrWhiteSpace(windowName);
+        if (!hasPid && !hasProcess && !hasWindow)
+        {
+            return null;
+        }
+
+        return new UiScope(
+            hasPid ? processId : null,
+            hasProcess ? processName!.Trim() : null,
+            hasWindow ? windowName!.Trim() : null
+        );
+    }
+
+    public override string ToString()
+    {
+        var parts = new List<string>();
+        if (ProcessId is > 0)
+        {
+            parts.Add($"processId={ProcessId}");
+        }
+
+        if (ProcessName is not null)
+        {
+            parts.Add($"processName=\"{ProcessName}\"");
+        }
+
+        if (WindowName is not null)
+        {
+            parts.Add($"windowName=\"{WindowName}\"");
+        }
+
+        return string.Join(", ", parts);
+    }
+}
+
+/// <summary>
 /// Selector for desktop UI Automation lookups.
 /// At least one of <see cref="Name"/>, <see cref="AutomationId"/>, or
 /// <see cref="ClassName"/> must be set; provided fields are AND-ed.
@@ -15,14 +73,16 @@ internal readonly record struct UiSelector(
     string? Name,
     string? AutomationId,
     string? ClassName,
-    int Index
+    int Index,
+    UiScope? Within
 )
 {
     public static UiSelector FromRequest(
         string? name,
         string? automationId,
         string? className,
-        int? index
+        int? index,
+        UiScope? within = null
     )
     {
         var hasName = !string.IsNullOrWhiteSpace(name);
@@ -44,7 +104,8 @@ internal readonly record struct UiSelector(
             hasName ? name!.Trim() : null,
             hasId ? automationId!.Trim() : null,
             hasClass ? className!.Trim() : null,
-            index ?? 0
+            index ?? 0,
+            within
         );
     }
 
@@ -69,6 +130,11 @@ internal readonly record struct UiSelector(
         if (Index != 0)
         {
             parts.Add($"index={Index}");
+        }
+
+        if (Within is { } scope)
+        {
+            parts.Add($"within=({scope})");
         }
 
         return string.Join(", ", parts);
@@ -120,13 +186,7 @@ internal static class WindowsUiAutomation
     public static void Tap(UiSelector selector, TimeSpan? findTimeout = null)
     {
         using var automation = new UIA3Automation();
-        ClickElement(FindElement(automation, selector, findTimeout), selector, twice: false);
-    }
-
-    public static void DoubleTap(UiSelector selector, TimeSpan? findTimeout = null)
-    {
-        using var automation = new UIA3Automation();
-        ClickElement(FindElement(automation, selector, findTimeout), selector, twice: true);
+        ClickElement(FindElement(automation, selector, findTimeout), selector);
     }
 
     public static void EnterText(
@@ -171,36 +231,6 @@ internal static class WindowsUiAutomation
         }
     }
 
-    public static IReadOnlyList<UiElementInfo> FindElements(
-        UiSelector selector,
-        TimeSpan? findTimeout = null
-    )
-    {
-        using var automation = new UIA3Automation();
-        var timeout = findTimeout ?? DefaultFindTimeout;
-        var desktop = automation.GetDesktop();
-
-        AutomationElement[] matches = [];
-        var found = Retry.WhileFalse(
-            () =>
-            {
-                matches = desktop.FindAllDescendants(cf => BuildCondition(cf, selector));
-                return matches.Length > 0;
-            },
-            timeout,
-            interval: TimeSpan.FromMilliseconds(200),
-            throwOnTimeout: false,
-            ignoreException: true
-        ).Result;
-
-        if (!found || matches.Length == 0)
-        {
-            return [];
-        }
-
-        return matches.Select(ToInfo).ToList();
-    }
-
     public static void PressKey(
         int keyCode,
         bool shift = false,
@@ -214,11 +244,7 @@ internal static class WindowsUiAutomation
         );
     }
 
-    private static void ClickElement(
-        AutomationElement element,
-        UiSelector selector,
-        bool twice
-    )
+    private static void ClickElement(AutomationElement element, UiSelector selector)
     {
         var rect = element.BoundingRectangle;
         if (rect.IsEmpty || rect.Width <= 0 || rect.Height <= 0)
@@ -228,37 +254,24 @@ internal static class WindowsUiAutomation
             );
         }
 
-        void Once()
+        Console.WriteLine($"WindowsUiAutomation: tap({selector})");
+
+        if (element.Patterns.Invoke.IsSupported)
         {
-            if (element.Patterns.Invoke.IsSupported)
-            {
-                element.Patterns.Invoke.Pattern.Invoke();
-                return;
-            }
-
-            if (element.Patterns.Toggle.IsSupported)
-            {
-                element.Patterns.Toggle.Pattern.Toggle();
-                return;
-            }
-
-            element.Focus();
-            var pixelX = (int)Math.Round(rect.Left + rect.Width / 2.0);
-            var pixelY = (int)Math.Round(rect.Top + rect.Height / 2.0);
-            WindowsInput.TapAtPixels(pixelX, pixelY);
+            element.Patterns.Invoke.Pattern.Invoke();
+            return;
         }
 
-        Console.WriteLine(
-            twice
-                ? $"WindowsUiAutomation: doubleTap({selector})"
-                : $"WindowsUiAutomation: tap({selector})"
-        );
-        Once();
-        if (twice)
+        if (element.Patterns.Toggle.IsSupported)
         {
-            Thread.Sleep(100);
-            Once();
+            element.Patterns.Toggle.Pattern.Toggle();
+            return;
         }
+
+        element.Focus();
+        var pixelX = (int)Math.Round(rect.Left + rect.Width / 2.0);
+        var pixelY = (int)Math.Round(rect.Top + rect.Height / 2.0);
+        WindowsInput.TapAtPixels(pixelX, pixelY);
     }
 
     private static AutomationElement FindElement(
@@ -267,14 +280,19 @@ internal static class WindowsUiAutomation
         TimeSpan? findTimeout
     )
     {
-        var desktop = automation.GetDesktop();
         var timeout = findTimeout ?? DefaultFindTimeout;
 
         AutomationElement[] matches = [];
         var found = Retry.WhileFalse(
             () =>
             {
-                matches = desktop.FindAllDescendants(cf => BuildCondition(cf, selector));
+                if (!TryGetSearchRoot(automation, selector, out var root))
+                {
+                    matches = [];
+                    return false;
+                }
+
+                matches = root.FindAllDescendants(cf => BuildCondition(cf, selector));
                 return matches.Length > selector.Index;
             },
             timeout,
@@ -291,6 +309,34 @@ internal static class WindowsUiAutomation
         }
 
         return matches[selector.Index];
+    }
+
+    private static bool TryGetSearchRoot(
+        UIA3Automation automation,
+        UiSelector selector,
+        out AutomationElement root
+    )
+    {
+        if (selector.Within is not { } scope || scope.IsEmpty)
+        {
+            root = automation.GetDesktop();
+            return true;
+        }
+
+        var window = WindowsAppControl.TryFindWindow(
+            automation,
+            scope.ProcessName,
+            scope.WindowName,
+            scope.ProcessId
+        );
+        if (window is null)
+        {
+            root = null!;
+            return false;
+        }
+
+        root = window;
+        return true;
     }
 
     private static ConditionBase BuildCondition(ConditionFactory cf, UiSelector selector)

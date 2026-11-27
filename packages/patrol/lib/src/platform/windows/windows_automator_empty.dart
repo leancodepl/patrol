@@ -33,13 +33,6 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
       _unsupported();
 
   @override
-  Future<void> doubleTap(
-    windows_automator.WindowsSelector selector, {
-    Duration? timeout,
-  }) =>
-      _unsupported();
-
-  @override
   Future<void> waitUntilVisible(
     windows_automator.WindowsSelector selector, {
     Duration? timeout,
@@ -55,13 +48,6 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
 
   @override
   Future<windows_automator.WindowsUiElement?> findElement(
-    windows_automator.WindowsSelector selector, {
-    Duration? timeout,
-  }) =>
-      _unsupported();
-
-  @override
-  Future<List<windows_automator.WindowsUiElement>> findElements(
     windows_automator.WindowsSelector selector, {
     Duration? timeout,
   }) =>

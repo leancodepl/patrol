@@ -19,6 +19,7 @@ void main() {
   patrolTest(
     'Flutter + native Windows dialog in one test',
     ($) async {
+     final p = pid
       // ── 1. Flutter app under test (same idea as mobile Patrol) ──────────
       await $.pumpWidgetAndSettle(const WindowsPocApp());
       expect($(#appTitle), findsOneWidget);
@@ -36,32 +37,38 @@ void main() {
       addTearDown(fixture.kill);
 
       // ── 3. Discover native UI (UIA — like UiAutomator / XCUITest) ──────
+      // Scope to the fixture dialog so finds ignore unrelated desktop windows.
+      const dialog = WindowsScope(windowName: 'Windows Security Prompt');
       await $.platform.windows.waitUntilVisible(
-        const WindowsSelector(name: 'Allow access'),
+        const WindowsSelector(name: 'Allow access', within: dialog),
       );
       expect(
         await $.platform.windows.isElementVisible(
-          const WindowsSelector(automationId: 'poc_identity_field'),
+          const WindowsSelector(
+            automationId: 'poc_identity_field',
+            within: dialog,
+          ),
         ),
         isTrue,
       );
 
       final allow = await $.platform.windows.findElement(
-        const WindowsSelector(automationId: 'poc_allow_button'),
+        const WindowsSelector(
+          automationId: 'poc_allow_button',
+          within: dialog,
+        ),
       );
       expect(allow, isNotNull);
       expect(allow!.name, 'Allow access');
       expect(allow.width, greaterThan(100));
 
-      final fields = await $.platform.windows.findElements(
-        const WindowsSelector(automationId: 'poc_identity_field'),
-      );
-      expect(fields, isNotEmpty);
-
       // ── 4. Type into the native (non-Flutter) text field ───────────────
       // pressKey into an empty native field, then set the full identity.
       await $.platform.windows.enterText(
-        const WindowsSelector(automationId: 'poc_identity_field'),
+        const WindowsSelector(
+          automationId: 'poc_identity_field',
+          within: dialog,
+        ),
         text: '',
       );
       await $.platform.windows.pressKey(WindowsKey.h, shift: true);
@@ -70,7 +77,10 @@ void main() {
       expect(File(textMarkerPath).readAsStringSync(), 'HI');
 
       await $.platform.windows.enterText(
-        const WindowsSelector(automationId: 'poc_identity_field'),
+        const WindowsSelector(
+          automationId: 'poc_identity_field',
+          within: dialog,
+        ),
         text: 'demo@example.com',
       );
       await Future<void>.delayed(const Duration(milliseconds: 200));
@@ -78,7 +88,7 @@ void main() {
 
       // ── 5. Click the native Allow button (outside Flutter) ─────────────
       await $.platform.windows.tap(
-        const WindowsSelector(name: 'Allow access'),
+        const WindowsSelector(name: 'Allow access', within: dialog),
       );
       await Future<void>.delayed(const Duration(milliseconds: 400));
 
@@ -86,7 +96,7 @@ void main() {
       expect(marker, contains('allowed:demo@example.com'));
       expect(
         await $.platform.windows.isElementVisible(
-          const WindowsSelector(name: 'Access granted'),
+          const WindowsSelector(name: 'Access granted', within: dialog),
         ),
         isTrue,
       );

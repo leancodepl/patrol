@@ -40,6 +40,26 @@ Used by find-based actions. Fields are AND-ed; at least one of `name`,
 | `className` | string | UIA ClassName |
 | `index` | int ≥ 0 | Optional 0-based match index |
 | `timeoutMillis` | int > 0 | Optional find timeout; runner default if omitted |
+| `within` | object | Optional search root (see below) |
+
+### `within` (search scope)
+
+The Dart client **defaults** to the Flutter app under test: when the test
+omits `within`, it sends `{ "processId": <dart:io pid> }`.
+
+| Wire shape | Meaning |
+|------------|---------|
+| omitted / absent | Full desktop (only if the client sends no `within`; Dart uses this for `WindowsScope.desktop`) |
+| `{ "processId" }` / `{ "processName" }` / `{ "windowName" }` | Root finds at that top-level window (at least one field required) |
+
+| Field | Type | Notes |
+|-------|------|--------|
+| `processId` | int > 0 | OS process id |
+| `processName` | string | e.g. `notepad` or `explorer.exe` |
+| `windowName` | string | Window title (exact or substring, case-insensitive) |
+
+Override in Dart with `WindowsSelector(within: WindowsScope(...))` for
+another window, or `within: WindowsScope.desktop` for an unscoped search.
 
 ## Actions
 
@@ -48,11 +68,9 @@ Used by find-based actions. Fields are AND-ed; at least one of `name`,
 | `markPatrolAppServiceReady` | `{}` | empty / `{}` |
 | `tapAt` | `{ x, y }` normalized `[0,1]` | empty |
 | `tap` | selector (+ timeout) | empty |
-| `doubleTap` | selector (+ timeout) | empty |
 | `waitUntilVisible` | selector (+ timeout) | empty |
 | `isElementVisible` | selector (+ optional timeout) | `{ "visible": bool }` |
 | `findElement` | selector (+ timeout) | `{ "element": object \| null }` |
-| `findElements` | selector (+ timeout) | `{ "elements": object[] }` |
 | `enterText` | `{ "text": string, ...selector }` | empty |
 | `pressKey` | `{ keyCode, shift?, ctrl?, alt? }` | empty |
 | `launchApp` | `{ appPath, arguments?, activate? }` | `{ "processId": int }` |

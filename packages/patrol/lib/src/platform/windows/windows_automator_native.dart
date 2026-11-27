@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:flutter/painting.dart';
@@ -64,18 +65,6 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
   }
 
   @override
-  Future<void> doubleTap(
-    windows_automator.WindowsSelector selector, {
-    Duration? timeout,
-  }) {
-    return _findBasedRequest(
-      'doubleTap',
-      selector,
-      timeout: timeout,
-    );
-  }
-
-  @override
   Future<void> waitUntilVisible(
     windows_automator.WindowsSelector selector, {
     Duration? timeout,
@@ -104,7 +93,7 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
         final json = await _sendRequestTimed(
           'isElementVisible',
           {
-            ...selector.toJson(),
+            ..._selectorBody(selector),
             if (findTimeout != null)
               'timeoutMillis': findTimeout.inMilliseconds,
           },
@@ -130,7 +119,7 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
         final json = await _sendRequestTimed(
           'findElement',
           {
-            ...selector.toJson(),
+            ..._selectorBody(selector),
             'timeoutMillis': findTimeout.inMilliseconds,
           },
           timeout: httpTimeout,
@@ -151,47 +140,6 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
   }
 
   @override
-  Future<List<windows_automator.WindowsUiElement>> findElements(
-    windows_automator.WindowsSelector selector, {
-    Duration? timeout,
-  }) {
-    final findTimeout = timeout ?? _config.findTimeout;
-    final httpTimeout = _requestTimeoutFor(findTimeout);
-
-    return _wrapRequest(
-      'findElements',
-      () async {
-        final json = await _sendRequestTimed(
-          'findElements',
-          {
-            ...selector.toJson(),
-            'timeoutMillis': findTimeout.inMilliseconds,
-          },
-          timeout: httpTimeout,
-        );
-        final raw = json['elements'];
-        if (raw is! List) {
-          return <windows_automator.WindowsUiElement>[];
-        }
-        final elements = <windows_automator.WindowsUiElement>[];
-        for (final item in raw) {
-          if (item is Map<String, dynamic>) {
-            elements.add(windows_automator.WindowsUiElement.fromJson(item));
-          } else if (item is Map) {
-            elements.add(
-              windows_automator.WindowsUiElement.fromJson(
-                Map<String, dynamic>.from(item),
-              ),
-            );
-          }
-        }
-        return elements;
-      },
-      requestTimeout: httpTimeout,
-    );
-  }
-
-  @override
   Future<void> enterText(
     windows_automator.WindowsSelector selector, {
     required String text,
@@ -206,7 +154,7 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
         'enterText',
         {
           'text': text,
-          ...selector.toJson(),
+          ..._selectorBody(selector),
           'timeoutMillis': findTimeout.inMilliseconds,
         },
         timeout: httpTimeout,
@@ -300,13 +248,34 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
       () => _sendRequestTimed(
         action,
         {
-          ...selector.toJson(),
+          ..._selectorBody(selector),
           'timeoutMillis': findTimeout.inMilliseconds,
         },
         timeout: httpTimeout,
       ),
       requestTimeout: httpTimeout,
     );
+  }
+
+  /// Builds the selector JSON, applying the default app-under-test scope.
+  Map<String, dynamic> _selectorBody(
+    windows_automator.WindowsSelector selector,
+  ) {
+    final body = selector.toJson();
+    final scope =
+        selector.within ?? windows_automator.WindowsScope.appUnderTest;
+
+    if (scope.isDesktop) {
+      return body;
+    }
+
+    if (scope.isAppUnderTest) {
+      body['within'] = <String, dynamic>{'processId': pid};
+      return body;
+    }
+
+    body['within'] = scope.toJson();
+    return body;
   }
 
   Duration _requestTimeoutFor(Duration findTimeout) {
