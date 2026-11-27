@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fake_async/fake_async.dart';
 import 'package:file/memory.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
@@ -883,6 +884,45 @@ void main() {
           ).called(1);
         },
       );
+
+      test('reports no result when the build ends after a quit', () async {
+        stubSession();
+        // The real backend completes normally once the instrumentation stops.
+        when(
+          () => androidTestBackend.stopInstrumentation(any(), any()),
+        ).thenAnswer((_) async => backend.complete());
+        _lastResult = null;
+        final run = runSession();
+
+        await _waitFor(() => onQuit != null);
+        await onQuit!();
+        await run;
+
+        expect(_lastResult, isNull);
+      });
+
+      test('quits even when the uninstall never finishes', () {
+        fakeAsync((async) {
+          stubSession();
+          var uninstalls = 0;
+          when(() => androidTestBackend.uninstall(any(), any())).thenAnswer(
+            // The first uninstall is the one before the tests start.
+            (_) =>
+                uninstalls++ == 0 ? Future.value() : Completer<void>().future,
+          );
+          unawaited(runSession());
+          async.elapse(const Duration(seconds: 1));
+          expect(onQuit, isNotNull);
+
+          var quitDone = false;
+          unawaited(onQuit!().then((_) => quitDone = true));
+          async.elapse(const Duration(seconds: 1));
+          expect(quitDone, isFalse);
+
+          async.elapse(const Duration(seconds: 30));
+          expect(quitDone, isTrue);
+        });
+      });
     });
 
     group('iOS logs', () {
