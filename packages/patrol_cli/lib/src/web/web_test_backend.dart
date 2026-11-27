@@ -4,7 +4,6 @@ import 'dart:io' as io;
 import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart' hide ProcessDisposed;
-import 'package:dispose_scope/dispose_scope.dart';
 import 'package:meta/meta.dart';
 import 'package:package_config/package_config.dart';
 import 'package:path/path.dart' show basename;

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dispose_scope/dispose_scope.dart';
+import 'package:dispose_scope/dispose_scope.dart' hide ProcessDisposed;
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/coverage/bind_unused_port.dart';
@@ -80,7 +80,7 @@ class WebDevtoolsServer {
             'tooling-daemon',
             '--machine',
           ])
-          ..disposedBy(_disposeScope);
+          ..disposedByTree(_disposeScope);
 
     final details = Completer<_ToolingDaemon>();
 
@@ -182,7 +182,7 @@ class WebDevtoolsServer {
             '--no-launch-browser',
             '--port=$port',
           ])
-          ..disposedBy(_disposeScope);
+          ..disposedByTree(_disposeScope);
 
     final url = Completer<String>();
 
