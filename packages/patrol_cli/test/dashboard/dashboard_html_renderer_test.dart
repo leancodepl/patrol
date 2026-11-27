@@ -152,7 +152,7 @@ void main() {
         html,
         contains(
           '<span class="exception-summary">Expected: exactly one matching '
-          'candidate</span>',
+          'candidate Actual: none</span>',
         ),
       );
       // Frames are split off the message and counted.
@@ -164,6 +164,54 @@ void main() {
       final stepEnd = html.indexOf('</li>', step);
       expect(exception, greaterThan(step));
       expect(exception, lessThan(stepEnd));
+    });
+
+    test('strips terminal colors from step actions', () {
+      final step =
+          DashboardStep(
+              action: "\x1B[32mscrollTo\x1B[0m widgets with key [<'a'>]",
+              startedAt: DateTime(2026, 8, 17),
+            )
+            ..status = DashboardStepStatus.passed
+            ..duration = const Duration(milliseconds: 10);
+
+      final html = renderer.render(
+        run([
+          testCase(steps: [step]),
+        ]),
+        reportPath: '/project/report.html',
+      );
+
+      expect(html, isNot(contains('\x1B')));
+      expect(html, contains('scrollTo widgets with key'));
+    });
+
+    test('summarizes a Flutter exception by its cause, not its banner', () {
+      final html = renderer.render(
+        run([
+          testCase(
+            status: DashboardTestStatus.failed,
+            error:
+                '══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞═════════\n'
+                'The following WaitUntilVisibleTimeoutException was thrown running\n'
+                'a test:\n'
+                'TimeoutException after 0:00:10.000000: Finder "Found 0 widgets\n'
+                'with text "Home": []" did not find any visible widgets\n'
+                '\n'
+                '#0      PatrolTester.waitUntilVisible (patrol_tester.dart:634:15)',
+          ),
+        ]),
+        reportPath: '/project/report.html',
+      );
+
+      expect(
+        html,
+        contains(
+          '<span class="exception-summary">TimeoutException after '
+          '0:00:10.000000: Finder &quot;Found 0 widgets with text '
+          '&quot;Home&quot;: []&quot; did not find any visible widgets</span>',
+        ),
+      );
     });
 
     test('places the exception above the steps when no step failed', () {

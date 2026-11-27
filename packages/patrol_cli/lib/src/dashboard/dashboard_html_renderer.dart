@@ -323,7 +323,7 @@ class DashboardHtmlRenderer {
       ..writeln(
         '<span class="test-name">'
         '<span class="status-dot dot-${test.status.name}"></span>'
-        '${_escape(test.name)}</span>',
+        '${_escape(_stripAnsi(test.name))}</span>',
       );
 
     if (test.filePath case final filePath?) {
@@ -409,14 +409,7 @@ class DashboardHtmlRenderer {
   /// blocks rather than a box per line.
   String _exceptionHtml(String error, {required String id}) {
     final (message, frames) = _splitException(_stripAnsi(error));
-    final summary = message.isEmpty
-        ? 'Exception'
-        : message
-              .split('\n')
-              .firstWhere(
-                (line) => line.trim().isNotEmpty,
-                orElse: () => 'Exception',
-              );
+    final summary = _summaryOf(message);
 
     final buffer = StringBuffer()
       ..write('<div class="exception">')
@@ -445,6 +438,22 @@ class DashboardHtmlRenderer {
     }
 
     return (buffer..write('</div></div>')).toString();
+  }
+
+  /// One line saying what went wrong, for the folded exception row.
+  ///
+  /// Flutter opens the message with a `══╡ EXCEPTION CAUGHT … ╞══` banner and a
+  /// "The following X was thrown …:" sentence, and wraps it at ~65 columns, so
+  /// the first line alone says nothing. The CSS ellipsis trims the rest.
+  static String _summaryOf(String message) {
+    final summary = message
+        .split('\n')
+        .where((line) => !line.trimLeft().startsWith('══'))
+        .join(' ')
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .replaceFirst(RegExp(r'^The following .+? was thrown [^:]*:\s*'), '')
+        .trim();
+    return summary.isEmpty ? 'Exception' : summary;
   }
 
   /// Splits a failure message into its human-readable part and its stack
@@ -503,7 +512,9 @@ class DashboardHtmlRenderer {
         ..writeln('<div class="step-row">')
         ..writeln('<span class="step-index">${i + 1}</span>')
         ..writeln('<span class="step-icon">${_stepIcon(step.status)}</span>')
-        ..writeln('<span class="step-action">${_escape(step.action)}</span>')
+        ..writeln(
+          '<span class="step-action">${_escape(_stripAnsi(step.action))}</span>',
+        )
         ..writeln(
           '<span class="step-track"><span style="width: '
           '${width.toStringAsFixed(1)}%"></span></span>',
