@@ -189,6 +189,14 @@ bool AutomatorServer::WaitUntilReady(std::chrono::milliseconds timeout) {
 
 void AutomatorServer::Start() {
   server_ = std::make_unique<httplib::Server>();
+  // httplib's default sets SO_REUSEADDR before SO_EXCLUSIVEADDRUSE; Winsock
+  // rejects that combo and ignores the error, so a second bind can succeed on
+  // an occupied port. Exclusive-only makes bind fail when the port is in use.
+  server_->set_socket_options([](httplib::socket_t sock) {
+    int opt = 1;
+    setsockopt(sock, SOL_SOCKET, SO_EXCLUSIVEADDRUSE,
+               reinterpret_cast<const char*>(&opt), sizeof(opt));
+  });
   RegisterRoutes();
 
   // Bind first so startup failure is synchronous; then accept in a thread.

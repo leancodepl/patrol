@@ -119,8 +119,11 @@ ComPtr<IUIAutomationElement> FindElement(
           std::vector<ComPtr<IUIAutomationElement>> hits;
           for (auto& root : roots) {
             ComPtr<IUIAutomationElementArray> matches;
+            // Subtree includes the scope root itself (Descendants does not), so
+            // a selector matching the scoped window (e.g. className #32770)
+            // still finds it.
             if (FAILED(root->FindAll(
-                    TreeScope_Descendants, condition.get(), matches.put())) ||
+                    TreeScope_Subtree, condition.get(), matches.put())) ||
                 !matches) {
               continue;
             }
@@ -157,6 +160,14 @@ ComPtr<IUIAutomationElement> FindElement(
 }
 
 void ClickElement(IUIAutomationElement* element, const UiSelector& selector) {
+  std::cout << "WindowsUiAutomation: tap(" << selector.to_string() << ")\n";
+
+  // Prefer a physical click: InvokePattern is the control's default action
+  // (e.g. Explorer opens a file) and is not equivalent to a single tap.
+  // Focus first — providers may scroll the control into view, which updates
+  // the bounding rectangle used for the click.
+  element->SetFocus();
+
   RECT rect{};
   ThrowIfFailed(element->get_CurrentBoundingRectangle(&rect),
                 "get_CurrentBoundingRectangle");
@@ -166,11 +177,6 @@ void ClickElement(IUIAutomationElement* element, const UiSelector& selector) {
         ") has an empty bounding rectangle");
   }
 
-  std::cout << "WindowsUiAutomation: tap(" << selector.to_string() << ")\n";
-
-  // Prefer a physical click: InvokePattern is the control's default action
-  // (e.g. Explorer opens a file) and is not equivalent to a single tap.
-  element->SetFocus();
   const int pixel_x = static_cast<int>((rect.left + rect.right) / 2);
   const int pixel_y = static_cast<int>((rect.top + rect.bottom) / 2);
   WindowsInput::TapAtPixels(pixel_x, pixel_y);

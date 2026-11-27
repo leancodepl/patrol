@@ -1,6 +1,8 @@
 #include "native/windows_input.h"
 
 #include <cmath>
+#include <cstdint>
+#include <mutex>
 #include <vector>
 
 #include <Windows.h>
@@ -11,10 +13,21 @@ namespace patrol {
 namespace {
 
 constexpr UINT kInputKeyboard = 1;
+constexpr UINT kInputMouse = 0;
 constexpr DWORD kKeyeventfKeyup = 0x0002;
+constexpr DWORD kMouseeventfMove = 0x0001;
+constexpr DWORD kMouseeventfLeftdown = 0x0002;
+constexpr DWORD kMouseeventfLeftup = 0x0004;
+constexpr DWORD kMouseeventfAbsolute = 0x8000;
 constexpr WORD kVkShift = 0x10;
 constexpr WORD kVkControl = 0x11;
 constexpr WORD kVkMenu = 0x12;
+
+// httplib runs handlers concurrently; physical input must not interleave.
+std::mutex& InputMutex() {
+  static std::mutex mutex;
+  return mutex;
+}
 
 }  // namespace
 
@@ -48,17 +61,43 @@ void WindowsInput::TapAtNormalized(double x, double y) {
 }
 
 void WindowsInput::TapAtPixels(int pixel_x, int pixel_y) {
-  if (!SetCursorPos(pixel_x, pixel_y)) {
-    throw std::runtime_error("SetCursorPos failed");
+  std::lock_guard lock(InputMutex());
+
+  const int screen_w = GetSystemMetrics(SM_CXSCREEN);
+  const int screen_h = GetSystemMetrics(SM_CYSCREEN);
+  if (screen_w <= 1 || screen_h <= 1) {
+    throw std::runtime_error("No primary screen available");
   }
-  mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
-  mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+
+  // Absolute SendInput coords are normalized to 0..65535 over the primary
+  // screen. Bundle move + click so concurrent taps cannot race the cursor.
+  const LONG abs_x = static_cast<LONG>(
+      (static_cast<int64_t>(pixel_x) * 65535) / (screen_w - 1));
+  const LONG abs_y = static_cast<LONG>(
+      (static_cast<int64_t>(pixel_y) * 65535) / (screen_h - 1));
+
+  INPUT inputs[3]{};
+  inputs[0].type = kInputMouse;
+  inputs[0].mi.dx = abs_x;
+  inputs[0].mi.dy = abs_y;
+  inputs[0].mi.dwFlags = kMouseeventfMove | kMouseeventfAbsolute;
+  inputs[1].type = kInputMouse;
+  inputs[1].mi.dwFlags = kMouseeventfLeftdown;
+  inputs[2].type = kInputMouse;
+  inputs[2].mi.dwFlags = kMouseeventfLeftup;
+
+  const UINT sent = SendInput(3, inputs, sizeof(INPUT));
+  if (sent != 3) {
+    throw std::runtime_error("SendInput(tap) failed");
+  }
 }
 
 void WindowsInput::PressKey(int key_code, bool shift, bool ctrl, bool alt) {
   if (key_code < 1 || key_code > 254) {
     throw BadRequestError("Virtual-key code must be in 1..254");
   }
+
+  std::lock_guard lock(InputMutex());
 
   std::vector<INPUT> inputs;
   inputs.reserve(8);
