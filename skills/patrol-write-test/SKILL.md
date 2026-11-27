@@ -25,7 +25,7 @@ When working with Patrol tests:
 - If session already running: automatically restarts current tests
 - A restart is a hot restart: app data and the answers given to permission dialogs stay from the previous run, so a test must not assume a fresh install. Reset the state the app persists (secure storage, local databases, shared preferences) in the helper that starts the app, before the app starts
 - A run also leaves what it changed outside the app, such as a record it created on the test backend, and a hot restart keeps a native screen the run left open. A run that failed halfway skipped any cleanup at its end, so the next run starts from that state
-- When a rerun opens on a screen the test does not expect, or fails at a step that passed in the run before, the state the previous run left is a likely cause. Check where that run stopped
+- When a rerun opens on a screen the test does not expect, or fails at a step that passed in the run before, the state the previous run left is a likely cause: a user still logged in, a permission dialog that no longer appears, a record that already exists, a native screen still open. Check where that run stopped
 - Use `patrol-screenshot({ "platform": "android" })` or `patrol-screenshot({ "platform": "ios" })` to capture screenshots for debugging test failures
 - Use `patrol-quit({})` to quit the session gracefully
 - Use `patrol-status({})` to check current status and recent output
