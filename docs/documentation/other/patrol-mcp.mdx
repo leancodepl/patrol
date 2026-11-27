@@ -60,7 +60,7 @@ One server serves every project you open.
 A server launched this way runs the project's pinned CLI, so it runs tests only in that project and
 the projects below it. Every `run` and `status` result names the CLI serving it in `cli`. A
 globally activated server serving a project that pins another `patrol_cli` adds `cliPinWarning`,
-which carries this block for the project's own config.
+which carries this block's `command` and `args` for the project's own config.
 
 Editors differ only in where that block goes:
 
@@ -159,8 +159,8 @@ MCP gives the agent the tools, while a skill teaches it how to use them to write
 
 ## When a test fails
 
-A failed `run` carries `error`: the failing test's name, its error and the error lines patrol
-reported after the failure. `output` holds the session's recent log for everything else, including
+A failed `run` carries `error`: the first failing test's name and the error lines patrol reported
+for it. `output` holds the session's recent log for everything else, including
 what the build writes to stderr. `logFile` names the file holding the whole log; follow it with
 `tail -F` to watch a run as it goes.
 

@@ -62,8 +62,8 @@ const sessionStatusSchema = JsonObject(
     ),
     'error': JsonString(
       description:
-          'Why the failing test failed: its name, its error and the error '
-          'lines patrol reported after it. Absent unless a test failed.',
+          'Why the first failing test failed: its name and the error lines '
+          'patrol reported for it. Absent unless a test failed.',
     ),
     'cli': JsonObject(
       description:

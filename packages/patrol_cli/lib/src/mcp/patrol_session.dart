@@ -215,8 +215,8 @@ class PatrolStatus {
   /// Set when the quiet has lasted long enough to be worth reporting.
   final String? stallNote;
 
-  /// Why the failing test failed: its name, its error and the error lines
-  /// patrol reported after it.
+  /// Why the first failing test failed: its name and the error lines patrol
+  /// reported for it.
   final String? error;
 
   /// The `patrol_cli` serving this server.
@@ -301,7 +301,6 @@ final class PatrolSession {
     // Above the develop service's 30 s bound on the uninstall, so a slow but
     // healthy uninstall finishes inside it.
     this._teardownTimeout = const Duration(seconds: 45),
-    this._errorSettle = const Duration(milliseconds: 1500),
     CliOrigin? cliOrigin,
     DateTime Function()? now,
   }) : _platform = platform ?? NativePlatform.current!,
@@ -598,25 +597,20 @@ final class PatrolSession {
     if (root == null || _servesFromProject(root)) {
       return null;
     }
-    if (_cliPinWarningFor?.$1 == root) {
-      return _cliPinWarningFor!.$2;
-    }
     final pinned = PubspecReader(
       projectRoot: const LocalFileSystem().directory(root),
     ).getLockedVersion('patrol_cli');
-    final warning = pinned == null || pinned == cliOrigin.version
-        ? null
-        : 'This project pins patrol_cli $pinned, but this server is '
-              '${cliOrigin.source.name} patrol_cli ${cliOrigin.version}, so '
-              'runs use ${cliOrigin.version}. To run the pinned one, give the '
-              "project's .mcp.json "
-              '{"mcpServers": {"patrol": {"command": "dart", '
-              '"args": ["run", "patrol_cli:main", "mcp"]}}}.';
-    _cliPinWarningFor = (root, warning);
-    return warning;
+    if (pinned == null || pinned == cliOrigin.version) {
+      return null;
+    }
+    return 'This project pins patrol_cli $pinned, but this server is '
+        '${cliOrigin.source.name} patrol_cli ${cliOrigin.version}, so runs '
+        'use ${cliOrigin.version}. To run the pinned one, point the patrol '
+        "server in your editor's MCP config for this project at "
+        '"command": "dart", "args": ["run", "patrol_cli:main", "mcp"]. Where '
+        'each editor keeps that config: '
+        'https://patrol.leancode.co/documentation/other/patrol-mcp#cli-as-a-project-dev-dependency';
   }
-
-  (String, String?)? _cliPinWarningFor;
 
   /// Whether [root] is the project whose dev dependency serves this server, or
   /// lies below it in the same workspace.
@@ -643,7 +637,8 @@ final class PatrolSession {
       'This server is patrol_cli ${cliOrigin.version} from the dev '
       'dependencies of ${cliOrigin.projectRoot}, so it runs tests only there. '
       'For $root, use a globally activated server (`patrol mcp`), or give that '
-      "project's .mcp.json its own `dart run patrol_cli:main mcp`.";
+      "project its own `dart run patrol_cli:main mcp` in your editor's MCP "
+      'config.';
 
   /// Makes the native automator reachable on `localhost:[testServerPort]`.
   ///
@@ -1001,8 +996,9 @@ final class PatrolSession {
               _finishWarning = err.message;
               _pushOutput(err.message);
             } else {
-              _pushOutput('ERROR: $err');
-              _logger.detail('$st');
+              _logger
+                ..err('ERROR: $err')
+                ..detail('$st');
             }
             if (_testState == TestState.running) {
               _testState = TestState.finishedFailed;
@@ -1025,23 +1021,12 @@ final class PatrolSession {
   /// How long a caller waits for a session to finish tearing down.
   final Duration _teardownTimeout;
 
-  /// How long a failed run waits for the error lines patrol reports after the
-  /// failure, counted from the last one. They arrive after the failing test's
-  /// entry.
-  final Duration _errorSettle;
-
-  static const _errorSettleCap = Duration(seconds: 5);
   static const _maxErrorLines = 60;
 
   final _errorLines = <String>[];
   String? _failedTest;
-  Timer? _failureSettle;
-  DateTime? _failedAt;
 
   void _clearFailure() {
-    _failureSettle?.cancel();
-    _failureSettle = null;
-    _failedAt = null;
     _failedTest = null;
     _errorLines.clear();
   }
@@ -1050,22 +1035,6 @@ final class PatrolSession {
     if (_errorLines.length < _maxErrorLines) {
       _errorLines.add(line);
     }
-  }
-
-  /// Answers the failed run once its error lines have stopped arriving.
-  void _settleFailure() {
-    _failureSettle?.cancel();
-    final failedAt = _failedAt ??= _now();
-    final left = _errorSettleCap - _now().difference(failedAt);
-    if (left <= Duration.zero) {
-      _failureSettle = null;
-      _completeFinish();
-      return;
-    }
-    _failureSettle = Timer(
-      left < _errorSettle ? left : _errorSettle,
-      _completeFinish,
-    );
   }
 
   String? get _error {
@@ -1195,10 +1164,11 @@ final class PatrolSession {
       _lastTestEntry = entry.name;
       _lastTestEntryAt = _lastHeardAt;
     }
+    // patrol logs a failing test's details before its failure entry, and the
+    // run ends on that entry, so later lines belong to other tests.
     if (entry is ErrorEntry) {
-      _addErrorLine(entry.message);
-      if (_failureSettle?.isActive ?? false) {
-        _settleFailure();
+      if (_testState == TestState.running) {
+        _addErrorLine(entry.message);
       }
       return;
     }
@@ -1210,7 +1180,7 @@ final class PatrolSession {
         _addErrorLine(error);
       }
       _testState = TestState.finishedFailed;
-      _settleFailure();
+      _completeFinish();
       return;
     }
 
@@ -1237,7 +1207,7 @@ final class PatrolSession {
     // so it isn't swallowed by the generic warning below.
     final error = result.error;
     if (error != null) {
-      _pushOutput('ERROR: $error');
+      _logger.err('ERROR: $error');
     }
     _finishWarning =
         'The app stopped without the test reporting completion, so there is no '
@@ -1299,7 +1269,6 @@ final class PatrolSession {
     switch (command) {
       case SessionCommand.quit:
         _quitRequested = true;
-        _failureSettle?.cancel();
         _testState = TestState.idle;
         _completeFinish();
         if (_liveSession case final live?) {
@@ -1388,10 +1357,9 @@ final class PatrolSession {
   }
 
   Future<PatrolStatus> _waitForFinish({Duration? timeout}) async {
-    final settlingFailure = _failureSettle?.isActive ?? false;
     if (!_isRunning ||
         _testState == TestState.finishedPassed ||
-        (_testState == TestState.finishedFailed && !settlingFailure)) {
+        _testState == TestState.finishedFailed) {
       return getStatus();
     }
 

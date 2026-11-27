@@ -49,14 +49,12 @@ void main() {
     ProcessManager? processManager,
     NativePlatform? platform,
     Logger? logger,
-    Duration errorSettle = const Duration(milliseconds: 50),
     CliOrigin cliOrigin = const CliOrigin(
       version: '4.9.0',
       source: CliSource.global,
     ),
   }) {
     final session = PatrolSession(
-      errorSettle: errorSettle,
       cliOrigin: cliOrigin,
       now: now,
       showTerminal: showTerminal,
@@ -662,17 +660,19 @@ packages:
       timeout: const Duration(seconds: 5),
     );
 
-    test('carries the failing test and the lines that follow it', () async {
+    test('carries the failing test and the lines logged before it', () async {
       final fake = FakeDevelop();
       final session = sessionWith(fake);
       final run = runOnce(session);
       await Future<void>.delayed(const Duration(milliseconds: 20));
 
-      fake.reportTestFailed('logs in', error: 'Expected: true');
-      await Future<void>.delayed(const Duration(milliseconds: 20));
-      fake
-        ..reportError('  Actual: <false>')
-        ..reportError('#0 main (login_test.dart:12)');
+      fake.reportTestFailed(
+        'logs in',
+        details:
+            'Expected: true\n'
+            '  Actual: <false>\n'
+            '#0 main (login_test.dart:12)',
+      );
 
       final result = await run;
       expect(result.status.testState, TestState.finishedFailed);
@@ -687,25 +687,52 @@ packages:
       await session.dispose();
     });
 
-    test('carries the lines logged before the failing test too', () async {
+    test('carries the error a failure entry names', () async {
+      final fake = FakeDevelop();
+      final session = sessionWith(fake);
+      final run = runOnce(session);
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+
+      fake.onLogEntry?.call(
+        TestEntry(
+          name: 'taps',
+          status: TestEntryStatus.failure,
+          error: 'Bad state: tapped twice',
+        ),
+      );
+
+      final result = await run;
+      expect(
+        result.status.error,
+        'Test "taps" failed.\n'
+        'Bad state: tapped twice',
+      );
+      await session.dispose();
+    });
+
+    test('holds only the first failing test of a file', () async {
       final fake = FakeDevelop();
       final session = sessionWith(fake);
       final run = runOnce(session);
       await Future<void>.delayed(const Duration(milliseconds: 20));
 
       fake
-        ..reportError('Expected: <42>')
-        ..reportError('  Actual: <1>')
-        ..reportTestFailed('counts');
+        ..reportTestFailed('A', details: 'Expected: <1>\n  Actual: <2>')
+        ..reportTestFailed('B', details: 'Expected: <3>\n  Actual: <4>')
+        ..onLogEntry?.call(
+          TestEntry(name: 'C', status: TestEntryStatus.success),
+        )
+        ..reportTestsPassed();
 
       final result = await run;
       expect(result.status.testState, TestState.finishedFailed);
       expect(
         result.status.error,
-        'Test "counts" failed.\n'
-        'Expected: <42>\n'
-        '  Actual: <1>',
+        'Test "A" failed.\n'
+        'Expected: <1>\n'
+        '  Actual: <2>',
       );
+      expect(session.getStatus().error, result.status.error);
       await session.dispose();
     });
 
@@ -724,15 +751,12 @@ packages:
     });
 
     test(
-      'a hot restart clears it, and its wait does not end the new run',
+      'a hot restart clears it, and the old failure does not end the new run',
       () async {
         final fake = FakeDevelop(hotRestartReady: Future<void>.value());
-        final session = sessionWith(
-          fake,
-          errorSettle: const Duration(milliseconds: 100),
-        );
+        final session = sessionWith(fake);
         await startSession(session, 'app_test.dart');
-        fake.reportTestFailed('logs in', error: 'Expected: true');
+        fake.reportTestFailed('logs in', details: 'Expected: true');
 
         final restarted = session.startAndWait(
           'app_test.dart',
@@ -790,7 +814,10 @@ packages:
           allOf(
             contains('pins patrol_cli 4.8.0'),
             contains('global patrol_cli 4.9.0'),
+            contains("your editor's MCP config"),
             contains('"args": ["run", "patrol_cli:main", "mcp"]'),
+            contains('patrol-mcp#cli-as-a-project-dev-dependency'),
+            isNot(contains('.mcp.json')),
           ),
         );
       },
@@ -800,6 +827,17 @@ packages:
       pinCli('4.9.0');
       final session = sessionWith(FakeDevelop());
       await session.ensureProjectResolved();
+
+      expect(session.getStatus().cliPinWarning, isNull);
+    });
+
+    test('goes away once the lockfile pins the serving version', () async {
+      pinCli('4.8.0');
+      final session = sessionWith(FakeDevelop());
+      await session.ensureProjectResolved();
+      expect(session.getStatus().cliPinWarning, isNotNull);
+
+      pinCli('4.9.0');
 
       expect(session.getStatus().cliPinWarning, isNull);
     });
@@ -1231,18 +1269,30 @@ packages:
     expect(result.status.output, contains('Cannot use release mode.'));
   });
 
-  test('any other develop failure lands in the output', () async {
-    final fake = FakeDevelop(runError: Exception('gradle exploded'));
-    final session = sessionWith(fake);
+  /// Runs [body] with stderr captured by [session], as `patrol mcp` does.
+  Future<T> capturingStderrOf<T>(
+    PatrolSession session,
+    Future<T> Function() body,
+  ) => IOOverrides.runZoned(body, stderr: () => session.capturingStderr);
 
-    final result = await session.startAndWait(
-      'app_test.dart',
-      device: 'test-device',
-      timeout: const Duration(seconds: 5),
+  test('any other develop failure is logged to the output once', () async {
+    final fake = FakeDevelop(runError: Exception('gradle exploded'));
+    final session = sessionWith(fake, logger: Logger());
+
+    final result = await capturingStderrOf(
+      session,
+      () => session.startAndWait(
+        'app_test.dart',
+        device: 'test-device',
+        timeout: const Duration(seconds: 5),
+      ),
     );
 
     expect(result.status.testState, TestState.finishedFailed);
-    expect(result.status.output, contains('ERROR: Exception: gradle exploded'));
+    expect(
+      'ERROR: Exception: gradle exploded'.allMatches(result.status.output),
+      hasLength(1),
+    );
   });
 
   test('dispose waits for a session whose app died to tear down', () async {
@@ -1267,22 +1317,24 @@ packages:
 
   test('a backend that exits mid-run is reported as a failure', () async {
     final fake = FakeDevelop();
-    final session = sessionWith(fake);
-    final run = session.startAndWait(
-      'app_test.dart',
-      device: 'test-device',
-      timeout: const Duration(seconds: 5),
-    );
-    await Future<void>.delayed(const Duration(milliseconds: 50));
+    final session = sessionWith(fake, logger: Logger());
+    final result = await capturingStderrOf(session, () async {
+      final run = session.startAndWait(
+        'app_test.dart',
+        device: 'test-device',
+        timeout: const Duration(seconds: 5),
+      );
+      await Future<void>.delayed(const Duration(milliseconds: 50));
 
-    fake.onTestsCompleted?.call(
-      const TestCompletionResult(success: false, error: 'app crashed'),
-    );
+      fake.onTestsCompleted?.call(
+        const TestCompletionResult(success: false, error: 'app crashed'),
+      );
+      return run;
+    });
 
-    final result = await run;
     expect(result.status.testState, TestState.finishedFailed);
     expect(result.status.warning, contains('stopped without the test'));
-    expect(result.status.output, contains('ERROR: app crashed'));
+    expect('ERROR: app crashed'.allMatches(result.status.output), hasLength(1));
     // The app is gone, so the session ends with it and the next run starts cold.
     expect(session.isRunning, isFalse);
     await session.awaitTeardown();

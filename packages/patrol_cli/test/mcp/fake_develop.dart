@@ -107,11 +107,12 @@ class FakeDevelop {
     return service;
   }
 
-  /// What `patrol` reports when a test fails: the failure, then one error
-  /// entry per line of its details.
-  void reportTestFailed(String name, {String? error}) => onLogEntry?.call(
-    TestEntry(name: name, status: TestEntryStatus.failure, error: error),
-  );
+  /// What `patrol` reports when a test fails: one error entry per line of its
+  /// [details], then the failure.
+  void reportTestFailed(String name, {String? details}) {
+    details?.split('\n').forEach(reportError);
+    onLogEntry?.call(TestEntry(name: name, status: TestEntryStatus.failure));
+  }
 
   void reportError(String message) =>
       onLogEntry?.call(ErrorEntry(message: message));
