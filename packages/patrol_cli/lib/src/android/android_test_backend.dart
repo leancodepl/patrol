@@ -1050,7 +1050,7 @@ allprojects { project ->
         _logger.warn(
           'The androidTestUtil APKs (e.g. orchestrator, test-services) were not '
           'exported by the last build, so they will not be installed. Rebuild '
-          'with `patrol build android` to include them.',
+          'with `patrol build android --emit-test-manifest` to include them.',
         );
       }
       return;
@@ -1084,13 +1084,20 @@ allprojects { project ->
     );
     if (installsTestServices && sdkLevel != null && sdkLevel >= 30) {
       // Without it TestStorage writes fail with "Operation not permitted".
-      await _processManager.run([
+      final result = await _processManager.run([
         'adb',
         ...['-s', device.id],
         'shell',
         ...['appops', 'set', 'androidx.test.services'],
         ...['MANAGE_EXTERNAL_STORAGE', 'allow'],
       ], runInShell: true);
+      if (result.exitCode != 0) {
+        _logger.warn(
+          'Could not allow test-services to write files (appops exited '
+          '${result.exitCode}), so TestStorage writes may fail:\n'
+          '${result.stdErr}',
+        );
+      }
     }
   }
 

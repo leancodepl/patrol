@@ -138,7 +138,7 @@ void main() {
     group('installTestUtilApks', () {
       late List<List<String>> runs;
 
-      void stubAdb({String sdk = '34'}) {
+      void stubAdb({String sdk = '34', int appopsExitCode = 0}) {
         runs = [];
         when(
           () => processManager.run(any(), runInShell: any(named: 'runInShell')),
@@ -148,7 +148,7 @@ void main() {
           runs.add(cmd);
           return ProcessResult(
             0,
-            0,
+            cmd.contains('appops') ? appopsExitCode : 0,
             cmd.contains('getprop') ? '$sdk\n' : '',
             '',
           );
@@ -231,6 +231,15 @@ void main() {
             'allow',
           ]),
         );
+      });
+
+      test('warns when appops fails', () async {
+        stubAdb(appopsExitCode: 1);
+        createTestUtilApks(['test-services-1.5.0.apk']);
+
+        await androidTestBackend.installTestUtilApks(androidDevice);
+
+        verify(() => logger.warn(any(that: contains('appops')))).called(1);
       });
 
       test('skips appops below API 30', () async {
