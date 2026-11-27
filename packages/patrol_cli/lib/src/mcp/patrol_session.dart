@@ -341,6 +341,22 @@ final class PatrolSession {
   /// The project this session drives, or null while none has resolved.
   String? get projectRoot => _projectRoot;
 
+  /// The Flutter command the last session in [projectRoot] started with, or
+  /// the one [FlutterCommandResolver] picks there while none has started.
+  FlutterCommand get flutterCommand {
+    final root = _projectRoot;
+    final started = _startedFlutterCommand;
+    if (started != null && started.$1 == root) {
+      return started.$2;
+    }
+    final resolved = root == null
+        ? null
+        : FlutterCommandResolver().resolve(projectRoot: root).command;
+    return resolved ?? const FlutterCommand('flutter');
+  }
+
+  (String, FlutterCommand)? _startedFlutterCommand;
+
   /// Enters the resolved project.
   ///
   /// The build reads the process's working directory. Injectable so a test does
@@ -865,6 +881,7 @@ final class PatrolSession {
     // Log the effective Flutter command once (to stderr via the logging sink).
     final flagCmd = globalResults['flutter-command'] as String?;
     final effective = options.flutterCommand;
+    _startedFlutterCommand = (flutterProjectPath, effective);
     final effectiveStr = [
       effective.executable,
       ...effective.arguments,

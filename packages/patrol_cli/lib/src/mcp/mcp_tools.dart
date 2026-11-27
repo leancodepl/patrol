@@ -153,23 +153,24 @@ class McpTools {
       return body();
     }
     final watch = Stopwatch()..start();
-    final result = await body();
-    final projectRoot = _session.projectRoot;
-    unawaited(
+    void report(String outcome) => unawaited(
       analytics.toolCalled(
         tool: tool,
-        result: result,
+        outcome: outcome,
         duration: watch.elapsed,
         platform: _session.device?.targetPlatform,
-        flutterCommand:
-            (projectRoot == null
-                ? null
-                : FlutterCommandResolver()
-                      .resolve(projectRoot: projectRoot)
-                      .command) ??
-            const FlutterCommand('flutter'),
+        flutterCommand: () => _session.flutterCommand,
+        workingDirectory: _session.projectRoot,
       ),
     );
+    final CallToolResult result;
+    try {
+      result = await body();
+    } on Object {
+      report('error');
+      rethrow;
+    }
+    report(McpAnalytics.outcomeOf(tool, result));
     return result;
   }
 

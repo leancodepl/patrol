@@ -54,8 +54,10 @@ void main() {
     bool projectResolvable = true,
     AttachedDevicesReader? listAttachedDevices,
     McpAnalytics? analytics,
+    List<String> developArgs = const [],
   }) {
     final session = PatrolSession(
+      developArgs: developArgs,
       listAttachedDevices:
           listAttachedDevices ??
           ({required flutterCommand}) async => const [device],
@@ -165,39 +167,108 @@ void main() {
     );
   });
 
-  test('reports each tool call to analytics', () async {
-    final events = <Map<String, Object?>>[];
-    final bothSent = Completer<void>();
-    final processManager = MockProcessManager();
-    when(
-      () => processManager.run(any(), runInShell: any(named: 'runInShell')),
-    ).thenThrow(Exception('no flutter here'));
-    final tools = toolsWith(
-      FakeDevelop(),
-      projectResolvable: false,
-      analytics: McpAnalytics(
-        send: (_, _, {eventData = const {}}) async {
-          events.add(eventData);
-          if (events.length == 2) {
-            bothSent.complete();
-          }
-          return true;
-        },
-        consented: () => true,
-        cliSource: CliSource.project,
-        processManager: processManager,
-      ),
+  group('analytics', () {
+    late MockProcessManager processManager;
+    late List<Map<String, Object?>> events;
+    late Completer<void> sentEnough;
+    late int expected;
+
+    setUp(() {
+      processManager = MockProcessManager();
+      when(
+        () => processManager.start(
+          any(),
+          workingDirectory: any(named: 'workingDirectory'),
+          runInShell: any(named: 'runInShell'),
+        ),
+      ).thenThrow(const ProcessException('flutter', []));
+      events = [];
+      sentEnough = Completer<void>();
+      expected = 1;
+    });
+
+    McpAnalytics analytics() => McpAnalytics(
+      send: (_, _, {eventData = const {}}) async {
+        events.add(eventData);
+        if (events.length == expected) {
+          sentEnough.complete();
+        }
+        return true;
+      },
+      consented: () => true,
+      cliSource: CliSource.project,
+      processManager: processManager,
     );
 
-    await tools.devices();
-    await tools.run({'testFile': 'app_test.dart'}, extra());
-    await bothSent.future.timeout(const Duration(seconds: 5));
+    Future<List<(Object?, Object?)>> sent() async {
+      await sentEnough.future.timeout(const Duration(seconds: 5));
+      return [for (final e in events) (e['tool'], e['outcome'])];
+    }
 
-    expect(events.map((e) => (e['tool'], e['outcome'])), [
-      ('devices', 'ok'),
-      ('run', 'refused'),
-    ]);
-    expect(events.first['cli_source'], 'project');
+    test('reports each tool call', () async {
+      expected = 2;
+      final tools = toolsWith(
+        FakeDevelop(),
+        projectResolvable: false,
+        analytics: analytics(),
+      );
+
+      await tools.devices();
+      await tools.run({'testFile': 'app_test.dart'}, extra());
+
+      expect(await sent(), [('devices', 'ok'), ('run', 'refused')]);
+      expect(events.first['cli_source'], 'project');
+    });
+
+    test("asks the Flutter command the run used for its version, in the run's "
+        'project', () async {
+      final tools = toolsWith(
+        FakeDevelop(),
+        developArgs: const ['--flutter-command', 'my-flutter'],
+        analytics: analytics(),
+      );
+
+      await tools.run({
+        'testFile': 'app_test.dart',
+        'timeoutMinutes': 0.001,
+      }, extra());
+
+      expect(await sent(), [('run', 'timed_out')]);
+      final command =
+          verify(
+                () => processManager.start(
+                  captureAny(),
+                  workingDirectory: projectRoot.path,
+                  runInShell: any(named: 'runInShell'),
+                ),
+              ).captured.single
+              as List<Object>;
+      expect(command.first, 'my-flutter');
+      await tools.quit();
+    });
+
+    test('reports a session that failed before any test as a session '
+        'error', () async {
+      final tools = toolsWith(
+        FakeDevelop(runError: Exception('gradle exploded')),
+        analytics: analytics(),
+      );
+
+      await tools.run({'testFile': 'app_test.dart'}, extra());
+
+      expect(await sent(), [('run', 'session_error')]);
+    });
+
+    test('reports a tool that throws as an error, and still throws', () async {
+      final tools = toolsWith(FakeDevelop(), analytics: analytics());
+
+      await expectLater(
+        tools.run({'testFile': 42}, extra()),
+        throwsA(isA<TypeError>()),
+      );
+
+      expect(await sent(), [('run', 'error')]);
+    });
   });
 
   test('devices answers on a server that has no project', () async {

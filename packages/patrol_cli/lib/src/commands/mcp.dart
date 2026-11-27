@@ -202,7 +202,9 @@ class McpCommand extends PatrolCommand {
         ),
         consented: () => _analytics.willSend,
         cliSource: session.cliOrigin.source,
-        processManager: _processManager,
+        // The runner's process manager logs each command in verbose mode, and
+        // the session's output would take that line as word from the run.
+        processManager: const LocalProcessManager(),
       ),
     );
     return McpServer(

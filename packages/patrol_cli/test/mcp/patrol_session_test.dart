@@ -10,6 +10,7 @@ import 'package:patrol_cli/src/commands/develop_service.dart';
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/mcp/cli_origin.dart';
+import 'package:patrol_cli/src/mcp/flutter_command_resolver.dart';
 import 'package:patrol_cli/src/mcp/mcp_tools.dart';
 import 'package:patrol_cli/src/mcp/patrol_session.dart';
 import 'package:patrol_cli/src/mcp/project_resolver.dart';
@@ -616,6 +617,27 @@ packages:
         }
       },
     );
+  });
+
+  test('names the Flutter command its run started with', () async {
+    final session = sessionWith(
+      FakeDevelop(),
+      developArgs: const ['--flutter-command', 'my-flutter --verbose'],
+    );
+    await session.ensureProjectResolved();
+    final resolved = FlutterCommandResolver()
+        .resolve(projectRoot: projectRoot.path)
+        .command;
+    expect(
+      session.flutterCommand.executable,
+      resolved?.executable ?? 'flutter',
+    );
+
+    await startSession(session, 'app_test.dart');
+
+    expect(session.flutterCommand.executable, 'my-flutter');
+    expect(session.flutterCommand.arguments, ['--verbose']);
+    await session.dispose();
   });
 
   test('names the log file in the status once a run has started', () async {
