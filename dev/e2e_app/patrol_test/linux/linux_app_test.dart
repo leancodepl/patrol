@@ -35,9 +35,32 @@ void main() {
     await $.waitUntilVisible($(#counterText));
 
     expect(Platform.isLinux, isTrue);
+
+    Matcher unsupported(String message) => throwsA(
+      isA<UnsupportedError>().having(
+        (e) => e.message,
+        'message',
+        '$message Patrol supports only Dart-side (Flutter) interactions on '
+            'Linux.',
+      ),
+    );
+
+    // An Android and iOS action (PlatformAction.mobile).
     await expectLater(
       () => $.platform.mobile.pressHome(),
-      throwsA(isA<UnsupportedError>()),
+      unsupported(
+        'This action is supported only on Android and iOS, not on Linux.',
+      ),
+    );
+    // A cross-platform action without a Linux branch (PlatformAction.safe).
+    await expectLater(
+      () => $.platform.tap(Selector(text: 'Add')),
+      unsupported('This action is not supported on Linux.'),
+    );
+    // An action for one platform only (PlatformAction.call).
+    expect(
+      () => $.platform.action(android: () {}),
+      unsupported('This action is not supported on Linux.'),
     );
   }, tags: ['linux']);
 
