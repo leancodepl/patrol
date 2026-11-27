@@ -132,7 +132,7 @@ Finder createFinder(dynamic matching) {
 ///
 /// This is decorator around [Finder] that extends it with Patrol features, but
 /// also preserves Finder's behavior.
-class PatrolFinder extends Finder {
+class PatrolFinder extends MatchFinder {
   /// Creates a new [PatrolFinder] with the given [finder] and [tester].
   ///
   /// Usually, you won't use this constructor directly. Instead, you'll use the
@@ -561,6 +561,7 @@ class PatrolFinder extends Finder {
   /// Simple finders (key, type, text, ...) check only [candidate], like
   /// [MatchFinder.matches]. Chained finders, such as `$(#a).$(#b)`, [first],
   /// [last] and [at], need the widget tree and check [evaluate] instead.
+  @override
   bool matches(Element candidate) {
     final finder = this.finder;
     if (finder is MatchFinder) {

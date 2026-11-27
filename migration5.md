@@ -129,11 +129,10 @@ instead of `Future<void>`: the number of frames it pumped, the same value
 - **A mock that stubs `pumpAndSettle()`:** answer with an `int`, e.g.
   `thenAnswer((_) async => 1)`; `thenAnswer((_) async {})` no longer compiles.
 
-## Other `patrol_finders` 4.x API changes
+## `pumpWidget()` takes named arguments, `pumpWidgetAndSettle()` returns frames
 
 **Packages:** `patrol_finders`, `patrol`
 
-`PatrolFinder` extends `Finder` instead of implementing `MatchFinder`.
 `PatrolTester.pumpWidget()` takes `duration` and `phase` as named parameters
 instead of positional ones, and both `pumpWidget()` and `pumpWidgetAndSettle()`
 take `wrapWithView`, like `WidgetTester.pumpWidget()`.
@@ -145,8 +144,6 @@ unchanged.
 
 - **`$.pumpWidget(app, duration)` or `$.pumpWidget(app, duration, phase)`:**
   name the arguments: `$.pumpWidget(app, duration: duration, phase: phase)`.
-- **A `PatrolFinder` stored as `MatchFinder`:** use `Finder`. `$(...).matches()`
-  still works.
 - **A subclass or implementation of `PatrolTester` that overrides
   `pumpWidget()` or `pumpWidgetAndSettle()`:** take `duration` and `phase` as
   named parameters, add `bool wrapWithView = true`, and return `Future<int>`

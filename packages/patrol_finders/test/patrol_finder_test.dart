@@ -228,10 +228,9 @@ void main() {
         ),
       );
 
-      patrolWidgetTest('is a Finder, not a MatchFinder', ($) async {
-        expect($(#column), isA<Finder>());
-        expect($(#column), isNot(isA<MatchFinder>()));
-        expect($(#column).$(Text).first, isA<Finder>());
+      patrolWidgetTest('is a MatchFinder, also when chained', ($) async {
+        expect($(#column), isA<MatchFinder>());
+        expect($(#column).$(Text).first, isA<MatchFinder>());
       });
 
       patrolWidgetTest('describes itself like the wrapped finder', ($) async {
