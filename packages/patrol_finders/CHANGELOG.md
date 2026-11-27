@@ -1,7 +1,7 @@
 ## Unreleased
 
 - **Breaking:** `PatrolTester.pumpAndSettle()` returns `Future<int>`, the number of pumped frames,
-  like `WidgetTester.pumpAndSettle()`. Classes that override it must change the return type.
+  like `WidgetTester.pumpAndSettle()`. Classes that override it must change the return type. (#3414)
 
 ## 3.7.1
 
