@@ -7,7 +7,7 @@
   reported as `<error>` instead of `<failure>` in the XML.
 - `--full-isolation` deletes the app on iOS in seconds instead of minutes. Patrol no longer waits
   for the home screen to stop animating after every step, and waits for each button of the deletion
-  instead.
+  instead. (#3416)
 
 ## 4.12.0
 
