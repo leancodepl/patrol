@@ -71,6 +71,8 @@ jobs:
           target: google_apis_playstore
           arch: x86_64
           ram-size: 3072M
+          # 37.4.2: on 37.3.10 with Flutter 3.44 the emulator dies mid-test.
+          emulator-build: '16982698'
           disk-size: 6G
           emulator-options: -no-snapshot-save -no-window -noaudio -no-boot-anim
           script: cd dev/cli_tests && dart pub get && dart patrol_develop_test.dart
