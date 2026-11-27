@@ -10,7 +10,7 @@ In the PR description mention the issue that this PR resolves. If that issue doe
 
 Use `## Unreleased` title if you're not sure what should be next version number.
 
-Be aware that `test android emulator` and `test android emulator webview` workflows will fails due to insufficient permission of a contributor. Those will have to be re-run by someone with the write access in the repository.
+The Android emulator tests on your PR start after a Patrol maintainer approves its workflows. Their results show up as `e2e android / …` checks, and the summary of the `run android emulator` run lists the failed tests.
 
 ## Running patrol_cli locally
 

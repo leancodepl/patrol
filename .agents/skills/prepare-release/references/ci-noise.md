@@ -10,7 +10,7 @@ at step level, so check the log before calling a PR blocked.
 |---|---|---|
 | `pana (<pkg>)` | fails on most PRs: patrol scores 150/160 on every PR (Linux/Windows unsupported), and patrol_cli, patrol_mcp and patrol_finders often lose points too | the score is lower than on other recent PRs for the same package |
 | `Check semver (…)` on non-`release/*` branches | runs from before 2026-10-20 failed until the version was bumped; newer runs only report the recommended version as the `semver (<pkg>)` status | on a `release/*` branch it enforces the version: red there means the pubspec version is too low |
-| `Flutter <ver> on API <n>`, `Flutter <ver> webview on emulator.wtf`, failed at the `Check User Permission` step | the emulator workflows stop there when whoever triggered the run lacks write access, as on fork PRs (CONTRIBUTING); a maintainer has to re-run them | failed at any later step, e.g. in a maintainer's re-run: the tests ran. Runs a few months old have no steps left, so the script counts them as real too |
+| `Flutter <ver> on API <n>`, `Flutter <ver> webview on emulator.wtf`, failed at the `Check User Permission` step (only runs from before the emulator tests moved to `run android emulator`) | the emulator workflows stopped there when whoever triggered the run lacks write access, as on fork PRs (CONTRIBUTING); a maintainer has to re-run them | failed at any later step, e.g. in a maintainer's re-run: the tests ran. Runs a few months old have no steps left, so the script counts them as real too |
 
 ## Check the failed step first
 
@@ -21,7 +21,7 @@ at step level, so check the log before calling a PR blocked.
 | Gradle fails transforming a Flutter engine jar | flake; re-run |
 | `dart analyze` fails intermittently inside `flutter pub publish --dry-run`, on several unrelated branches at once | flake; re-run |
 | docs Deploy Preview fails on a GitHub API rate limit | flake; passes later |
-| a PR that changes CI workflows, the Dart SDK floor or the Flutter pin fails its e2e jobs | `pull_request_target` workflows run from master, not the PR (e.g. #3323 on Flutter 3.38 vs its 3.44). Verify after merge or via `workflow_dispatch` on the branch |
+| a PR that changes CI workflows, the Dart SDK floor or the Flutter pin fails its e2e jobs | workflows run from the PR merged into its base, so a base branch without the matching CI change (e.g. `release/5.0` behind master) brings its old pins. Merge the base up to date, or verify via `workflow_dispatch` on the branch |
 
 ## Local-only differences
 
