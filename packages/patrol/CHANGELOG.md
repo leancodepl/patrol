@@ -5,6 +5,9 @@
   tests to Chromium 149. This also fixes `npx playwright install` hanging while extracting Chromium
   on Node.js 26 and newer Node.js 24 releases. With `--web-reporter junit`, some failures are now
   reported as `<error>` instead of `<failure>` in the XML.
+- `--full-isolation` deletes the app on iOS in seconds instead of minutes. Patrol no longer waits
+  for the home screen to stop animating after every step, and waits for each button of the deletion
+  instead.
 
 ## 4.12.0
 
