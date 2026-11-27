@@ -461,7 +461,8 @@ abstract class PatrolCommand extends Command<int> {
       ..addOption(
         'web-browser-timeout',
         help:
-            'Maximum time in milliseconds to wait for the browser instance to start.',
+            'Maximum time in milliseconds to wait for the browser instance to '
+            'start, or to connect to a remote browser.',
         valueHelp: 'number',
       )
       ..addOption(
@@ -521,6 +522,34 @@ abstract class PatrolCommand extends Command<int> {
         'web-accept-downloads',
         help: 'Whether to automatically accept all downloads.',
         defaultsTo: null,
+      )
+      ..addOption(
+        'web-connect-ws-endpoint',
+        help:
+            'Connect to a remote Playwright browser server at this WebSocket '
+            'URL (e.g. `npx playwright run-server`) instead of launching a '
+            'local browser. The server must run the same Playwright version '
+            'as the web runner. If the URL contains credentials, prefer the '
+            'PATROL_WEB_CONNECT_WS_ENDPOINT environment variable.',
+        valueHelp: 'ws://127.0.0.1:3000/',
+      )
+      ..addOption(
+        'web-connect-headers',
+        help:
+            'Additional HTTP headers sent when connecting to the remote '
+            'browser server, e.g. an auth token checked by a proxy. JSON '
+            'object. For secrets, prefer the PATROL_WEB_CONNECT_HEADERS '
+            'environment variable.',
+        valueHelp: '\'{"Authorization": "Bearer token"}\'',
+      )
+      ..addOption(
+        'web-connect-expose-network',
+        help:
+            'Network the remote browser reaches through this machine, in '
+            "Playwright's exposeNetwork format. Defaults to <loopback>, so "
+            'the remote browser can open the app served on localhost. An '
+            'empty value turns this off.',
+        valueHelp: '<loopback>',
       );
   }
 

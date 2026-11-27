@@ -1,3 +1,12 @@
+## Unreleased
+
+- Allow web tests to run on a remote browser: when `PATROL_WEB_CONNECT_WS_ENDPOINT` is set, the web
+  runner connects to that Playwright server, including for test discovery, instead of launching a
+  local browser. `PATROL_WEB_CONNECT_HEADERS` adds headers to the connection, and
+  `PATROL_WEB_CONNECT_EXPOSE_NETWORK` (default `<loopback>`, empty to turn it off) lets the remote
+  browser reach the app served on localhost. `PATROL_WEB_BROWSER_TIMEOUT` also limits connecting. A
+  remote browser runs headless by default. (#3406)
+
 ## 4.12.0
 
 - Add Android code coverage for runs with the test orchestrator's `clearPackageData:true` on

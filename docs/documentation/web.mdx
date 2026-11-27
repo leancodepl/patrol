@@ -11,7 +11,7 @@ browser interactions in your tests.
 When you run Patrol tests on web, the following happens:
 
 1. **Flutter Web Server**: Patrol starts a Flutter web server that serves your application
-2. **Playwright Test Runner**: Patrol automatically launches Chromium using Playwright
+2. **Playwright Test Runner**: Patrol automatically launches Chromium using Playwright, or connects to a [remote browser](#running-tests-on-a-remote-browser)
 3. **Platform Actions Bridge**: For platform automation calls (like `$.platform.web.grantPermissions()`), your Dart test code sends requests to Playwright with actions to be executed
 4. **Results Collection**: Test results are collected and reported back in Patrol's standard format
 
@@ -48,6 +48,118 @@ patrol test \
   --target patrol_test/login_test.dart \
   --web-headless
 ```
+
+### Running Tests on a Remote Browser
+
+By default, Patrol launches the browser on the machine that runs `patrol test`.
+To use a browser on another machine instead, such as a Playwright server in a
+container or a hosted browser grid, pass the server's WebSocket URL with
+`--web-connect-ws-endpoint`:
+
+```bash
+patrol test \
+  --device chrome \
+  --release \
+  --target patrol_test/login_test.dart \
+  --web-connect-ws-endpoint ws://browsers.internal:3000/
+```
+
+Patrol then connects to that server for test discovery and for every test, and
+skips installing a local browser. A remote browser runs headless unless you pass
+`--no-web-headless`; test discovery always runs headless.
+
+`--web-browser-timeout` also limits how long Patrol waits to connect. Without
+it, a server that never answers keeps the run waiting.
+
+Options that point at files on your machine don't apply to a remote browser:
+the server ignores `--web-executable-path`, `--web-downloads-path` and
+`--web-traces-dir`. `--web-ignore-default-args true` isn't supported either;
+pass a JSON list of the arguments to skip instead.
+
+#### Starting a Playwright server
+
+Any server that speaks Playwright's protocol works. To host one yourself, run
+Playwright's `run-server` command with Node.js. On a fresh machine, install the
+browser first (`--with-deps` also installs the system libraries it needs on
+Linux):
+
+```bash
+npx -y playwright@1.56.0 install --with-deps chromium
+npx -y playwright@1.56.0 run-server --port 3000 --host 0.0.0.0
+```
+
+or use the official Docker image:
+
+```bash
+docker run -p 3000:3000 --rm --init -it --workdir /home/pwuser --user pwuser \
+  mcr.microsoft.com/playwright:v1.56.0-noble \
+  /bin/sh -c "npx -y playwright@1.56.0 run-server --port 3000 --host 0.0.0.0"
+```
+
+<Warning>
+  The server must run the same Playwright version as Patrol's web runner (the
+  `playwright` version in `web_runner/package.json` of the `patrol` package you
+  use; 1.56.0 in the examples above). Only the major and minor versions are
+  compared, so 1.56.x works with 1.56.0. With a different version the
+  connection fails with `428 Precondition Required` and a "Playwright version
+  mismatch" message.
+</Warning>
+
+#### How the remote browser reaches your app
+
+Patrol serves your app on `localhost` of the machine that runs `patrol test`.
+A remote browser can't open that address by itself, so Patrol tunnels it: by
+default, requests from the remote browser to `localhost`, `127.0.0.1` and
+`::1` go through the connection back to your machine (Playwright's
+[`exposeNetwork`](https://playwright.dev/docs/api/class-browsertype#browser-type-connect-option-expose-network)
+set to `<loopback>`). To expose other hosts, pass your own rules with
+`--web-connect-expose-network`, e.g. `<loopback>,*.internal.example.com`. If
+the server reaches your app some other way, such as a provider's own tunnel,
+pass an empty value to turn this off.
+
+Every test loads the app again through this connection. Keep the server close
+to the machine that runs `patrol test`.
+
+<Warning>
+  Use `--release` (or `--profile`) with a remote browser. A debug build is made
+  of over a thousand files, which makes every test slow to load over the
+  connection, and Flutter's debug service can stop starting the app after the
+  first few tests on a remote browser. They then fail with a timeout in
+  `initialise`.
+</Warning>
+
+#### Securing the server
+
+`playwright run-server` has no authentication. Anyone who can reach its port
+can start browsers on it. Keep it on a private network, behind a firewall or a
+VPN, or reach it through an SSH tunnel. If you put an authenticating proxy in
+front of it, send the credentials with `--web-connect-headers`:
+
+```bash
+export PATROL_WEB_CONNECT_HEADERS='{"Authorization": "Bearer <token>"}'
+patrol test --device chrome --web-connect-ws-endpoint wss://browsers.example.com/
+```
+
+Every `--web-connect-*` option can also be set as an environment variable
+(`PATROL_WEB_CONNECT_WS_ENDPOINT`, `PATROL_WEB_CONNECT_HEADERS`,
+`PATROL_WEB_CONNECT_EXPOSE_NETWORK`). Prefer the environment variables for
+anything secret, so it doesn't end up in your shell history or CI logs.
+
+<Warning>
+  Playwright prints the endpoint URL in its errors and reports, without the
+  query string but with any `user:password@` part. Pass credentials in a header
+  or in the query string, never as `user:password@` in the URL.
+</Warning>
+
+#### Hosted browser grids
+
+Some providers offer browsers through a Playwright WebSocket endpoint. Pass
+that endpoint to `--web-connect-ws-endpoint`, usually with credentials and
+browser settings in the URL. Check that the provider supports the Playwright
+version Patrol uses. Each `--web-workers` worker opens its own browser, which
+counts as a parallel session with most providers. If the provider has its own
+tunnel to `localhost`, you can use it instead of `exposeNetwork` by passing
+`--web-connect-expose-network ""`.
 
 ### Supported Native Actions on Web
 

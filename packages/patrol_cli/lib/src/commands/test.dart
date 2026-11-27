@@ -400,6 +400,9 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       trace: stringArg('web-trace'),
       storageState: stringArg('web-storage-state'),
       acceptDownloads: optionalBoolArg('web-accept-downloads'),
+      connectWsEndpoint: stringArg('web-connect-ws-endpoint'),
+      connectHeaders: stringArg('web-connect-headers'),
+      connectExposeNetwork: stringArg('web-connect-expose-network'),
       coverageDir: webCoverageDataDir,
     );
 

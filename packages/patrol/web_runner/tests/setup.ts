@@ -3,9 +3,21 @@ import { initialise } from "./initialise"
 import { DartTestEntry, PatrolTestEntry } from "./types"
 
 async function setup(config: FullConfig) {
-  const { baseURL, channel, launchOptions, locale, ignoreHTTPSErrors } = config.projects[0].use
+  const { baseURL, channel, launchOptions, locale, ignoreHTTPSErrors, connectOptions } = config.projects[0].use
 
-  const browser = await chromium.launch({ ...launchOptions, channel })
+  const browser = connectOptions
+    ? await chromium.connect(connectOptions.wsEndpoint, {
+        exposeNetwork: connectOptions.exposeNetwork,
+        timeout: connectOptions.timeout,
+        headers: {
+          // The same handshake as Playwright's own browser fixture: the server
+          // launches the browser with these options. Test discovery always runs
+          // headless, like the local launch below.
+          "x-playwright-launch-options": jsonStringifyForceAscii({ ...launchOptions, channel, headless: true }),
+          ...connectOptions.headers,
+        },
+      })
+    : await chromium.launch({ ...launchOptions, channel })
 
   const page = await browser.newPage({ locale, ignoreHTTPSErrors })
 
@@ -46,6 +58,12 @@ async function setup(config: FullConfig) {
   } finally {
     await browser.close()
   }
+}
+
+// HTTP header values must be ASCII, so escape anything else, like Playwright's
+// own jsonStringifyForceASCII does for the same header.
+function jsonStringifyForceAscii(value: unknown) {
+  return JSON.stringify(value).replace(/[\u007f-\uffff]/g, c => `\\u${c.charCodeAt(0).toString(16).padStart(4, "0")}`)
 }
 
 function mapEntry(entry: DartTestEntry, parentName?: string, skip = false, tags = new Set<string>()) {

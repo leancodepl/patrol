@@ -433,8 +433,33 @@ class WebTestBackend {
 
       final webRunnerPath = await _getWebRunnerPath();
 
-      // Install Node.js dependencies if needed
-      await _ensureNodeDependencies(webRunnerPath);
+      final remoteEndpoint = remoteBrowserEndpoint(
+        options,
+        Platform.environment,
+      );
+      if (remoteEndpoint != null) {
+        // An older `patrol` package ships a web runner that ignores the
+        // endpoint and launches a local browser, which this run doesn't
+        // install. Stop with a clear message instead.
+        if (!runnerSupportsRemoteBrowser(webRunnerPath)) {
+          throw Exception(
+            "The web runner in this project's `patrol` package does not "
+            'support remote browsers (--web-connect-ws-endpoint or '
+            'PATROL_WEB_CONNECT_WS_ENDPOINT). Upgrade `patrol` to a version '
+            'that supports them, or run without a remote endpoint.',
+          );
+        }
+        _logger.info(
+          'Using the remote browser at ${describeEndpoint(remoteEndpoint)}',
+        );
+      }
+
+      // Install Node.js dependencies if needed. A remote browser server
+      // brings its own browser, so there is none to install locally.
+      await _ensureNodeDependencies(
+        webRunnerPath,
+        installBrowser: remoteEndpoint == null,
+      );
 
       final testResultsDir =
           options.resultsDir ?? '${Directory.current.path}/test-results';
@@ -525,7 +550,7 @@ class WebTestBackend {
 
     final webRunnerPath = await _getWebRunnerPath();
 
-    await _ensureNodeDependencies(webRunnerPath);
+    await _ensureNodeDependencies(webRunnerPath, installBrowser: true);
 
     final testResultsDir =
         options.resultsDir ?? '${Directory.current.path}/test-results';
@@ -685,7 +710,47 @@ class WebTestBackend {
     }
   }
 
-  Future<void> _ensureNodeDependencies(String webRunnerPath) async {
+  /// The WebSocket URL of the remote Playwright browser server to connect
+  /// to, from `--web-connect-ws-endpoint` or the
+  /// `PATROL_WEB_CONNECT_WS_ENDPOINT` environment variable, or null when the
+  /// web runner launches a local browser. The flag wins, like in
+  /// [_runPlaywrightTests], where it overrides the inherited environment.
+  @visibleForTesting
+  static String? remoteBrowserEndpoint(
+    WebAppOptions options,
+    Map<String, String> environment,
+  ) {
+    final endpoint =
+        options.connectWsEndpoint ??
+        environment['PATROL_WEB_CONNECT_WS_ENDPOINT'];
+    return (endpoint == null || endpoint.isEmpty) ? null : endpoint;
+  }
+
+  /// Whether the web runner at [webRunnerPath] connects to a remote browser
+  /// server, i.e. its Playwright config reads `PATROL_WEB_CONNECT_WS_ENDPOINT`.
+  /// Runners from older `patrol` releases don't, and launch a local browser.
+  @visibleForTesting
+  static bool runnerSupportsRemoteBrowser(String webRunnerPath) {
+    final config = File('$webRunnerPath/playwright.config.ts');
+    return config.existsSync() &&
+        config.readAsStringSync().contains('PATROL_WEB_CONNECT_WS_ENDPOINT');
+  }
+
+  /// Describes [endpoint] for logs without its user info, path or query,
+  /// which often carry credentials for hosted browser grids.
+  @visibleForTesting
+  static String describeEndpoint(String endpoint) {
+    final uri = Uri.tryParse(endpoint);
+    if (uri == null || uri.host.isEmpty) {
+      return 'the configured endpoint';
+    }
+    return '${uri.scheme}://${uri.host}${uri.hasPort ? ':${uri.port}' : ''}';
+  }
+
+  Future<void> _ensureNodeDependencies(
+    String webRunnerPath, {
+    required bool installBrowser,
+  }) async {
     _logger.info('Installing Node.js dependencies...');
 
     final nodeResult = await _processManager.run(
@@ -705,9 +770,13 @@ class WebTestBackend {
       );
     }
 
-    _logger
-      ..info('Node.js dependencies installed successfully.')
-      ..info('Installing Playwright dependencies...');
+    _logger.info('Node.js dependencies installed successfully.');
+
+    if (!installBrowser) {
+      return;
+    }
+
+    _logger.info('Installing Playwright dependencies...');
     final result = await _processManager.run(
       ['npx', 'playwright', 'install', 'chromium'],
       workingDirectory: webRunnerPath,

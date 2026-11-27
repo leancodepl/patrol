@@ -954,6 +954,22 @@ void main() {
         );
       });
 
+      test('keeps an empty expose network, which turns the tunnel off', () {
+        options = const WebAppOptions(
+          flutter: flutterOpts,
+          connectWsEndpoint: 'ws://127.0.0.1:3000/',
+          connectExposeNetwork: '',
+        );
+
+        expect(
+          options.toEnvironmentVariables(),
+          equals({
+            'PATROL_WEB_CONNECT_WS_ENDPOINT': 'ws://127.0.0.1:3000/',
+            'PATROL_WEB_CONNECT_EXPOSE_NETWORK': '',
+          }),
+        );
+      });
+
       test('stringifies every supported option', () {
         options = const WebAppOptions(
           flutter: flutterOpts,
@@ -991,6 +1007,9 @@ void main() {
           trace: 'retain-on-failure',
           storageState: '/tmp/state.json',
           acceptDownloads: true,
+          connectWsEndpoint: 'ws://127.0.0.1:3000/',
+          connectHeaders: '{"Authorization":"Bearer token"}',
+          connectExposeNetwork: '<loopback>',
           coverageDir: '/tmp/coverage',
         );
 
@@ -1032,6 +1051,9 @@ void main() {
             'PATROL_WEB_TRACE': 'retain-on-failure',
             'PATROL_WEB_STORAGE_STATE': '/tmp/state.json',
             'PATROL_WEB_ACCEPT_DOWNLOADS': 'true',
+            'PATROL_WEB_CONNECT_WS_ENDPOINT': 'ws://127.0.0.1:3000/',
+            'PATROL_WEB_CONNECT_HEADERS': '{"Authorization":"Bearer token"}',
+            'PATROL_WEB_CONNECT_EXPOSE_NETWORK': '<loopback>',
             'PATROL_WEB_COVERAGE_DIR': '/tmp/coverage',
           }),
         );
