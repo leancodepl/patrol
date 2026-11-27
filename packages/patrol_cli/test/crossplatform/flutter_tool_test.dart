@@ -24,9 +24,10 @@ void main() {
   late MockLogger logger;
   late Platform platform;
   late StreamController<List<int>> stdin;
+  late DisposeScope disposeScope;
 
   setUp(() {
-    final disposeScope = DisposeScope();
+    disposeScope = DisposeScope();
     stdin = StreamController<List<int>>();
     processManager = MockProcessManager();
     logger = MockLogger();
@@ -422,7 +423,7 @@ void main() {
 
     test('logs does not leave the observation URL pending on exit', () async {
       stubProcess(exitCode: Future.value(1));
-      final observationUrl = Completer<String>();
+      final observationUrl = Completer<String?>();
 
       await flutterTool.logs(
         'testDeviceId',
@@ -432,6 +433,46 @@ void main() {
 
       await expectLater(observationUrl.future, throwsA(isA<ToolExit>()));
     });
+
+    test(
+      'attachForHotRestart stops without an error when disposed while waiting '
+      'for the VM service URL',
+      () async {
+        final exited = Completer<int>();
+        final process = stubProcess(exitCode: exited.future);
+        when(process.kill).thenAnswer((_) {
+          if (!exited.isCompleted) {
+            exited.complete(-15);
+          }
+          return true;
+        });
+        final stdin = MockStdin();
+        when(() => stdin.hasTerminal).thenReturn(false);
+
+        final attached = IOOverrides.runZoned(
+          () => flutterTool.attachForHotRestart(
+            flutterCommand: flutterCommand,
+            deviceId: 'testDeviceId',
+            target: 'target',
+            appId: 'appId',
+            dartDefines: {},
+            openDevtools: false,
+            attachUsingUrl: true,
+            forwardFlutterLogs: false,
+          ),
+          stdin: () => stdin,
+        );
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+
+        await disposeScope.dispose();
+        await attached.timeout(const Duration(seconds: 1));
+        await exited.future;
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+
+        verifyNever(() => logger.err(any()));
+        verifyNever(() => processManager.start(any()));
+      },
+    );
   });
 
   group('getObservationUrl', () {

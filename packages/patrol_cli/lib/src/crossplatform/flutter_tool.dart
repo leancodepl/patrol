@@ -133,6 +133,9 @@ class FlutterTool {
                 deviceId,
                 flutterCommand: flutterCommand,
               ));
+      if (url == null) {
+        return;
+      }
 
       await attach(
         flutterCommand: flutterCommand,
@@ -160,11 +163,12 @@ class FlutterTool {
     }
   }
 
-  Future<String> _readDebugUrlFromFlutterLogs(
+  /// Completes with null once the session is disposed before the URL arrives.
+  Future<String?> _readDebugUrlFromFlutterLogs(
     String deviceId, {
     required FlutterCommand flutterCommand,
   }) async {
-    final urlCompleter = Completer<String>();
+    final urlCompleter = Completer<String?>();
     // The error can be set before anything awaits this below.
     urlCompleter.future.ignore();
     await logs(
@@ -347,7 +351,7 @@ class FlutterTool {
   Future<void> logs(
     String deviceId, {
     required FlutterCommand flutterCommand,
-    Completer<String>? observationUrlCompleter,
+    Completer<String?>? observationUrlCompleter,
   }) async {
     await _disposeScope.run((scope) async {
       _logger.detail('Logs: waiting for them...');
@@ -363,7 +367,10 @@ class FlutterTool {
             ..disposedBy(scope);
 
       final completer = Completer<void>();
-      scope.addDispose(completer.maybeComplete);
+      scope.addDispose(() {
+        completer.maybeComplete();
+        observationUrlCompleter?.maybeComplete();
+      });
 
       _reportExit(process, scope, 'flutter logs', (reason) {
         if (!completer.isCompleted) {
