@@ -40,6 +40,43 @@ void main() {
   });
 
   group('FlutterTool', () {
+    test('attach runs in the project, not in the process directory', () async {
+      final process = MockProcess();
+      when(
+        () => process.stdout,
+      ).thenAnswer((_) => const Stream<List<int>>.empty());
+      when(
+        () => process.stderr,
+      ).thenAnswer((_) => const Stream<List<int>>.empty());
+      _stubStart(processManager, process);
+      final inProject = FlutterTool(
+        logger: MockLogger(),
+        parentDisposeScope: DisposeScope(),
+        processManager: processManager,
+        platform: platform,
+        stdin: const Stream<List<int>>.empty(),
+        onExit: () async {},
+        projectRoot: '/projects/app',
+      );
+
+      // attach only returns once the app is attached, which no stub does.
+      unawaited(
+        inProject.attach(
+          flutterCommand: flutterCommand,
+          deviceId: 'testDeviceId',
+          target: 'target',
+          appId: 'appId',
+          dartDefines: {},
+          openBrowser: false,
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+
+      verify(
+        () => processManager.start(any(), workingDirectory: '/projects/app'),
+      );
+    });
+
     test(
       'hotRestart requested before attach completes is queued, then sent',
       () async {
@@ -226,8 +263,7 @@ void main() {
       when(
         () => process.stderr,
       ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
-      when(() => process.exitCode).thenAnswer((_) => Completer<int>().future);
-      when(() => processManager.start(any())).thenAnswer((_) async => process);
+      _stubStart(processManager, process);
 
       unawaited(
         flutterTool.attach(
@@ -254,8 +290,7 @@ void main() {
       when(
         () => process.stderr,
       ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
-      when(() => process.exitCode).thenAnswer((_) => Completer<int>().future);
-      when(() => processManager.start(any())).thenAnswer((_) async => process);
+      _stubStart(processManager, process);
 
       unawaited(
         flutterTool.attach(
@@ -614,6 +649,24 @@ void main() {
   });
 }
 
+/// Answers `start` whatever working directory it is given.
+void _stubStart(MockProcessManager processManager, MockProcess process) {
+  when(() => process.exitCode).thenAnswer((_) => Completer<int>().future);
+  when(
+    () => processManager.start(
+      any(),
+      workingDirectory: any(named: 'workingDirectory'),
+    ),
+  ).thenAnswer((_) async => process);
+  when(
+    () => processManager.start(
+      any(),
+      runInShell: any(named: 'runInShell'),
+      workingDirectory: any(named: 'workingDirectory'),
+    ),
+  ).thenAnswer((_) async => process);
+}
+
 /// Stubs a spawned process whose stdout replays [stdoutLines].
 void _stubAttach(
   MockProcessManager processManager, {
@@ -625,7 +678,6 @@ void _stubAttach(
       for (final line in stdoutLines) utf8.encode('$line\n'),
     ]),
   );
-  when(() => process.exitCode).thenAnswer((_) => Completer<int>().future);
   when(() => process.stderr).thenAnswer((_) => const Stream<List<int>>.empty());
-  when(() => processManager.start(any())).thenAnswer((_) async => process);
+  _stubStart(processManager, process);
 }

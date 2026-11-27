@@ -52,11 +52,17 @@
 - `patrol develop` no longer leaves `adb` port forwards behind on Android devices when the session ends. (#3367)
 - Add `patrol mcp` (experimental), an MCP server shipped with the CLI that lets AI agents run tests
   in `patrol develop` sessions and read their results. It runs a test on Android or iOS, hot
-  restarts it on the next `run`, and takes screenshots and native trees. Its results report a
-  `patrol` version this CLI cannot drive. It replaces the `patrol_mcp` package, so its dependencies
-  no longer land in the app's pubspec (#3166). Run it as `patrol mcp` from a globally activated CLI
-  or as `dart run patrol_cli:main mcp` from a dev dependency, with develop flags after `--`;
-  `PATROL_FLAGS` is split as a shell would (#3026). (#3368)
+  restarts it on the next `run`, and takes screenshots and native trees. One server serves every
+  project it is asked about, git worktrees included. Its results report a `patrol` version this CLI
+  cannot drive. It replaces the `patrol_mcp` package, so its dependencies no longer land in the
+  app's pubspec (#3166). Run it as `patrol mcp` from a globally activated CLI or as
+  `dart run patrol_cli:main mcp` from a dev dependency, with develop flags after `--`;
+  `PATROL_FLAGS` is split as a shell would (#3026). See the
+  [docs](https://patrol.leancode.co/documentation/other/patrol-mcp), migrating off `patrol_mcp`
+  included. (#3368)
+- Look for a `patrol test`/`patrol develop` target in the project when the path names nothing from
+  the directory the command was run in. A relative target still belongs to that directory first,
+  which is how `-t ../patrol_test/app_test.dart` works from a subdirectory. (#3369)
 
 - **BREAKING CHANGE**
   - Remove `--tags` from `patrol develop`. It was accepted but never applied, so a session ran

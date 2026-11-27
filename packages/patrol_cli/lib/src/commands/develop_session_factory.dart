@@ -62,6 +62,7 @@ class DevelopSessionFactory {
       platform: platform,
       parentDisposeScope: disposeScope,
       logger: logger,
+      projectRoot: projectRoot,
       onExit:
           onExit ??
           () async {

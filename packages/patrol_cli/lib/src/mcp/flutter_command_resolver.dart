@@ -2,6 +2,7 @@ import 'dart:io' as io;
 
 import 'package:path/path.dart' as p;
 import 'package:patrol_cli/src/runner/flutter_command.dart';
+import 'package:process/process.dart';
 
 /// Outcome of resolving which Flutter command MCP-driven `patrol develop`
 /// sessions should use.
@@ -43,12 +44,13 @@ class FlutterCommandResolver {
     bool Function(String path)? pathExists,
     bool Function()? isFvmInstalled,
     bool Function()? isFlutterInstalled,
+    ProcessManager processManager = const LocalProcessManager(),
   }) : _env = environment ?? io.Platform.environment,
        _pathExists = pathExists ?? _defaultPathExists {
-    _isFvmInstalled =
-        isFvmInstalled ?? () => _exeOnPath(_env, _pathExists, 'fvm');
+    // `canRun` already knows how an executable is named on each platform.
+    _isFvmInstalled = isFvmInstalled ?? () => processManager.canRun('fvm');
     _isFlutterInstalled =
-        isFlutterInstalled ?? () => _exeOnPath(_env, _pathExists, 'flutter');
+        isFlutterInstalled ?? () => processManager.canRun('flutter');
   }
 
   final Map<String, String> _env;
@@ -142,35 +144,4 @@ class FlutterCommandResolver {
 
   static bool _defaultPathExists(String path) =>
       io.File(path).existsSync() || io.Directory(path).existsSync();
-
-  /// Whether an executable named [base] is resolvable on PATH. Handles the
-  /// Windows `.bat`/`.exe`/`.cmd` wrappers rather than looking for a bare file.
-  static bool _exeOnPath(
-    Map<String, String> env,
-    bool Function(String path) pathExists,
-    String base,
-  ) {
-    final pathVar = env['PATH'] ?? env['Path'] ?? env['path'];
-    if (pathVar == null || pathVar.isEmpty) {
-      return false;
-    }
-    final names = io.Platform.isWindows
-        ? ['$base.bat', '$base.exe', '$base.cmd', base]
-        : [base];
-    for (var dir in pathVar.split(io.Platform.isWindows ? ';' : ':')) {
-      if (dir.isEmpty) {
-        continue;
-      }
-      // Windows PATH entries containing spaces are sometimes wrapped in quotes.
-      if (io.Platform.isWindows && dir.startsWith('"') && dir.endsWith('"')) {
-        dir = dir.substring(1, dir.length - 1);
-      }
-      for (final name in names) {
-        if (pathExists(p.join(dir, name))) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
 }

@@ -7,6 +7,7 @@ import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
+import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/commands/dart_define_utils.dart';
 import 'package:patrol_cli/src/commands/develop_options.dart';
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
@@ -794,23 +795,9 @@ class DevelopService {
   List<StreamSubscription<ProcessSignal>> _registerProxyCleanupOnSignals(
     String testDirectory,
   ) {
-    final subscriptions = <StreamSubscription<ProcessSignal>>[];
-
-    void cleanup(ProcessSignal signal) {
+    return watchStopSignals((signal) {
       _logger.detail('Received $signal, removing devtools proxy entrypoint');
       _testBundler.deleteEntrypointProxy(testDirectory);
-    }
-
-    subscriptions.add(ProcessSignal.sigint.watch().listen(cleanup));
-    // ProcessSignal.sigterm is not listenable on Windows and the failure
-    // surfaces as an unhandled async SignalException (not caught by a
-    // surrounding try/catch). Guard with Platform.isWindows to match the
-    // fix in commands/mcp.dart's _ExitSignal. Graceful cleanup on Windows still
-    // runs via the SIGINT path above and via stdio close.
-    if (!Platform.isWindows) {
-      subscriptions.add(ProcessSignal.sigterm.watch().listen(cleanup));
-    }
-
-    return subscriptions;
+    });
   }
 }
