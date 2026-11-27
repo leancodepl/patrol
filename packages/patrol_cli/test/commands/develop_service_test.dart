@@ -779,6 +779,98 @@ void main() {
         );
       });
 
+      test('switches a web session through the web backend', () async {
+        registerFallbackValue(
+          const WebAppOptions(
+            flutter: FlutterAppOptions(
+              command: FlutterCommand('flutter'),
+              target: 'patrol_test/test_bundle.dart',
+              flavor: null,
+              buildMode: BuildMode.debug,
+              dartDefines: <String, String>{},
+              dartDefineFromFilePaths: <String>[],
+              buildName: null,
+              buildNumber: null,
+            ),
+          ),
+        );
+        registerFallbackValue(MockFlutterTool());
+        registerFallbackValue(const Stream<List<int>>.empty());
+        void Function()? webRestartCompleted;
+        when(
+          () => deviceFinder.find(
+            any(),
+            flutterCommand: any(named: 'flutterCommand'),
+          ),
+        ).thenAnswer(
+          (_) async => [
+            const Device(
+              name: 'Chrome',
+              id: 'chrome',
+              targetPlatform: TargetPlatform.web,
+              real: false,
+            ),
+          ],
+        );
+        when(
+          () => webTestBackend.buildForDevelop(any()),
+        ).thenAnswer((_) async {});
+        when(
+          () => webTestBackend.develop(
+            any(),
+            any(),
+            any(),
+            showFlutterLogs: any(named: 'showFlutterLogs'),
+            hideTestSteps: any(named: 'hideTestSteps'),
+            clearTestSteps: any(named: 'clearTestSteps'),
+            stdin: any(named: 'stdin'),
+            onLogEntry: any(named: 'onLogEntry'),
+            openDevtools: any(named: 'openDevtools'),
+          ),
+        ).thenAnswer((invocation) {
+          backendOnLogEntry =
+              invocation.namedArguments[#onLogEntry]
+                  as void Function(Entry entry)?;
+          return Completer<void>().future;
+        });
+        when(
+          () => webTestBackend.hotRestart(
+            any(),
+            onCompleted: any(named: 'onCompleted'),
+            onFailed: any(named: 'onFailed'),
+          ),
+        ).thenAnswer((invocation) async {
+          webRestartCompleted =
+              invocation.namedArguments[#onCompleted] as void Function()?;
+        });
+        // A Flutter that cannot report its version passes the web version check.
+        final service = await startSession(
+          options: const DevelopOptions(
+            target: 'onboarding_test.dart',
+            flutterCommand: FlutterCommand('/nonexistent/flutter'),
+            buildMode: BuildMode.debug,
+            testServerPort: 8081,
+            appServerPort: 8080,
+            uninstall: false,
+            checkCompatibility: false,
+          ),
+        );
+
+        final switched = service.restartInto('b_test.dart');
+        await _waitFor(() => webRestartCompleted != null);
+        webRestartCompleted!();
+
+        expect(await switched, isNull);
+        expect(bundle.readAsStringSync(), 'bundle of patrol_test/b_test.dart');
+        expect(
+          await service.restartInto(
+            'b_test.dart',
+            dartDefines: {'API_URL': 'two'},
+          ),
+          contains('not supported on web'),
+        );
+      });
+
       test('refuses a dart-define patrol sets itself', () async {
         final service = await startSession();
 

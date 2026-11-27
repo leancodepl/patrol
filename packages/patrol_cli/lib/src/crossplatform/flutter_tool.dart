@@ -55,6 +55,8 @@ class FlutterTool {
   /// while this is null.
   TestSwitcher? testSwitcher;
 
+  late final _testFileChooser = TestFileChooser(_logger);
+
   String get _keyCommands => [
     'Patrol develop key commands:',
     'r Hot restart',
@@ -504,71 +506,16 @@ class FlutterTool {
   }) {
     var quitting = false;
 
-    // The test files offered after `t`, while the user is choosing one.
-    List<String>? choices;
-    var typed = '';
-
-    Future<void> onChoiceKey(List<String> offered, String char) async {
-      if (RegExp('[0-9]').hasMatch(char)) {
-        typed += char;
-        return;
-      }
-      choices = null;
-      final index = int.tryParse(typed);
-      typed = '';
-      if ((char != '\r' && char != '\n') || index == null) {
-        _logger.info('Test switch cancelled.');
-        return;
-      }
-      if (index < 1 || index > offered.length) {
-        _logger.warn('No test file numbered $index.');
-        return;
-      }
-      final testFile = offered[index - 1];
-      final switcher = testSwitcher;
-      if (switcher == null) {
-        return;
-      }
-      _logger.success('Hot Restart into $testFile...');
-      final failure = await switcher.switchTo(testFile);
-      if (failure != null) {
-        _logger.warn(
-          'Still running the previous test file: '
-          '${failure.split('\n').first}',
-        );
-      }
-    }
-
-    void offerTestFiles(TestSwitcher switcher) {
-      final offered = switcher.listTests();
-      if (offered.isEmpty) {
-        _logger.warn('No test files to switch to.');
-        return;
-      }
-      choices = offered;
-      _logger.info(
-        [
-          'Type the number of the test file to run, then Enter:',
-          for (final (i, file) in offered.indexed) '${i + 1} $file',
-        ].join('\n'),
-      );
-    }
-
     _stdin
         .listen((event) async {
-          if (choices case final offered?) {
-            for (final char in String.fromCharCodes(event).split('')) {
-              if (choices == null) {
-                break;
-              }
-              await onChoiceKey(offered, char);
-            }
+          if (_testFileChooser.isChoosing) {
+            await _testFileChooser.onKeys(event);
             return;
           }
 
           final char = String.fromCharCode(event.first);
           if ((char == 't' || char == 'T') && testSwitcher != null) {
-            offerTestFiles(testSwitcher!);
+            _testFileChooser.offer(testSwitcher!);
           } else if (char == 'r' || char == 'R') {
             if (!_hotRestartActive) {
               _logger.warn(
@@ -795,6 +742,77 @@ class TestSwitcher {
   /// Hot-restarts the session into the test file. Returns null once it runs
   /// it, otherwise why it does not.
   final Future<String?> Function(String testFile) switchTo;
+}
+
+/// The `t` key of a develop session: offers the test files, then switches to
+/// the one whose number the user types before Enter. Any other key cancels.
+class TestFileChooser {
+  TestFileChooser(this._logger);
+
+  final Logger _logger;
+  List<String>? _offered;
+  TestSwitcher? _switcher;
+  var _typed = '';
+
+  /// Whether keys go to the choice instead of the session.
+  bool get isChoosing => _offered != null;
+
+  void offer(TestSwitcher switcher) {
+    final offered = switcher.listTests();
+    if (offered.isEmpty) {
+      _logger.warn('No test files to switch to.');
+      return;
+    }
+    _offered = offered;
+    _switcher = switcher;
+    _typed = '';
+    _logger.info(
+      [
+        'Type the number of the test file to run, then Enter:',
+        for (final (i, file) in offered.indexed) '${i + 1} $file',
+      ].join('\n'),
+    );
+  }
+
+  /// Handles keys typed while choosing, and returns once a chosen switch has
+  /// ended.
+  Future<void> onKeys(List<int> keys) async {
+    for (final char in String.fromCharCodes(keys).split('')) {
+      if (!isChoosing) {
+        return;
+      }
+      await _onKey(char);
+    }
+  }
+
+  Future<void> _onKey(String char) async {
+    if (RegExp('[0-9]').hasMatch(char)) {
+      _typed += char;
+      return;
+    }
+    final offered = _offered!;
+    final switcher = _switcher!;
+    final index = int.tryParse(_typed);
+    _offered = null;
+    _switcher = null;
+    _typed = '';
+    if ((char != '\r' && char != '\n') || index == null) {
+      _logger.info('Test switch cancelled.');
+      return;
+    }
+    if (index < 1 || index > offered.length) {
+      _logger.warn('No test file numbered $index.');
+      return;
+    }
+    final testFile = offered[index - 1];
+    _logger.success('Hot Restart into $testFile...');
+    final failure = await switcher.switchTo(testFile);
+    if (failure != null) {
+      _logger.warn(
+        'Still running the previous test file: ${failure.split('\n').first}',
+      );
+    }
+  }
 }
 
 class StdinModes {

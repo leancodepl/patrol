@@ -130,6 +130,9 @@ class DevelopService {
   /// The dart-defines the running `flutter attach` compiles with, and which of
   /// them patrol sets itself; set by [run].
   Map<String, String> _attachDartDefines = const {};
+
+  /// The entrypoint the session compiles; set by [run].
+  String _entrypointPath = '';
   Set<String> _internalDartDefineKeys = const {};
 
   /// Whether [dartDefines] would change what the session compiles with, which
@@ -212,10 +215,7 @@ class DevelopService {
       return 'This develop session runs a bundle it did not generate '
           '(--no-generate-bundle), so it cannot switch test files.';
     }
-    if (_device?.targetPlatform == TargetPlatform.web) {
-      return 'Switching test files in a running session is not supported on '
-          'web yet.';
-    }
+    final isWeb = _device?.targetPlatform == TargetPlatform.web;
 
     final patrolOwned = dartDefines.keys.where(
       _internalDartDefineKeys.contains,
@@ -225,6 +225,10 @@ class DevelopService {
           '${patrolOwned.length == 1 ? 'it' : 'them'} out of dartDefines.';
     }
     final reattach = changesDartDefines(dartDefines);
+    if (reattach && isWeb) {
+      return 'Changing dart-defines in a running session is not supported on '
+          'web yet.';
+    }
     final newDartDefines = {..._attachDartDefines, ...dartDefines};
 
     final String testFile;
@@ -274,6 +278,14 @@ class DevelopService {
                 outcome.complete('Could not attach with the new defines: $err');
               }
             }),
+      );
+    } else if (isWeb) {
+      unawaited(
+        _webTestBackend.hotRestart(
+          _entrypointPath,
+          onCompleted: onCompleted,
+          onFailed: onFailed,
+        ),
       );
     } else {
       _flutterTool.hotRestart(onCompleted: onCompleted, onFailed: onFailed);
@@ -363,7 +375,7 @@ class DevelopService {
     // because the proxy entrypoint in integration_test/ causes broken
     // relative imports under the web compiler.
     final isWeb = device.targetPlatform == TargetPlatform.web;
-    _flutterTool.testSwitcher = _bundleTarget == null || isWeb
+    _flutterTool.testSwitcher = _bundleTarget == null
         ? null
         : TestSwitcher(
             listTests: () => [
@@ -381,6 +393,7 @@ class DevelopService {
       _testBundler.ensureEntrypoint(testDirectory);
       entrypoint = _testBundler.getEntrypointFile(testDirectory);
     }
+    _entrypointPath = entrypoint.path;
     final signalSubscriptions = _registerProxyCleanupOnSignals(testDirectory);
     Future<void> cleanupProxy() async {
       _testBundler.deleteEntrypointProxy(testDirectory);
@@ -779,7 +792,7 @@ class DevelopService {
           hideTestSteps: hideTestSteps,
           clearTestSteps: clearTestSteps,
           stdin: _stdin,
-          onLogEntry: onLogEntry,
+          onLogEntry: gatedOnLogEntry,
           openDevtools: openDevtools,
         );
     }
