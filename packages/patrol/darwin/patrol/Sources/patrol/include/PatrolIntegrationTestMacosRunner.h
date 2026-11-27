@@ -7,6 +7,11 @@
 //  5. Copy the contents from RunnerUITests.m back here
 //  6. Go back to using a macro in RunnerUITests.m
 
+// PatrolServer and ObjCPatrolAppServiceClient exist only when PATROL_ENABLED is defined for Swift.
+// If the build fails with "use of undeclared identifier 'PatrolServer'" or
+// "Undefined symbol: _OBJC_CLASS_$_PatrolServer", the test target was built without it: build it
+// with the patrol CLI (`patrol test` / `patrol build`), which sets the flag.
+
 // For every Flutter dart test, dynamically generate an Objective-C method mirroring the test results
 // so it is reported as a native XCTest run result.
 #define PATROL_INTEGRATION_TEST_MACOS_RUNNER(__test_class)                                                    \

@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 import Foundation
 
 #if canImport(Darwin)
@@ -11,10 +12,8 @@ import Foundation
 
   private static let maxPortBindAttempts = 50
 
-  #if PATROL_ENABLED
-    private let automator: Automator
-    private let server: Server
-  #endif
+  private let automator: Automator
+  private let server: Server
 
   @objc
   public var appReady = false
@@ -44,89 +43,82 @@ import Foundation
   @objc public override init() {
     Logger.shared.i("PatrolServer constructor called")
 
-    #if PATROL_ENABLED
-      Logger.shared.i("PATROL_ENABLED flag is defined")
-      self.server = Server()
-      #if os(iOS)
-        self.automator = IOSAutomator()
-      #elseif os(macOS)
-        self.automator = MacOSAutomator()
-      #endif
-    #else
-      Logger.shared.i("Fatal error: PATROL_ENABLED flag is not defined")
+    self.server = Server()
+    #if os(iOS)
+      self.automator = IOSAutomator()
+    #elseif os(macOS)
+      self.automator = MacOSAutomator()
     #endif
   }
 
   @objc public func start() throws {
-    #if PATROL_ENABLED
-      Logger.shared.i("Starting server...")
+    Logger.shared.i("Starting server...")
 
-      #if os(macOS)
-        SystemDialogMonitor.register()
-      #endif
-
-      let provider = AutomatorServer(automator: automator) { appReady in
-        Logger.shared.i("App reported that it is ready")
-        self.appReady = appReady
-      }
-
-      provider.setupRoutes(server: server)
-
-      // Mount optional extension routes on the same server.
-      let registrar = PatrolRouteRegistrar { [server = self.server] path, handler in
-        server.route(.POST, path) { request in
-          do {
-            let responseBody = try handler(request.body)
-            return HTTPResponse(.ok, body: responseBody)
-          } catch let err {
-            return HTTPResponse(.badRequest, headers: [:], error: err)
-          }
-        }
-      }
-      for ext in PatrolServerExtensions.discover() {
-        Logger.shared.i("Loaded Patrol server extension: \(ext.name)")
-        ext.register(on: registrar)
-      }
-
-      var portToTry = preferredPort
-      var lastError: Error?
-
-      for attempt in 0..<Self.maxPortBindAttempts {
-        let appPortToTry = portToTry + 1
-        if !Self.isPortAvailable(appPortToTry) {
-          Logger.shared.i(
-            "App service port \(appPortToTry) unavailable (attempt \(attempt + 1)), trying next pair"
-          )
-          portToTry += 2
-          continue
-        }
-
-        do {
-          try server.start(port: portToTry)
-          boundTestPort = portToTry
-          boundAppPort = appPortToTry
-          Logger.shared.i("Server started on http://0.0.0.0:\(boundTestPort)")
-          Logger.shared.i("App service port: \(boundAppPort)")
-          return
-        } catch {
-          lastError = error
-          Logger.shared.i(
-            "Failed to bind PatrolServer on port \(portToTry) (attempt \(attempt + 1)): \(error)"
-          )
-          portToTry += 2
-        }
-      }
-
-      throw lastError
-        ?? NSError(
-          domain: "PatrolServer",
-          code: 1,
-          userInfo: [
-            NSLocalizedDescriptionKey:
-              "Failed to bind PatrolServer after \(Self.maxPortBindAttempts) attempts"
-          ]
-        )
+    #if os(macOS)
+      SystemDialogMonitor.register()
     #endif
+
+    let provider = AutomatorServer(automator: automator) { appReady in
+      Logger.shared.i("App reported that it is ready")
+      self.appReady = appReady
+    }
+
+    provider.setupRoutes(server: server)
+
+    // Mount optional extension routes on the same server.
+    let registrar = PatrolRouteRegistrar { [server = self.server] path, handler in
+      server.route(.POST, path) { request in
+        do {
+          let responseBody = try handler(request.body)
+          return HTTPResponse(.ok, body: responseBody)
+        } catch let err {
+          return HTTPResponse(.badRequest, headers: [:], error: err)
+        }
+      }
+    }
+    for ext in PatrolServerExtensions.discover() {
+      Logger.shared.i("Loaded Patrol server extension: \(ext.name)")
+      ext.register(on: registrar)
+    }
+
+    var portToTry = preferredPort
+    var lastError: Error?
+
+    for attempt in 0..<Self.maxPortBindAttempts {
+      let appPortToTry = portToTry + 1
+      if !Self.isPortAvailable(appPortToTry) {
+        Logger.shared.i(
+          "App service port \(appPortToTry) unavailable (attempt \(attempt + 1)), trying next pair"
+        )
+        portToTry += 2
+        continue
+      }
+
+      do {
+        try server.start(port: portToTry)
+        boundTestPort = portToTry
+        boundAppPort = appPortToTry
+        Logger.shared.i("Server started on http://0.0.0.0:\(boundTestPort)")
+        Logger.shared.i("App service port: \(boundAppPort)")
+        return
+      } catch {
+        lastError = error
+        Logger.shared.i(
+          "Failed to bind PatrolServer on port \(portToTry) (attempt \(attempt + 1)): \(error)"
+        )
+        portToTry += 2
+      }
+    }
+
+    throw lastError
+      ?? NSError(
+        domain: "PatrolServer",
+        code: 1,
+        userInfo: [
+          NSLocalizedDescriptionKey:
+            "Failed to bind PatrolServer after \(Self.maxPortBindAttempts) attempts"
+        ]
+      )
   }
 
   private static func isPortAvailable(_ port: Int) -> Bool {
@@ -163,3 +155,5 @@ import Foundation
     return bindResult == 0
   }
 }
+
+#endif

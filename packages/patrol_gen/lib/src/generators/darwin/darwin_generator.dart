@@ -28,6 +28,15 @@ class DarwinGenerator {
       }
     }
 
-    return result;
+    // PatrolImpl must compile to nothing without PATROL_ENABLED, so that
+    // normal (e.g. release) app builds don't ship the test server.
+    return result.map(_guardWithPatrolEnabled).toList();
+  }
+
+  OutputFile _guardWithPatrolEnabled(OutputFile file) {
+    return OutputFile(
+      filename: file.filename,
+      content: '#if PATROL_ENABLED\n${file.content}\n#endif\n',
+    );
   }
 }

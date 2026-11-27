@@ -170,6 +170,20 @@ jobs:
         if: success() || failure()
         run: |
           find . -iname '*.h' -o -iname '*.m' | xargs -I {} clang-format --dry-run --Werror {}
+
+      # Without PATROL_ENABLED, PatrolImpl must compile to nothing, so that
+      # normal (e.g. release) app builds don't ship the test server.
+      - name: PatrolImpl files are guarded with PATROL_ENABLED
+        if: success() || failure()
+        run: |
+          unguarded=$(find patrol/Sources/PatrolImpl -name '*.swift' -exec sh -c \
+            'head -n 1 "$1" | grep -Eq "^#if PATROL_ENABLED( |$)" || echo "$1"' _ {} \;)
+          if [ -n "$unguarded" ]; then
+            echo "These files must start with '#if PATROL_ENABLED':"
+            echo "$unguarded"
+            exit 1
+          fi
+
   prepare-published-deps:
     name: Resolve against published dependencies
     runs-on: ubuntu-latest

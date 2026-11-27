@@ -72,7 +72,7 @@ Native methods API is generated from a schema. If you wish to modify any of thes
 3. Run `./gen_from_schema` script to regenerate the contracts.
 4. Implement these methods on the native side.
 
-Note: On iOS, during development you should remove `#if PATROL_ENABLED` from `AutomatorServer.swift` and `Automator.swift` to make code completion work.
+Note: On iOS, all Swift sources in `PatrolImpl` are wrapped in `#if PATROL_ENABLED`, so that normal (e.g. release) app builds don't include them. To make code completion work during development, define the flag for the target you're editing, e.g. add `-D PATROL_ENABLED` to `OTHER_SWIFT_FLAGS` (CocoaPods) or open the package with `PATROL_ENABLED=1` set in the environment (SwiftPM). New Swift files in `PatrolImpl` must start with `#if PATROL_ENABLED` too; CI checks this.
 
 ## Working with patrol_devtools_extension
 

@@ -7,6 +7,11 @@
 //  5. Copy the macro back here
 //  6. Go back to using a macro in RunnerUITests.m
 
+// PatrolServer and ObjCPatrolAppServiceClient exist only when PATROL_ENABLED is defined for Swift.
+// If the build fails with "use of undeclared identifier 'PatrolServer'" or
+// "Undefined symbol: _OBJC_CLASS_$_PatrolServer", the test target was built without it: build it
+// with the patrol CLI (`patrol test` / `patrol build`), which sets the flag.
+
 // Set by patrol_cli from `screenshot_on_failure`; off when built without it.
 #ifndef PATROL_SCREENSHOT_ON_FAILURE
 #define PATROL_SCREENSHOT_ON_FAILURE 0

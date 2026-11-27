@@ -3,6 +3,13 @@
 - Agent skills: `patrol-write-test` now covers the state a restart of a running session keeps,
   what a failed run leaves behind, assertions that cannot fail, steps a test does not need, and
   `settlePolicy` on screens with never-ending animations.
+- Stop shipping Patrol's iOS/macOS test server in normal (e.g. release) app builds: all `PatrolImpl`
+  Swift sources now compile only with `PATROL_ENABLED`, which the patrol CLI sets, and such builds
+  no longer link or embed CocoaAsyncSocket. Building the `RunnerUITests` target
+  without the patrol CLI (e.g. from Xcode or with a plain `xcodebuild`) now fails with "use of
+  undeclared identifier 'PatrolServer'" or "Undefined symbol: _OBJC_CLASS_$_PatrolServer"; add
+  `-D PATROL_ENABLED` to `OTHER_SWIFT_FLAGS` (CocoaPods) or set `PATROL_ENABLED=1` (SwiftPM) for
+  such builds.
 - Fix web tests failing on Ubuntu 26.04 (now `ubuntu-latest` on GitHub Actions) with "Playwright does
   not support chromium on ubuntu26.04-x64", by updating Playwright to 1.61.1, which also moves web
   tests to Chromium 149. This also fixes `npx playwright install` hanging while extracting Chromium
