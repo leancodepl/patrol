@@ -35,6 +35,9 @@
 - Add native screenshots on iOS: `screenshot_on_failure: true` and `$.takeNativeScreenshot('tag')`
   now work on simulators and physical devices. See the
   [docs](https://patrol.leancode.co/cli-commands/test#on-ios). (#3271)
+- Fix `enterText` and `enterTextByIndex` on iOS leaving a trailing newline in multi-line native text
+  fields (for example the Messages compose field) with the default `KeyboardBehavior.showAndDismiss`,
+  so selectors by the entered text didn't match. (#TODO)
 
 ## 5.0.0-dev.1
 

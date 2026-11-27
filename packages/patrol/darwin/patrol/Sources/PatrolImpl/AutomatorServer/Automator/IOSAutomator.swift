@@ -154,11 +154,6 @@
       dx: CGFloat,
       dy: CGFloat
     ) throws {
-      var data = data
-      if dismissKeyboard {
-        data = "\(data)\n"
-      }
-
       var view = createLogMessage(element: "text field", from: selector)
       view += " in app \(bundleId)"
 
@@ -196,7 +191,8 @@
           throw PatrolError.viewNotExists(view)
         }
 
-        self.clearAndEnterText(data: data, element: element, dx: dx, dy: dy)
+        self.clearAndEnterText(
+          data: data, element: element, dismissKeyboard: dismissKeyboard, dx: dx, dy: dy)
       }
 
       // Prevent keyboard dismissal from happening too fast
@@ -212,11 +208,6 @@
       dx: CGFloat,
       dy: CGFloat
     ) throws {
-      var data = data
-      if dismissKeyboard {
-        data = "\(data)\n"
-      }
-
       try runAction("entering text \(format: data) by index \(index) in app \(bundleId)") {
         let app = try self.getApp(withBundleId: bundleId)
 
@@ -241,7 +232,8 @@
           throw PatrolError.viewNotExists("text field at index \(index) in app \(bundleId)")
         }
 
-        self.clearAndEnterText(data: data, element: element, dx: dx, dy: dy)
+        self.clearAndEnterText(
+          data: data, element: element, dismissKeyboard: dismissKeyboard, dx: dx, dy: dy)
       }
 
       // Prevent keyboard dismissal from happening too fast
@@ -955,7 +947,9 @@
     }
 
     // MARK: Private stuff
-    private func clearAndEnterText(data: String, element: XCUIElement, dx: CGFloat, dy: CGFloat) {
+    private func clearAndEnterText(
+      data: String, element: XCUIElement, dismissKeyboard: Bool, dx: CGFloat, dy: CGFloat
+    ) {
       let currentValue = element.value as? String
       var delete: String = ""
       if let value = currentValue {
@@ -966,7 +960,13 @@
       let coordinate = element.coordinate(withNormalizedOffset: CGVector(dx: dx, dy: dy))
       coordinate.tap()
 
-      element.typeText(delete + data)
+      element.typeText(delete + data + (dismissKeyboard ? "\n" : ""))
+
+      guard dismissKeyboard else { return }
+      // Multi-line fields insert the newline instead of dismissing the keyboard (#2081).
+      if element.exists, let value = element.value as? String, value.hasSuffix("\n") {
+        element.typeText(XCUIKeyboardKey.delete.rawValue)
+      }
     }
 
     private func findKeyboardReturnKey(in keyboard: XCUIElement) -> XCUIElement? {
