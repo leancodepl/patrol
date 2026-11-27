@@ -53,7 +53,7 @@ class ProjectResolver {
     // Configured paths are pinned to the directory the server started in.
     // Resolving a project enters it, and a relative path read afterwards would
     // point somewhere else — or nowhere.
-    final start = _currentDirectory();
+    final start = _startDirectory = _currentDirectory();
     String? pin(String? value) => value == null || value.trim().isEmpty
         ? null
         : p.normalize(p.join(start, value));
@@ -69,6 +69,9 @@ class ProjectResolver {
   late final String? _projectRootOverride;
   late final String? _envProjectRoot;
   late final String? _envClaudeProjectDir;
+
+  /// The working directory the client started the server in.
+  late final String _startDirectory;
   final Map<String, String> _env;
   final String Function() _currentDirectory;
 
@@ -88,9 +91,8 @@ class ProjectResolver {
     String? requestedRoot,
     bool remember = true,
   }) async {
-    // A root resolved without a test file can be the wrong one — a repository
-    // root rather than the package inside it — so a test file that does not sit
-    // in it sends resolution round again.
+    // A root resolved without a test file can be a repository root above the
+    // package, so a test file that does not sit in it is resolved again.
     if (_cached case final cached?
         when requestedRoot == null &&
             (testFile == null || _ownsTestFile(cached, testFile))) {
@@ -120,7 +122,7 @@ class ProjectResolver {
       attempts,
     );
     // 4. Working directory the client launched us in.
-    hit ??= _trySignal('cwd', _currentDirectory(), testFile, attempts);
+    hit ??= _trySignal('cwd', _startDirectory, testFile, attempts);
 
     if (hit == null) {
       throw ProjectResolutionException(attempts);
@@ -158,15 +160,15 @@ class ProjectResolver {
     ?_envProjectRoot,
     ?_envClaudeProjectDir,
     ...?_lastRoots,
-    _currentDirectory(),
+    _startDirectory,
   ];
 
   /// Records [dir] as a tried signal and returns the project it leads to, or
   /// `null` if [dir] is empty or leads nowhere.
   ///
   /// [testFile] resolved against [dir] is preferred: a repository root can carry
-  /// a workspace `pubspec.yaml`, which walking up would take for the project,
-  /// while the test file sits in the package that owns it.
+  /// a workspace `pubspec.yaml`, and the test file sits in the package that owns
+  /// it.
   String? _trySignal(
     String label,
     String? dir,

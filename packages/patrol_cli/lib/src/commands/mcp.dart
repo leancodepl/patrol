@@ -57,13 +57,7 @@ const sessionStatusSchema = JsonObject(
     'output': JsonString(),
     'summary': JsonString(),
   },
-  required: [
-    'isDevelopRunning',
-    'projectRoot',
-    'testState',
-    'output',
-    'summary',
-  ],
+  required: ['isDevelopRunning', 'testState', 'output', 'summary'],
 );
 
 const _instructions =
@@ -203,8 +197,8 @@ class McpCommand extends PatrolCommand {
   /// The workspace directories the client advertises, or none when it does not
   /// support `roots/list`.
   ///
-  /// A client that never answers is treated as one with no roots: the request
-  /// otherwise blocks the tool call that is waiting for a project.
+  /// A client that never answers counts as one with no roots, since the tool
+  /// call waiting for a project waits on this request.
   Future<List<String>> _clientRoots() async {
     final server = _server;
     if (server == null) {
@@ -401,9 +395,8 @@ class McpCommand extends PatrolCommand {
   /// resolution failure as the tool's error with the signals that were tried.
   ///
   /// [testFile] and [requestedRoot] are what the call itself said about the
-  /// project. A server started outside any Dart package has nothing else to go
-  /// on, so resolving without them would fail here before the call's own signals
-  /// were ever read.
+  /// project; for a server started outside any Dart package they are the only
+  /// signals.
   Future<CallToolResult> _withProject(
     PatrolSession session,
     Future<CallToolResult> Function() body, {
@@ -424,8 +417,7 @@ class McpCommand extends PatrolCommand {
         );
       }
       // Only a run needs a project. A tool that reports on the session, or lists
-      // what is attached, still has an answer — and refusing it would leave an
-      // agent nothing to call on a server that has not been told where to work.
+      // what is attached, answers without one.
       session.noteProjectUnresolved('$err');
     }
     return body();
@@ -473,10 +465,12 @@ class McpCommand extends PatrolCommand {
   Future<CallToolResult> _devices(PatrolSession session) async {
     // Resolve Flutter the same way `run` does (FVM autodetect,
     // `PATROL_FLUTTER_COMMAND` escape hatch) so device enumeration works in FVM
-    // projects without a global `flutter` on PATH.
-    final flutterCommand = FlutterCommandResolver()
-        .resolve(projectRoot: session.flutterProjectPath)
-        .command;
+    // projects without a global `flutter` on PATH. A server that has no project
+    // yet lists devices with the default `flutter`.
+    final projectRoot = session.projectRoot;
+    final flutterCommand = projectRoot == null
+        ? null
+        : FlutterCommandResolver().resolve(projectRoot: projectRoot).command;
     try {
       final attached = await _deviceFinder.getAttachedDevices(
         flutterCommand: flutterCommand ?? const FlutterCommand('flutter'),
@@ -539,8 +533,7 @@ class McpCommand extends PatrolCommand {
 
     final exitSignal = _ExitSignal();
     await Future.any([exitSignal.wait, closed.future]);
-    // ProcessSignal.watch() keeps the VM alive; the EOF path skips
-    // _handleSignal, so cancel here.
+    // ProcessSignal.watch() keeps the VM alive until it is cancelled.
     exitSignal.cancel();
     _logger.info('Shutting down (signal or client disconnect)');
 

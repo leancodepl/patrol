@@ -162,10 +162,17 @@ class DeviceFinder {
     process.disposedByTree(_disposeScope, onKill: () => flutterKilled = true);
 
     var output = '';
+    final errors = <String>[];
     process.listenStdOut((line) => output += line).disposedBy(_disposeScope);
+    process.listenStdErr(errors.add).disposedBy(_disposeScope);
     final exitCode = await process.exitCode;
     if (exitCode != 0) {
-      throwToolExit('`$flutterCommand devices` exited with code $exitCode');
+      throwToolExit(
+        [
+          '`$flutterCommand devices` exited with code $exitCode',
+          ...errors,
+        ].join('\n'),
+      );
     } else if (flutterKilled) {
       throwToolInterrupted('`$flutterCommand devices` was interrupted');
     } else {

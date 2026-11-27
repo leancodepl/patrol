@@ -146,8 +146,6 @@ void main() {
     });
 
     test('asks the process manager which executables exist', () {
-      // The resolver used to walk PATH itself; `canRun` knows how executables
-      // are named on each platform.
       final processManager = MockProcessManager();
       when(() => processManager.canRun('fvm')).thenReturn(true);
       when(() => processManager.canRun('flutter')).thenReturn(false);

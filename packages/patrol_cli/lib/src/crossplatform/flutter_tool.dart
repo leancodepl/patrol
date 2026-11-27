@@ -26,9 +26,8 @@ class FlutterTool {
     _disposeScope.disposedBy(parentDisposeScope);
   }
 
-  /// The project `flutter attach` and `flutter logs` run in. Without it they
-  /// read the process's working directory, which one process serving several
-  /// projects cannot keep pointing at the right one.
+  /// The project `flutter attach` and `flutter logs` run in; the process's
+  /// working directory when null.
   final String? projectRoot;
 
   final Stream<List<int>> _stdin;

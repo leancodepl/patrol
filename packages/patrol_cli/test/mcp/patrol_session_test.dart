@@ -560,6 +560,10 @@ packages:
     expect(status.error, 'Expected: true\nActual: false');
   });
 
+  test('a status without a project still fits the schema', () {
+    expect(sessionStatusSchema.required, isNot(contains('projectRoot')));
+  });
+
   test('the status schema lists every key a status can carry', () {
     const status = PatrolStatus(
       isDevelopRunning: true,

@@ -193,9 +193,8 @@ Future<void> main(List<String> args) async {
 /// Starts a second server outside any Dart package and asks it to run a test in
 /// a project named on the call.
 ///
-/// The run is refused for its device — the point is which refusal: a server that
-/// resolves the project before reading the call has nothing but its working
-/// directory to go on, and answers that it cannot find a project at all.
+/// The run is refused for its device, which shows the project from the call was
+/// found.
 Future<void> _checkProjectFromCall({required String serverDart}) async {
   final outside = Directory.systemTemp.createTempSync('patrol_smoke_outside');
   final project = Directory.systemTemp.createTempSync('patrol_smoke_project');

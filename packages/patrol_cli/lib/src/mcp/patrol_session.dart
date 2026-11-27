@@ -279,11 +279,13 @@ final class PatrolSession {
   String get flutterProjectPath =>
       _projectRoot ?? (throw StateError('Project root not resolved yet'));
 
+  /// The project this session drives, or null before one is resolved.
+  String? get projectRoot => _projectRoot;
+
   /// Enters the resolved project.
   ///
-  /// `flutter attach` and `flutter logs` are told which project they belong to,
-  /// but most of the build path still spawns without a working directory and
-  /// reads the process's. Injectable so a test does not move the test runner.
+  /// The build reads the process's working directory. Injectable so a test does
+  /// not move the test runner.
   final void Function(String root) _enterProjectDirectory;
 
   /// Resolves the project this call is about.
@@ -340,13 +342,17 @@ final class PatrolSession {
     if (requestedRoot == null) {
       return null;
     }
-    // Asking only to name the project in the refusal: remembering it here would
-    // send the next call that names no project to the one just refused.
-    final requested = await _resolveProjectRoot(
-      testFile: testFile,
-      requestedRoot: requestedRoot,
-      remember: false,
-    );
+    // Resolved only to name the project in the refusal, so it is not remembered.
+    final ResolvedProject requested;
+    try {
+      requested = await _resolveProjectRoot(
+        testFile: testFile,
+        requestedRoot: requestedRoot,
+        remember: false,
+      );
+    } on ProjectResolutionException catch (err) {
+      return '$err';
+    }
     if (_sameDirectory(requested.root, flutterProjectPath)) {
       return null;
     }
@@ -393,8 +399,6 @@ final class PatrolSession {
 
   static const _maxOutputLines = 200;
 
-  /// Matches patrol_cli's own default; only used when a session has not
-  /// reported its port yet.
   /// How long a hot restart waits for `flutter attach` to become ready. Long
   /// enough for a slow iOS attach and shorter than the caller's run timeout, so
   /// an attach that never finishes is reported while the caller still waits.
@@ -652,8 +656,7 @@ final class PatrolSession {
     // a completer, because the server outlives every session it runs.
     final exitCompleter = Completer<void>();
     // A session's callbacks answer for that session only: the previous one's
-    // backend can report its exit while this one is already running, and the
-    // session would take it for its own app dying.
+    // backend can report its exit while this one is already running.
     final token = Object();
     _liveSession = token;
     final developService = _createDevelopService(
@@ -763,9 +766,8 @@ final class PatrolSession {
 
   /// Waits for a teardown that is under way, if any.
   ///
-  /// The `adb forward` a session removes on its way out would otherwise be
-  /// removed after the next session has installed its own, leaving the new
-  /// session's automator unreachable on a port nothing forwards.
+  /// A session removes its `adb forward` on its way out, so the next session
+  /// installs its own only after that.
   Future<void> awaitTeardown() async {
     final deadline = Stopwatch()..start();
     for (final pending in [?_sessionEnded, ?_cleanupFuture]) {

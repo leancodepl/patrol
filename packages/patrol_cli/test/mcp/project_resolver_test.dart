@@ -40,6 +40,20 @@ void main() {
       currentDirectory: () => cwd ?? tmp.path,
     );
 
+    test('reads the working directory the server started in', () async {
+      final started = project('started');
+      var cwd = started;
+      final r = ProjectResolver(
+        readRoots: () async => const [],
+        environment: const {},
+        currentDirectory: () => cwd,
+      );
+      // Resolving a project enters it.
+      cwd = project('entered');
+
+      expect(await r.resolve(remember: false).root, started);
+    });
+
     /// Writes `<dir>/<relative>` and every directory above it.
     void testFile(String dir, String relative) {
       final file = io.File(p.join(dir, relative));

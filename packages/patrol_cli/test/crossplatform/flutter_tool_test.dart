@@ -41,8 +41,6 @@ void main() {
 
   group('FlutterTool', () {
     test('attach runs in the project, not in the process directory', () async {
-      // One process serving several projects cannot keep its working directory
-      // pointing at the right one.
       final process = MockProcess();
       when(
         () => process.stdout,
@@ -630,8 +628,7 @@ void main() {
   });
 }
 
-/// Answers `start` whatever working directory it is given: attach and logs name
-/// the project, and a stub that ignores the argument matches neither.
+/// Answers `start` whatever working directory it is given.
 void _stubStart(MockProcessManager processManager, MockProcess process) {
   when(() => process.exitCode).thenAnswer((_) => Completer<int>().future);
   when(
