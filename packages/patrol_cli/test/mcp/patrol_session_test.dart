@@ -1140,7 +1140,8 @@ packages:
 
     expect(
       sessionStatusSchema.properties!.keys.toSet(),
-      status.toMap().keys.toSet(),
+      // The status tools add the suite's own status next to the session's.
+      {...status.toMap().keys, 'suite'},
     );
   });
 
