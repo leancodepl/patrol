@@ -12,6 +12,10 @@ on:
       - 'docs_app/**'
       - '.github/workflows/docs-preview.yaml'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   Deploy-Preview:
     runs-on: ubuntu-latest

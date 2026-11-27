@@ -136,15 +136,30 @@ jobs:
           run-id: ${{ needs.plan.outputs.build_run_id }}
           github-token: ${{ github.token }}
 
+      # Old layout ships app-debug-androidTest.apk, the :patrolTest layout ships patrolTest-debug.apk.
       - name: Check the downloaded files
+        id: apks
         run: |
           cd "$RUNNER_TEMP/apks"
-          for f in app-debug.apk patrolTest-debug.apk; do
-            if [ ! -f "$f" ] || [ -L "$f" ]; then
-              echo "::error::Missing or unexpected $f in the artifact"
+          if [ ! -f app-debug.apk ] || [ -L app-debug.apk ]; then
+            echo "::error::Missing or unexpected app-debug.apk in the artifact"
+            exit 1
+          fi
+          found=()
+          for f in app-debug-androidTest.apk patrolTest-debug.apk; do
+            if [ -L "$f" ]; then
+              echo "::error::Unexpected symlink $f in the artifact"
               exit 1
             fi
+            if [ -f "$f" ]; then
+              found+=("$f")
+            fi
           done
+          if [ "${#found[@]}" -ne 1 ]; then
+            echo "::error::Expected exactly one test APK (app-debug-androidTest.apk or patrolTest-debug.apk), found ${#found[@]}"
+            exit 1
+          fi
+          echo "test_apk=${found[0]}" >> "$GITHUB_OUTPUT"
 
       - name: Install ew-cli
         run: |
@@ -168,6 +183,7 @@ jobs:
           SUITE: ${{ needs.plan.outputs.suite }}
           DEVICE: ${{ matrix.device }}
           LABEL: ${{ matrix.label }}
+          TEST_APK: ${{ steps.apks.outputs.test_apk }}
         run: |
           args=()
           if [ -n "$DEVICE" ]; then
@@ -177,7 +193,7 @@ jobs:
           set +e
           output="$(java -jar "$RUNNER_TEMP/ew-cli/ew-cli.jar" "emulatorwtf.yaml:$SUITE" \
             --app "$RUNNER_TEMP/apks/app-debug.apk" \
-            --test "$RUNNER_TEMP/apks/patrolTest-debug.apk" \
+            --test "$RUNNER_TEMP/apks/$TEST_APK" \
             "${args[@]}" \
             --display-name "Patrol example app $LABEL (${HEAD_SHA::7})" \
             --json)"

@@ -17,6 +17,9 @@
 - Add native screenshots on iOS, collected by `patrol test` from the `.xcresult` into
   `<test-directory>/screenshots`. Requires Xcode 16 or newer. See the
   [docs](https://patrol.leancode.co/cli-commands/test#on-ios). (#3271)
+- `patrol test-without-building` on Android now installs the `androidTestUtil` APKs (orchestrator,
+  test-services) from the last `patrol build android`, so tools that write through `TestStorage`,
+  such as allure-android, work on a fresh device. (#3427)
 
 ## 5.0.0-dev.1
 
