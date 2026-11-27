@@ -104,9 +104,10 @@ const defaultScrollDelta = 64.0;
 /// covers. 3 default steps stay under the default 250 px cache extent.
 const _stepsPerDragWithoutFling = 3.0;
 
-/// Longer than the 100 ms velocity tracking window, so a drag made with
+/// Longer than the 40 ms after which Flutter's VelocityTracker treats the
+/// pointer as stopped, so a drag made with
 /// [PatrolTesterConfig.dragWithoutFling] ends with zero velocity.
-const _holdBeforeRelease = Duration(milliseconds: 120);
+const _holdBeforeRelease = Duration(milliseconds: 50);
 
 /// Default maximum number of drags during scrolling.
 const defaultScrollMaxIteration = 15;
