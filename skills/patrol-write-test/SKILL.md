@@ -23,6 +23,7 @@ When working with Patrol tests:
 - Use `patrol-run({ "testFile": "patrol_test/your_test.dart" })` to run tests and wait for completion
 - If no session running: starts new session with specified test file
 - If session already running: automatically restarts current tests
+- A restart is a hot restart: app data and granted permissions stay from the previous run, so a test must not assume a fresh install. Reset the state the app persists (secure storage, local databases, shared preferences) in the helper that starts the app, before the app starts
 - Use `patrol-screenshot({ "platform": "android" })` or `patrol-screenshot({ "platform": "ios" })` to capture screenshots for debugging test failures
 - Use `patrol-quit({})` to quit the session gracefully
 - Use `patrol-status({})` to check current status and recent output
@@ -50,18 +51,22 @@ When working with Patrol tests:
 - Don't write try catch blocks unless absolutely necessary
 - After writing test check if it works by running it with MCP server, fix it if it fails
 - If test fails because element was not found, check if it need to be scrolled to in the app code and adjust the test if needed
+- On a screen with an animation that never ends (a spinner, a looping animation), every action waits out the settle timeout (10 seconds by default) and `$.pumpAndSettle` fails. Pass `settlePolicy: SettlePolicy.noSettle` to the actions on that screen instead of adding waits
 
 ## Assertion Rules
 
 - Don't write assertions after actions, but do write them at the end of the test
 - Prefer using `waitUntilVisible` as assertion at the end of the test
 - Use `expect()` for assertions only when `waitUntilVisible` is not enough
+- An assertion must be able to fail. Before asserting that something is not visible, assert something only the expected screen shows: an absence check also passes on the wrong screen
+- Don't assert a value the app already had before the test acted. Pick a value different from the starting one, or assert the starting value before the first action
 
 ## Native Dialog Handling
 
 - ALWAYS handle native dialogs that appear during the flow:
   - Handle dialogs immediately after the action that triggers them
   - For native permissions prefer `$.platform.mobile.grantPermissionWhenInUse` over `$.platform.mobile.tap`
+  - A permission stays granted across restarts of a running session, so check `$.platform.mobile.isPermissionDialogVisible()` before handling its dialog
 
 # Test Keys
 
