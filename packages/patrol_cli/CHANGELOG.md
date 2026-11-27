@@ -1,5 +1,7 @@
 ## Unreleased
 
+- `patrol develop` stops waiting for the app's uninstall after 30 s when a session ends without `q`,
+  for example when the device goes away. (#3370)
 - Fix the generated test bundle dropping the Dart entrypoint arguments passed by the native side of
   the app: `main` now takes them and passes them to tests as `$.entrypointArgs`. Needs a `patrol`
   release that includes this change. (#3366)
