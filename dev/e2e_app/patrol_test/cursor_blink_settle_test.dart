@@ -1,68 +1,32 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:e2e_app/cursor_blink_screen.dart';
+import 'package:e2e_app/keys.dart';
+import 'package:flutter/foundation.dart';
 
 import 'common.dart';
 
-class _TextFieldScreen extends StatefulWidget {
-  const _TextFieldScreen();
-
-  @override
-  State<_TextFieldScreen> createState() => _TextFieldScreenState();
-}
-
-class _TextFieldScreenState extends State<_TextFieldScreen> {
-  var _taps = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        body: SafeArea(
-          child: Column(
-            children: [
-              const TextField(key: Key('materialField')),
-              const CupertinoTextField(key: Key('cupertinoField')),
-              ElevatedButton(
-                key: const Key('counterButton'),
-                onPressed: () => setState(() => _taps++),
-                child: Text('taps: $_taps'),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// The animated cursor (iOS, CupertinoTextField) used to make these time out.
-const _config = PatrolTesterConfig(
-  printLogs: true,
-  settlePolicy: SettlePolicy.settle,
-  settleTimeout: Duration(seconds: 2),
-);
-
 Future<void> _tapWhileFocused(PatrolIntegrationTester $, Key field) async {
-  await $.pumpWidgetAndSettle(const _TextFieldScreen());
-
+  await $.pumpWidgetAndSettle(const CursorBlinkScreen());
   await $(field).tap();
-  await $(#counterButton).tap();
+
+  // A blinking cursor used to keep this settle busy for several seconds.
+  await $(K.cursorBlinkCounterButton).tap(
+    settlePolicy: SettlePolicy.settle,
+    settleTimeout: const Duration(seconds: 2),
+  );
 
   expect($('taps: 1'), findsOneWidget);
 }
 
 void main() {
-  patrolTest(
-    'settles while a Material TextField is focused',
-    config: _config,
-    ($) => _tapWhileFocused($, const Key('materialField')),
+  patrol(
+    'settles quickly while a Material TextField is focused',
+    ($) => _tapWhileFocused($, K.materialTextField),
     tags: ['android', 'emulator', 'ios', 'simulator'],
   );
 
-  patrolTest(
-    'settles while a CupertinoTextField is focused',
-    config: _config,
-    ($) => _tapWhileFocused($, const Key('cupertinoField')),
+  patrol(
+    'settles quickly while a CupertinoTextField is focused',
+    ($) => _tapWhileFocused($, K.cupertinoTextField),
     tags: ['android', 'emulator', 'ios', 'simulator'],
   );
 }

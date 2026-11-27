@@ -117,6 +117,11 @@ class Keys {
   // external app screen
   static const openIosSettingsButton = Key('openIosSettingsButton');
   static const externalAppStatusText = Key('externalAppStatusText');
+
+  // cursor blink screen
+  static const materialTextField = Key('materialTextField');
+  static const cupertinoTextField = Key('cupertinoTextField');
+  static const cursorBlinkCounterButton = Key('cursorBlinkCounterButton');
 }
 
 class AtFinderItemKey extends ValueKey<int> {
