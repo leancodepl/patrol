@@ -133,11 +133,17 @@ extension ProcessTreeDisposers on Process {
     });
   }
 
-  /// Kills this process together with any processes it spawned.
-  ///
-  /// Call it while the process runs: [kill] alone stops only a wrapper, and once
-  /// the wrapper is gone its PID may belong to an unrelated process.
+  /// Kills this process together with any processes it spawned, unless it has
+  /// already ended: its PID may belong to an unrelated process by then.
   Future<void> killTree() async {
+    // An exit code that is already there arrives before a zero timeout.
+    final ended = await exitCode
+        .then((_) => true)
+        .timeout(Duration.zero, onTimeout: () => false);
+    if (ended) {
+      return;
+    }
+
     if (!NativePlatform.current!.isWindows) {
       // Collected before anything dies; once the parent is gone its children
       // are reparented and `pgrep -P` no longer reports them.

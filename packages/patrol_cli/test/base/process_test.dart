@@ -2,8 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart' hide ProcessDisposed;
+import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:test/test.dart';
+
+import '../src/mocks.dart';
 
 /// Starts a process that stays alive until killed and keeps a child of its own -
 /// the shape of every wrapped process patrol starts (`cmd.exe /c`, `fvm`).
@@ -156,6 +159,19 @@ void main() {
   });
 
   group('killTree', () {
+    test('leaves a process that has ended alone', () async {
+      final process = MockProcess();
+      when(() => process.exitCode).thenAnswer((_) async => 0);
+      // No such process: a regression must not signal real ones.
+      when(() => process.pid).thenReturn(999999999);
+      when(process.kill).thenReturn(true);
+
+      await process.killTree();
+
+      verifyNever(process.kill);
+      verifyNever(() => process.pid);
+    });
+
     test('kills the processes that the process spawned', () async {
       final process = await _startSleeper();
       addTearDown(process.kill);
