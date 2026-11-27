@@ -10,6 +10,7 @@
   existing Android and iOS trees. Nodes are labelled by test id, DOM id or accessible label so the
   tree doesn't read as a wall of identical `flt-semantics` entries, and the details panel shows role,
   aria-label, test id, text, visibility and bounds.
+- Regenerate API contracts (adds `IOSTakeNativeScreenshotRequest`). (#3271)
 
 ## 0.4.1
 

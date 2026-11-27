@@ -279,6 +279,23 @@
       }
     }
 
+    // MARK: Screenshots
+    func takeNativeScreenshot(name: String) throws {
+      // `patrol develop` never drains the buffer, so captures would pile up.
+      if ProcessInfo.processInfo.environment["PATROL_DEVELOP"] == "1" {
+        return
+      }
+      runAction("taking native screenshot \(name)") {
+        let screenshot = XCUIScreen.main.screenshot()
+        // Prefixed so the CLI can tell Patrol screenshots apart from XCTest's
+        // own automatic attachments when it extracts them from the .xcresult.
+        PatrolScreenshotBuffer.sharedBuffer.add(
+          name: "patrol_\(name)",
+          screenshot: screenshot
+        )
+      }
+    }
+
     // MARK: Volume settings
     func pressVolumeUp() throws {
       #if targetEnvironment(simulator)
