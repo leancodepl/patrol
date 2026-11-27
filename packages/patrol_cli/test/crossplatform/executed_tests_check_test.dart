@@ -77,7 +77,7 @@ void main() {
         check.verify,
         _toolExit(
           allOf(
-            contains('2 test(s) should have run, but only 0 did'),
+            contains('3 test(s) should have run, but only 0 did'),
             contains('MainActivityTest.java'),
           ),
         ),
@@ -112,6 +112,16 @@ void main() {
       check.onRunnerOutput('Executed 3 tests, with 0 failures (0 unexpected)');
 
       expect(check.verify, returnsNormally);
+    });
+
+    test('compares the runner count with skipped tests included', () {
+      // 3 selected, 1 of them skipped: the runner counts the skipped one too.
+      check.onRunnerOutput('OK (2 tests)');
+
+      expect(
+        check.verify,
+        _toolExit(contains('3 test(s) should have run, but only 2 did')),
+      );
     });
 
     test('reads the counts of am instrument and Gradle', () {

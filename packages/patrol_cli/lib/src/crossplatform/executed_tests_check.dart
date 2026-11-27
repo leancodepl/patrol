@@ -9,8 +9,8 @@ import 'package:patrol_log/patrol_log.dart';
 ///
 /// Native runners report success when no test ran, so the manifest is the
 /// only list of what should have run. A test counts as run when the app logged
-/// its result, or when the native runner reports at least that many tests
-/// (device logs can arrive late).
+/// its result. The native runner's count stands in only when the app logged no
+/// result at all, because device logs can be lost.
 class ExecutedTestsCheck {
   ExecutedTestsCheck(this.expected, {this.selectedCount});
 
@@ -137,14 +137,22 @@ class ExecutedTestsCheck {
       );
     }
 
+    if (expected.isEmpty) {
+      return;
+    }
+
     final executed = executedCount;
-    if (executed >= expected.length) {
+    // The runner count includes skipped tests, so compare it with all selected.
+    final required = _finished.isEmpty
+        ? selectedCount ?? expected.length
+        : expected.length;
+    if (executed >= required) {
       return;
     }
 
     final missingNames = missing;
     final buffer = StringBuffer(
-      '${expected.length} test(s) should have run, but only $executed did.',
+      '$required test(s) should have run, but only $executed did.',
     );
     if (missingNames.isNotEmpty) {
       const shown = 20;
