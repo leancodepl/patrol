@@ -8,10 +8,11 @@
 - Fix `PatrolFinder.matches()` throwing a `TypeError` on chained finders (`$(#a).$(#b)`) and on
   `first`, `last` and `at()`. Simple finders behave as before. (#3433)
 - **Breaking:** `PatrolTester.pumpWidget()` takes `duration` and `phase` as named parameters, like
-  `pumpWidgetAndSettle()`, and gets `wrapWithView` from `WidgetTester.pumpWidget()`. (#3433)
+  `pumpWidgetAndSettle()`, and gets `wrapWithView` from `WidgetTester.pumpWidget()`. Callers,
+  overrides and mocks must pass them by name; overrides must also take `wrapWithView`. (#3433)
 - **Breaking:** `PatrolTester.pumpWidgetAndSettle()` returns `Future<int>`, the number of frames
   pumped while settling, and gets `wrapWithView`. Overrides, implementations and mocks of it must
-  return `Future<int>`. (#3433)
+  return `Future<int>`, and overrides must take `wrapWithView`. (#3433)
 
 ## 3.7.1
 

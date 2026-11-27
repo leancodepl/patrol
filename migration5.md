@@ -133,19 +133,27 @@ instead of `Future<void>`: the number of frames it pumped, the same value
 
 **Packages:** `patrol_finders`, `patrol`
 
-Tests that only find, tap and pump with one argument compile unchanged.
+`PatrolFinder` extends `Finder` instead of implementing `MatchFinder`.
+`PatrolTester.pumpWidget()` takes `duration` and `phase` as named parameters
+instead of positional ones, and both `pumpWidget()` and `pumpWidgetAndSettle()`
+take `wrapWithView`, like `WidgetTester.pumpWidget()`.
+`pumpWidgetAndSettle()` returns `Future<int>`, the number of frames pumped while
+settling. Tests that only find, tap and pump with one argument compile
+unchanged.
 
 **What to do:**
 
 - **`$.pumpWidget(app, duration)` or `$.pumpWidget(app, duration, phase)`:**
   name the arguments: `$.pumpWidget(app, duration: duration, phase: phase)`.
-  `pumpWidget()` also takes `wrapWithView`, like `WidgetTester.pumpWidget()`.
-- **A `PatrolFinder` stored as `MatchFinder`:** use `Finder`. `PatrolFinder`
-  now extends `Finder` and is no longer a `MatchFinder`; `$(...).matches()`
+- **A `PatrolFinder` stored as `MatchFinder`:** use `Finder`. `$(...).matches()`
   still works.
-- **Overrides, implementations or mocks of `pumpWidgetAndSettle()`:** return
-  `Future<int>`, the number of frames pumped while settling, as for
-  `pumpAndSettle()` above.
+- **A subclass or implementation of `PatrolTester` that overrides
+  `pumpWidget()` or `pumpWidgetAndSettle()`:** take `duration` and `phase` as
+  named parameters, add `bool wrapWithView = true`, and return `Future<int>`
+  from `pumpWidgetAndSettle()`, e.g. the value of `super.pumpWidgetAndSettle()`.
+- **A mock that stubs them:** match `duration` and `phase` by name, e.g.
+  `mock.pumpWidget(any(), duration: any(named: 'duration'))`, and answer
+  `pumpWidgetAndSettle()` with an `int`, e.g. `thenAnswer((_) async => 1)`.
 
 ## Build-time test discovery is the default
 

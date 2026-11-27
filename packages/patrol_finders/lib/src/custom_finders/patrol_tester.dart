@@ -317,7 +317,7 @@ class PatrolTester {
     bool wrapWithView = true,
     Duration? timeout,
   }) async {
-    await tester.pumpWidget(
+    await pumpWidget(
       widget,
       duration: duration,
       phase: phase,
