@@ -131,7 +131,12 @@ Future<void> runAppService(PatrolAppService service) async {
 /// the generated code can access it.
 class PatrolAppService {
   /// Creates a new [PatrolAppService].
-  PatrolAppService({required this.topLevelDartTestGroup});
+  PatrolAppService({
+    required this.topLevelDartTestGroup,
+    // Unused on web, which has no build-time discovery; present for API parity.
+    // ignore: avoid_unused_constructor_parameters
+    List<String>? manifestTests,
+  });
 
   /// Port the server will use to listen for incoming HTTP traffic.
   ///

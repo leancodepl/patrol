@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:file/file.dart';
+import 'package:patrol_cli/src/devices.dart';
 
 /// A single discovered Dart test, flattened to the exact name the native runner
 /// uses to request its execution.
@@ -47,14 +48,24 @@ class TestManifest {
   factory TestManifest.parse(String jsonString) =>
       TestManifest.fromJson(jsonDecode(jsonString) as Map<String, dynamic>);
 
-  /// Loads the build-time manifest from its conventional path
-  /// (`build/patrol/patrol_test_manifest.json`) under [rootDirectory], or
-  /// returns `null` when it hasn't been generated yet.
-  static TestManifest? loadFromBuild(Directory rootDirectory) {
-    final file = rootDirectory
+  /// The manifest of the last build for [platform], kept apart from the
+  /// shared `build/patrol/patrol_test_manifest.json` because discovery differs
+  /// per platform.
+  static File buildFile(Directory rootDirectory, TargetPlatform platform) {
+    return rootDirectory
         .childDirectory('build')
         .childDirectory('patrol')
+        .childDirectory(platform.name.toLowerCase())
         .childFile('patrol_test_manifest.json');
+  }
+
+  /// Loads the manifest of the last build for [platform] under
+  /// [rootDirectory], or returns `null` when it hasn't been generated yet.
+  static TestManifest? loadFromBuild(
+    Directory rootDirectory, {
+    required TargetPlatform platform,
+  }) {
+    final file = buildFile(rootDirectory, platform);
     if (!file.existsSync()) {
       return null;
     }

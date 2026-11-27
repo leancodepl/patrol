@@ -138,4 +138,43 @@ void main() {
       );
     });
   });
+
+  group('PatrolAppService with a build-time manifest', () {
+    final tests = _group('', [
+      _group('example_test', [_test('everywhere'), _test('android only')]),
+    ]);
+
+    test('fails every test when the manifest misses one', () async {
+      final service = PatrolAppService(
+        topLevelDartTestGroup: tests,
+        manifestTests: ['example_test everywhere'],
+      );
+
+      final response = await service.runDartTest(
+        const RunDartTestRequest(name: 'example_test everywhere'),
+      );
+
+      expect(response.result, RunDartTestResponseResult.failure);
+      expect(response.details, contains('example_test android only'));
+      expect(
+        response.details,
+        isNot(contains('\u2022 example_test everywhere')),
+      );
+    });
+
+    test('runs tests when the manifest lists all of them', () async {
+      final service = PatrolAppService(
+        topLevelDartTestGroup: tests,
+        manifestTests: ['example_test everywhere', 'example_test android only'],
+      );
+
+      final response = await _runCycle(
+        service,
+        'example_test everywhere',
+        passed: true,
+      );
+
+      expect(response.result, RunDartTestResponseResult.success);
+    });
+  });
 }

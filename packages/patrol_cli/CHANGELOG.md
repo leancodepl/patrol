@@ -64,6 +64,10 @@
     discovery with a warning that shows the lines to add (an explicit opt-in fails instead). The removed
     `PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN`/`_END` macros are reported with the
     replacement. Requires `patrol` 5.0.
+  - With build-time discovery, runs in which tests didn't run fail instead of passing with
+    `Total: 0`. A missing Android Patrol test class (`MainActivityTest.java`) stops the build, a run
+    that executed fewer tests than discovered fails and lists them, and the app fails when it
+    registers a test that discovery didn't find. Requires `patrol` 5.0. See `migration5.md`. (#3425)
 - Show why build-time discovery failed (the failing part of the host `flutter test` output) without
   `--verbose`.
 

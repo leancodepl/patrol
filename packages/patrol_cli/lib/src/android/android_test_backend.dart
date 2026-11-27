@@ -13,6 +13,7 @@ import 'package:patrol_cli/src/base/extensions/completer.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
+import 'package:patrol_cli/src/crossplatform/executed_tests_check.dart';
 import 'package:patrol_cli/src/crossplatform/test_manifest.dart';
 import 'package:patrol_cli/src/crossplatform/test_manifest_generator.dart';
 import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
@@ -95,18 +96,14 @@ class AndroidTestBackend {
           manifestPath: manifestPath,
           androidDir: androidDir,
         );
-        if (result != null) {
-          _logger.info(
-            'Generated ${result.testCount} static JUnit test method(s) in '
-            '${result.fullyQualifiedClassNames.length} class(es) → '
-            '${result.directoryPath}',
-          );
-        } else {
-          _logger.warn(
-            'Could not locate the androidTest host class; falling back to '
-            'runtime test discovery',
-          );
+        if (result == null) {
+          throwToolExit(missingAndroidHostTestMessage);
         }
+        _logger.info(
+          'Generated ${result.testCount} static JUnit test method(s) in '
+          '${result.fullyQualifiedClassNames.length} class(es) → '
+          '${result.directoryPath}',
+        );
       }
 
       // :app:assembleDebug
@@ -405,6 +402,13 @@ class AndroidTestBackend {
     bool pullScreenshots = false,
     String? screenshotsOutputDir,
   }) async {
+    final executedTestsCheck = ExecutedTestsCheck.forRun(
+      _rootDirectory,
+      _logger,
+      platform: TargetPlatform.android,
+      emitTestManifest: options.emitTestManifest,
+      interruptible: interruptible,
+    );
     await _disposeScope.run((scope) async {
       // Create video recording manager if enabled
       AndroidVideoRecordingManager? videoRecordingManager;
@@ -448,7 +452,9 @@ class AndroidTestBackend {
               hideTestSteps: hideTestSteps,
               clearTestSteps: clearTestSteps,
               onLogEntry: composeLogEntryCallback(
-                onLogEntry: onLogEntry,
+                onLogEntry:
+                    executedTestsCheck?.wrapOnLogEntry(onLogEntry) ??
+                    onLogEntry,
                 videoRecordingManager: videoRecordingManager,
               ),
             )
@@ -495,7 +501,12 @@ class AndroidTestBackend {
               workingDirectory: _rootDirectory.childDirectory('android').path,
             )
             ..disposedByTree(scope, grace: _testRunExitGrace);
-      process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
+      process
+          .listenStdOut((l) {
+            executedTestsCheck?.onRunnerOutput(l);
+            _logger.detail('\t: $l');
+          })
+          .disposedBy(scope);
       process
           .listenStdErr((l) {
             const prefix = 'There were failing tests. ';
@@ -532,6 +543,7 @@ class AndroidTestBackend {
       }
 
       if (exitCode == 0) {
+        executedTestsCheck?.verifyTask(task, subject);
         task.complete('Completed executing $subject');
       } else if (exitCode != 0 && interruptible) {
         task.complete('App shut down on request');
@@ -782,9 +794,12 @@ class AndroidTestBackend {
       );
     }
 
-    final generatedClassNames = AndroidTestCodegen(
-      _rootDirectory.fileSystem,
-    ).findGeneratedClassNames(_rootDirectory.childDirectory('android'));
+    final codegen = AndroidTestCodegen(_rootDirectory.fileSystem);
+    final androidDir = _rootDirectory.childDirectory('android');
+    if (!codegen.hasHostTest(androidDir)) {
+      throwToolExit(missingAndroidHostTestMessage);
+    }
+    final generatedClassNames = codegen.findGeneratedClassNames(androidDir);
     if (generatedClassNames.isEmpty) {
       throwToolExit(
         'No generated test class found. Run `patrol build android` without '
@@ -793,6 +808,13 @@ class AndroidTestBackend {
     }
 
     final classArg = _resolveClassArg(generatedClassNames, onlyTests);
+    final executedTestsCheck = ExecutedTestsCheck.forRun(
+      _rootDirectory,
+      _logger,
+      platform: TargetPlatform.android,
+      emitTestManifest: true,
+      onlyTests: onlyTests,
+    );
 
     // `patrol build android` only ASSEMBLES the app + androidTest APKs; it does
     // not install them. Install both now so a clean device works with the
@@ -831,7 +853,8 @@ class AndroidTestBackend {
               showFlutterLogs: showFlutterLogs,
               hideTestSteps: hideTestSteps,
               clearTestSteps: clearTestSteps,
-              onLogEntry: onLogEntry,
+              onLogEntry:
+                  executedTestsCheck?.wrapOnLogEntry(onLogEntry) ?? onLogEntry,
             )
             ..listen()
             ..startTimer();
@@ -857,6 +880,7 @@ class AndroidTestBackend {
                 l.contains('Process crashed')) {
               failed = true;
             }
+            executedTestsCheck?.onRunnerOutput(l);
             _logger.detail('\t: $l');
           })
           .disposedBy(scope);
@@ -868,6 +892,7 @@ class AndroidTestBackend {
       _logger.info(patrolLogReader.summary);
 
       if (exitCode == 0 && !failed) {
+        executedTestsCheck?.verifyTask(task, subject);
         task.complete('Completed executing $subject');
       } else {
         const cause = 'am instrument reported failing tests';
@@ -893,7 +918,10 @@ class AndroidTestBackend {
       0,
       generatedClassNames.first.lastIndexOf('.'),
     );
-    final manifest = TestManifest.loadFromBuild(_rootDirectory);
+    final manifest = TestManifest.loadFromBuild(
+      _rootDirectory,
+      platform: TargetPlatform.android,
+    );
     if (manifest == null) {
       throwToolExit(
         'No build-time test manifest found. Run `patrol build android` '
