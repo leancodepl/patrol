@@ -425,7 +425,7 @@ void main() {
       expect(warned, contains('Hot Restart is not available'));
       expect(warned, contains('exited with code 64'));
       expect(warned, isNot(contains('not attached to the app yet')));
-      expect(warned, isNot(contains('Could not find an option')));
+      expect(warned, contains('Could not find an option'));
     });
 
     test('logs survives stdout arriving after the process exits', () async {

@@ -62,8 +62,9 @@ class FlutterTool {
   /// [onFailed] fires instead when the restart is rejected (compile error);
   /// for a request that is sent, exactly one of the two fires, at most once.
   void hotRestart({void Function()? onCompleted, void Function()? onFailed}) {
-    if (_attachExitCode case final code?) {
-      _logger.warn(_attachUnavailable(code));
+    // Repeats the stderr tail: a restart comes long after the exit scrolled by.
+    if (_attachFailure case final failure?) {
+      _logger.warn(failure);
       return;
     }
     _onRestartCompleted = onCompleted;
@@ -247,8 +248,8 @@ class FlutterTool {
             final char = String.fromCharCode(event.first);
             if (char == 'r' || char == 'R') {
               if (!_hotRestartActive) {
-                if (_attachExitCode case final code?) {
-                  _logger.warn(_attachUnavailable(code));
+                if (_attachFailure case final failure?) {
+                  _logger.warn(failure);
                   return;
                 }
                 _logger.warn(
