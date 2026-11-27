@@ -307,8 +307,15 @@ Future<void> _checkProjectFromCall({required String serverDart}) async {
       stderrBuffer,
     ),
   );
-  outside.deleteSync(recursive: true);
-  project.deleteSync(recursive: true);
+  // On Windows a process started inside a directory (the adb server
+  // `flutter devices` starts) keeps it from being deleted.
+  for (final dir in [outside, project]) {
+    try {
+      dir.deleteSync(recursive: true);
+    } on FileSystemException catch (err) {
+      stdout.writeln('[smoke] could not remove ${dir.path}: ${err.osError}');
+    }
+  }
   stdout.writeln(
     '[smoke] project OK — devices answers before a project resolves, and a '
     'run reaches the project it names',

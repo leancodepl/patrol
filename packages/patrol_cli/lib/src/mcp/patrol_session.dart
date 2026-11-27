@@ -463,6 +463,10 @@ final class PatrolSession {
   final _outputs = <String>[];
   final _errorDetails = <String>[];
 
+  static const _notUpYet =
+      'The app has not come up yet (it may still be building, installing or '
+      'launching).';
+
   /// How long a run may say nothing before the quiet itself is reported.
   static const _quietBeforeStalled = Duration(minutes: 3);
 
@@ -1242,7 +1246,7 @@ final class PatrolSession {
       return getStatus(
         overrideWarning: [
           'Run timed out, but the test is still running in the background.',
-          if (!_appUp) 'The app is still building.',
+          if (!_appUp) _notUpYet,
           ?stalled,
           'Call status to check progress, or quit to stop it.',
         ].join(' '),

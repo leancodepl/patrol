@@ -47,8 +47,8 @@ const sessionStatusSchema = JsonObject(
     'quietForSeconds': JsonInteger(
       description:
           'How long the running session has heard nothing from the device '
-          'since the app came up. Absent while the app is still building and '
-          'when no run is in progress.',
+          'since the app came up. Absent until the app has come up and when '
+          'no run is in progress.',
     ),
     'lastTestEntry': JsonString(
       description: 'The last test the session saw start, pass or fail.',
