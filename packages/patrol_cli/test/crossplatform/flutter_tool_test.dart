@@ -332,7 +332,7 @@ void main() {
       expect(reported, contains('Could not find an option named "--flavor".'));
     });
 
-    test('attachFailed carries why attach exited before attaching', () async {
+    test('attachFailure carries why attach exited before attaching', () async {
       stubProcess(
         stderr: ['Could not find an option named "--flavor".'],
         exitCode: Future.value(64),
@@ -347,38 +347,31 @@ void main() {
         openBrowser: false,
       );
 
-      final reason = await flutterTool.attachFailed.timeout(
-        const Duration(seconds: 1),
-      );
+      final reason = flutterTool.attachFailure;
       expect(reason, contains('exited with code 64'));
       expect(reason, contains('Could not find an option named "--flavor".'));
     });
 
-    test(
-      'attachFailed stays pending when attach exits once attached',
-      () async {
-        final exited = Completer<int>();
-        stubProcess(
-          stdout: ['Flutter run key commands.'],
-          exitCode: exited.future,
-        );
+    test('attachFailure stays null when attach exits once attached', () async {
+      final exited = Completer<int>();
+      stubProcess(
+        stdout: ['Flutter run key commands.'],
+        exitCode: exited.future,
+      );
 
-        await flutterTool.attach(
-          flutterCommand: flutterCommand,
-          deviceId: 'testDeviceId',
-          target: 'target',
-          appId: 'appId',
-          dartDefines: {},
-          openBrowser: false,
-        );
-        exited.complete(0);
+      await flutterTool.attach(
+        flutterCommand: flutterCommand,
+        deviceId: 'testDeviceId',
+        target: 'target',
+        appId: 'appId',
+        dartDefines: {},
+        openBrowser: false,
+      );
+      exited.complete(0);
 
-        var failed = false;
-        unawaited(flutterTool.attachFailed.then((_) => failed = true));
-        await Future<void>.delayed(const Duration(milliseconds: 1200));
-        expect(failed, isFalse);
-      },
-    );
+      await Future<void>.delayed(const Duration(milliseconds: 1200));
+      expect(flutterTool.attachFailure, isNull);
+    });
 
     test('logs returns and reports why when the process exits', () async {
       stubProcess(
