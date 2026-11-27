@@ -1239,10 +1239,10 @@ void main() {
         ($) async {
           await $.pumpWidget(fadingApp());
 
-          await $.tester.tap(find.text('toggle'));
+          await $('toggle').tap(settlePolicy: SettlePolicy.noSettle);
           final patrolCount = await $.pumpAndSettle();
 
-          await $.tester.tap(find.text('toggle'));
+          await $('toggle').tap(settlePolicy: SettlePolicy.noSettle);
           final flutterCount = await $.tester.pumpAndSettle();
 
           expect(patrolCount, greaterThan(1));
@@ -1253,10 +1253,10 @@ void main() {
       patrolWidgetTest('pumps fewer frames with a longer duration', ($) async {
         await $.pumpWidget(fadingApp());
 
-        await $.tester.tap(find.text('toggle'));
+        await $('toggle').tap(settlePolicy: SettlePolicy.noSettle);
         final shortCount = await $.pumpAndSettle();
 
-        await $.tester.tap(find.text('toggle'));
+        await $('toggle').tap(settlePolicy: SettlePolicy.noSettle);
         final longCount = await $.pumpAndSettle(
           duration: const Duration(milliseconds: 500),
         );
