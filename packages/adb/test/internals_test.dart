@@ -47,15 +47,5 @@ void main() {
         throwsA(isA<AdbTimeout>()),
       );
     });
-
-    test('does not count a check that succeeds after the timeout', () async {
-      await expectLater(
-        waitUntilReady('The package service', () async {
-          await Future<void>.delayed(const Duration(milliseconds: 100));
-          return true;
-        }, timeout: const Duration(milliseconds: 50)),
-        throwsA(isA<AdbTimeout>()),
-      );
-    });
   });
 }

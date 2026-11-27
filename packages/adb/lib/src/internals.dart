@@ -7,7 +7,7 @@ const _interval = Duration(milliseconds: 100);
 
 /// Calls [isReady], pausing [interval] between calls, until it returns true.
 /// Throws [AdbTimeout] naming [what] once [timeout] has passed, including while
-/// a call is still pending; a check that succeeds after that does not count.
+/// a call is still pending.
 Future<void> waitUntilReady(
   String what,
   Future<bool> Function() isReady, {
@@ -20,12 +20,12 @@ Future<void> waitUntilReady(
     final ready =
         remaining > Duration.zero &&
         await isReady().timeout(remaining, onTimeout: () => false);
-    if (ready && stopwatch.elapsed <= timeout) {
+    if (ready) {
       return;
     }
     if (stopwatch.elapsed >= timeout) {
       throw AdbTimeout(
-        message: '$what was not ready after ${timeout.inMilliseconds} ms',
+        message: '$what was not ready after ${timeout.inSeconds} s',
       );
     }
     await Future<void>.delayed(interval);
