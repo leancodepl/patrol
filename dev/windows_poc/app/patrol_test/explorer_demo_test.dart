@@ -23,7 +23,10 @@ void main() {
       }
     });
 
-    const fileName = 'patrol_explorer_target.txt';
+    // No extension on purpose: with "Hide extensions for known file types"
+    // (the Windows default), Explorer exposes `foo.txt` to UIA as `foo`.
+    // An extensionless name is the same either way.
+    const fileName = 'patrol_explorer_target';
     final file = File(
       '${folder.path}${Platform.pathSeparator}$fileName',
     );

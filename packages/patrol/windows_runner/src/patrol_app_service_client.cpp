@@ -77,11 +77,18 @@ RunDartTestResult PatrolAppServiceClient::RunDartTest(const std::string& name) {
 
   const auto body = json::parse(res->body);
   RunDartTestResult result;
-  const auto status =
-      body.value("result", std::string{});
+  // json::value() only falls back on a *missing* key; a present `null` (e.g.
+  // `"details": null` for a passing test) throws type_error.302. Read
+  // strings defensively.
+  const auto string_or_empty = [&body](const char* key) {
+    const auto it = body.find(key);
+    return it != body.end() && it->is_string() ? it->get<std::string>()
+                                                : std::string{};
+  };
+  const auto status = string_or_empty("result");
   result.passed =
       status == "success" || status == "Success";
-  result.details = body.value("details", std::string{});
+  result.details = string_or_empty("details");
   return result;
 }
 

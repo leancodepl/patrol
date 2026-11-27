@@ -23,7 +23,7 @@ $env:PATROL_WINDOWS_FIXTURE_EXE = (
 ).Path
 
 cd dev/windows_poc/app
-dart run ../../../packages/patrol_cli/bin/main.dart test -d windows patrol_test/demo_test.dart
+dart run ../../../packages/patrol_cli/bin/main.dart test -d windows -t patrol_test/demo_test.dart
 ```
 
 ## Run Explorer demo (`launchApp` / `activateApp`)
@@ -32,7 +32,7 @@ No fixture EXE required — opens real File Explorer:
 
 ```powershell
 cd dev/windows_poc/app
-dart run ../../../packages/patrol_cli/bin/main.dart test -d windows patrol_test/explorer_demo_test.dart
+dart run ../../../packages/patrol_cli/bin/main.dart test -d windows -t patrol_test/explorer_demo_test.dart
 ```
 
 Tip: run on a visible desktop session (not a locked RDP screen) so windows

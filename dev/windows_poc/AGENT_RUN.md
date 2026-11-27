@@ -40,7 +40,7 @@ From **repo root**:
 
 ```powershell
 cd dev/windows_poc/app
-dart run ../../../packages/patrol_cli/bin/main.dart test -d windows patrol_test/explorer_demo_test.dart
+dart run ../../../packages/patrol_cli/bin/main.dart test -d windows -t patrol_test/explorer_demo_test.dart
 ```
 
 What the CLI does automatically (you do not run these yourself):
@@ -50,7 +50,8 @@ What the CLI does automatically (you do not run these yourself):
 3. Launch `patrol_windows_runner.exe` against the built app  
 
 **Success:** command exits `0`. You should see Explorer open a temp folder
-`PatrolExplorerDemo` and the test tap `patrol_explorer_target.txt`.
+`PatrolExplorerDemo` and the test tap `patrol_explorer_target` (no extension,
+so the UIA name is the same whether or not Explorer hides file extensions).
 
 **First run** can take several minutes (Flutter Windows build + C++ runner
 compile). Later runs reuse `windows_runner/build/`.
@@ -67,7 +68,7 @@ $env:PATROL_WINDOWS_FIXTURE_EXE = (
 ).Path
 
 cd dev/windows_poc/app
-dart run ../../../packages/patrol_cli/bin/main.dart test -d windows patrol_test/demo_test.dart
+dart run ../../../packages/patrol_cli/bin/main.dart test -d windows -t patrol_test/demo_test.dart
 ```
 
 **Success:** exit `0`; a “Windows Security Prompt” Win32 dialog appears and is
@@ -94,3 +95,4 @@ driven by UIA (type + Allow).
 - Wire protocol: `packages/patrol/windows_runner/PROTOCOL.md`
 - Stack decision: `dev/windows_poc/NATIVE_STACK.md`
 - Human-oriented demo notes: `dev/windows_poc/README.md`
+- First clean-machine run, issues and fixes: `dev/windows_poc/RUN_NOTES_2026-11-27.md`
