@@ -38,10 +38,20 @@ void main() {
         appId: 'com.apple.springboard',
         timeout: _dialogTimeout,
       );
-      await $(
-        K.locationAlwaysPermissionTile,
-      ).$(K.statusText).$('Granted').waitUntilVisible();
-      expect(await Permission.locationAlways.isGranted, isTrue);
+      // permission_handler completes the Always request before the user
+      // answers, so read the status again instead of trusting the tile.
+      expect(await _waitForLocationAlways(), isTrue);
     }, tags: ['ios', 'clear_permissions_location_always']);
   }
+}
+
+Future<bool> _waitForLocationAlways() async {
+  final deadline = DateTime.now().add(_dialogTimeout);
+  while (DateTime.now().isBefore(deadline)) {
+    if (await Permission.locationAlways.isGranted) {
+      return true;
+    }
+    await Future<void>.delayed(const Duration(milliseconds: 500));
+  }
+  return false;
 }
