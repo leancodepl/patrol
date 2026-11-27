@@ -5,6 +5,8 @@ on:
   pull_request:
     paths:
       - 'packages/patrol_finders/**'
+      - '.github/workflows/patrol_finders-prepare.yaml'
+      - '.github/scripts/without-analyzer-plugins.sh'
 
 jobs:
   prepare:
@@ -60,7 +62,7 @@ jobs:
 
       - name: flutter pub publish --dry-run
         if: success() || failure()
-        run: flutter pub publish --dry-run
+        run: ../../.github/scripts/without-analyzer-plugins.sh flutter pub publish --dry-run
 
       - name: flutter pub get (example app)
         if: success() || failure()

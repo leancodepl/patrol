@@ -5,6 +5,8 @@ on:
   pull_request:
     paths:
       - 'packages/patrol/**'
+      - '.github/workflows/patrol-prepare.yaml'
+      - '.github/scripts/without-analyzer-plugins.sh'
 
 jobs:
   prepare-android-on-windows:
@@ -273,7 +275,8 @@ jobs:
         if: success() || failure()
         shell: bash
         run: |
-          flutter pub publish --dry-run | tee "$RUNNER_TEMP/publish-dry-run.txt"
+          ../../.github/scripts/without-analyzer-plugins.sh flutter pub publish --dry-run \
+            | tee "$RUNNER_TEMP/publish-dry-run.txt"
           grep -q 'patrol-write-test' "$RUNNER_TEMP/publish-dry-run.txt" \
             || { echo "::error::skills/ is missing from the patrol package archive"; exit 1; }
 
