@@ -87,6 +87,11 @@ class _RecordingLogger extends Logger {
 
   final lines = <String>[];
   final errors = <String>[];
+  final warnings = <String>[];
+
+  @override
+  void warn(String? message, {String tag = 'WARN', mason.LogStyle? style}) =>
+      warnings.add('$message');
 
   @override
   void info(String? message, {mason.LogStyle? style}) => lines.add('$message');
@@ -189,12 +194,14 @@ set(APPLICATION_ID "pl.leancode.example_app")
     http.Client client, {
     bool resolvePorts = false,
     Duration readyTimeout = const Duration(milliseconds: 300),
+    Map<String, String> environment = const {
+      'DISPLAY': ':99',
+      'HOME': '/home/runner',
+    },
   }) {
     return LinuxTestBackend(
       processManager: processManager,
-      platform: TestNativePlatform(
-        environment: {'DISPLAY': ':99', 'HOME': '/home/runner'},
-      ),
+      platform: TestNativePlatform(environment: environment),
       rootDirectory: fs.directory('/project'),
       parentDisposeScope: disposeScope,
       logger: logger,
@@ -486,7 +493,10 @@ set(APPLICATION_ID "pl.leancode.example_app")
           );
           if (name == 'example_test taps') {
             // The app crashes: no response ever comes.
-            app.exit(139);
+            app
+              ..writeStderr('Gtk-WARNING **: cannot open display: :99')
+              ..writeStderr('')
+              ..exit(139);
             return Completer<http.Response>().future;
           }
           app.writeStdout(
@@ -518,6 +528,13 @@ set(APPLICATION_ID "pl.leancode.example_app")
       logger.errors,
       contains('  - example_test taps (app crashed (exit 139))'),
     );
+    // What the crashed app printed is shown without --verbose, because it is
+    // the only explanation of the crash.
+    expect(logger.errors, contains(startsWith('Last 2 line(s) of the app')));
+    expect(
+      logger.errors,
+      contains('  Gtk-WARNING **: cannot open display: :99'),
+    );
     expect(logger.errors.join('\n'), isNot(contains('scrolls')));
     // The app could not report the crash, so the summary counts it.
     final summary = logger.lines.singleWhere(
@@ -526,6 +543,28 @@ set(APPLICATION_ID "pl.leancode.example_app")
     expect(summary, contains('Total: 2'));
     expect(summary, contains('Successful: 1'));
     expect(summary, contains('Failed: 1\n  - taps '));
+  });
+
+  test('warns before the run when there is no display', () async {
+    for (final (environment, warns) in [
+      (const {'HOME': '/home/runner'}, true),
+      (const {'DISPLAY': '', 'HOME': '/home/runner'}, true),
+      (const {'WAYLAND_DISPLAY': 'wayland-0'}, false),
+      (const {'DISPLAY': ':99'}, false),
+    ]) {
+      logger.warnings.clear();
+
+      await createBackend(
+        appServer(),
+        environment: environment,
+      ).execute(_options(), _linuxDevice);
+
+      expect(
+        logger.warnings,
+        warns ? [contains('xvfb-run -a patrol test -d linux')] : isEmpty,
+        reason: '$environment',
+      );
+    }
   });
 
   test('counts a test whose app does not become ready as failed in the '

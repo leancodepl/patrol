@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:convert';
 import 'dart:io' as io;
 
@@ -113,6 +114,7 @@ class LinuxTestBackend {
     bool clearTestSteps = false,
     void Function(Entry entry)? onLogEntry,
   }) async {
+    _warnIfNoDisplay();
     await _disposeScope.run((scope) async {
       // Not in a shell, so the SIGKILL fallback of [stopFlutterRun] reaches
       // `flutter run` itself.
@@ -217,6 +219,7 @@ class LinuxTestBackend {
     bool clearTestSteps = false,
     void Function(Entry entry)? onLogEntry,
   }) async {
+    _warnIfNoDisplay();
     await _disposeScope.run((scope) async {
       final subject = '${options.description} on ${device.description}';
       final binaryPath = await resolveBinaryPath(options);
@@ -329,16 +332,23 @@ class LinuxTestBackend {
 
       _throwIfInterrupted('test discovery');
       final discoveryTask = _logger.task('Discovering tests of $subject');
-      final TestManifest manifest;
+      late final TestManifest manifest;
+      _AppNotReady? notReady;
       final discoveryApp = await launch();
       try {
         manifest = await _waitUntilReady(client, discoveryApp);
       } on _AppNotReady catch (err) {
-        discoveryTask.fail('Failed to discover tests of $subject');
-        _throwIfInterrupted('test discovery');
-        throwToolExit('Could not list the tests of the app: ${err.reason}');
+        notReady = err;
       } finally {
         await _terminate(discoveryApp);
+      }
+      if (notReady != null) {
+        discoveryTask.fail('Failed to discover tests of $subject');
+        _throwIfInterrupted('test discovery');
+        _printRecentOutput(discoveryApp);
+        throwToolExit(
+          'Could not list the tests of the app: ${notReady.reason}',
+        );
       }
 
       final toRun = manifest.tests.where((test) => !test.skip).toList();
@@ -406,42 +416,87 @@ class LinuxTestBackend {
     Future<_AppProcess> Function() launch,
   ) async {
     final app = await launch();
+    final String? failure;
     try {
-      try {
-        await _waitUntilReady(client, app);
-      } on _AppNotReady catch (err) {
-        return err.reason;
-      }
-
-      final outcome = await Future.any<Object>([
-        client
-            .runDartTest(name)
-            .then<Object>((result) => result, onError: (Object err) => err),
-        app.exitCode,
-      ]);
-
-      switch (outcome) {
-        case RunDartTestResult(failed: true, :final details):
-          _logger.detail('Test "$name" failed: $details');
-          return 'failed';
-        case RunDartTestResult():
-          return null;
-        case final int exitCode:
-          return 'app crashed (exit $exitCode)';
-        default:
-          // The connection broke, most likely because the app is going down.
-          // Give it a moment to exit, so the exit code can be reported.
-          _logger.detail('runDartTest for "$name" failed: $outcome');
-          final exitCode = await app.exitCode
-              .then<int?>((code) => code)
-              .timeout(_killTimeout, onTimeout: () => null);
-          return exitCode != null
-              ? 'app crashed (exit $exitCode)'
-              : 'lost connection to the app: $outcome';
-      }
+      failure = await _runTestIn(client, name, app);
     } finally {
       await _terminate(app);
     }
+    // A failed Dart test is reported by the app itself. Any other failure
+    // (a crash, no answer, a lost connection) is explained only by what the
+    // app printed, which is otherwise visible only with --verbose.
+    if (failure != null && failure != _testFailed && !_disposeScope.disposed) {
+      _printRecentOutput(app);
+    }
+    return failure;
+  }
+
+  static const _testFailed = 'failed';
+
+  Future<String?> _runTestIn(
+    PatrolAppServiceClient client,
+    String name,
+    _AppProcess app,
+  ) async {
+    try {
+      await _waitUntilReady(client, app);
+    } on _AppNotReady catch (err) {
+      return err.reason;
+    }
+
+    final outcome = await Future.any<Object>([
+      client
+          .runDartTest(name)
+          .then<Object>((result) => result, onError: (Object err) => err),
+      app.exitCode,
+    ]);
+
+    switch (outcome) {
+      case RunDartTestResult(failed: true, :final details):
+        _logger.detail('Test "$name" failed: $details');
+        return _testFailed;
+      case RunDartTestResult():
+        return null;
+      case final int exitCode:
+        return 'app crashed (exit $exitCode)';
+      default:
+        // The connection broke, most likely because the app is going down.
+        // Give it a moment to exit, so the exit code can be reported.
+        _logger.detail('runDartTest for "$name" failed: $outcome');
+        final exitCode = await app.exitCode
+            .then<int?>((code) => code)
+            .timeout(_killTimeout, onTimeout: () => null);
+        return exitCode != null
+            ? 'app crashed (exit $exitCode)'
+            : 'lost connection to the app: $outcome';
+    }
+  }
+
+  void _printRecentOutput(_AppProcess app) {
+    final lines = app.recentOutput;
+    if (lines.isEmpty) {
+      _logger.err('The app printed nothing before it stopped.');
+      return;
+    }
+    _logger.err('Last ${lines.length} line(s) of the app output:');
+    for (final line in lines) {
+      _logger.err('  $line');
+    }
+  }
+
+  /// GTK can't open a window without a display, so the app exits at once.
+  /// Says so before the run, because then every test fails as a crash.
+  void _warnIfNoDisplay() {
+    bool isSet(String name) => _platform.environment[name]?.isNotEmpty ?? false;
+    if (isSet('DISPLAY') || isSet('WAYLAND_DISPLAY')) {
+      return;
+    }
+    _logger.warn(
+      'Neither DISPLAY nor WAYLAND_DISPLAY is set, so the app has no display '
+      'to open its window on and will most likely exit at once. On a machine '
+      'without a display, such as CI, run Patrol under a virtual display, for '
+      'example: xvfb-run -a patrol test -d linux',
+    );
   }
 
   /// Polls `listDartTests` until the app answers, the app exits, or
@@ -515,8 +570,13 @@ class LinuxTestBackend {
     // Flutter's desktop log reader also listens to both streams.
     final stdoutDone = Completer<void>();
     final stderrDone = Completer<void>();
-    process.listenStdOut(onLine, onDone: stdoutDone.complete).disposedBy(scope);
-    process.listenStdErr(onLine, onDone: stderrDone.complete).disposedBy(scope);
+    void record(String line) {
+      app.addOutput(line);
+      onLine(line);
+    }
+
+    process.listenStdOut(record, onDone: stdoutDone.complete).disposedBy(scope);
+    process.listenStdErr(record, onDone: stderrDone.complete).disposedBy(scope);
     app.outputDone = Future.wait([stdoutDone.future, stderrDone.future]);
 
     return app;
@@ -650,12 +710,32 @@ class _AppProcess {
     exitCode = process.exitCode.then((code) => exited = code);
   }
 
+  /// How many of the last output lines [recentOutput] keeps.
+  static const recentOutputLines = 20;
+
   final io.Process process;
   late final Future<int> exitCode;
   late Future<void> outputDone;
 
   /// The exit code, once the process exited.
   int? exited;
+
+  final _recentOutput = Queue<String>();
+
+  /// The last [recentOutputLines] lines that the app printed to stdout and
+  /// stderr.
+  List<String> get recentOutput => List.unmodifiable(_recentOutput);
+
+  void addOutput(String line) {
+    // Empty lines explain nothing and would take the place of lines that do.
+    if (line.trim().isEmpty) {
+      return;
+    }
+    _recentOutput.addLast(line);
+    if (_recentOutput.length > recentOutputLines) {
+      _recentOutput.removeFirst();
+    }
+  }
 }
 
 class _AppNotReady implements Exception {
