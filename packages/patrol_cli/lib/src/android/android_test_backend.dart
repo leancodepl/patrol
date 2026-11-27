@@ -79,10 +79,9 @@ class AndroidTestBackend {
       final codegen = AndroidTestCodegen(_rootDirectory.fileSystem);
       final androidDir = _rootDirectory.childDirectory('android');
       codegen.deleteGenerated(androidDir);
-      final testUtilDir = androidTestUtilDirectory;
-      if (testUtilDir.existsSync()) {
-        testUtilDir.deleteSync(recursive: true);
-      }
+      final testUtilExport = prepareTestUtilExport(
+        emitTestManifest: options.emitTestManifest,
+      );
 
       if (options.emitTestManifest) {
         final manifestPath =
@@ -153,12 +152,7 @@ class AndroidTestBackend {
           await _processManager.start(
               options.toGradleAssembleTestInvocation(
                 isWindows: _platform.isWindows,
-                testUtilExport: options.emitTestManifest
-                    ? (
-                        initScript: _writeTestUtilExportInitScript(),
-                        outputDir: testUtilDir.absolute.path,
-                      )
-                    : null,
+                testUtilExport: testUtilExport,
               ),
               runInShell: true,
               workingDirectory: _rootDirectory.childDirectory('android').path,
@@ -192,6 +186,25 @@ class AndroidTestBackend {
       .childDirectory('build')
       .childDirectory('patrol')
       .childDirectory('android_test_util');
+
+  /// Clears the previous export and, when [emitTestManifest] is set, writes
+  /// the init script that makes the next Gradle build export the APKs again.
+  @visibleForTesting
+  ({String initScript, String outputDir})? prepareTestUtilExport({
+    required bool emitTestManifest,
+  }) {
+    final dir = androidTestUtilDirectory;
+    if (dir.existsSync()) {
+      dir.deleteSync(recursive: true);
+    }
+    if (!emitTestManifest) {
+      return null;
+    }
+    return (
+      initScript: _writeTestUtilExportInitScript(),
+      outputDir: dir.absolute.path,
+    );
+  }
 
   String _writeTestUtilExportInitScript() {
     final file = _rootDirectory
@@ -845,8 +858,7 @@ allprojects { project ->
     // `patrol build android` only ASSEMBLES the app + androidTest APKs; it does
     // not install them. Install both now so a clean device works with the
     // documented `patrol build` -> `patrol test-without-building` flow.
-    await _installApks(options, device, flavor: flavor);
-    await installTestUtilApks(device);
+    await installForRunWithoutBuilding(options, device, flavor: flavor);
 
     // Resolve the real instrumentation component from the device so custom
     // testApplicationId / custom runners are honored; falls back to the default.
@@ -1039,6 +1051,18 @@ allprojects { project ->
     await _adbInstall(testApk.path, device);
   }
 
+  /// Installs everything `test-without-building` needs on [device]: the app,
+  /// the androidTest APK and the exported `androidTestUtil` APKs.
+  @visibleForTesting
+  Future<void> installForRunWithoutBuilding(
+    AndroidAppOptions options,
+    Device device, {
+    String? flavor,
+  }) async {
+    await _installApks(options, device, flavor: flavor);
+    await installTestUtilApks(device);
+  }
+
   /// Installs the `androidTestUtil` APKs (orchestrator, test-services) that
   /// `patrol build android` exported, which Gradle would otherwise install as
   /// part of `connectedAndroidTest`.
@@ -1049,8 +1073,9 @@ allprojects { project ->
       if (_declaresAndroidTestUtil()) {
         _logger.warn(
           'The androidTestUtil APKs (e.g. orchestrator, test-services) were not '
-          'exported by the last build, so they will not be installed. Rebuild '
-          'with `patrol build android --emit-test-manifest` to include them.',
+          'exported by the last build, which was likely made with an older '
+          'patrol_cli, so they will not be installed. Rebuild with this version '
+          'of `patrol build android --emit-test-manifest` to include them.',
         );
       }
       return;
@@ -1073,9 +1098,10 @@ allprojects { project ->
         apk.path,
         device,
         extraFlags: [
-          '-g',
+          if (sdkLevel == null || sdkLevel >= 23) '-g',
           if (sdkLevel != null && sdkLevel >= 30) '--force-queryable',
         ],
+        failOnError: false,
       );
     }
 
@@ -1132,6 +1158,7 @@ allprojects { project ->
     String path,
     Device device, {
     List<String> extraFlags = const [],
+    bool failOnError = true,
   }) async {
     final result = await _processManager.run([
       'adb',
@@ -1141,12 +1168,16 @@ allprojects { project ->
       ...extraFlags,
       path,
     ], runInShell: true);
-    if (result.exitCode != 0) {
-      throwToolExit(
-        'Failed to install $path (adb install exited ${result.exitCode}):\n'
-        '${result.stdErr}',
-      );
+    if (result.exitCode == 0) {
+      return;
     }
+    final message =
+        'Failed to install $path (adb install exited ${result.exitCode}):\n'
+        '${result.stdErr}';
+    if (failOnError) {
+      throwToolExit(message);
+    }
+    _logger.warn(message);
   }
 
   /// Resolves the `<package>/<runner>` component for `am instrument` by querying
