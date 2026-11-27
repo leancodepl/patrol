@@ -1,7 +1,7 @@
 ## Unreleased
 
 - Give up with an `AdbTimeout` after 2 minutes when the ADB server, or a device's package or
-  activity service, does not become ready, instead of polling forever when the device is gone.
+  activity service, does not become ready, instead of polling forever when the device is gone. (#3424)
 
 ## 0.6.1
 
