@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:app_links/app_links.dart';
 import 'package:e2e_app/applink_screen.dart';
 import 'package:e2e_app/at_finder_screen.dart';
@@ -75,6 +77,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
   static const _macosChannel = MethodChannel('pl.leancode.patrol.e2e/macos');
 
   final _appLinks = AppLinks();
+  late final StreamSubscription<Uri> _linkSubscription;
   var _counter = 0;
   String? _nativeAlertResult;
 
@@ -103,16 +106,26 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    _appLinks.uriLinkStream.listen((uri) {
-      if (!context.mounted) {
+  void initState() {
+    super.initState();
+    _linkSubscription = _appLinks.uriLinkStream.listen((uri) {
+      if (!mounted) {
         return;
       }
       Navigator.of(
         context,
       ).push(MaterialPageRoute<void>(builder: (_) => ApplinkScreen(uri: uri)));
     });
+  }
 
+  @override
+  void dispose() {
+    _linkSubscription.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       key: K.scaffold,
       appBar: AppBar(title: Text(widget.title)),
