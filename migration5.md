@@ -16,7 +16,7 @@ Update `patrol` and `patrol_cli` together: Patrol 5.0 is `patrol` 5.x with
 | `patrol` | 5.x | |
 | `patrol_cli` | 5.x | |
 | `patrol_mcp` | discontinued | replaced by the `patrol mcp` command of `patrol_cli`, see below |
-| `patrol_finders` | 4.x | `pumpAndSettle()` returns `Future<int>`, see below |
+| `patrol_finders` | 4.x | `pumpAndSettle()` returns `Future<int>` and other API changes, see below |
 | `patrol_log` | 0.10.x, no change so far | |
 
 To try a prerelease, pin it explicitly, since pub doesn't pick prereleases on
@@ -128,6 +128,29 @@ instead of `Future<void>`: the number of frames it pumped, the same value
   `pumpAndSettle()`, e.g. the value of `WidgetTester.pumpAndSettle()`.
 - **A mock that stubs `pumpAndSettle()`:** answer with an `int`, e.g.
   `thenAnswer((_) async => 1)`; `thenAnswer((_) async {})` no longer compiles.
+
+## `pumpWidget()` takes named arguments, `pumpWidgetAndSettle()` returns frames
+
+**Packages:** `patrol_finders`, `patrol`
+
+`PatrolTester.pumpWidget()` takes `duration` and `phase` as named parameters
+instead of positional ones, and both `pumpWidget()` and `pumpWidgetAndSettle()`
+take `wrapWithView`, like `WidgetTester.pumpWidget()`.
+`pumpWidgetAndSettle()` returns `Future<int>`, the number of frames pumped while
+settling. Tests that only find, tap and pump with one argument compile
+unchanged.
+
+**What to do:**
+
+- **`$.pumpWidget(app, duration)` or `$.pumpWidget(app, duration, phase)`:**
+  name the arguments: `$.pumpWidget(app, duration: duration, phase: phase)`.
+- **A subclass or implementation of `PatrolTester` that overrides
+  `pumpWidget()` or `pumpWidgetAndSettle()`:** take `duration` and `phase` as
+  named parameters, add `bool wrapWithView = true`, and return `Future<int>`
+  from `pumpWidgetAndSettle()`, e.g. the value of `super.pumpWidgetAndSettle()`.
+- **A mock that stubs them:** match `duration` and `phase` by name, e.g.
+  `mock.pumpWidget(any(), duration: any(named: 'duration'))`, and answer
+  `pumpWidgetAndSettle()` with an `int`, e.g. `thenAnswer((_) async => 1)`.
 
 ## Build-time test discovery is the default
 

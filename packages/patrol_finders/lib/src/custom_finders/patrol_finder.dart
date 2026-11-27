@@ -132,7 +132,7 @@ Finder createFinder(dynamic matching) {
 ///
 /// This is decorator around [Finder] that extends it with Patrol features, but
 /// also preserves Finder's behavior.
-class PatrolFinder implements MatchFinder {
+class PatrolFinder extends MatchFinder {
   /// Creates a new [PatrolFinder] with the given [finder] and [tester].
   ///
   /// Usually, you won't use this constructor directly. Instead, you'll use the
@@ -558,6 +558,22 @@ class PatrolFinder implements MatchFinder {
   /// Returns true if this finder finds at least 1 widget.
   bool get exists => evaluate().isNotEmpty;
 
+  /// Returns true if [candidate] is one of the widgets this finder finds.
+  ///
+  /// Simple finders (key, type, text, ...) check only [candidate], like
+  /// [MatchFinder.matches], so offstage widgets match too. Chained finders,
+  /// such as `$(#a).$(#b)`, [first], [last] and [at], check [evaluate] and
+  /// skip offstage widgets, like the finder itself.
+  @override
+  bool matches(Element candidate) {
+    final finder = this.finder;
+    if (finder is MatchFinder) {
+      return finder.matches(candidate);
+    }
+
+    return evaluate().contains(candidate);
+  }
+
   @override
   String describeMatch(Plurality plurality) => finder.describeMatch(plurality);
 
@@ -647,11 +663,6 @@ class PatrolFinder implements MatchFinder {
   }
 
   @override
-  bool matches(Element candidate) {
-    return (finder as MatchFinder).matches(candidate);
-  }
-
-  @override
   FinderResult<Element> get found => finder.found;
 
   @override
@@ -683,21 +694,9 @@ class PatrolFinder implements MatchFinder {
   bool get skipOffstage => finder.skipOffstage;
 
   @override
-  Iterable<Element> apply(Iterable<Element> candidates) {
-    // Do we still need to use deprecated method?
-    // ignore: deprecated_member_use
-    return finder.apply(candidates);
-  }
-
-  @override
-  // Do we still need to use deprecated field?
+  // Every Finder must implement it until Flutter drops the legacy Finder API.
   // ignore: deprecated_member_use
   String get description => finder.description;
-
-  @override
-  // Do we still need to use deprecated method?
-  // ignore: deprecated_member_use
-  bool precache() => finder.precache();
 }
 
 class _PatrolSelectorFinder extends ChainedFinder {
