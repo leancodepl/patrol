@@ -52,18 +52,26 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
   }
 
   @override
-  Future<void> tap(windows_automator.WindowsSelector selector) {
-    return _wrapRequest(
+  Future<void> tap(
+    windows_automator.WindowsSelector selector, {
+    Duration? timeout,
+  }) {
+    return _findBasedRequest(
       'tap',
-      () => _sendRequest('tap', selector.toJson()),
+      selector,
+      timeout: timeout,
     );
   }
 
   @override
-  Future<void> doubleTap(windows_automator.WindowsSelector selector) {
-    return _wrapRequest(
+  Future<void> doubleTap(
+    windows_automator.WindowsSelector selector, {
+    Duration? timeout,
+  }) {
+    return _findBasedRequest(
       'doubleTap',
-      () => _sendRequest('doubleTap', selector.toJson()),
+      selector,
+      timeout: timeout,
     );
   }
 
@@ -72,43 +80,61 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
     windows_automator.WindowsSelector selector, {
     Duration? timeout,
   }) {
-    final findTimeout = timeout ?? _config.findTimeout;
-    return _wrapRequest(
+    return _findBasedRequest(
       'waitUntilVisible',
-      () => _sendRequestTimed(
-        'waitUntilVisible',
-        {
-          ...selector.toJson(),
-          'timeoutMillis': findTimeout.inMilliseconds,
-        },
-        timeout: _requestTimeoutFor(findTimeout),
-      ),
-      requestTimeout: _requestTimeoutFor(findTimeout),
+      selector,
+      timeout: timeout,
     );
   }
 
   @override
-  Future<bool> isElementVisible(windows_automator.WindowsSelector selector) {
+  Future<bool> isElementVisible(
+    windows_automator.WindowsSelector selector, {
+    Duration? timeout,
+  }) {
+    // Instant check by default (sidecar ~500ms). Explicit timeout waits longer.
+    final findTimeout = timeout;
+    final httpTimeout = findTimeout != null
+        ? _requestTimeoutFor(findTimeout)
+        : _config.connectionTimeout;
+
     return _wrapRequest(
       'isElementVisible',
       () async {
-        final json = await _sendRequest(
+        final json = await _sendRequestTimed(
           'isElementVisible',
-          selector.toJson(),
+          {
+            ...selector.toJson(),
+            if (findTimeout != null)
+              'timeoutMillis': findTimeout.inMilliseconds,
+          },
+          timeout: httpTimeout,
         );
         return json['visible'] == true;
       },
+      requestTimeout: httpTimeout,
     );
   }
 
   @override
   Future<windows_automator.WindowsUiElement?> findElement(
-    windows_automator.WindowsSelector selector,
-  ) {
+    windows_automator.WindowsSelector selector, {
+    Duration? timeout,
+  }) {
+    final findTimeout = timeout ?? _config.findTimeout;
+    final httpTimeout = _requestTimeoutFor(findTimeout);
+
     return _wrapRequest(
       'findElement',
       () async {
-        final json = await _sendRequest('findElement', selector.toJson());
+        final json = await _sendRequestTimed(
+          'findElement',
+          {
+            ...selector.toJson(),
+            'timeoutMillis': findTimeout.inMilliseconds,
+          },
+          timeout: httpTimeout,
+        );
         final element = json['element'];
         if (element is! Map<String, dynamic>) {
           if (element is Map) {
@@ -120,17 +146,29 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
         }
         return windows_automator.WindowsUiElement.fromJson(element);
       },
+      requestTimeout: httpTimeout,
     );
   }
 
   @override
   Future<List<windows_automator.WindowsUiElement>> findElements(
-    windows_automator.WindowsSelector selector,
-  ) {
+    windows_automator.WindowsSelector selector, {
+    Duration? timeout,
+  }) {
+    final findTimeout = timeout ?? _config.findTimeout;
+    final httpTimeout = _requestTimeoutFor(findTimeout);
+
     return _wrapRequest(
       'findElements',
       () async {
-        final json = await _sendRequest('findElements', selector.toJson());
+        final json = await _sendRequestTimed(
+          'findElements',
+          {
+            ...selector.toJson(),
+            'timeoutMillis': findTimeout.inMilliseconds,
+          },
+          timeout: httpTimeout,
+        );
         final raw = json['elements'];
         if (raw is! List) {
           return <windows_automator.WindowsUiElement>[];
@@ -149,6 +187,7 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
         }
         return elements;
       },
+      requestTimeout: httpTimeout,
     );
   }
 
@@ -156,13 +195,23 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
   Future<void> enterText(
     windows_automator.WindowsSelector selector, {
     required String text,
+    Duration? timeout,
   }) {
+    final findTimeout = timeout ?? _config.findTimeout;
+    final httpTimeout = _requestTimeoutFor(findTimeout);
+
     return _wrapRequest(
       'enterText',
-      () => _sendRequest('enterText', {
-        'text': text,
-        ...selector.toJson(),
-      }),
+      () => _sendRequestTimed(
+        'enterText',
+        {
+          'text': text,
+          ...selector.toJson(),
+          'timeoutMillis': findTimeout.inMilliseconds,
+        },
+        timeout: httpTimeout,
+      ),
+      requestTimeout: httpTimeout,
     );
   }
 
@@ -238,6 +287,28 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
     );
   }
 
+  Future<void> _findBasedRequest(
+    String action,
+    windows_automator.WindowsSelector selector, {
+    Duration? timeout,
+  }) {
+    final findTimeout = timeout ?? _config.findTimeout;
+    final httpTimeout = _requestTimeoutFor(findTimeout);
+
+    return _wrapRequest(
+      action,
+      () => _sendRequestTimed(
+        action,
+        {
+          ...selector.toJson(),
+          'timeoutMillis': findTimeout.inMilliseconds,
+        },
+        timeout: httpTimeout,
+      ),
+      requestTimeout: httpTimeout,
+    );
+  }
+
   Duration _requestTimeoutFor(Duration findTimeout) {
     // Sidecar holds the HTTP request open until the find timeout elapses.
     final padded = findTimeout + const Duration(seconds: 5);
@@ -280,7 +351,7 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
           StepEntry(action: text, status: StepEntryStatus.failure),
         );
       }
-      throw PatrolActionException(err.toString());
+      throw PatrolActionException(err.message);
     }
   }
 
@@ -313,7 +384,7 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
         .timeout(timeout);
 
     if (response.statusCode != 200) {
-      throw WindowsAutomatorClientException(
+      throw WindowsAutomatorClientException.fromResponse(
         response.statusCode,
         response.body,
       );
@@ -340,14 +411,46 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
 /// Thrown when the Windows automator HTTP server returns a non-200 status.
 class WindowsAutomatorClientException implements Exception {
   /// Creates a new [WindowsAutomatorClientException].
-  WindowsAutomatorClientException(this.statusCode, this.responseBody);
+  WindowsAutomatorClientException(
+    this.statusCode,
+    this.responseBody, {
+    this.error,
+  });
 
-  /// HTTP status code.
+  /// Parses a sidecar error response (`{ "error": "..." }`).
+  factory WindowsAutomatorClientException.fromResponse(
+    int statusCode,
+    String responseBody,
+  ) {
+    String? error;
+    try {
+      final decoded = jsonDecode(responseBody);
+      if (decoded is Map && decoded['error'] is String) {
+        error = decoded['error'] as String;
+      }
+    } on Object {
+      // Keep raw body when JSON parse fails.
+    }
+    return WindowsAutomatorClientException(
+      statusCode,
+      responseBody,
+      error: error,
+    );
+  }
+
+  /// HTTP status code (`400` / `404` / `500`).
   final int statusCode;
 
-  /// Response body.
+  /// Raw response body.
   final String responseBody;
 
+  /// Parsed `error` field from the JSON body, when present.
+  final String? error;
+
+  /// Best message for [PatrolActionException].
+  String get message =>
+      error ?? 'Windows automator error ($statusCode): $responseBody';
+
   @override
-  String toString() => 'Invalid response: $statusCode $responseBody';
+  String toString() => message;
 }

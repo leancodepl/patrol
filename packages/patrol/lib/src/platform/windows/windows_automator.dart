@@ -119,6 +119,8 @@ class WindowsSelector {
 /// Drives desktop UI outside the Flutter window through an out-of-process
 /// Windows automator sidecar over HTTP/JSON (UI Automation). Use Flutter
 /// finders for widgets inside your app.
+///
+/// See `packages/patrol/windows_runner/PROTOCOL.md` for the wire contract.
 abstract interface class WindowsAutomator {
   /// Configuration used by this automator.
   WindowsAutomatorConfig get config;
@@ -130,10 +132,13 @@ abstract interface class WindowsAutomator {
   Future<void> tapAt(Offset point);
 
   /// Taps a matching desktop UI element.
-  Future<void> tap(WindowsSelector selector);
+  ///
+  /// Defaults to [WindowsAutomatorConfig.findTimeout] when [timeout] is omit-
+  /// ted.
+  Future<void> tap(WindowsSelector selector, {Duration? timeout});
 
   /// Double-taps / double-invokes a matching desktop UI element.
-  Future<void> doubleTap(WindowsSelector selector);
+  Future<void> doubleTap(WindowsSelector selector, {Duration? timeout});
 
   /// Waits until a matching desktop UI element exists.
   ///
@@ -146,20 +151,39 @@ abstract interface class WindowsAutomator {
   });
 
   /// Returns whether a matching desktop UI element currently exists.
-  Future<bool> isElementVisible(WindowsSelector selector);
+  ///
+  /// When [timeout] is omitted the sidecar uses a short poll (~500 ms). Pass
+  /// an explicit [timeout] to wait longer for the element to appear.
+  Future<bool> isElementVisible(
+    WindowsSelector selector, {
+    Duration? timeout,
+  });
 
-  /// Finds a matching desktop UI element, or `null` if none.
-  Future<WindowsUiElement?> findElement(WindowsSelector selector);
+  /// Finds a matching desktop UI element, or `null` if none within [timeout].
+  Future<WindowsUiElement?> findElement(
+    WindowsSelector selector, {
+    Duration? timeout,
+  });
 
-  /// Finds all matching desktop UI elements.
-  Future<List<WindowsUiElement>> findElements(WindowsSelector selector);
+  /// Finds all matching desktop UI elements (waits up to [timeout] for any).
+  Future<List<WindowsUiElement>> findElements(
+    WindowsSelector selector, {
+    Duration? timeout,
+  });
 
   /// Sets the text of a matching desktop edit control.
-  Future<void> enterText(WindowsSelector selector, {required String text});
+  Future<void> enterText(
+    WindowsSelector selector, {
+    required String text,
+    Duration? timeout,
+  });
 
   /// Presses a virtual-key code, optionally with modifiers.
   ///
-  /// [keyCode] is a Win32 virtual-key code (e.g. `0x41` for A, `0x0D` for Enter).
+  /// Prefer `WindowsKey` constants instead of raw hex, e.g.
+  /// `pressKey(WindowsKey.enter)` or `pressKey(WindowsKey.h, shift: true)`.
+  ///
+  /// [keyCode] is a Win32 virtual-key code.
   Future<void> pressKey(
     int keyCode, {
     bool shift = false,

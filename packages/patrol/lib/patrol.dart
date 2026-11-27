@@ -43,3 +43,4 @@ export 'src/platform/web/web_automator_config.dart';
 export 'src/platform/web/web_native_view.dart';
 export 'src/platform/windows/windows_automator.dart';
 export 'src/platform/windows/windows_automator_config.dart';
+export 'src/platform/windows/windows_key.dart';

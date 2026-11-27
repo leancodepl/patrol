@@ -64,8 +64,8 @@ void main() {
         const WindowsSelector(automationId: 'poc_identity_field'),
         text: '',
       );
-      await $.platform.windows.pressKey(0x48, shift: true); // H
-      await $.platform.windows.pressKey(0x49, shift: true); // I
+      await $.platform.windows.pressKey(WindowsKey.h, shift: true);
+      await $.platform.windows.pressKey(WindowsKey.i, shift: true);
       await Future<void>.delayed(const Duration(milliseconds: 250));
       expect(File(textMarkerPath).readAsStringSync(), 'HI');
 

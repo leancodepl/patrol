@@ -26,11 +26,17 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
   Future<void> tapAt(Offset point) => _unsupported();
 
   @override
-  Future<void> tap(windows_automator.WindowsSelector selector) =>
+  Future<void> tap(
+    windows_automator.WindowsSelector selector, {
+    Duration? timeout,
+  }) =>
       _unsupported();
 
   @override
-  Future<void> doubleTap(windows_automator.WindowsSelector selector) =>
+  Future<void> doubleTap(
+    windows_automator.WindowsSelector selector, {
+    Duration? timeout,
+  }) =>
       _unsupported();
 
   @override
@@ -42,26 +48,30 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
 
   @override
   Future<bool> isElementVisible(
-    windows_automator.WindowsSelector selector,
-  ) =>
+    windows_automator.WindowsSelector selector, {
+    Duration? timeout,
+  }) =>
       _unsupported();
 
   @override
   Future<windows_automator.WindowsUiElement?> findElement(
-    windows_automator.WindowsSelector selector,
-  ) =>
+    windows_automator.WindowsSelector selector, {
+    Duration? timeout,
+  }) =>
       _unsupported();
 
   @override
   Future<List<windows_automator.WindowsUiElement>> findElements(
-    windows_automator.WindowsSelector selector,
-  ) =>
+    windows_automator.WindowsSelector selector, {
+    Duration? timeout,
+  }) =>
       _unsupported();
 
   @override
   Future<void> enterText(
     windows_automator.WindowsSelector selector, {
     required String text,
+    Duration? timeout,
   }) =>
       _unsupported();
 

@@ -89,14 +89,15 @@ internal sealed class AutomatorServer
             await RunSelectorActionAsync(
                 request,
                 "tap",
-                (selector, _) => WindowsUiAutomation.Tap(selector)
+                (selector, timeout) => WindowsUiAutomation.Tap(selector, timeout)
             ));
 
         _app.MapPost("/doubleTap", async (HttpRequest request) =>
             await RunSelectorActionAsync(
                 request,
                 "doubleTap",
-                (selector, _) => WindowsUiAutomation.DoubleTap(selector)
+                (selector, timeout) =>
+                    WindowsUiAutomation.DoubleTap(selector, timeout)
             ));
 
         _app.MapPost("/waitUntilVisible", async (HttpRequest request) =>
@@ -117,14 +118,19 @@ internal sealed class AutomatorServer
                 );
                 try
                 {
-                    var selector = ParseSelector(doc.RootElement);
+                    var root = doc.RootElement;
+                    var selector = ParseSelector(root);
+                    var timeout = ParseTimeout(root);
                     Console.WriteLine($"AutomatorServer: isElementVisible({selector})");
-                    var visible = WindowsUiAutomation.IsElementVisible(selector);
+                    var visible = WindowsUiAutomation.IsElementVisible(
+                        selector,
+                        timeout
+                    );
                     return Results.Json(new { visible });
                 }
                 catch (ArgumentException ex)
                 {
-                    return Results.BadRequest(new { error = ex.Message });
+                    return ErrorBadRequest(ex.Message);
                 }
             }
         );
@@ -139,16 +145,21 @@ internal sealed class AutomatorServer
                 );
                 try
                 {
-                    var selector = ParseSelector(doc.RootElement);
+                    var root = doc.RootElement;
+                    var selector = ParseSelector(root);
+                    var timeout = ParseTimeout(root);
                     Console.WriteLine($"AutomatorServer: findElement({selector})");
-                    var info = WindowsUiAutomation.FindElementInfo(selector);
+                    var info = WindowsUiAutomation.FindElementInfo(
+                        selector,
+                        timeout
+                    );
                     return info is null
                         ? Results.Json(new { element = (object?)null })
                         : Results.Json(new { element = ToJson(info) });
                 }
                 catch (ArgumentException ex)
                 {
-                    return Results.BadRequest(new { error = ex.Message });
+                    return ErrorBadRequest(ex.Message);
                 }
             }
         );
@@ -163,14 +174,19 @@ internal sealed class AutomatorServer
                 );
                 try
                 {
-                    var selector = ParseSelector(doc.RootElement);
+                    var root = doc.RootElement;
+                    var selector = ParseSelector(root);
+                    var timeout = ParseTimeout(root);
                     Console.WriteLine($"AutomatorServer: findElements({selector})");
-                    var elements = WindowsUiAutomation.FindElements(selector);
+                    var elements = WindowsUiAutomation.FindElements(
+                        selector,
+                        timeout
+                    );
                     return Results.Json(new { elements = elements.Select(ToJson) });
                 }
                 catch (ArgumentException ex)
                 {
-                    return Results.BadRequest(new { error = ex.Message });
+                    return ErrorBadRequest(ex.Message);
                 }
             }
         );
@@ -189,28 +205,26 @@ internal sealed class AutomatorServer
                     || textEl.ValueKind != JsonValueKind.String
                 )
                 {
-                    return Results.BadRequest(new { error = "enterText requires \"text\"" });
+                    return ErrorBadRequest("enterText requires \"text\"");
                 }
 
                 try
                 {
                     var selector = ParseSelector(root);
+                    var timeout = ParseTimeout(root);
                     var text = textEl.GetString() ?? "";
                     Console.WriteLine($"AutomatorServer: enterText({selector})");
-                    WindowsUiAutomation.EnterText(selector, text);
+                    WindowsUiAutomation.EnterText(selector, text, timeout);
                     return Results.Ok();
                 }
                 catch (ArgumentException ex)
                 {
-                    return Results.BadRequest(new { error = ex.Message });
+                    return ErrorBadRequest(ex.Message);
                 }
                 catch (InvalidOperationException ex)
                 {
                     Console.Error.WriteLine($"AutomatorServer: enterText failed: {ex.Message}");
-                    return Results.Json(
-                        new { error = ex.Message },
-                        statusCode: StatusCodes.Status404NotFound
-                    );
+                    return ErrorNotFound(ex.Message);
                 }
             }
         );
@@ -229,7 +243,7 @@ internal sealed class AutomatorServer
                     || keyEl.ValueKind != JsonValueKind.Number
                 )
                 {
-                    return Results.BadRequest(new { error = "pressKey requires \"keyCode\"" });
+                    return ErrorBadRequest("pressKey requires \"keyCode\"");
                 }
 
                 try
@@ -244,15 +258,12 @@ internal sealed class AutomatorServer
                 }
                 catch (ArgumentOutOfRangeException ex)
                 {
-                    return Results.BadRequest(new { error = ex.Message });
+                    return ErrorBadRequest(ex.Message);
                 }
                 catch (Exception ex)
                 {
                     Console.Error.WriteLine($"AutomatorServer: pressKey failed: {ex.Message}");
-                    return Results.Json(
-                        new { error = ex.Message },
-                        statusCode: StatusCodes.Status500InternalServerError
-                    );
+                    return ErrorInternal(ex.Message);
                 }
             }
         );
@@ -272,7 +283,7 @@ internal sealed class AutomatorServer
                     || string.IsNullOrWhiteSpace(pathEl.GetString())
                 )
                 {
-                    return Results.BadRequest(new { error = "launchApp requires \"appPath\"" });
+                    return ErrorBadRequest("launchApp requires \"appPath\"");
                 }
 
                 try
@@ -302,10 +313,7 @@ internal sealed class AutomatorServer
                 catch (Exception ex)
                 {
                     Console.Error.WriteLine($"AutomatorServer: launchApp failed: {ex.Message}");
-                    return Results.Json(
-                        new { error = ex.Message },
-                        statusCode: StatusCodes.Status500InternalServerError
-                    );
+                    return ErrorInternal(ex.Message);
                 }
             }
         );
@@ -355,15 +363,12 @@ internal sealed class AutomatorServer
                 }
                 catch (ArgumentException ex)
                 {
-                    return Results.BadRequest(new { error = ex.Message });
+                    return ErrorBadRequest(ex.Message);
                 }
                 catch (InvalidOperationException ex)
                 {
                     Console.Error.WriteLine($"AutomatorServer: activateApp failed: {ex.Message}");
-                    return Results.Json(
-                        new { error = ex.Message },
-                        statusCode: StatusCodes.Status404NotFound
-                    );
+                    return ErrorNotFound(ex.Message);
                 }
             }
         );
@@ -404,17 +409,29 @@ internal sealed class AutomatorServer
         }
         catch (ArgumentException ex)
         {
-            return Results.BadRequest(new { error = ex.Message });
+            return ErrorBadRequest(ex.Message);
         }
         catch (InvalidOperationException ex)
         {
             Console.Error.WriteLine($"AutomatorServer: {actionName} failed: {ex.Message}");
-            return Results.Json(
-                new { error = ex.Message },
-                statusCode: StatusCodes.Status404NotFound
-            );
+            return ErrorNotFound(ex.Message);
         }
     }
+
+    /// <summary>400 — invalid request. Body: <c>{ "error": "..." }</c>.</summary>
+    private static IResult ErrorBadRequest(string message) =>
+        Results.Json(new { error = message }, statusCode: StatusCodes.Status400BadRequest);
+
+    /// <summary>404 — target not found. Body: <c>{ "error": "..." }</c>.</summary>
+    private static IResult ErrorNotFound(string message) =>
+        Results.Json(new { error = message }, statusCode: StatusCodes.Status404NotFound);
+
+    /// <summary>500 — unexpected failure. Body: <c>{ "error": "..." }</c>.</summary>
+    private static IResult ErrorInternal(string message) =>
+        Results.Json(
+            new { error = message },
+            statusCode: StatusCodes.Status500InternalServerError
+        );
 
     private static UiSelector ParseSelector(JsonElement root)
     {
