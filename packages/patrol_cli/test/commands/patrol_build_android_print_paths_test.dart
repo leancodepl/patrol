@@ -24,6 +24,7 @@ void main() {
         dartDefinesReader: MockDartDefinesReader(),
         pubspecReader: MockPubspecReader(),
         androidTestBackend: MockAndroidTestBackend(),
+        kernelCompiler: MockKernelCompiler(),
         analytics: MockAnalytics(),
         logger: mockLogger,
         compatibilityChecker: MockCompatibilityChecker(),

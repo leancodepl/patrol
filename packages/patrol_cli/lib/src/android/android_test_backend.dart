@@ -6,6 +6,7 @@ import 'package:adb/adb.dart';
 import 'package:dispose_scope/dispose_scope.dart' hide ProcessDisposed;
 import 'package:file/file.dart';
 import 'package:meta/meta.dart';
+import 'package:path/path.dart' show basename, join;
 import 'package:patrol_cli/src/android/android_test_codegen.dart';
 import 'package:patrol_cli/src/android/android_video_recording_manager.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
@@ -20,11 +21,13 @@ import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
 import 'package:patrol_cli/src/crossplatform/video_recording_manager.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
+import 'package:patrol_cli/src/reuse_build/android_kernel_swapper.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:patrol_log/patrol_log.dart';
 import 'package:patrol_log/patrol_log_reader.dart';
 import 'package:platform/platform.dart';
 import 'package:process/process.dart';
+import 'package:version/version.dart';
 
 /// Provides functionality to build, install, run, and uninstall Android apps.
 ///
@@ -244,6 +247,11 @@ class AndroidTestBackend {
   Future<void> loadJavaPathFromFlutterDoctor(
     FlutterCommand flutterCommand,
   ) async {
+    javaPath = await findJavaHome(flutterCommand);
+  }
+
+  /// Finds the Java home `flutter` uses, from `flutter doctor --verbose`.
+  Future<String?> findJavaHome(FlutterCommand flutterCommand) async {
     final javaCompleterPath = Completer<String?>();
 
     await _disposeScope.run((scope) async {
@@ -283,7 +291,7 @@ class AndroidTestBackend {
           .disposedBy(scope);
     });
 
-    javaPath = await javaCompleterPath.future;
+    return javaCompleterPath.future;
   }
 
   /// Execute `flutter build apk --config-only` to generate the gradlew file.
@@ -826,6 +834,223 @@ class AndroidTestBackend {
     final (instrumentPackage, instrumentRunner) =
         await _resolveInstrumentationComponent(packageName, device);
 
+    await _executeInstrumentation(
+      options,
+      device,
+      instrumentPackage: instrumentPackage,
+      instrumentRunner: instrumentRunner,
+      classArg: classArg,
+      executedTestsCheck: executedTestsCheck,
+      flavor: flavor,
+      showFlutterLogs: showFlutterLogs,
+      hideTestSteps: hideTestSteps,
+      clearTestSteps: clearTestSteps,
+      onLogEntry: onLogEntry,
+    );
+  }
+
+  /// Runs the tests with patched APKs from `patrol test --reuse-build`:
+  /// installs [apks] and runs them through the Android Test Orchestrator, the
+  /// way Gradle's connected test task does, but without Gradle, which would
+  /// rebuild them.
+  ///
+  /// Tests are discovered at runtime, as in a normal `patrol test`. The
+  /// orchestrator runs each test in a new app process, which patrol needs.
+  /// `clearPackageData` is passed when the app's Gradle file sets it.
+  Future<void> executeReusedBuild(
+    AndroidAppOptions options,
+    Device device, {
+    required AndroidApks apks,
+    required bool showFlutterLogs,
+    required bool hideTestSteps,
+    required bool clearTestSteps,
+    void Function(Entry entry)? onLogEntry,
+    VideoRecordingConfig? videoConfig,
+    String? screenshotsOutputDir,
+  }) async {
+    final packageName = options.packageName;
+    if (packageName == null) {
+      throwToolExit(
+        'Android applicationId is unknown. Set patrol.android.package_name in '
+        'pubspec.yaml or pass --package-name.',
+      );
+    }
+
+    await _installReusedApk(apks.app, packageName, device);
+    await _installReusedApk(apks.test, '$packageName.test', device);
+    await _ensureOrchestrator(device);
+
+    final (instrumentPackage, instrumentRunner) =
+        await _resolveInstrumentationComponent(packageName, device);
+
+    await _executeInstrumentation(
+      options,
+      device,
+      instrumentPackage: instrumentPackage,
+      instrumentRunner: instrumentRunner,
+      orchestrator: true,
+      clearPackageData: _setsClearPackageData(),
+      flavor: options.flutter.flavor,
+      showFlutterLogs: showFlutterLogs,
+      hideTestSteps: hideTestSteps,
+      clearTestSteps: clearTestSteps,
+      onLogEntry: onLogEntry,
+      videoConfig: videoConfig,
+      screenshotsOutputDir: screenshotsOutputDir,
+    );
+  }
+
+  /// Installs an APK patched by `--reuse-build`. It's signed with the debug
+  /// key, so an app installed earlier with another key is uninstalled first.
+  Future<void> _installReusedApk(
+    File apk,
+    String packageName,
+    Device device,
+  ) async {
+    _logger.detail('Installing ${apk.path}');
+    final result = await _processManager.run([
+      'adb',
+      ...['-s', device.id],
+      'install',
+      ...['-r', '-t'],
+      apk.path,
+    ], runInShell: true);
+    if (result.exitCode == 0) {
+      return;
+    }
+    final output = '${result.stdOut}${result.stdErr}';
+    if (output.contains('INSTALL_FAILED_UPDATE_INCOMPATIBLE')) {
+      _logger.detail(
+        '$packageName is installed with another signing key, uninstalling it',
+      );
+      await _adb.uninstall(packageName, device: device.id);
+      await _adbInstall(apk.path, device);
+      return;
+    }
+    throwToolExit(
+      'Failed to install ${apk.path} (adb install exited ${result.exitCode}):'
+      '\n$output',
+    );
+  }
+
+  static const _orchestratorPackage = 'androidx.test.orchestrator';
+  static const _testServicesPackage = 'androidx.test.services';
+
+  /// Installs the Android Test Orchestrator and test services from the Gradle
+  /// cache, unless they're on [device] already. Gradle downloads them on the
+  /// first full build and uninstalls them after each test run.
+  Future<void> _ensureOrchestrator(Device device) async {
+    final result = await _processManager.run([
+      'adb',
+      ...['-s', device.id],
+      'shell',
+      ...['pm', 'list', 'packages', 'androidx.test'],
+    ], runInShell: true);
+    final installed = const LineSplitter()
+        .convert(result.stdOut)
+        .map((l) => l.trim().replaceFirst('package:', ''))
+        .toSet();
+
+    for (final (package, group, artifact) in [
+      (_orchestratorPackage, 'androidx.test', 'orchestrator'),
+      (_testServicesPackage, 'androidx.test.services', 'test-services'),
+    ]) {
+      if (installed.contains(package)) {
+        continue;
+      }
+      final apk = _findInGradleCache(group, artifact);
+      if (apk == null) {
+        throwToolExit(
+          'The Android Test Orchestrator ($group:$artifact) is not in the '
+          'Gradle cache. Run once without --reuse-build, so Gradle downloads '
+          'it.',
+        );
+      }
+      _logger.detail('Installing ${apk.path}');
+      final install = await _processManager.run([
+        'adb',
+        ...['-s', device.id],
+        'install',
+        ...['-r', '-t', '-g'],
+        apk.path,
+      ], runInShell: true);
+      if (install.exitCode != 0) {
+        throwToolExit(
+          'Failed to install ${apk.path} (adb install exited '
+          '${install.exitCode}):\n${install.stdErr}',
+        );
+      }
+    }
+  }
+
+  /// The APK of the newest version of [group]:[artifact] in the Gradle cache.
+  File? _findInGradleCache(String group, String artifact) {
+    final env = _platform.environment;
+    final gradleHome =
+        env['GRADLE_USER_HOME'] ??
+        join(env['HOME'] ?? env['USERPROFILE'] ?? '', '.gradle');
+    final dir = _rootDirectory.fileSystem.directory(
+      join(gradleHome, 'caches', 'modules-2', 'files-2.1', group, artifact),
+    );
+    if (!dir.existsSync()) {
+      return null;
+    }
+    Version version(File f) {
+      try {
+        return Version.parse(basename(f.parent.parent.path));
+      } on FormatException {
+        return Version(0, 0, 0);
+      }
+    }
+
+    final apks =
+        dir
+            .listSync(recursive: true)
+            .whereType<File>()
+            .where((f) => f.path.endsWith('.apk'))
+            .toList()
+          ..sort((a, b) => version(b).compareTo(version(a)));
+    return apks.firstOrNull;
+  }
+
+  /// Whether the app's Gradle file sets the orchestrator's `clearPackageData`
+  /// instrumentation argument to true, as patrol's setup guide says.
+  bool _setsClearPackageData() {
+    final appDir = _rootDirectory
+        .childDirectory('android')
+        .childDirectory('app');
+    for (final name in ['build.gradle.kts', 'build.gradle']) {
+      final file = appDir.childFile(name);
+      if (file.existsSync() &&
+          RegExp(
+            r'clearPackageData\W{1,12}true',
+          ).hasMatch(file.readAsStringSync())) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /// Runs the installed instrumentation with `am instrument` and fails when a
+  /// test failed. Without [classArg], the runner discovers the tests itself.
+  /// With [orchestrator], the Android Test Orchestrator runs it.
+  Future<void> _executeInstrumentation(
+    AndroidAppOptions options,
+    Device device, {
+    required String instrumentPackage,
+    required String instrumentRunner,
+    bool orchestrator = false,
+    bool clearPackageData = false,
+    String? classArg,
+    ExecutedTestsCheck? executedTestsCheck,
+    String? flavor,
+    required bool showFlutterLogs,
+    required bool hideTestSteps,
+    required bool clearTestSteps,
+    void Function(Entry entry)? onLogEntry,
+    VideoRecordingConfig? videoConfig,
+    String? screenshotsOutputDir,
+  }) async {
     await _disposeScope.run((scope) async {
       final processLogcat =
           await _adb.logcat(
@@ -844,6 +1069,19 @@ class AndroidTestBackend {
           ? path.replaceAll(r'\', '/')
           : path;
 
+      AndroidVideoRecordingManager? videoRecordingManager;
+      if (videoConfig?.enabled ?? false) {
+        videoRecordingManager = AndroidVideoRecordingManager(
+          processManager: _processManager,
+          adb: _adb,
+          rootDirectory: _rootDirectory,
+          logger: _logger,
+          config: videoConfig!,
+          device: device,
+          scope: scope,
+        );
+      }
+
       final patrolLogReader =
           PatrolLogReader(
               listenStdOut: processLogcat.listenStdOut,
@@ -853,8 +1091,12 @@ class AndroidTestBackend {
               showFlutterLogs: showFlutterLogs,
               hideTestSteps: hideTestSteps,
               clearTestSteps: clearTestSteps,
-              onLogEntry:
-                  executedTestsCheck?.wrapOnLogEntry(onLogEntry) ?? onLogEntry,
+              onLogEntry: composeLogEntryCallback(
+                onLogEntry:
+                    executedTestsCheck?.wrapOnLogEntry(onLogEntry) ??
+                    onLogEntry,
+                videoRecordingManager: videoRecordingManager,
+              ),
             )
             ..listen()
             ..startTimer();
@@ -862,16 +1104,35 @@ class AndroidTestBackend {
       final subject = '${options.description} on ${device.description}';
       final task = _logger.task('Executing tests of $subject (no build)');
 
+      if (screenshotsOutputDir != null) {
+        await _adb.remove(
+          _deviceScreenshotsDir,
+          device: device.id,
+          recursive: true,
+        );
+      }
+
       // `am instrument -w` exits 0 even when tests fail, so detect failure from
       // its textual output instead of the exit code.
       var failed = false;
+      // Not in a host shell: `$(pm path ...)` must run on the device.
       final process =
-          await _adb.instrument(
-              packageName: instrumentPackage,
-              intentClass: instrumentRunner,
-              device: device.id,
-              arguments: {'class': classArg},
-            )
+          (orchestrator
+                ? await _processManager.start([
+                    'adb',
+                    ...['-s', device.id],
+                    'shell',
+                    orchestratorInvocation(
+                      instrumentation: '$instrumentPackage/$instrumentRunner',
+                      clearPackageData: clearPackageData,
+                    ),
+                  ])
+                : await _adb.instrument(
+                    packageName: instrumentPackage,
+                    intentClass: instrumentRunner,
+                    device: device.id,
+                    arguments: {'class': ?classArg},
+                  ))
             ..disposedByTree(scope);
       process
           .listenStdOut((l) {
@@ -889,7 +1150,18 @@ class AndroidTestBackend {
       final exitCode = await process.exitCode;
       patrolLogReader.stopTimer();
       await processLogcat.killTree();
+
+      await videoRecordingManager?.dispose();
+
+      if (screenshotsOutputDir != null) {
+        await pullDeviceScreenshots(device, screenshotsOutputDir);
+      }
+
       _logger.info(patrolLogReader.summary);
+      final recordingSummary = videoRecordingManager?.recordingSummary;
+      if (recordingSummary != null) {
+        _logger.info(recordingSummary);
+      }
 
       if (exitCode == 0 && !failed) {
         executedTestsCheck?.verifyTask(task, subject);
@@ -1227,6 +1499,24 @@ class AndroidTestBackend {
         _logger.detail('Failed to stop $packageName: $err');
       }
     }
+  }
+
+  /// The device shell command that runs [instrumentation]
+  /// (`<package>/<runner>`) through the Android Test Orchestrator, as Gradle
+  /// does.
+  @visibleForTesting
+  static String orchestratorInvocation({
+    required String instrumentation,
+    required bool clearPackageData,
+  }) {
+    return [
+      r'CLASSPATH=$(pm path androidx.test.services)',
+      'app_process / androidx.test.services.shellexecutor.ShellMain',
+      'am instrument -w',
+      if (clearPackageData) '-e clearPackageData true',
+      '-e targetInstrumentation $instrumentation',
+      '$_orchestratorPackage/androidx.test.orchestrator.AndroidTestOrchestrator',
+    ].join(' ');
   }
 
   /// Generates the Android test report path based on build mode and flavor.

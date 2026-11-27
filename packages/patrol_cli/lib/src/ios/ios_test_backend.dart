@@ -440,6 +440,7 @@ class IOSTestBackend {
     void Function(String url)? onVmServiceUrl,
     VideoRecordingConfig? videoConfig,
     String? screenshotsOutputDir,
+    String? productsRoot,
   }) async {
     // A develop session runs in the base runner class, whatever the mode.
     final onlyTesting = interruptible
@@ -546,6 +547,7 @@ class IOSTestBackend {
                   real: device.real,
                   scheme: options.scheme,
                   sdkVersion: sdkVersion,
+                  productsRoot: productsRoot,
                 ),
                 resultBundlePath: reportPath,
                 onlyTesting: onlyTesting,
@@ -759,6 +761,11 @@ class IOSTestBackend {
     }
   }
 
+  /// Where `xcodebuild build-for-testing` writes the app, the UI test runner
+  /// and the `.xctestrun`, relative to the project root.
+  static const productsDirectoryPath = 'build/ios_integ/Build/Products';
+
+  /// [productsRoot] overrides where to look, e.g. a `--reuse-build` copy.
   // TODO: The path should be joined using platform-specific separator.
   // https://github.com/leancodepl/patrol/issues/1980
   Future<String> xcTestRunPath({
@@ -766,12 +773,13 @@ class IOSTestBackend {
     required String scheme,
     required String sdkVersion,
     bool absolutePath = true,
+    String? productsRoot,
   }) async {
     final targetPlatform = real ? 'iphoneos' : 'iphonesimulator';
     final glob = Glob('${scheme}_*$targetPlatform$sdkVersion*.xctestrun');
 
-    var root = 'build/ios_integ/Build/Products';
-    if (absolutePath) {
+    var root = productsRoot ?? productsDirectoryPath;
+    if (absolutePath && productsRoot == null) {
       root = '${_rootDirectory.absolute.path}/$root';
     }
     _logger.detail('Looking for .xctestrun matching ${glob.pattern} at $root');

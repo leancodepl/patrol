@@ -9,6 +9,7 @@ import 'package:patrol_cli/src/commands/build_android.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
+import 'package:patrol_cli/src/reuse_build/native_fingerprint.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:test/test.dart';
 
@@ -36,6 +37,18 @@ void main() {
     );
     registerFallbackValue(
       PatrolPubspecConfig.empty(flutterPackageName: 'test_app'),
+    );
+    registerFallbackValue(
+      const FlutterAppOptions(
+        command: FlutterCommand('flutter'),
+        target: 'patrol_test/test_bundle.dart',
+        flavor: null,
+        buildMode: BuildMode.debug,
+        dartDefines: <String, String>{},
+        dartDefineFromFilePaths: <String>[],
+        buildName: null,
+        buildNumber: null,
+      ),
     );
     registerFallbackValue(MemoryFileSystem().file('test'));
     registerFallbackValue(<String>[]);
@@ -120,6 +133,7 @@ void main() {
         dartDefinesReader: mockDartDefinesReader,
         pubspecReader: mockPubspecReader,
         androidTestBackend: mockAndroidTestBackend,
+        kernelCompiler: MockKernelCompiler(),
         analytics: mockAnalytics,
         logger: mockLogger,
         compatibilityChecker: mockCompatibilityChecker,
@@ -136,6 +150,49 @@ void main() {
 
         return result;
       }
+
+      test('--kernel-only compiles the Dart code without Gradle', () async {
+        final kernelCompiler = MockKernelCompiler();
+        when(
+          () => kernelCompiler.compile(any(), platform: ReusePlatform.android),
+        ).thenAnswer(
+          (_) async => MemoryFileSystem().file(
+            'build/patrol_kernel/android/flutter_assets/kernel_blob.bin',
+          ),
+        );
+        command = BuildAndroidCommand(
+          testFinderFactory: mockTestFinderFactory,
+          testBundler: mockTestBundler,
+          dartDefinesReader: mockDartDefinesReader,
+          pubspecReader: mockPubspecReader,
+          androidTestBackend: mockAndroidTestBackend,
+          kernelCompiler: kernelCompiler,
+          analytics: mockAnalytics,
+          logger: mockLogger,
+          compatibilityChecker: mockCompatibilityChecker,
+        );
+
+        final result = await runCommand(['--kernel-only']);
+
+        expect(result, equals(0));
+        verifyNever(() => mockAndroidTestBackend.build(any()));
+        final opts =
+            verify(
+                  () => kernelCompiler.compile(
+                    captureAny(),
+                    platform: ReusePlatform.android,
+                  ),
+                ).captured.single
+                as FlutterAppOptions;
+        expect(opts.dartDefines, containsPair('PATROL_WAIT', '0'));
+      });
+
+      test('--kernel-only refuses a release build', () async {
+        await expectLater(
+          runCommand(['--kernel-only', '--release']),
+          throwsA(isA<ToolExit>()),
+        );
+      });
 
       group('--develop', () {
         setUp(() {

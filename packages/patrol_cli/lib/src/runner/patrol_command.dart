@@ -233,6 +233,18 @@ abstract class PatrolCommand extends Command<int> {
   /// by test file. Selection happens natively (the entry is mapped to the
   /// generated test method or class through the build-time manifest), so it needs
   /// no rebuild.
+  void usesKernelOnlyOption() {
+    argParser.addFlag(
+      'kernel-only',
+      negatable: false,
+      help:
+          'Only compile the Dart code (kernel_blob.bin) of a debug build, '
+          'with the same dart-defines as a full build, and print its path. '
+          'Put it into a debug build of the same native code to run other '
+          'tests without a native build.',
+    );
+  }
+
   void usesOnlyOption() {
     argParser.addMultiOption(
       'only',

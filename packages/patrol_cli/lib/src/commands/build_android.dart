@@ -14,6 +14,8 @@ import 'package:patrol_cli/src/crossplatform/test_discovery_mode.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
+import 'package:patrol_cli/src/reuse_build/kernel_compiler.dart';
+import 'package:patrol_cli/src/reuse_build/native_fingerprint.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
@@ -25,6 +27,7 @@ class BuildAndroidCommand extends PatrolCommand {
     required this._dartDefinesReader,
     required this._pubspecReader,
     required this._androidTestBackend,
+    required this._kernelCompiler,
     required this._analytics,
     required this._logger,
     required this._compatibilityChecker,
@@ -47,6 +50,7 @@ class BuildAndroidCommand extends PatrolCommand {
     usesAndroidOptions();
     usesAppNameOption();
     usesEmitTestManifestOption();
+    usesKernelOnlyOption();
 
     argParser.addFlag(
       'develop',
@@ -65,6 +69,7 @@ class BuildAndroidCommand extends PatrolCommand {
   final DartDefinesReader _dartDefinesReader;
   final PubspecReader _pubspecReader;
   final AndroidTestBackend _androidTestBackend;
+  final KernelCompiler _kernelCompiler;
   final CompatibilityChecker _compatibilityChecker;
 
   final Analytics _analytics;
@@ -125,6 +130,10 @@ class BuildAndroidCommand extends PatrolCommand {
       _logger.detail('Received exclude tag(s): $excludeTags');
     }
     final develop = boolArg('develop');
+    final kernelOnly = boolArg('kernel-only');
+    if (kernelOnly && buildMode.name != 'debug') {
+      throwToolExit('--kernel-only needs a debug build.');
+    }
     if (develop && targets.length != 1) {
       throwToolExit('--develop requires exactly one --target');
     }
@@ -252,8 +261,19 @@ class BuildAndroidCommand extends PatrolCommand {
     );
 
     try {
-      await _androidTestBackend.build(androidOpts);
-      printApkPaths(flavor: flavor, buildMode: buildMode.androidName);
+      if (kernelOnly) {
+        final kernel = await _kernelCompiler.compile(
+          flutterOpts,
+          platform: ReusePlatform.android,
+        );
+        _logger.info(
+          '${kernel.path} (kernel_blob.bin, goes to '
+          'assets/flutter_assets/ in the app APK)',
+        );
+      } else {
+        await _androidTestBackend.build(androidOpts);
+        printApkPaths(flavor: flavor, buildMode: buildMode.androidName);
+      }
     } catch (err, st) {
       _logger
         ..err('$err')

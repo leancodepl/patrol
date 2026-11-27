@@ -13,6 +13,8 @@ import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
+import 'package:patrol_cli/src/reuse_build/kernel_compiler.dart';
+import 'package:patrol_cli/src/reuse_build/native_fingerprint.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
@@ -24,6 +26,7 @@ class BuildIOSCommand extends PatrolCommand {
     required this._dartDefinesReader,
     required this._pubspecReader,
     required this._iosTestBackend,
+    required this._kernelCompiler,
     required this._analytics,
     required this._logger,
     required this._compatibilityChecker,
@@ -48,6 +51,7 @@ class BuildIOSCommand extends PatrolCommand {
       help: 'Build for simulator instead of real device.',
     );
     usesEmitTestManifestOption();
+    usesKernelOnlyOption();
   }
 
   final TestFinderFactory _testFinderFactory;
@@ -55,6 +59,7 @@ class BuildIOSCommand extends PatrolCommand {
   final DartDefinesReader _dartDefinesReader;
   final PubspecReader _pubspecReader;
   final IOSTestBackend _iosTestBackend;
+  final KernelCompiler _kernelCompiler;
   final CompatibilityChecker _compatibilityChecker;
 
   final Analytics _analytics;
@@ -208,6 +213,22 @@ class BuildIOSCommand extends PatrolCommand {
 
     if (!iosOpts.simulator && iosOpts.fullIsolation) {
       throwToolExit('Full isolation is only supported on iOS Simulator');
+    }
+
+    if (boolArg('kernel-only')) {
+      if (buildMode.name != 'debug') {
+        throwToolExit('--kernel-only needs a debug build.');
+      }
+      final kernel = await _kernelCompiler.compile(
+        flutterOpts,
+        platform: ReusePlatform.iosSimulator,
+      );
+      _logger.info(
+        '${kernel.path} (kernel_blob.bin, goes to '
+        'Frameworks/App.framework/flutter_assets/ in Runner.app and in the UI '
+        'test runner)',
+      );
+      return 0;
     }
 
     try {

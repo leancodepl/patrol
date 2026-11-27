@@ -20,6 +20,7 @@ void main() {
         dartDefinesReader: MockDartDefinesReader(),
         pubspecReader: MockPubspecReader(),
         iosTestBackend: MockIOSTestBackend(),
+        kernelCompiler: MockKernelCompiler(),
         analytics: MockAnalytics(),
         logger: mockLogger,
         compatibilityChecker: MockCompatibilityChecker(),
