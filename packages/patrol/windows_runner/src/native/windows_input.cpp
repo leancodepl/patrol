@@ -1,7 +1,6 @@
 #include "native/windows_input.h"
 
 #include <cmath>
-#include <mutex>
 #include <vector>
 
 #include <Windows.h>
@@ -16,11 +15,6 @@ constexpr DWORD kKeyeventfKeyup = 0x0002;
 constexpr WORD kVkShift = 0x10;
 constexpr WORD kVkControl = 0x11;
 constexpr WORD kVkMenu = 0x12;
-
-std::mutex& InputMutex() {
-  static std::mutex mutex;
-  return mutex;
-}
 
 }  // namespace
 
@@ -54,7 +48,6 @@ void WindowsInput::TapAtNormalized(double x, double y) {
 }
 
 void WindowsInput::TapAtPixels(int pixel_x, int pixel_y) {
-  std::lock_guard lock(InputMutex());
   if (!SetCursorPos(pixel_x, pixel_y)) {
     throw std::runtime_error("SetCursorPos failed");
   }
@@ -66,8 +59,6 @@ void WindowsInput::PressKey(int key_code, bool shift, bool ctrl, bool alt) {
   if (key_code < 1 || key_code > 254) {
     throw BadRequestError("Virtual-key code must be in 1..254");
   }
-
-  std::lock_guard lock(InputMutex());
 
   std::vector<INPUT> inputs;
   inputs.reserve(8);

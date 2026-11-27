@@ -119,9 +119,7 @@ ComPtr<IUIAutomationElement> FindElement(
           std::vector<ComPtr<IUIAutomationElement>> hits;
           for (auto& root : roots) {
             ComPtr<IUIAutomationElementArray> matches;
-            // Subtree includes the scope root itself (Descendants does not), so
-            // a selector matching the scoped window (e.g. className #32770)
-            // still finds it.
+            // Subtree includes the scope root; Descendants does not.
             if (FAILED(root->FindAll(
                     TreeScope_Subtree, condition.get(), matches.put())) ||
                 !matches) {
@@ -162,10 +160,8 @@ ComPtr<IUIAutomationElement> FindElement(
 void ClickElement(IUIAutomationElement* element, const UiSelector& selector) {
   std::cout << "WindowsUiAutomation: tap(" << selector.to_string() << ")\n";
 
-  // Prefer a physical click: InvokePattern is the control's default action
-  // (e.g. Explorer opens a file) and is not equivalent to a single tap.
-  // Focus first — providers may scroll the control into view, which updates
-  // the bounding rectangle used for the click.
+  // Physical click (InvokePattern is the control's default action, not a tap).
+  // Focus first so off-screen controls scroll into view before we read bounds.
   element->SetFocus();
 
   RECT rect{};

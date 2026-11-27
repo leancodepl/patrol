@@ -195,8 +195,6 @@ int WindowsAppControl::LaunchApp(
     throw BadRequestError("launchApp requires \"appPath\"");
   }
 
-  // ShellExecuteEx can load shell extensions that expect STA; httplib workers
-  // are not COM-initialized, so initialize before the launch call.
   ComApartment apartment;
 
   const std::wstring wide_path = Utf8ToWide(app_path);
@@ -208,8 +206,6 @@ int WindowsAppControl::LaunchApp(
 
   SHELLEXECUTEINFOW info{};
   info.cbSize = sizeof(info);
-  // NOASYNC: finish before COM teardown on the worker thread.
-  // FLAG_NO_UI: surface failures to the HTTP handler, not a modal dialog.
   info.fMask =
       SEE_MASK_NOCLOSEPROCESS | SEE_MASK_NOASYNC | SEE_MASK_FLAG_NO_UI;
   info.lpFile = wide_path.c_str();

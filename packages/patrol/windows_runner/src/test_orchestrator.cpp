@@ -212,11 +212,8 @@ int TestOrchestrator::Run() {
 
       if (tests.empty()) {
         StopApp(first_app, app_exit_timeout_);
-        // Discovery returned only skipped tests → success (same as other
-        // runners). An empty tree means nothing was registered → fail.
         if (!tree.empty()) {
-          std::cout << "TestOrchestrator: all " << tree.size()
-                    << " discovered test(s) were skipped\n";
+          std::cout << "TestOrchestrator: all discovered tests were skipped\n";
           return 0;
         }
         std::cerr << "TestOrchestrator: no runnable Dart tests found\n";
