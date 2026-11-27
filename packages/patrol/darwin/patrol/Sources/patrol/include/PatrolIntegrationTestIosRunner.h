@@ -22,7 +22,9 @@ static inline BOOL *PatrolSkipsQuiescenceWait(void) {
   return &skips;
 }
 
-static inline void PatrolReplaceQuiescenceWait(void) {
+// Returns whether XCTest has a quiescence wait that Patrol could replace.
+static inline BOOL PatrolReplaceQuiescenceWait(void) {
+  static BOOL replaced = NO;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     Class processClass = NSClassFromString(@"XCUIApplicationProcess");
@@ -56,10 +58,12 @@ static inline void PatrolReplaceQuiescenceWait(void) {
                                }));
     }
 
-    if (legacyMethod == NULL && preEventMethod == NULL) {
+    replaced = legacyMethod != NULL || preEventMethod != NULL;
+    if (!replaced) {
       NSLog(@"Patrol: this XCTest has no quiescence wait to skip");
     }
   });
+  return replaced;
 }
 
 // Runs [block] without waiting for apps to become idle.
@@ -76,129 +80,140 @@ static inline void PatrolWithoutQuiescenceWait(void (^block)(void)) {
 
 // Class methods shared by the iOS runners. They delete the app under test through Springboard.
 // On the iOS Simulator, the next launch of the app installs it again.
-#define PATROL_SPRINGBOARD_UNINSTALL_METHODS                                                                          \
-  +(BOOL)uninstallApp {                                                                                               \
-    XCUIApplication *app = [[XCUIApplication alloc] init];                                                            \
-    NSString *appName = app.label;                                                                                    \
-    NSLog(@"Uninstalling app: %@", appName);                                                                          \
-                                                                                                                      \
-    [app terminate];                                                                                                  \
-                                                                                                                      \
-    XCUIApplication *springboard = [[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"];       \
-                                                                                                                      \
-    /* Go to home screen (springboard) by pressing home button */                                                     \
-    [[XCUIDevice sharedDevice] pressButton:XCUIDeviceButtonHome];                                                     \
-    [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                                \
-                                                                                                                      \
-    /* Search for app icon on current screen and subsequent screens */                                                \
-    int maxScreens = 10; /* Maximum number of screens to check */                                                     \
-    for (int currentScreen = 0; currentScreen < maxScreens; currentScreen++) {                                        \
-      NSLog(@"Checking screen %d for app: %@", currentScreen + 1, appName);                                           \
-                                                                                                                      \
-      XCUIElement *icon = springboard.icons[appName];                                                                 \
-      if (icon.exists && icon.isHittable) {                                                                           \
-        NSLog(@"App icon found on screen %d: %@", currentScreen + 1, appName);                                        \
-                                                                                                                      \
-        /* From the long press on, Springboard animates and does not become idle, so XCTest would wait                \
-           a minute for it after every step. Wait for each element instead. */                                        \
-        __block BOOL deleted = NO;                                                                                    \
-        PatrolWithoutQuiescenceWait(^{                                                                                \
-          [icon pressForDuration:1.3];                                                                                \
-          deleted = [self deleteAppIcon:icon named:appName inSpringboard:springboard];                                \
-          if (!deleted) {                                                                                             \
-            /* Close the context menu or alert that is left open, so the next launch is not covered. */               \
-            [[XCUIDevice sharedDevice] pressButton:XCUIDeviceButtonHome];                                             \
-          }                                                                                                           \
-        });                                                                                                           \
-        return deleted;                                                                                               \
-      }                                                                                                               \
-                                                                                                                      \
-      /* If app not found on current screen, swipe right to next screen */                                            \
-      if (currentScreen + 1 < maxScreens) {                                                                           \
-        NSLog(@"App not found on screen %d, swiping right to next screen", currentScreen + 1);                        \
-        XCUICoordinate *startCoordinate = [springboard coordinateWithNormalizedOffset:CGVectorMake(0.8, 0.5)];        \
-        XCUICoordinate *endCoordinate = [springboard coordinateWithNormalizedOffset:CGVectorMake(0.2, 0.5)];          \
-        [startCoordinate pressForDuration:0.0                                                                         \
-                     thenDragToCoordinate:endCoordinate                                                               \
-                             withVelocity:XCUIGestureVelocityFast                                                     \
-                      thenHoldForDuration:0.0];                                                                       \
-        [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                            \
-      }                                                                                                               \
-    }                                                                                                                 \
-                                                                                                                      \
-    NSLog(@"App icon not found on any home screen: %@", appName);                                                     \
-    return NO;                                                                                                        \
-  }                                                                                                                   \
-                                                                                                                      \
-  /* Confirms the deletion from the icon's context menu and waits until the icon is gone. */                          \
-  +(BOOL)deleteAppIcon : (XCUIElement *)icon named : (NSString *)appName inSpringboard                                \
-      : (XCUIApplication *)springboard {                                                                              \
-    NSString *removeAppText = [ObjCLocalization getLocalizedStringWithKey:@"remove_app"];                             \
-    XCUIElement *removeAppButton = springboard.buttons[removeAppText];                                                \
-    if (![removeAppButton waitForExistenceWithTimeout:5.0]) {                                                         \
-      NSLog(@"'%@' button not found", removeAppText);                                                                 \
-      return NO;                                                                                                      \
-    }                                                                                                                 \
-    [self tapWhenSettled:removeAppButton];                                                                            \
-                                                                                                                      \
-    /* Depending on the iOS version, one or two alerts ask to confirm. Tap whichever shows up until the               \
-       icon is gone. */                                                                                               \
-    NSArray<NSString *> *confirmTexts = @[                                                                            \
-      [ObjCLocalization getLocalizedStringWithKey:@"delete_app"],                                                     \
-      [ObjCLocalization getLocalizedStringWithKey:@"delete"],                                                         \
-    ];                                                                                                                \
-    XCUIElement *confirmButton =                                                                                      \
-        [springboard.alerts.buttons matchingPredicate:[NSPredicate predicateWithFormat:@"label IN %@", confirmTexts]] \
-            .firstMatch;                                                                                              \
-    /* An alert hides the icons below it from XCTest, and between two alerts neither may be visible.                  \
-       The app counts as deleted once neither the icon nor an alert has shown up for a second. */                     \
-    XCUIElement *anyAlert = springboard.alerts.firstMatch;                                                            \
-    NSDate *deadline = [NSDate dateWithTimeIntervalSinceNow:15.0];                                                    \
-    NSDate *goneSince = nil;                                                                                          \
-    int confirmations = 0;                                                                                            \
-    while (goneSince == nil || -goneSince.timeIntervalSinceNow < 1.0) {                                               \
-      if (deadline.timeIntervalSinceNow <= 0) {                                                                       \
-        NSLog(@"App icon is still on the home screen after deleting it: %@", appName);                                \
-        return NO;                                                                                                    \
-      }                                                                                                               \
-      if (confirmations < 2 && confirmButton.exists) {                                                                \
-        NSString *text = confirmButton.label;                                                                         \
-        [self tapWhenSettled:confirmButton];                                                                          \
-        confirmations++;                                                                                              \
-        if (![self waitUntilGone:springboard.alerts.buttons[text] timeout:5.0]) {                                     \
-          NSLog(@"'%@' alert did not close", text);                                                                   \
-          return NO;                                                                                                  \
-        }                                                                                                             \
-        goneSince = nil;                                                                                              \
-        continue;                                                                                                     \
-      }                                                                                                               \
-      if (icon.exists || anyAlert.exists) {                                                                           \
-        goneSince = nil;                                                                                              \
-      } else if (goneSince == nil) {                                                                                  \
-        goneSince = [NSDate date];                                                                                    \
-      }                                                                                                               \
-      [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];                              \
-    }                                                                                                                 \
-                                                                                                                      \
-    NSLog(@"App uninstallation completed");                                                                           \
-    return YES;                                                                                                       \
-  }                                                                                                                   \
-                                                                                                                      \
-  /* XCTest does not wait for Springboard here, so give a menu or alert a moment to finish appearing. */              \
-  +(void)tapWhenSettled : (XCUIElement *)element {                                                                    \
-    [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];                                \
-    [element tap];                                                                                                    \
-  }                                                                                                                   \
-                                                                                                                      \
-  +(BOOL)waitUntilGone : (XCUIElement *)element timeout : (NSTimeInterval)timeout {                                   \
-    NSDate *deadline = [NSDate dateWithTimeIntervalSinceNow:timeout];                                                 \
-    while (element.exists) {                                                                                          \
-      if (deadline.timeIntervalSinceNow <= 0) {                                                                       \
-        return NO;                                                                                                    \
-      }                                                                                                               \
-      [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];                              \
-    }                                                                                                                 \
-    return YES;                                                                                                       \
+#define PATROL_SPRINGBOARD_UNINSTALL_METHODS                                                                         \
+  +(BOOL)uninstallApp {                                                                                              \
+    XCUIApplication *app = [[XCUIApplication alloc] init];                                                           \
+    NSString *appName = app.label;                                                                                   \
+    NSLog(@"Uninstalling app: %@", appName);                                                                         \
+                                                                                                                     \
+    [app terminate];                                                                                                 \
+                                                                                                                     \
+    XCUIApplication *springboard = [[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"];      \
+                                                                                                                     \
+    /* Go to home screen (springboard) by pressing home button */                                                    \
+    [[XCUIDevice sharedDevice] pressButton:XCUIDeviceButtonHome];                                                    \
+    [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                               \
+                                                                                                                     \
+    /* Search for app icon on current screen and subsequent screens */                                               \
+    int maxScreens = 10; /* Maximum number of screens to check */                                                    \
+    for (int currentScreen = 0; currentScreen < maxScreens; currentScreen++) {                                       \
+      NSLog(@"Checking screen %d for app: %@", currentScreen + 1, appName);                                          \
+                                                                                                                     \
+      XCUIElement *icon = springboard.icons[appName];                                                                \
+      if (icon.exists && icon.isHittable) {                                                                          \
+        NSLog(@"App icon found on screen %d: %@", currentScreen + 1, appName);                                       \
+                                                                                                                     \
+        /* From the long press on, Springboard animates and does not become idle, so XCTest would wait               \
+           a minute for it after every step. Wait for each element instead. If this XCTest has no wait to            \
+           replace, every step still takes that minute, so the timeouts below get longer. */                         \
+        NSTimeInterval patience = PatrolReplaceQuiescenceWait() ? 1.0 : 40.0;                                        \
+        __block BOOL deleted = NO;                                                                                   \
+        PatrolWithoutQuiescenceWait(^{                                                                               \
+          [icon pressForDuration:1.3];                                                                               \
+          deleted = [self deleteAppIcon:icon named:appName inSpringboard:springboard patience:patience];             \
+          if (!deleted) {                                                                                            \
+            /* Close the context menu or alert that is left open, so the next launch is not covered. */              \
+            [[XCUIDevice sharedDevice] pressButton:XCUIDeviceButtonHome];                                            \
+          }                                                                                                          \
+        });                                                                                                          \
+        return deleted;                                                                                              \
+      }                                                                                                              \
+                                                                                                                     \
+      /* If app not found on current screen, swipe right to next screen */                                           \
+      if (currentScreen + 1 < maxScreens) {                                                                          \
+        NSLog(@"App not found on screen %d, swiping right to next screen", currentScreen + 1);                       \
+        XCUICoordinate *startCoordinate = [springboard coordinateWithNormalizedOffset:CGVectorMake(0.8, 0.5)];       \
+        XCUICoordinate *endCoordinate = [springboard coordinateWithNormalizedOffset:CGVectorMake(0.2, 0.5)];         \
+        [startCoordinate pressForDuration:0.0                                                                        \
+                     thenDragToCoordinate:endCoordinate                                                              \
+                             withVelocity:XCUIGestureVelocityFast                                                    \
+                      thenHoldForDuration:0.0];                                                                      \
+        [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                           \
+      }                                                                                                              \
+    }                                                                                                                \
+                                                                                                                     \
+    NSLog(@"App icon not found on any home screen: %@", appName);                                                    \
+    return NO;                                                                                                       \
+  }                                                                                                                  \
+                                                                                                                     \
+  /* Confirms the deletion from the icon's context menu and waits until the icon is gone. [patience]                 \
+     multiplies the timeouts. */                                                                                     \
+  +(BOOL)deleteAppIcon : (XCUIElement *)icon named : (NSString *)appName inSpringboard                               \
+      : (XCUIApplication *)springboard patience : (NSTimeInterval)patience {                                         \
+    NSString *removeAppText = [ObjCLocalization getLocalizedStringWithKey:@"remove_app"];                            \
+    XCUIElement *removeAppButton = springboard.buttons[removeAppText];                                               \
+    if (![removeAppButton waitForExistenceWithTimeout:5.0 * patience]) {                                             \
+      NSLog(@"'%@' button not found", removeAppText);                                                                \
+      return NO;                                                                                                     \
+    }                                                                                                                \
+    [self tapWhenSettled:removeAppButton];                                                                           \
+    NSDate *removeAppTappedAt = [NSDate date];                                                                       \
+                                                                                                                     \
+    /* Depending on the iOS version, one or two alerts ask to confirm. Tap whichever shows up until the              \
+       icon is gone. */                                                                                              \
+    NSString *deleteText = [ObjCLocalization getLocalizedStringWithKey:@"delete"];                                   \
+    NSArray<NSString *> *confirmTexts = @[ [ObjCLocalization getLocalizedStringWithKey:@"delete_app"], deleteText ]; \
+    NSPredicate *isConfirmButton = [NSPredicate predicateWithFormat:@"label IN %@", confirmTexts];                   \
+    XCUIElement *confirmButton = [springboard.alerts.buttons matchingPredicate:isConfirmButton].firstMatch;          \
+    /* Only the deletion alerts count, so an unrelated alert does not hold up the deletion. */                       \
+    XCUIElement *deletionAlert = [springboard.alerts containingPredicate:isConfirmButton].firstMatch;                \
+    /* An alert or the context menu hides the icons below it from XCTest, and between two alerts neither             \
+       may be visible. So the app counts as deleted once neither the icon, the menu nor a deletion alert             \
+       has shown up for a while: 1 s after the final "Delete", 3 s otherwise, in case another alert                  \
+       comes. */                                                                                                     \
+    NSDate *deadline = [NSDate dateWithTimeIntervalSinceNow:15.0 * patience];                                        \
+    NSDate *goneSince = nil;                                                                                         \
+    BOOL confirmedDelete = NO;                                                                                       \
+    while (goneSince == nil || -goneSince.timeIntervalSinceNow < (confirmedDelete ? 1.0 : 3.0)) {                    \
+      if (deadline.timeIntervalSinceNow <= 0) {                                                                      \
+        NSLog(@"Could not confirm deleting the app: %@", appName);                                                   \
+        return NO;                                                                                                   \
+      }                                                                                                              \
+      if (confirmButton.exists) {                                                                                    \
+        NSString *text = confirmButton.label;                                                                        \
+        [self tapWhenSettled:confirmButton];                                                                         \
+        goneSince = nil;                                                                                             \
+        if (![self waitUntilGone:springboard.alerts.buttons[text] timeout:3.0 * patience]) {                         \
+          NSLog(@"'%@' alert did not close, tapping again", text);                                                   \
+          continue;                                                                                                  \
+        }                                                                                                            \
+        confirmedDelete = [text isEqualToString:deleteText];                                                         \
+        continue;                                                                                                    \
+      }                                                                                                              \
+      if (removeAppButton.exists && -removeAppTappedAt.timeIntervalSinceNow > 2.0 * patience) {                      \
+        NSLog(@"'%@' menu is still open, tapping again", removeAppText);                                             \
+        [self tapWhenSettled:removeAppButton];                                                                       \
+        removeAppTappedAt = [NSDate date];                                                                           \
+        goneSince = nil;                                                                                             \
+        continue;                                                                                                    \
+      }                                                                                                              \
+      if (icon.exists || removeAppButton.exists || deletionAlert.exists) {                                           \
+        goneSince = nil;                                                                                             \
+      } else if (goneSince == nil) {                                                                                 \
+        goneSince = [NSDate date];                                                                                   \
+      }                                                                                                              \
+      [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];                             \
+    }                                                                                                                \
+                                                                                                                     \
+    NSLog(@"App uninstallation completed");                                                                          \
+    return YES;                                                                                                      \
+  }                                                                                                                  \
+                                                                                                                     \
+  /* XCTest does not wait for Springboard here, so give a menu or alert a moment to finish appearing. */             \
+  +(void)tapWhenSettled : (XCUIElement *)element {                                                                   \
+    [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];                               \
+    [element tap];                                                                                                   \
+  }                                                                                                                  \
+                                                                                                                     \
+  +(BOOL)waitUntilGone : (XCUIElement *)element timeout : (NSTimeInterval)timeout {                                  \
+    NSDate *deadline = [NSDate dateWithTimeIntervalSinceNow:timeout];                                                \
+    while (element.exists) {                                                                                         \
+      if (deadline.timeIntervalSinceNow <= 0) {                                                                      \
+        return NO;                                                                                                   \
+      }                                                                                                              \
+      [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];                             \
+    }                                                                                                                \
+    return YES;                                                                                                      \
   }
 
 // For every Flutter dart test, dynamically generate an Objective-C method mirroring the test results
@@ -427,6 +442,9 @@ static inline void PatrolWithoutQuiescenceWait(void (^block)(void)) {
                                                                                                                     \
       IMP implementation = imp_implementationWithBlock(^(id _self) {                                                \
         NSLog(@"RunnerUITests running Dart test: %@", dartTestName);                                                \
+        if (skip) {                                                                                                 \
+          XCTSkip(@"Skip that test \"%@\"", dartTestName);                                                          \
+        }                                                                                                           \
                                                                                                                     \
         if (CLEAR_PERMISSIONS && i > 0) {                                                                           \
           [self resetPermissions];                                                                                  \
@@ -436,15 +454,11 @@ static inline void PatrolWithoutQuiescenceWait(void (^block)(void)) {
         if (FULL_ISOLATION && i > 0) {                                                                              \
           NSLog(@"Uninstalling app");                                                                               \
           if (![self uninstallApp]) {                                                                               \
-            XCTFail(@"Could not delete the app for --full-isolation. Check that the Simulator language is "         \
-                    @"English, German, French, Polish, Japanese or Korean.");                                       \
+            XCTFail(@"Could not delete the app for --full-isolation. The runner log says which step failed. "       \
+                    @"Patrol finds Springboard's buttons in English, German, French, Polish, Japanese or Korean."); \
             return;                                                                                                 \
           }                                                                                                         \
           NSLog(@"Launching the app");                                                                              \
-        }                                                                                                           \
-                                                                                                                    \
-        if (skip) {                                                                                                 \
-          XCTSkip(@"Skip that test \"%@\"", dartTestName);                                                          \
         }                                                                                                           \
                                                                                                                     \
         [__test_class launchPatrolAppWithServer:server];                                                            \
@@ -579,6 +593,9 @@ static inline void PatrolWithoutQuiescenceWait(void (^block)(void)) {
                                                                                                                        \
   -(void)patrolExecuteDartTest : (NSString *)dartTestName skip : (BOOL)skip {                                          \
     NSLog(@"RunnerUITests running Dart test: %@", dartTestName);                                                       \
+    if (skip) {                                                                                                        \
+      XCTSkip(@"Skip that test \"%@\"", dartTestName);                                                                 \
+    }                                                                                                                  \
     if (CLEAR_PERMISSIONS && _patrolStaticTestIndex > 0) {                                                             \
       [[self class] resetPermissions];                                                                                 \
       NSLog(@"App permissions cleared");                                                                               \
@@ -586,8 +603,8 @@ static inline void PatrolWithoutQuiescenceWait(void (^block)(void)) {
     if (FULL_ISOLATION && _patrolStaticTestIndex > 0) {                                                                \
       NSLog(@"Uninstalling app");                                                                                      \
       if (![[self class] uninstallApp]) {                                                                              \
-        XCTFail(@"Could not delete the app for --full-isolation. Check that the Simulator language is "                \
-                @"English, German, French, Polish, Japanese or Korean.");                                              \
+        XCTFail(@"Could not delete the app for --full-isolation. The runner log says which step failed. "              \
+                @"Patrol finds Springboard's buttons in English, German, French, Polish, Japanese or Korean.");        \
         return;                                                                                                        \
       }                                                                                                                \
       NSLog(@"Launching the app");                                                                                     \
@@ -595,9 +612,6 @@ static inline void PatrolWithoutQuiescenceWait(void (^block)(void)) {
     _patrolStaticTestIndex++;                                                                                          \
                                                                                                                        \
     [[self class] launchPatrolApp];                                                                                    \
-    if (skip) {                                                                                                        \
-      XCTSkip(@"Skip that test \"%@\"", dartTestName);                                                                 \
-    }                                                                                                                  \
                                                                                                                        \
     NSDate *_patrolReadyDeadline = [NSDate dateWithTimeIntervalSinceNow:180.0];                                        \
     while (!_patrolStaticServer.appReady) {                                                                            \
