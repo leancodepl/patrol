@@ -19,7 +19,6 @@ void main() {
   patrolTest(
     'Flutter + native Windows dialog in one test',
     ($) async {
-     final p = pid
       // ── 1. Flutter app under test (same idea as mobile Patrol) ──────────
       await $.pumpWidgetAndSettle(const WindowsPocApp());
       expect($(#appTitle), findsOneWidget);
