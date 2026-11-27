@@ -6,7 +6,7 @@ import 'package:patrol/src/platform/windows/windows_automator_config.dart';
 /// Stub [WindowsAutomator] used when not compiling for a Windows IO target.
 class WindowsAutomator implements windows_automator.WindowsAutomator {
   /// Creates a new [WindowsAutomator].
-  WindowsAutomator({required WindowsAutomatorConfig config}) : _config = config;
+  WindowsAutomator({required this._config});
 
   final WindowsAutomatorConfig _config;
 

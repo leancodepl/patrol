@@ -195,6 +195,10 @@ int WindowsAppControl::LaunchApp(
     throw BadRequestError("launchApp requires \"appPath\"");
   }
 
+  // ShellExecuteEx can load shell extensions that expect STA; httplib workers
+  // are not COM-initialized, so initialize before the launch call.
+  ComApartment apartment;
+
   const std::wstring wide_path = Utf8ToWide(app_path);
   const std::wstring wide_args =
       arguments.has_value() ? Utf8ToWide(*arguments) : L"";

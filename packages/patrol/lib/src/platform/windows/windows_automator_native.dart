@@ -14,12 +14,11 @@ import 'package:patrol_log/patrol_log.dart';
 /// HTTP client talking to the Windows Patrol sidecar on port 8081.
 class WindowsAutomator implements windows_automator.WindowsAutomator {
   /// Creates a new [WindowsAutomator].
-  WindowsAutomator({required WindowsAutomatorConfig config})
+  WindowsAutomator({required this._config})
     : assert(
-        config.connectionTimeout > config.findTimeout,
+        _config.connectionTimeout > _config.findTimeout,
         'connectionTimeout must be longer than findTimeout',
-      ),
-      _config = config {
+      ) {
     _client = http.Client();
     _apiUri = Uri.http('${_config.host}:${_config.port}');
     _config.logger('WindowsAutomator client created, port: ${_config.port}');

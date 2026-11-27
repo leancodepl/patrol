@@ -154,14 +154,26 @@ TrackedProcess LaunchApp(AutomatorServer& server,
 
 int RunOne(PatrolAppServiceClient& client, const std::string& name) {
   std::cout << "TestOrchestrator: running " << name << "\n";
-  const auto result = client.RunDartTest(name);
-  if (result.passed) {
-    std::cout << "TestOrchestrator: passed " << name << "\n";
-    return 0;
+  try {
+    const auto result = client.RunDartTest(name);
+    if (result.passed) {
+      std::cout << "TestOrchestrator: passed " << name << "\n";
+      return 0;
+    }
+    std::cerr << "TestOrchestrator: failed " << name << "\n"
+              << result.details << "\n";
+    return 1;
+  } catch (const std::exception& ex) {
+    // Crash / dropped connection: keep going with remaining tests and put the
+    // name on stderr (CLI shows stderr without --verbose).
+    std::cerr << "TestOrchestrator: failed " << name << "\n"
+              << ex.what() << "\n";
+    return 1;
+  } catch (...) {
+    std::cerr << "TestOrchestrator: failed " << name
+              << "\nUnknown error during runDartTest\n";
+    return 1;
   }
-  std::cerr << "TestOrchestrator: failed " << name << "\n"
-            << result.details << "\n";
-  return 1;
 }
 
 }  // namespace

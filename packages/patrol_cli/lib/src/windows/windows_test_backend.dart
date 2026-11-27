@@ -1,6 +1,6 @@
 import 'dart:io' as io;
 
-import 'package:dispose_scope/dispose_scope.dart';
+import 'package:dispose_scope/dispose_scope.dart' hide ProcessDisposed;
 import 'package:file/file.dart';
 import 'package:package_config/package_config.dart';
 import 'package:path/path.dart' as p;
@@ -16,16 +16,12 @@ import 'package:process/process.dart';
 class WindowsTestBackend {
   /// Creates a [WindowsTestBackend].
   WindowsTestBackend({
-    required ProcessManager processManager,
-    required FileSystem fs,
-    required Directory rootDirectory,
+    required this._processManager,
+    required this._fs,
+    required this._rootDirectory,
     required DisposeScope parentDisposeScope,
-    required Logger logger,
-  }) : _processManager = processManager,
-       _fs = fs,
-       _rootDirectory = rootDirectory,
-       _disposeScope = DisposeScope(),
-       _logger = logger {
+    required this._logger,
+  }) : _disposeScope = DisposeScope() {
     _disposeScope.disposedBy(parentDisposeScope);
   }
 
@@ -49,10 +45,10 @@ class WindowsTestBackend {
         runInShell: true,
         workingDirectory: _rootDirectory.path,
       );
-      scope.addDispose(() {
-        process.kill();
-        flutterBuildKilled = true;
-      });
+      process.disposedByTree(
+        scope,
+        onKill: () => flutterBuildKilled = true,
+      );
       process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
 
@@ -82,8 +78,8 @@ class WindowsTestBackend {
       final appPath = _resolveBuiltAppPath(options.flutter.buildMode);
       final runnerPath = await _ensureRunnerBuilt(scope);
 
-      // Launch the EXE directly so dispose/kill targets the runner (not a
-      // shell wrapper that can leave the sidecar holding the test port).
+      // Launch the EXE directly and kill its process tree on dispose so the
+      // Flutter app the runner spawned does not outlive Ctrl+C.
       final process =
           await _processManager.start(
               [
@@ -97,7 +93,7 @@ class WindowsTestBackend {
               ],
               workingDirectory: _rootDirectory.path,
             )
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
 
       process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
@@ -114,14 +110,20 @@ class WindowsTestBackend {
   }
 
   String _resolveBuiltAppPath(BuildMode buildMode) {
-    // Flutter writes: build/windows/x64/runner/<Mode>/<BINARY_NAME>.exe
+    // Flutter writes: build/windows/<arch>/runner/<Mode>/<BINARY_NAME>.exe
     final buildRoot = _rootDirectory
         .childDirectory('build')
         .childDirectory('windows');
 
+    final hostArch = io.Platform.version.contains('arm64')
+        ? 'arm64'
+        : 'x64';
+    final otherArch = hostArch == 'arm64' ? 'x64' : 'arm64';
+
+    // Prefer the host architecture so a stale cross-arch build is not picked.
     final candidates = <Directory>[
-      buildRoot.childDirectory('x64').childDirectory('runner'),
-      buildRoot.childDirectory('arm64').childDirectory('runner'),
+      buildRoot.childDirectory(hostArch).childDirectory('runner'),
+      buildRoot.childDirectory(otherArch).childDirectory('runner'),
       buildRoot.childDirectory('runner'),
     ];
 
@@ -192,10 +194,7 @@ class WindowsTestBackend {
         runInShell: true,
         workingDirectory: runnerDir,
       );
-      scope.addDispose(() {
-        process.kill();
-        killed = true;
-      });
+      process.disposedByTree(scope, onKill: () => killed = true);
       process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
       final exitCode = await process.exitCode;
@@ -211,20 +210,33 @@ class WindowsTestBackend {
       }
     }
 
-    // Configure once (or when CMakeCache is missing), then build Release.
-    // Pin the VS generator so `-A x64` is valid (Ninja rejects `-A`).
-    if (!buildDir.childFile('CMakeCache.txt').existsSync()) {
-      await runCmake([
-        'cmake',
-        '-S',
-        runnerDir,
-        '-B',
-        buildDir.path,
-        '-G',
-        'Visual Studio 17 2022',
-        '-A',
-        'x64',
-      ], label: 'cmake configure');
+    // Configure when there is no usable cache. A failed configure can still
+    // leave CMakeCache.txt behind, so also require a generated VS solution.
+    final cache = buildDir.childFile('CMakeCache.txt');
+    final solution = buildDir.childFile('patrol_windows_runner.sln');
+    final needsConfigure = !cache.existsSync() || !solution.existsSync();
+    if (needsConfigure) {
+      if (buildDir.existsSync()) {
+        buildDir.deleteSync(recursive: true);
+      }
+      try {
+        await runCmake([
+          'cmake',
+          '-S',
+          runnerDir,
+          '-B',
+          buildDir.path,
+          '-G',
+          'Visual Studio 17 2022',
+          '-A',
+          'x64',
+        ], label: 'cmake configure');
+      } catch (_) {
+        if (buildDir.existsSync()) {
+          buildDir.deleteSync(recursive: true);
+        }
+        rethrow;
+      }
     }
 
     await runCmake([

@@ -211,6 +211,12 @@ class DevelopService {
       throwToolExit('macOS is not supported with develop');
     }
 
+    // Reject before writing the develop entrypoint proxy, so a failed run does
+    // not leave integration_test/patrol_test_bundle.dart behind.
+    if (device.targetPlatform == TargetPlatform.windows) {
+      throwToolExit('Windows is not supported with develop');
+    }
+
     if (device.targetPlatform == TargetPlatform.web) {
       _assertWebHotRestartSupported(options.flutterCommand);
     }
@@ -229,10 +235,6 @@ class DevelopService {
     final signalSubscriptions = _registerProxyCleanupOnSignals(testDirectory);
     Future<void> cleanupProxy() async {
       _testBundler.deleteEntrypointProxy(testDirectory);
-    }
-
-    if (device.targetPlatform == TargetPlatform.windows) {
-      throwToolExit('Windows is not supported with develop');
     }
 
     _logger.detail('Received device: ${device.name} (${device.id})');
