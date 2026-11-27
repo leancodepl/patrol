@@ -161,7 +161,7 @@ patrol test --target patrol_test/login_test.dart --build-name=1.2.3 --build-numb
 ### Isolation of test runs
 
 To achieve full isolation between test runs:
-- On Android: set `clearPackageData` to `true` in your `build.gradle` file,
+- On Android: `patrol_test.gradle` defaults `clearPackageData` to `true`,
 - On iOS Simulator: use the `--full-isolation` flag
 
 <Warning>

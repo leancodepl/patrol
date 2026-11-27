@@ -435,5 +435,74 @@ void main() {
         expect(androidTestBackend.verifyAndroidSdkResolved, returnsNormally);
       });
     });
+
+    group('isPrebuiltAndroidTestApk', () {
+      test('recognizes in-app and self-instrumenting test APK names', () {
+        expect(
+          AndroidTestBackend.isPrebuiltAndroidTestApk(
+            'build/app-debug-androidTest.apk',
+          ),
+          isTrue,
+        );
+        expect(
+          AndroidTestBackend.isPrebuiltAndroidTestApk(
+            'build/patrolTest-debug.apk',
+          ),
+          isTrue,
+        );
+        expect(
+          AndroidTestBackend.isPrebuiltAndroidTestApk(
+            r'C:\out\patrolTest-dev-debug.apk',
+          ),
+          isTrue,
+        );
+        expect(
+          AndroidTestBackend.isPrebuiltAndroidTestApk('build/app-debug.apk'),
+          isFalse,
+        );
+      });
+    });
+
+    group('installPrebuiltApks', () {
+      setUp(() {
+        when(
+          () => processManager.run(any(), runInShell: any(named: 'runInShell')),
+        ).thenAnswer((_) async => ProcessResult(0, 0, '', ''));
+      });
+
+      test('accepts patrolTest-*.apk as the instrumentation APK', () async {
+        final dir = fs.directory('/apks')..createSync(recursive: true);
+        dir.childFile('app-debug.apk').writeAsStringSync('app');
+        dir.childFile('patrolTest-debug.apk').writeAsStringSync('test');
+
+        await androidTestBackend.installPrebuiltApks(
+          apksDir: '/apks',
+          device: androidDevice,
+        );
+
+        verify(
+          () => processManager.run([
+            'adb',
+            '-s',
+            androidDeviceId,
+            'install',
+            '-r',
+            '-t',
+            '/apks/app-debug.apk',
+          ], runInShell: true),
+        ).called(1);
+        verify(
+          () => processManager.run([
+            'adb',
+            '-s',
+            androidDeviceId,
+            'install',
+            '-r',
+            '-t',
+            '/apks/patrolTest-debug.apk',
+          ], runInShell: true),
+        ).called(1);
+      });
+    });
   });
 }

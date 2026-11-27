@@ -36,9 +36,12 @@ With build-time discovery, `patrol build` / `patrol test`:
    - **iOS**: `ios/RunnerUITests/PatrolGeneratedTests.inc` - one
      `PatrolGeneratedTests_<file> : RunnerUITests` subclass per test file, each
      with one `- (void)test_<name>` method per Dart test.
-   - **Android**: one `PatrolGeneratedTests_<file>.java` per test file in your
-     `androidTest` source set, each with one `@Test public void test_<name>()` per
-     Dart test, plus a `PatrolGeneratedTests` marker class holding no tests.
+   - **Android**: one `PatrolGeneratedTests_<file>.java` per test file under
+     `android/patrolTest/src/main` (self-instrumenting
+     [`:patrolTest`](/documentation#android-setup) layout) or
+     `android/app/src/androidTest` (in-app layout), each with one
+     `@Test public void test_<name>()` per Dart test, plus a
+     `PatrolGeneratedTests` marker class holding no tests.
 3. Compiles those classes into the test binary, so the native test framework
    (XCTest / JUnit) discovers them natively.
 
@@ -154,6 +157,13 @@ when you want to run a single test.
 
 If discovery fails (a test file that throws on the host, for example), the build
 stops and shows the part of the host `flutter test` output that explains why.
+
+<Info>
+  The generated sources (`ios/RunnerUITests/PatrolGeneratedTests.inc` and
+  `PatrolGeneratedTests.java` plus `PatrolGeneratedTests_*.java` under
+  `android/patrolTest/src/main` or `android/app/src/androidTest`) are build
+  output. Add them to `.gitignore`; they're regenerated on every build.
+</Info>
 
 </Steps>
 
@@ -289,14 +299,14 @@ Android sharding, and clean per-test names in reports.
 
 <Info>
   On Android the runtime-discovery host class (your parameterized
-  `MainActivityTest`) is still compiled into the androidTest APK next to the
-  generated one. It stands down whenever the generated class is present — it
-  reports no tests and never launches the app — so tools that instrument the
-  built APK directly (Firebase Test Lab, saucectl, emulator.wtf, Marathon) run
-  each Dart test exactly once. With a Patrol version older than the one that
-  introduced this, restrict those tools to the generated class yourself
-  (`testOptions.class` for saucectl, `test-targets` for emulator.wtf) — otherwise
-  both classes run and the whole suite executes twice.
+  `MainActivityTest`) is still compiled into the test APK (`:patrolTest` or
+  in-app `androidTest`) next to the generated one. It stands down whenever the
+  generated class is present — it reports no tests and never launches the app —
+  so tools that instrument the built APK directly (Firebase Test Lab, saucectl,
+  emulator.wtf, Marathon) run each Dart test exactly once. With a Patrol version
+  older than the one that introduced this, restrict those tools to the generated
+  class yourself (`testOptions.class` for saucectl, `test-targets` for
+  emulator.wtf) — otherwise both classes run and the whole suite executes twice.
 </Info>
 
 ### iOS sharding on device farms that need a test list

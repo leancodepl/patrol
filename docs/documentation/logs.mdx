@@ -72,7 +72,7 @@ Test summary:
   - accepts location permission native2 (patrol_test/permissions/permissions_location_test.dart)
   - grants various permissions (patrol_test/permissions/permissions_many_test.dart)
 ⏩ Skipped: 0
-📊 Report: file:///Users/user/patrol/dev/e2e_app/build/app/reports/androidTests/connected/index.html
+📊 Report: file:///Users/user/patrol/dev/e2e_app/build/patrolTest/reports/androidTests/connected/debug/index.html
 ⏱️  Duration: 227s
 ```
 
@@ -92,14 +92,19 @@ In addition to console logs, you can review test results in a **native test repo
 
 ### Android:
 
-Path without flavor, so just build mode (debug, release, profile):
+With the self-instrumenting [`:patrolTest`](/documentation#android-setup)
+layout, reports live under `build/patrolTest/...`. Path without flavor (debug,
+release, profile):
 ```
-📊 Report: file:///Users/user/patrol/dev/e2e_app/build/app/reports/androidTests/connected/debug/index.html
+📊 Report: file:///Users/user/patrol/dev/e2e_app/build/patrolTest/reports/androidTests/connected/debug/index.html
 ```
 Path with flavor:
 ```
-📊 Report: file:///Users/user/patrol/dev/e2e_app/build/app/reports/androidTests/connected/debug/flavors/dev/index.html
+📊 Report: file:///Users/user/patrol/dev/e2e_app/build/patrolTest/reports/androidTests/connected/debug/flavors/dev/index.html
 ```
+
+With the older in-app `androidTest` layout, replace `patrolTest` with `app` in
+those paths.
 
 ### iOS:
 Open `.xcresult` file in Xcode, to see logs and videos.

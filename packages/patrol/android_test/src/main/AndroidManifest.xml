@@ -1,0 +1,14 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Required by $.platform.mobile.openApp(), which can launch any package. -->
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+
+    <application>
+        <meta-data
+            android:name="pl.leancode.patrol.APP_ID"
+            android:value="${patrolAppId}" />
+        <meta-data
+            android:name="pl.leancode.patrol.CLEAR_APP_DATA"
+            android:value="${patrolClearAppData}" />
+    </application>
+</manifest>

@@ -12,19 +12,33 @@ title: BrowserStack
     <Step>
       ### Change runner
 
-        Modify the **app-level build.gradle.kts**:
+        With the self-instrumenting [`:patrolTest`](/documentation#android-setup)
+        layout, override the runner **after** `patrol_test.gradle` applies:
 
-        ```groovy title="android/app/build.gradle.kts"
-        android {
-          // ...
-          defaultConfig {
-            //...
-            testInstrumentationRunner = "pl.leancode.patrol.BrowserstackPatrolJUnitRunner"
-          }
-          // ...
+        ```kotlin title="android/patrolTest/build.gradle.kts"
+        plugins {
+            id("com.android.test")
         }
 
-        // ...
+        apply(from = project(":patrol_android_test").projectDir.resolve("patrol_test.gradle"))
+
+        android {
+            defaultConfig {
+                testInstrumentationRunner =
+                    "pl.leancode.patrol.BrowserstackPatrolJUnitRunner"
+            }
+        }
+        ```
+
+        With the older in-app `androidTest` layout, set it on `:app` instead:
+
+        ```kotlin title="android/app/build.gradle.kts"
+        android {
+            defaultConfig {
+                testInstrumentationRunner =
+                    "pl.leancode.patrol.BrowserstackPatrolJUnitRunner"
+            }
+        }
         ```
 
       <Info>
@@ -227,6 +241,13 @@ Then pass it in the `xctestrun-build` request next to the app and test suite:
 Patrol can collect Dart line coverage on BrowserStack and hand it back through BrowserStack's Espresso coverage API.
 
 Nothing on the device side is BrowserStack-specific: the same setup works on other Android device farms, see [emulator.wtf](/documentation/integrations/emulator-wtf#dart-code-coverage) and [Firebase Test Lab](/documentation/integrations/firebase-test-lab#dart-code-coverage-android).
+
+<Warning>
+  Dart coverage needs the **in-app** `androidTest` layout. The self-instrumenting
+  [`:patrolTest`](/documentation#android-setup) runner lives outside the app
+  process, so `PATROL_COVERAGE_DIR` never reaches Dart and Patrol rejects
+  `coverage=true` there.
+</Warning>
 
 <Steps>
   <Step>

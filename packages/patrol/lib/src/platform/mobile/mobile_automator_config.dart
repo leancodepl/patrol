@@ -16,17 +16,13 @@ class MobileAutomatorConfig {
     Duration? connectionTimeout,
     Duration? findTimeout,
     void Function(String)? logger,
-  }) : host =
-           host ??
-           const String.fromEnvironment(
-             'PATROL_HOST',
-             defaultValue: 'localhost',
-           ),
+  }) : _hostOverride = host,
        _portOverride = port,
        connectionTimeout = connectionTimeout ?? const Duration(seconds: 60),
        findTimeout = findTimeout ?? const Duration(seconds: 10),
        logger = logger ?? _defaultPrintLogger;
 
+  final String? _hostOverride;
   final String? _portOverride;
 
   static String _defaultPort() {
@@ -41,10 +37,16 @@ class MobileAutomatorConfig {
   }
 
   /// Host on which Patrol server instrumentation is running.
-  final String host;
+  String get host => _hostOverride ?? PatrolRuntimePorts.nativeServerHost();
 
   /// Port on [host] on which Patrol server instrumentation is running.
   String get port => _portOverride ?? _defaultPort();
+
+  /// The explicitly configured host, if any.
+  ///
+  /// Unlike [host], reading this does not resolve the default host, so it can
+  /// be copied between configs before the runtime ports are loaded.
+  String? get hostOverride => _hostOverride;
 
   /// The explicitly configured port, if any.
   ///

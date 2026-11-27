@@ -167,13 +167,18 @@ via `DispatchQueue.main.sync`. Calling XCTest from a background thread crashes w
 
 #### Android
 
-The extension must be available on the instrumentation (`androidTest`) classpath:
+The extension must be on the classpath of the process that runs `PatrolServer`.
+With the self-instrumenting [`:patrolTest`](/documentation#android-setup)
+layout, that is the test APK:
 
-```kotlin title="android/app/build.gradle.kts"
+```kotlin title="android/patrolTest/build.gradle.kts"
 dependencies {
-  androidTestImplementation(project(":patrol_my_sdk"))
+  implementation(project(":patrol_my_sdk"))
 }
 ```
+
+With the older in-app `androidTest` layout, keep using
+`androidTestImplementation` in `:app` instead.
 
 In some repository layouts (for example local monorepo path deps), you may also need to map Gradle project path in `android/settings.gradle(.kts)`.
 
