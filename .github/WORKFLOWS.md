@@ -64,10 +64,10 @@ Package-level `pana` scoring only runs for packages published to pub.dev (`patro
 The emulator tests are split so that PR code, including PRs from forks, never runs next to the emulator.wtf token:
 
 1. [test android emulator][test-android-emulator] and [test android emulator webview][test-android-emulator-webview] run on `pull_request`, schedule and `workflow_dispatch`. They build the app and test APKs once, with no secrets, and upload them as the `e2e-apks` artifact.
-2. [run android emulator][run-android-emulator] starts on `workflow_run` when a build succeeds. It always runs from master, takes `emulatorwtf.yaml` from master, runs the APKs on emulator.wtf with the token, and never executes anything from the build.
+2. [run android emulator][run-android-emulator] starts on `workflow_run` when a build succeeds. It runs only from master, takes `emulatorwtf.yaml` from master, runs the APKs on emulator.wtf with the token, and never executes anything from the build.
 3. It reports each run as an `e2e android / API <n>` or `e2e android / webview` commit status on the PR's head commit, linking to its run. The run summary lists the failed tests, so contributors without emulator.wtf access can see them.
 
-On a fork PR, a maintainer reviews the changes and approves the workflows; nothing else is needed. To run the tests again for a build, start [run android emulator][run-android-emulator] with `workflow_dispatch` and the build's run ID. The results come from an APK the PR built, so on fork PRs they are informative, and the scheduled runs on master stay the trusted signal.
+On a fork PR, a maintainer reviews the changes and approves the workflows; nothing else is needed. To run the tests again for a build, start [run android emulator][run-android-emulator] on master with `workflow_dispatch` and the build's run ID, within 7 days of the build (the APK artifact expires after that). The results come from an APK the PR built, so on fork PRs they are informative, and the scheduled runs on master stay the trusted signal.
 
 Because the builds run on `pull_request`, GitHub takes their definition from the PR merged into its base branch. A PR into `release/5.0` therefore builds with the Flutter version pinned on `release/5.0`. Changes to `run-android-emulator.yaml` or `emulatorwtf.yaml` take effect only once they are on master.
 

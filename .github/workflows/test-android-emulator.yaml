@@ -106,4 +106,4 @@ jobs:
           name: e2e-apks
           path: ${{ runner.temp }}/apks
           if-no-files-found: error
-          retention-days: 1
+          retention-days: 7

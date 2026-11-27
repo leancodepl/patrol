@@ -1,6 +1,6 @@
 name: run android emulator
 
-# Holds EW_API_TOKEN and runs from master: never execute anything the build produced.
+# Holds EW_API_TOKEN and runs only from master: never execute anything the build produced.
 
 on:
   workflow_run:
@@ -18,10 +18,6 @@ permissions:
   actions: read
   statuses: write
 
-concurrency:
-  group: ${{ github.workflow }}-${{ inputs.build_run_id || format('{0}-{1}-{2}', github.event.workflow_run.name, github.event.workflow_run.head_repository.full_name, github.event.workflow_run.head_branch) }}
-  cancel-in-progress: true
-
 env:
   EW_CLI_VERSION: 1.6.1
   EW_CLI_SHA256: 188b9e47203b0de7e73591e2e77f8bfd158eebef2fb4a523793df82f1bb405bb
@@ -29,7 +25,7 @@ env:
 jobs:
   plan:
     name: Plan
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    if: github.ref == 'refs/heads/master' && (github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success')
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
@@ -39,6 +35,7 @@ jobs:
       workflow_name: ${{ steps.build.outputs.name }}
       head_sha: ${{ steps.build.outputs.head_sha }}
       event: ${{ steps.build.outputs.event }}
+      concurrency_key: ${{ steps.build.outputs.concurrency_key }}
     steps:
       - name: Find the build run
         id: build
@@ -57,11 +54,18 @@ jobs:
             echo "::error::Build run $run_id did not succeed"
             exit 1
           fi
+          event="$(jq -r .event <<< "$run")"
+          if [ "$event" = pull_request ]; then
+            key="pr-$(jq -r '"\(.name)-\(.head_repository.full_name)-\(.head_branch)"' <<< "$run")"
+          else
+            key="build-$run_id"
+          fi
           {
             echo "run_id=$run_id"
             echo "name=$(jq -r .name <<< "$run")"
             echo "head_sha=$(jq -r .head_sha <<< "$run")"
-            echo "event=$(jq -r .event <<< "$run")"
+            echo "event=$event"
+            echo "concurrency_key=$key"
           } >> "$GITHUB_OUTPUT"
 
       - name: Pick the suite for the workflow that built the APKs
@@ -89,6 +93,10 @@ jobs:
     needs: plan
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    # A newer push to the same PR, or a manual rerun of the same build, replaces this run.
+    concurrency:
+      group: ${{ github.workflow }}-${{ needs.plan.outputs.concurrency_key }}-${{ matrix.label }}
+      cancel-in-progress: true
     outputs:
       SLACK_MESSAGE_TITLE: ${{ needs.plan.outputs.workflow_name }} on emulator.wtf
       TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
@@ -99,19 +107,20 @@ jobs:
       matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
 
     env:
-      GH_TOKEN: ${{ github.token }}
       HEAD_SHA: ${{ needs.plan.outputs.head_sha }}
       STATUS_CONTEXT: e2e android / ${{ matrix.label }}
       RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
     steps:
       - name: Mark the commit status as pending
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh api "repos/$GITHUB_REPOSITORY/statuses/$HEAD_SHA" \
             -f state=pending -f context="$STATUS_CONTEXT" \
             -f target_url="$RUN_URL" -f description="Running on emulator.wtf"
 
-      # Only the emulator.wtf config, from master, never from the PR.
+      # Only the emulator.wtf config, never from the PR.
       - name: Check out emulator.wtf config
         uses: actions/checkout@v4
         with:
@@ -219,7 +228,7 @@ jobs:
           lines = [f"### Failed tests ({len(failed)})", ""]
           if failed:
               lines += ["| Test | Message |", "| --- | --- |"]
-              lines += [f"| `{name}` | {message} |" for name, message in sorted(failed.items())[:100]]
+              lines += [f"| `{name}` | " + (f"`{message}`" if message else "") + " |" for name, message in sorted(failed.items())[:100]]
           else:
               lines.append("No failed tests in the results.")
           with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as summary:
@@ -228,6 +237,7 @@ jobs:
       - name: Report the commit status
         if: always()
         env:
+          GH_TOKEN: ${{ github.token }}
           JOB_STATUS: ${{ job.status }}
         run: |
           case "$JOB_STATUS" in
@@ -247,6 +257,7 @@ jobs:
     if: always() && (needs.run_tests.result != 'skipped' || github.event.workflow_run.event == 'schedule')
     with:
       TESTS_EXIT_CODE: ${{ needs.run_tests.outputs.TESTS_EXIT_CODE }}
+      FAILURE_STATUS: ${{ needs.run_tests.result == 'failure' && 'failure' || '' }}
       SLACK_MESSAGE_TITLE: ${{ needs.run_tests.outputs.SLACK_MESSAGE_TITLE || format('{0} on emulator.wtf', github.event.workflow_run.name) }}
       URL_TO_DETAILS: ${{ needs.run_tests.outputs.URL_TO_DETAILS || github.event.workflow_run.html_url }}
       TRIGGER_EVENT: ${{ needs.plan.outputs.event || github.event.workflow_run.event }}

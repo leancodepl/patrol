@@ -34,7 +34,7 @@ concurrency:
 
 jobs:
   build:
-    name: Build APKs with Flutter ${{ matrix.flutter-version }}
+    name: Build webview APKs with Flutter ${{ matrix.flutter-version }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -101,4 +101,4 @@ jobs:
           name: e2e-apks
           path: ${{ runner.temp }}/apks
           if-no-files-found: error
-          retention-days: 1
+          retention-days: 7
