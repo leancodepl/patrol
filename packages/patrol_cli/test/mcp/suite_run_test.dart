@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:patrol_cli/src/mcp/suite_run.dart';
+import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:patrol_log/patrol_log.dart';
 import 'package:process/process.dart';
 import 'package:test/test.dart';
@@ -16,7 +17,7 @@ void main() {
       String? tags,
       String? excludeTags,
       String? device,
-      String? flutterCommand,
+      FlutterCommand? flutterCommand,
     }) => SuiteCommandLine.build(
       serverArgs: serverArgs,
       targets: targets,
@@ -120,17 +121,32 @@ void main() {
     });
 
     test('passes the resolved Flutter command unless the flags name one', () {
+      const fvm = FlutterCommand('fvm', ['flutter']);
       expect(
-        build([], flutterCommand: 'fvm flutter').arguments.first,
+        build([], flutterCommand: fvm).arguments.first,
         '--flutter-command=fvm flutter',
       );
       expect(
         build([
           '--flutter-command',
           'my-flutter',
-        ], flutterCommand: 'fvm flutter').arguments.first,
+        ], flutterCommand: fvm).arguments.first,
         '--flutter-command=my-flutter',
       );
+    });
+
+    test('quotes a Flutter command whose path holds a space', () {
+      const sdk = '/Users/me/flutter sdk/bin/flutter';
+      final flag = build(
+        [],
+        flutterCommand: const FlutterCommand(sdk, ['--suppress-analytics']),
+      ).arguments.first;
+
+      final passed = FlutterCommand.parse(
+        flag.substring('--flutter-command='.length),
+      );
+      expect(passed.executable, sdk);
+      expect(passed.arguments, ['--suppress-analytics']);
     });
 
     test('rejects flags develop does not take', () {

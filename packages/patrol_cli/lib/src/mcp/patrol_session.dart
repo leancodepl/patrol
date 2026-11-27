@@ -1653,9 +1653,7 @@ final class PatrolSession {
       tags: tags,
       excludeTags: excludeTags,
       device: picked.device,
-      flutterCommand: flutterCommand == null
-          ? null
-          : [flutterCommand.executable, ...flutterCommand.arguments].join(' '),
+      flutterCommand: flutterCommand,
       resultsFile: resultsFile,
     );
 

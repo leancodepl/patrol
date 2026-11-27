@@ -4,8 +4,10 @@ import 'dart:io' as io;
 
 import 'package:args/args.dart';
 import 'package:dispose_scope/dispose_scope.dart' hide ProcessDisposed;
+import 'package:patrol_cli/src/base/command_line.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/commands/develop_arg_parser.dart';
+import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:patrol_log/patrol_log.dart';
 import 'package:patrol_log/patrol_log_reader.dart';
@@ -49,7 +51,7 @@ final class SuiteCommandLine {
     required String? tags,
     required String? excludeTags,
     required String? device,
-    required String? flutterCommand,
+    required FlutterCommand? flutterCommand,
     required String resultsFile,
   }) {
     final parser = _parser();
@@ -75,7 +77,11 @@ final class SuiteCommandLine {
     final pinned = results['device'] as List<String>;
     final callerChecks = results.wasParsed('check-compatibility');
     if (flutterCommand != null && !results.wasParsed('flutter-command')) {
-      global.add('--flutter-command=$flutterCommand');
+      final joined = joinCommandLine([
+        flutterCommand.executable,
+        ...flutterCommand.arguments,
+      ]);
+      global.add('--flutter-command=$joined');
     }
     return SuiteCommandLine._([
       ...global,
