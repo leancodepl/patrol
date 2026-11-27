@@ -34,12 +34,10 @@ class DeviceFinder {
     for (final deviceJson in jsonOutput) {
       deviceJson as Map<String, dynamic>;
 
-      final targetPlatform = deviceJson['targetPlatform'] as String;
-      if (!targetPlatform.startsWith('android-') &&
-          targetPlatform != 'ios' &&
-          targetPlatform != 'darwin' &&
-          !targetPlatform.startsWith('linux-') &&
-          targetPlatform != 'web-javascript') {
+      final targetPlatform = TargetPlatformX.tryFromString(
+        deviceJson['targetPlatform'] as String,
+      );
+      if (targetPlatform == null) {
         continue;
       }
 
@@ -47,7 +45,7 @@ class DeviceFinder {
         Device(
           name: deviceJson['name'] as String,
           id: deviceJson['id'] as String,
-          targetPlatform: TargetPlatformX.fromString(targetPlatform),
+          targetPlatform: targetPlatform,
           real: !(deviceJson['emulator'] as bool),
         ),
       );
@@ -297,7 +295,9 @@ const defaultTestServerPort = 8081;
 enum TargetPlatform { iOS, android, macOS, web, linux }
 
 extension TargetPlatformX on TargetPlatform {
-  static TargetPlatform fromString(String platform) {
+  /// Maps a `targetPlatform` of `flutter devices --machine` to the platform
+  /// Patrol runs on, or `null` if Patrol doesn't support it.
+  static TargetPlatform? tryFromString(String platform) {
     if (platform == 'ios') {
       return TargetPlatform.iOS;
     } else if (platform.startsWith('android-')) {
@@ -309,8 +309,7 @@ extension TargetPlatformX on TargetPlatform {
     } else if (platform.startsWith('linux-')) {
       // `linux-x64` or `linux-arm64`
       return TargetPlatform.linux;
-    } else {
-      throw Exception('Unsupported platform $platform');
     }
+    return null;
   }
 }
