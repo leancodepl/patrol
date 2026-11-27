@@ -1631,6 +1631,27 @@ packages:
         },
       );
 
+      test('keeps its project while a suite runs', () async {
+        final other = Directory.systemTemp.createTempSync('patrol_other');
+        addTearDown(() => other.deleteSync(recursive: true));
+        final session = sessionWith(
+          FakeDevelop(),
+          suiteCommand: recordingSuite(then: 'sleep 30 & wait'),
+        );
+        await session.startSuite(
+          targets: const [],
+          wait: const Duration(milliseconds: 10),
+        );
+
+        await session.ensureProjectResolved(
+          testFile: 'b_test.dart',
+          requestedRoot: other.path,
+        );
+
+        expect(session.projectRoot, projectRoot.path);
+        await session.quit();
+      });
+
       test('waitForSuite returns once the suite ends', () async {
         final session = sessionWith(
           FakeDevelop(),

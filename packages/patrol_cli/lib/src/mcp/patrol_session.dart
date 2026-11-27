@@ -374,13 +374,13 @@ final class PatrolSession {
   ///
   /// A [testFile] pins down which project is meant, so a root resolved without
   /// one is revisited when the file turns out to live elsewhere. A live session
-  /// keeps the project it started in.
+  /// or suite keeps the project it started in.
   Future<void> ensureProjectResolved({
     String? testFile,
     String? requestedRoot,
   }) async {
     if (_projectRoot != null &&
-        (_live || (testFile == null && requestedRoot == null))) {
+        (_live || _suiteLive || (testFile == null && requestedRoot == null))) {
       return;
     }
     await _resolveAndEnter(testFile: testFile, requestedRoot: requestedRoot);
