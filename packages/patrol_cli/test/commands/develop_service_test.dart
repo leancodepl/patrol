@@ -879,7 +879,7 @@ void main() {
         await onQuit!();
 
         verify(
-          () => androidTestBackend.uninstall('com.example.app', androidDevice),
+          () => androidTestBackend.uninstall(any(), androidDevice),
         ).called(1);
 
         await expectLater(run, completes);

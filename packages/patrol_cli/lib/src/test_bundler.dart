@@ -288,11 +288,12 @@ Future<void> main([List<String> args = const []]) async {
     ..entrypointArgs = args
     ..workaroundDebugDefaultTargetPlatformOverride =
         debugDefaultTargetPlatformOverride;
-  await PatrolRuntimePorts.ensureLoaded();
 
   // START: GENERATED TEST GROUPS
 ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e').join('\n')}
   // END: GENERATED TEST GROUPS
+
+  await PatrolRuntimePorts.ensureLoaded();
 }
 ''';
     final bundle = getBundledTestFile(testDirectory)

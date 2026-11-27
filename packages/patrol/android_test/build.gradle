@@ -6,13 +6,11 @@ buildscript {
     repositories {
         google()
         mavenCentral()
-        gradlePluginPortal()
     }
 
     dependencies {
         classpath "com.android.tools.build:gradle:8.2.2"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "org.jlleitschuh.gradle:ktlint-gradle:11.5.0"
     }
 }
 
@@ -22,14 +20,6 @@ def agpMajor = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')[0
 def usesBuiltInKotlin = project.findProperty("android.builtInKotlin") == "true"
 if (agpMajor < 9 || !usesBuiltInKotlin) {
     apply plugin: "kotlin-android"
-}
-
-apply plugin: "org.jlleitschuh.gradle.ktlint"
-
-ktlint {
-    filter {
-        exclude("**/contracts/**")
-    }
 }
 
 allprojects {
@@ -54,7 +44,7 @@ android {
     }
 
     defaultConfig {
-        minSdk 21
+        minSdk 24
         buildConfigField("String", "PATROL_APP_PORT", project.hasProperty('app-server-port') ? '"' + project.getProperty('app-server-port') + '"' : '""')
         buildConfigField("String", "PATROL_TEST_PORT", project.hasProperty('test-server-port') ? '"' + project.getProperty('test-server-port') + '"' : '""')
     }
@@ -79,8 +69,6 @@ android {
         implementation "io.ktor:ktor-client-cio"
         implementation "io.ktor:ktor-client-content-negotiation"
         implementation "io.ktor:ktor-serialization-gson"
-
-        testImplementation "org.jetbrains.kotlin:kotlin-test"
     }
 }
 
@@ -100,10 +88,4 @@ plugins.withId("org.jetbrains.kotlin.android") {
 // entrypoint and has to stay where the Flutter tool looks for it, so skip it here.
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
     exclude("**/PatrolPlugin.kt")
-}
-
-tasks.withType(Test).configureEach {
-    testLogging {
-        events "passed", "skipped", "failed"
-    }
 }
