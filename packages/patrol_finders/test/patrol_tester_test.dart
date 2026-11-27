@@ -1264,6 +1264,16 @@ void main() {
         expect(longCount, lessThan(shortCount));
       });
 
+      patrolWidgetTest('reports invalid arguments through the future', (
+        $,
+      ) async {
+        await $.pumpWidget(const MaterialApp(home: Text('idle')));
+
+        final result = $.pumpAndSettle(duration: Duration.zero);
+
+        await expectLater(result, throwsA(isA<AssertionError>()));
+      });
+
       patrolWidgetTest(
         'throws after config.settleTimeout when it never settles',
         config: const PatrolTesterConfig(settleTimeout: Duration(seconds: 2)),

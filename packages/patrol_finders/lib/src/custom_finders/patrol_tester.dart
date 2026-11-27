@@ -260,12 +260,14 @@ class PatrolTester {
     Duration duration = const Duration(milliseconds: 100),
     EnginePhase phase = EnginePhase.sendSemanticsUpdate,
     Duration? timeout,
-  }) {
-    return tester.pumpAndSettle(
+  }) async {
+    // Awaited here, so invalid arguments fail the future instead of throwing.
+    final frames = await tester.pumpAndSettle(
       duration,
       phase,
       timeout ?? config.settleTimeout,
     );
+    return frames;
   }
 
   /// Calls [WidgetTester.pumpAndSettle] but doesn't throw if it times out.
