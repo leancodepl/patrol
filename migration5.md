@@ -325,6 +325,52 @@ Playwright the full list before the run, so `--web-shard` works as before.
 web, and `--emit-test-manifest` with `patrol test -d chrome` or
 `patrol develop -d chrome` only prints a warning.
 
+## The iOS and macOS test runner is a compiled class
+
+**Packages:** `patrol`, `patrol_cli`
+
+The logic of `PATROL_INTEGRATION_TEST_IOS_RUNNER` and
+`PATROL_INTEGRATION_TEST_MACOS_RUNNER` moved into `PatrolIntegrationTestCase`, a
+class compiled into the patrol pod or Swift package. The macros now only declare
+`RunnerUITests` as its subclass, so `RunnerUITests.m` doesn't change. The class is
+compiled only when the build sets `PATROL_ENABLED=1`, so it never reaches a
+regular app build.
+
+| Build | Before | 5.0 |
+|---|---|---|
+| `patrol build`, `patrol test`, `patrol develop` | Nothing to set | Nothing to set |
+| Own `xcodebuild`, CocoaPods | `OTHER_SWIFT_FLAGS='$(inherited) -D PATROL_ENABLED'` and `OTHER_CFLAGS='$(inherited) -D FULL_ISOLATION=0 -D CLEAR_PERMISSIONS=0'` | `PATROL_ENABLED=1` |
+| Own `xcodebuild`, Swift Package Manager | `PATROL_ENABLED=1` environment variable and the XCTest `OTHER_LDFLAGS` | Same |
+| macOS test names with runtime discovery | `RunnerUITests/<dart test name>` | Spaces become `+`, as on iOS |
+
+**What to do:**
+
+1. **Run `flutter clean` after upgrading**, and `pod install` in `ios/` and
+   `macos/` if you use CocoaPods. An incremental build can miss the new source
+   file of the pod and fail with `Undefined symbol:
+   _OBJC_CLASS_$_PatrolIntegrationTestCase`.
+2. **If you build `RunnerUITests` without `patrol_cli`** (device farm scripts,
+   Fastlane), set the `PATROL_ENABLED=1` environment variable for `xcodebuild`.
+   It works with CocoaPods and Swift Package Manager:
+
+   ```bash
+   PATROL_ENABLED=1 xcodebuild build-for-testing -workspace Runner.xcworkspace \
+     -scheme Runner -sdk iphoneos -configuration Release
+   ```
+
+   The old `OTHER_SWIFT_FLAGS` and `OTHER_CFLAGS` are no longer needed, but
+   still work. Keep `OTHER_CFLAGS='$(inherited) -D FULL_ISOLATION=1'`,
+   `-D CLEAR_PERMISSIONS=1` or `-D PATROL_SCREENSHOT_ON_FAILURE=1` if you used
+   them. Without `PATROL_ENABLED=1` the
+   test target now fails to link with the error above, instead of building a
+   runner whose server never starts. Setting it only in the build settings of
+   the `RunnerUITests` target isn't enough: it has to reach the patrol pod.
+3. **If your `Podfile` sets `GCC_PREPROCESSOR_DEFINITIONS` or
+   `SWIFT_ACTIVE_COMPILATION_CONDITIONS` on all pods in `post_install`**, keep
+   `$(inherited)` in the value, or the pod loses `PATROL_ENABLED`.
+4. **macOS with runtime discovery only:** update filters that match test names
+   with spaces.
+
 ## Inbox
 
 Short notes on changes that don't have a section yet, one line each: the PR or

@@ -450,9 +450,10 @@ void main() {
               ...['-destination', 'generic/platform=iOS Simulator'],
               '-quiet',
               ...['-derivedDataPath', '../build/ios_integ'],
+              'PATROL_ENABLED=1',
               r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
               r'OTHER_LDFLAGS=$(inherited) -weak_framework XCTest -F$(PLATFORM_DIR)/Developer/Library/Frameworks -L$(PLATFORM_DIR)/Developer/usr/lib',
-              r'OTHER_CFLAGS=$(inherited) -D FULL_ISOLATION=0 -D CLEAR_PERMISSIONS=0 -D PATROL_SCREENSHOT_ON_FAILURE=0',
+              r'OTHER_CFLAGS=$(inherited) -D PATROL_ENABLED=1 -D FULL_ISOLATION=0 -D CLEAR_PERMISSIONS=0 -D PATROL_SCREENSHOT_ON_FAILURE=0',
             ]),
           );
         });
@@ -537,9 +538,10 @@ void main() {
               ...['-destination', 'generic/platform=iOS Simulator'],
               '-quiet',
               ...['-derivedDataPath', '../build/ios_integ'],
+              'PATROL_ENABLED=1',
               r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
               r'OTHER_LDFLAGS=$(inherited) -weak_framework XCTest -F$(PLATFORM_DIR)/Developer/Library/Frameworks -L$(PLATFORM_DIR)/Developer/usr/lib',
-              r'OTHER_CFLAGS=$(inherited) -D FULL_ISOLATION=0 -D CLEAR_PERMISSIONS=0 -D PATROL_SCREENSHOT_ON_FAILURE=0',
+              r'OTHER_CFLAGS=$(inherited) -D PATROL_ENABLED=1 -D FULL_ISOLATION=0 -D CLEAR_PERMISSIONS=0 -D PATROL_SCREENSHOT_ON_FAILURE=0',
             ]),
           );
         });
@@ -634,9 +636,10 @@ void main() {
             ...['-destination', 'generic/platform=iOS'],
             '-quiet',
             ...['-derivedDataPath', '../build/ios_integ'],
+            'PATROL_ENABLED=1',
             r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
             r'OTHER_LDFLAGS=$(inherited) -weak_framework XCTest -F$(PLATFORM_DIR)/Developer/Library/Frameworks -L$(PLATFORM_DIR)/Developer/usr/lib',
-            r'OTHER_CFLAGS=$(inherited) -D FULL_ISOLATION=1 -D CLEAR_PERMISSIONS=0 -D PATROL_SCREENSHOT_ON_FAILURE=1',
+            r'OTHER_CFLAGS=$(inherited) -D PATROL_ENABLED=1 -D FULL_ISOLATION=1 -D CLEAR_PERMISSIONS=0 -D PATROL_SCREENSHOT_ON_FAILURE=1',
           ]),
         );
       });
@@ -818,6 +821,41 @@ void main() {
           ]),
         );
       });
+    });
+
+    test('enables Patrol in xcodebuild build-for-testing', () {
+      options = MacOSAppOptions(
+        flutter: const FlutterAppOptions(
+          command: flutterCommand,
+          target: 'patrol_test/app_test.dart',
+          buildMode: BuildMode.debug,
+          flavor: null,
+          buildName: null,
+          buildNumber: null,
+          dartDefines: {},
+          dartDefineFromFilePaths: [],
+        ),
+        scheme: 'Runner',
+        configuration: 'Debug',
+        appServerPort: 8082,
+        testServerPort: 8081,
+      );
+
+      expect(
+        options.buildForTestingInvocation(),
+        equals([
+          ...['xcodebuild', 'build-for-testing'],
+          ...['-workspace', 'Runner.xcworkspace'],
+          ...['-scheme', 'Runner'],
+          ...['-configuration', 'Debug'],
+          '-quiet',
+          ...['-derivedDataPath', '../build/macos_integ'],
+          'PATROL_ENABLED=1',
+          r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
+          r'OTHER_LDFLAGS=$(inherited) -weak_framework XCTest -F$(PLATFORM_DIR)/Developer/Library/Frameworks -L$(PLATFORM_DIR)/Developer/usr/lib',
+          r'OTHER_CFLAGS=$(inherited) -D PATROL_ENABLED=1',
+        ]),
+      );
     });
   });
 

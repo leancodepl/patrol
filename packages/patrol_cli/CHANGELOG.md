@@ -101,6 +101,8 @@
   with `patrol test -d chrome` or `patrol develop -d chrome` prints a warning. (#3432)
 - Show why build-time discovery failed (the failing part of the host `flutter test` output) without
   `--verbose`.
+- On iOS and macOS, `patrol build`, `patrol test` and `patrol develop` pass `PATROL_ENABLED=1` to
+  `xcodebuild`, which compiles the runner class of `patrol` 5.0 into the patrol pod.
 
 ## 4.10.0
 

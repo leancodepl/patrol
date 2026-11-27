@@ -91,6 +91,29 @@ patrol test --dart-define=PATROL_ANDROID_DONT_SUPPRESS_ACCESSIBILITY_SERVICES=fa
 Setting it to `false` can help when a native [extension package](/documentation/native/extension-packages)
 needs the default `UiAutomation` connection.
 
+### Building iOS and macOS tests without `patrol_cli`
+
+`patrol build` and `patrol test` configure `xcodebuild` for you. If you build
+`RunnerUITests` yourself, for example in a device farm script or with Fastlane,
+set the `PATROL_ENABLED=1` environment variable. It compiles the Patrol test
+runner into the patrol pod or Swift package:
+
+```bash
+cd ios
+PATROL_ENABLED=1 xcodebuild build-for-testing \
+  -workspace Runner.xcworkspace -scheme Runner -configuration Release \
+  -sdk iphoneos -destination 'generic/platform=iOS'
+```
+
+- With Swift Package Manager, also pass
+  `'OTHER_LDFLAGS=$(inherited) -F$(PLATFORM_DIR)/Developer/Library/Frameworks -L$(PLATFORM_DIR)/Developer/usr/lib'`,
+  so that the linker finds XCTest.
+- For the behavior of `--full-isolation`, `--clear-permissions` and
+  `screenshot_on_failure`, pass
+  `'OTHER_CFLAGS=$(inherited) -D FULL_ISOLATION=1 -D CLEAR_PERMISSIONS=1 -D PATROL_SCREENSHOT_ON_FAILURE=1'`.
+- Without `PATROL_ENABLED=1`, linking `RunnerUITests` fails with
+  `Undefined symbol: _OBJC_CLASS_$_PatrolIntegrationTestCase`.
+
 ### Embrace the native tests
 
 If you've diligently followed the steps in [native automation setup] and `patrol test` prints a **TEST
