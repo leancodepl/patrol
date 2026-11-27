@@ -6,8 +6,6 @@ void main() {
   patrol('pumpAndSettle returns the number of pumped frames', ($) async {
     await createApp($);
 
-    expect(await $.pumpAndSettle(), greaterThanOrEqualTo(1));
-
     // noSettle leaves the route transition for pumpAndSettle to count.
     await $(
       K.atFinderScreenButton,

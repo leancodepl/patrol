@@ -261,7 +261,7 @@ class PatrolTester {
     EnginePhase phase = EnginePhase.sendSemanticsUpdate,
     Duration? timeout,
   }) async {
-    // Awaited here, so invalid arguments fail the future instead of throwing.
+    // `async` keeps invalid-argument asserts inside the returned future.
     final frames = await tester.pumpAndSettle(
       duration,
       phase,

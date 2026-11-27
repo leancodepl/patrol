@@ -94,11 +94,12 @@ instead of `Future<void>`: the number of frames it pumped, the same value
 - **`await $.pumpAndSettle()`:** nothing, it compiles unchanged.
 - **`patrol_finders` in your own `pubspec.yaml`:** change the constraint to
   `^4.0.0`, otherwise it conflicts with `patrol` 5.x.
-- **A subclass that overrides `pumpAndSettle()`, or a class that implements
-  `PatrolTester`:** return `Future<int>`, e.g. the value of
-  `super.pumpAndSettle()`.
+- **A subclass that overrides `pumpAndSettle()`:** return `Future<int>`, e.g.
+  the value of `super.pumpAndSettle()`.
+- **A class that implements `PatrolTester`:** return `Future<int>` from
+  `pumpAndSettle()`, e.g. the value of `WidgetTester.pumpAndSettle()`.
 - **A mock that stubs `pumpAndSettle()`:** answer with an `int`, e.g.
-  `thenAnswer((_) async => 1)`; `thenAnswer((_) async {})` now fails at runtime.
+  `thenAnswer((_) async => 1)`; `thenAnswer((_) async {})` no longer compiles.
 
 ## Inbox
 
