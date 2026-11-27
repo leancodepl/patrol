@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:io' show ProcessResult;
+import 'dart:io' show ProcessException, ProcessResult;
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
@@ -9,6 +9,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
+import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:platform/testing.dart';
@@ -838,6 +839,149 @@ void main() {
       expect(rootDirectory.childDirectory('screenshots').existsSync(), isFalse);
     });
   });
+
+  _lockStateTests();
+}
+
+void _lockStateTests() {
+  group('IOSTestBackend.waitUntilUnlocked', () {
+    late MockProcessManager processManager;
+    late RecordingLogger logger;
+    late FileSystem fs;
+    late DisposeScope parentScope;
+    late IOSTestBackend iosTestBackend;
+
+    const device = Device(
+      name: 'iPhone',
+      id: '00008130-0005589A3E82001C',
+      targetPlatform: TargetPlatform.iOS,
+      real: true,
+    );
+
+    setUp(() {
+      processManager = MockProcessManager();
+      logger = RecordingLogger();
+      fs = MemoryFileSystem.test();
+      parentScope = DisposeScope();
+      iosTestBackend = IOSTestBackend(
+        processManager: processManager,
+        platform: TestNativePlatform(),
+        fs: fs,
+        rootDirectory: fs.currentDirectory,
+        parentDisposeScope: parentScope,
+        logger: logger,
+      );
+    });
+
+    /// Makes consecutive lockState calls report [states] (the last one
+    /// repeats). A null state makes devicectl fail.
+    void stubLockStates(List<bool?> states) {
+      var call = 0;
+      when(() => processManager.run(any())).thenAnswer((invocation) async {
+        final args = (invocation.positionalArguments.first as List)
+            .cast<String>();
+        expect(args, containsAllInOrder(['--device', device.id]));
+        final state = states[call < states.length ? call : states.length - 1];
+        call++;
+        if (state == null) {
+          return ProcessResult(0, 1, '', '');
+        }
+        final path = args[args.indexOf('--json-output') + 1];
+        fs
+            .file(path)
+            .writeAsStringSync(
+              jsonEncode({
+                'result': {'passcodeRequired': state},
+              }),
+            );
+        return ProcessResult(0, 0, '', '');
+      });
+    }
+
+    Future<void> wait() =>
+        iosTestBackend.waitUntilUnlocked(device, pollInterval: Duration.zero);
+
+    test('returns at once when the device is unlocked', () async {
+      stubLockStates([false]);
+
+      await wait();
+
+      expect(logger.output, isEmpty);
+      verify(() => processManager.run(any())).called(1);
+    });
+
+    test('rings and waits until the device is unlocked', () async {
+      stubLockStates([true, true, true, false]);
+
+      await wait();
+
+      expect(logger.output, ['\x07']);
+      expect(logger.tasks.single.completed, isTrue);
+      verify(() => processManager.run(any())).called(4);
+    });
+
+    test('stops waiting when the lock state stops being readable', () async {
+      stubLockStates([true, null]);
+
+      await wait();
+
+      verify(() => processManager.run(any())).called(2);
+    });
+
+    test('returns when devicectl fails', () async {
+      stubLockStates([null]);
+
+      await wait();
+
+      expect(logger.output, isEmpty);
+    });
+
+    test('returns when devicectl is missing', () async {
+      when(
+        () => processManager.run(any()),
+      ).thenThrow(const ProcessException('xcrun', []));
+
+      await wait();
+
+      expect(logger.output, isEmpty);
+    });
+
+    test('throws when interrupted while waiting', () async {
+      stubLockStates([true]);
+
+      final waiting = expectLater(wait(), throwsA(isA<ToolInterrupted>()));
+      await parentScope.dispose();
+      await waiting;
+
+      expect(logger.tasks.single.failed, isTrue);
+    });
+  });
+}
+
+class RecordingLogger extends FakeLogger {
+  final output = <String?>[];
+  final tasks = <RecordingProgressTask>[];
+
+  @override
+  void write(String? message) => output.add(message);
+
+  @override
+  ProgressTask task(String message) {
+    final task = RecordingProgressTask();
+    tasks.add(task);
+    return task;
+  }
+}
+
+class RecordingProgressTask extends Fake implements ProgressTask {
+  bool completed = false;
+  bool failed = false;
+
+  @override
+  void complete([String? update]) => completed = true;
+
+  @override
+  void fail([String? update]) => failed = true;
 }
 
 class FakeProcessManager extends Fake implements ProcessManager {}

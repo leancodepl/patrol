@@ -3,6 +3,8 @@
 - Wait up to 120 seconds, instead of 1, for a physical iOS device that is busy (for example
   "Preparing" right after the previous run) before running tests on it. `patrol test` used to fail
   with `xcodebuild exited with code 70` in that case. Simulators still fail after 1 second.
+- Wait for a locked physical iOS device to be unlocked before running tests on it, for as long as it
+  takes. `patrol test` rings the terminal bell and says it's waiting for the unlock.
 - Fix the generated test bundle dropping the Dart entrypoint arguments passed by the native side of
   the app: `main` now takes them and passes them to tests as `$.entrypointArgs`. Needs a `patrol`
   release that includes this change. (#3366)

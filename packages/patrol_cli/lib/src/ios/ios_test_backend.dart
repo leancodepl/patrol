@@ -456,6 +456,10 @@ class IOSTestBackend {
       onlyTests: onlyTests,
     );
     await _disposeScope.run((scope) async {
+      if (device.real) {
+        await waitUntilUnlocked(device);
+      }
+
       // Create video recording manager if enabled
       IOSVideoRecordingManager? videoRecordingManager;
       if (videoConfig?.enabled ?? false) {
@@ -615,6 +619,69 @@ class IOSTestBackend {
         throwToolExit(cause);
       }
     });
+  }
+
+  /// Waits until the user unlocks [device], however long it takes.
+  ///
+  /// xcodebuild can't run tests on a locked physical device, and while it
+  /// waits it doesn't say why. This rings the terminal bell and waits until
+  /// the device is unlocked, so the user can come back to it later.
+  ///
+  /// Best effort: if the lock state can't be read (e.g. no `devicectl` before
+  /// Xcode 15), this returns and lets xcodebuild handle the device.
+  @visibleForTesting
+  Future<void> waitUntilUnlocked(
+    Device device, {
+    Duration pollInterval = const Duration(seconds: 1),
+  }) async {
+    if (await _isLocked(device) != true) {
+      return;
+    }
+
+    _logger.write('\x07');
+    final task = _logger.task(
+      'Waiting for ${device.name} to be unlocked. Unlock it to run tests',
+    );
+    while (true) {
+      await Future<void>.delayed(pollInterval);
+      if (_disposeScope.disposed) {
+        const cause = 'Interrupted while waiting for the device to be unlocked';
+        task.fail(cause);
+        throwToolInterrupted(cause);
+      }
+      if (await _isLocked(device) != true) {
+        break;
+      }
+    }
+    task.complete('${device.name} unlocked');
+  }
+
+  /// Whether [device] is locked, or null if `devicectl` can't tell.
+  Future<bool?> _isLocked(Device device) async {
+    final tempDir = _fs.systemTempDirectory.createTempSync('patrol_lock_state');
+    try {
+      final jsonFile = tempDir.childFile('lock_state.json');
+      final result = await _processManager.run([
+        'xcrun',
+        'devicectl',
+        ...['--quiet', '--timeout', '10'],
+        ...['device', 'info', 'lockState'],
+        ...['--device', device.id],
+        ...['--json-output', jsonFile.path],
+      ]);
+      if (result.exitCode != 0 || !jsonFile.existsSync()) {
+        return null;
+      }
+      final json =
+          jsonDecode(jsonFile.readAsStringSync()) as Map<String, dynamic>;
+      final lockState = json['result'] as Map<String, dynamic>?;
+      return lockState?['passcodeRequired'] as bool?;
+    } catch (err) {
+      _logger.detail('Failed to check lock state of ${device.name}: $err');
+      return null;
+    } finally {
+      tempDir.deleteSync(recursive: true);
+    }
   }
 
   Future<IOSHostServer> _startHostServer(
