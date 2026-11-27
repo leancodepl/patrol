@@ -188,7 +188,7 @@ void main() {
   group('watchStopSignals', () {
     // SIGTERM cannot be watched on Windows: it throws an async SignalException
     // that no try/catch sees, so a server watching it there would crash.
-    test('watches SIGINT and SIGTERM elsewhere', () {
+    test('watches SIGINT and SIGTERM elsewhere', testOn: '!windows', () {
       final subscriptions = watchStopSignals(
         (_) {},
         platform: TestNativePlatform(operatingSystem: 'linux'),
