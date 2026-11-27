@@ -136,9 +136,10 @@ Future<void> main([List<String> args = const []]) async {
     platformAutomator = PlatformAutomator(
       config: PlatformAutomatorConfig.defaultConfig(),
     );
-    await platformAutomator.initialize();
     binding = PatrolBinding.ensureInitialized(platformAutomator)
       ..entrypointArgs = args;
+    await PatrolRuntimePorts.ensureLoaded();
+    await platformAutomator.initialize();
   }
 
   // A special test to explore the hierarchy of groups and tests. This is a hack
@@ -196,7 +197,6 @@ ${generateGroupsCode(testDirectory, testFilePaths).split('\n').map((e) => '  $e'
     manifestTests: _patrolManifestTests,
   );
   binding.patrolAppService = appService;
-  await PatrolRuntimePorts.ensureLoaded();
   await runAppService(appService);
 
   // Until now, the native test runner was waiting for us, the Dart side, to
@@ -277,18 +277,16 @@ Future<void> main([List<String> args = const []]) async {
   final platformAutomator = PlatformAutomator(
     config: PlatformAutomatorConfig.defaultConfig(),
   );
-  await platformAutomator.initialize();
-
   PatrolBinding.ensureInitialized(platformAutomator)
     ..entrypointArgs = args
     ..workaroundDebugDefaultTargetPlatformOverride =
         debugDefaultTargetPlatformOverride;
+  await PatrolRuntimePorts.ensureLoaded();
+  await platformAutomator.initialize();
 
   // START: GENERATED TEST GROUPS
 ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e').join('\n')}
   // END: GENERATED TEST GROUPS
-
-  await PatrolRuntimePorts.ensureLoaded();
 }
 ''';
     final bundle = getBundledTestFile(testDirectory)

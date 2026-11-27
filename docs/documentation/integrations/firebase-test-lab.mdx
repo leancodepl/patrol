@@ -143,6 +143,11 @@ Patrol can collect Dart line coverage on Firebase Test Lab the same way it does
 on [BrowserStack][bs coverage]: the app embeds it into the JaCoCo `.ec` files the
 test run writes, and `patrol coverage pull` turns them into a `patrol_lcov.info`.
 
+<Warning>
+  Dart coverage needs the **in-app** `androidTest` layout. The self-instrumenting
+  [`:patrolTest`](/documentation#android-setup) runner rejects `coverage=true`.
+</Warning>
+
 <Steps>
   <Step>
     Instrument the app under test. In **android/app/build.gradle.kts** set
@@ -179,6 +184,9 @@ test run writes, and `patrol coverage pull` turns them into a `patrol_lcov.info`
       --results-bucket=<bucket> \
       --results-dir=<results-dir>
     ```
+
+    Coverage runs must use the in-app `androidTest` APK path above, not
+    `:patrolTest`.
 
     With the orchestrator, `coverageFilePath` (ending with `/`) gives one `.ec`
     file per test. Without it, pass `coverageFile=/sdcard/Download/coverage.ec`

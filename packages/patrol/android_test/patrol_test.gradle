@@ -38,15 +38,28 @@ testAndroid.productFlavors.all { flavor ->
     flavor.manifestPlaceholders.put("patrolClearAppData", flavorClear ?: "false")
 }
 
+// Release (and custom) test APKs must be installable; debug-sign every build type.
+testAndroid.buildTypes.configureEach { buildType ->
+    buildType.signingConfig = testAndroid.signingConfigs.getByName("debug")
+}
+
 // Use the matching :app variant's final application ID.
 def appAndroid = project(":app").extensions.getByName("android")
 def androidComponents = project.extensions.getByName("androidComponents")
+androidComponents.beforeVariants(androidComponents.selector().all()) { variantBuilder ->
+    def appVariant = appAndroid.applicationVariants.find {
+        it.name.equalsIgnoreCase(variantBuilder.name)
+    }
+    if (appVariant == null) {
+        variantBuilder.enable = false
+    }
+}
 androidComponents.onVariants(androidComponents.selector().all()) { variant ->
     def appVariant = appAndroid.applicationVariants.find {
         it.name.equalsIgnoreCase(variant.name)
     }
     if (appVariant == null) {
-        throw new GradleException("No matching :app variant found for ${variant.name}")
+        return
     }
     def appId = appVariant.applicationId
     variant.applicationId.set("${appId}.patrol_test")

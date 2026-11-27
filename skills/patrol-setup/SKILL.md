@@ -23,14 +23,14 @@ Follow the **Setup** steps, deep-linking to the relevant point:
 
 - Add the `patrol` dev dependency and the `patrol:` block in `pubspec.yaml` — https://patrol.leancode.co/documentation#add-patrol-dependency
 - Native Android (self-instrumenting `:patrolTest` module,
-  `:patrol_test_harness`, and `MainActivityTest.java`) —
+  `:patrol_android_test`, and `MainActivityTest.java`) —
   https://patrol.leancode.co/documentation#android-setup
 - Build flavors, if the project uses them — https://patrol.leancode.co/documentation#flavors
 
 For Android, verify all of the following:
 
 - `settings.gradle(.kts)` includes `:patrolTest` and resolves
-  `:patrol_test_harness` relative to Flutter's existing `:patrol` project.
+  `:patrol_android_test` relative to Flutter's existing `:patrol` project.
 - `patrolTest` applies `com.android.test`, targets `:app`, enables
   `android.experimental.self-instrumenting`, and mirrors the app's SDK levels,
   flavor dimensions, product flavors, and build types.

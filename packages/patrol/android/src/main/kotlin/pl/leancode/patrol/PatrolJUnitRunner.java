@@ -10,6 +10,7 @@ import static org.junit.Assume.*;
 import android.app.Instrumentation;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnitRunner;
 import androidx.test.uiautomator.UiDevice;
@@ -40,6 +41,8 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
     private static final String TARGET_APP_ID_METADATA = "pl.leancode.patrol.APP_ID";
     private static final String CLEAR_APP_DATA_ARGUMENT = "patrolClearAppData";
     private static final String CLEAR_APP_DATA_METADATA = "pl.leancode.patrol.CLEAR_APP_DATA";
+    private static final long APP_READY_TIMEOUT_MS = 180_000;
+    private static final long APP_READY_POLL_MS = 5_000;
 
     public PatrolAppServiceClient patrolAppServiceClient;
     private Map<String, Boolean> dartTestCaseSkipMap = new HashMap<>();
@@ -124,6 +127,15 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             );
         } else {
             clearAppData = Boolean.parseBoolean(clearAppDataArgument);
+        }
+
+        if (!clearAppData
+                && isSelfInstrumenting()
+                && "true".equalsIgnoreCase(arguments.getString("clearPackageData"))) {
+            clearAppData = true;
+            Logger.INSTANCE.i(
+                    "PatrolJUnitRunner: clearPackageData=true mapped to app data clear"
+            );
         }
 
         boolean isInitialRun = Boolean.parseBoolean(arguments.getString("listTestsForOrchestrator"));
@@ -549,9 +561,37 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         final String TAG = "PatrolJUnitRunner.setUp(): ";
 
         Logger.INSTANCE.i(TAG + "Waiting for PatrolAppService to report its readiness...");
-        PatrolServer.Companion.getAppReady().block();
+        final long deadline = SystemClock.elapsedRealtime() + APP_READY_TIMEOUT_MS;
+        while (true) {
+            if (PatrolServer.Companion.getAppReady().block(APP_READY_POLL_MS)) {
+                Logger.INSTANCE.i(TAG + "PatrolAppService is ready to report Dart tests");
+                return;
+            }
+            if (targetAppId != null
+                    && !targetAppId.isEmpty()
+                    && !isAppProcessAlive(targetAppId)) {
+                throw new IllegalStateException(
+                        "App process " + targetAppId
+                                + " died before PatrolAppService became ready"
+                );
+            }
+            if (SystemClock.elapsedRealtime() >= deadline) {
+                throw new IllegalStateException(
+                        "PatrolAppService did not become ready within "
+                                + (APP_READY_TIMEOUT_MS / 1000)
+                                + "s"
+                );
+            }
+        }
+    }
 
-        Logger.INSTANCE.i(TAG + "PatrolAppService is ready to report Dart tests");
+    private boolean isAppProcessAlive(String appId) {
+        try {
+            String output = UiDevice.getInstance(this).executeShellCommand("pidof " + appId);
+            return output != null && !output.trim().isEmpty();
+        } catch (IOException e) {
+            return true;
+        }
     }
 
     public Object[] listDartTests() {

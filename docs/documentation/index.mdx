@@ -164,15 +164,16 @@ Check out our video version of this tutorial on YouTube!
 <Accordion defaultOpen id="android-setup" title="Android setup (for projects using Kotlin DSL)">
   <Steps>
     <Step id="include-patrol-test-modules">
-      Add the Patrol test APK and its native harness to `android/settings.gradle.kts`.
-      The harness path is resolved from Flutter's existing `:patrol` plugin project,
-      so it also works when Patrol is installed from the pub cache.
+      Add the Patrol test APK and Patrol's Android test library to
+      `android/settings.gradle.kts`. The library path is resolved from Flutter's
+      existing `:patrol` plugin project, so it also works when Patrol is installed
+      from the pub cache.
 
       ```kotlin title="android/settings.gradle.kts"
       include(":app", ":patrolTest")
 
-      include(":patrol_test_harness")
-      project(":patrol_test_harness").projectDir =
+      include(":patrol_android_test")
+      project(":patrol_android_test").projectDir =
           project(":patrol").projectDir.resolve("../android_test")
       ```
 
@@ -181,8 +182,8 @@ Check out our video version of this tutorial on YouTube!
       ```groovy title="android/settings.gradle"
       include ':app', ':patrolTest'
 
-      include ':patrol_test_harness'
-      project(':patrol_test_harness').projectDir =
+      include ':patrol_android_test'
+      project(':patrol_android_test').projectDir =
           new File(project(':patrol').projectDir, '../android_test')
       ```
     </Step>
@@ -228,7 +229,6 @@ Check out our video version of this tutorial on YouTube!
                   buildTypes.create(appBuildType.name)
               }
           }
-          // Resolve custom build types against a harness variant.
           buildTypes.configureEach {
               if (name != "debug" && name != "release") {
                   matchingFallbacks += listOf("release", "debug")
@@ -244,11 +244,11 @@ Check out our video version of this tutorial on YouTube!
       }
 
       dependencies {
-          implementation(project(":patrol_test_harness"))
+          implementation(project(":patrol_android_test"))
           androidTestUtil("androidx.test:orchestrator:1.5.1")
       }
 
-      apply(from = project(":patrol_test_harness").projectDir.resolve("patrol_test.gradle"))
+      apply(from = project(":patrol_android_test").projectDir.resolve("patrol_test.gradle"))
       ```
 
       `patrol_test.gradle` assigns each test APK a package ID and embeds the
@@ -258,7 +258,7 @@ Check out our video version of this tutorial on YouTube!
       The orchestrator gives every Dart test a fresh instrumentation process and a
       freshly launched app. With `clearPackageData` set as above, Patrol wipes the
       **app's** data before each test (including runtime permissions).
-      `:patrol_test_harness` contributes the test APK's required `INTERNET`
+      `:patrol_android_test` contributes the test APK's required `INTERNET`
       and `QUERY_ALL_PACKAGES` permissions.
     </Step>
 

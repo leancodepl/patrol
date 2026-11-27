@@ -19,7 +19,9 @@
   `deterministicCursor: false`. See `migration5.md`. (#3439)
 - Add the optional self-instrumenting Android `:patrolTest` layout, which runs
   JUnit outside the app process. The in-app `androidTest` layout remains
-  supported.
+  supported. Needs a matching `patrol_cli` release: an older CLI still runs the
+  empty `:app` androidTest, and a newer CLI with an older `patrol` fails without
+  `android_test`.
 - Add `$.entrypointArgs` with the Dart entrypoint arguments the native side of the app passes to
   the test bundle (`dartEntrypointArgs` on Android, `entrypointArgs` on iOS and macOS). Needs a
   `patrol_cli` release that includes this change. (#3366)

@@ -48,8 +48,8 @@ android {
 }
 
 dependencies {
-    implementation(project(":patrol_test_harness"))
+    implementation(project(":patrol_android_test"))
     androidTestUtil("androidx.test:orchestrator:1.5.1")
 }
 
-apply(from = project(":patrol_test_harness").projectDir.resolve("patrol_test.gradle"))
+apply(from = project(":patrol_android_test").projectDir.resolve("patrol_test.gradle"))

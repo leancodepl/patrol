@@ -25,6 +25,6 @@ plugins {
 
 include(":app", ":patrolTest")
 
-include(":patrol_test_harness")
-project(":patrol_test_harness").projectDir =
+include(":patrol_android_test")
+project(":patrol_android_test").projectDir =
     project(":patrol").projectDir.resolve("../android_test")
