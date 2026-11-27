@@ -15,6 +15,7 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
   var _cameraPermissionGranted = false;
   var _microphonePermissionGranted = false;
   var _locationPermissionGranted = false;
+  var _locationAlwaysPermissionGranted = false;
   var _galleryPermissionGranted = false;
   var _batteryPermissionGranted = false;
 
@@ -38,6 +39,13 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
     final status = await Permission.location.request();
     setState(() {
       _locationPermissionGranted = status == PermissionStatus.granted;
+    });
+  }
+
+  Future<void> _requestLocationAlwaysPermission() async {
+    final status = await Permission.locationAlways.request();
+    setState(() {
+      _locationAlwaysPermissionGranted = status == PermissionStatus.granted;
     });
   }
 
@@ -85,6 +93,14 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
     );
 
     unawaited(
+      Permission.locationAlways.status.then((value) {
+        setState(() {
+          _locationAlwaysPermissionGranted = value == PermissionStatus.granted;
+        });
+      }),
+    );
+
+    unawaited(
       Permission.photos.status.then((value) {
         setState(() {
           _galleryPermissionGranted = value == PermissionStatus.granted;
@@ -106,7 +122,7 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
     return Scaffold(
       key: K.permissionsScreen,
       appBar: AppBar(title: const Text('Permissions')),
-      body: Center(
+      body: SingleChildScrollView(
         child: Column(
           children: [
             _PermissionTile(
@@ -129,6 +145,13 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
               granted: _locationPermissionGranted,
               onTap: _requestLocationPermission,
               key: K.locationPermissionTile,
+            ),
+            _PermissionTile(
+              name: 'Location Always',
+              icon: Icons.my_location,
+              granted: _locationAlwaysPermissionGranted,
+              onTap: _requestLocationAlwaysPermission,
+              key: K.locationAlwaysPermissionTile,
             ),
             _PermissionTile(
               name: 'Gallery',
@@ -170,6 +193,7 @@ class _PermissionTile extends StatelessWidget {
         'camera' => K.requestCameraPermissionButton,
         'microphone' => K.requestMicrophonePermissionButton,
         'location' => K.requestLocationPermissionButton,
+        'location always' => K.requestLocationAlwaysPermissionButton,
         'gallery' => K.requestGalleryPermissionButton,
         'battery optimizations' => K.requestBatteryPermissionButton,
         _ => Key('request${permissionName}PermissionButton'),

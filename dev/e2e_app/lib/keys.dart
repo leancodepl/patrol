@@ -55,6 +55,7 @@ class Keys {
   static const cameraPermissionTile = Key('camera');
   static const microphonePermissionTile = Key('microphone');
   static const locationPermissionTile = Key('location');
+  static const locationAlwaysPermissionTile = Key('locationAlways');
   static const galleryPermissionTile = Key('gallery');
   static const batteryPermissionTile = Key('battery');
   static const permissionsScreen = Key('permissionsScreen');
@@ -66,6 +67,9 @@ class Keys {
   );
   static const requestLocationPermissionButton = Key(
     'requestLocationPermissionButton',
+  );
+  static const requestLocationAlwaysPermissionButton = Key(
+    'requestLocationAlwaysPermissionButton',
   );
   static const requestGalleryPermissionButton = Key(
     'requestGalleryPermissionButton',
