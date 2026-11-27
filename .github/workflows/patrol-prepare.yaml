@@ -253,6 +253,10 @@ jobs:
         if: success() || failure()
         run: flutter test
 
+      - name: dart fix golden tests (lib/fix_data.yaml)
+        if: success() || failure()
+        run: dart fix test_fixes --compare-to-golden
+
       - name: Run analyzer
         if: success() || failure()
         run: |

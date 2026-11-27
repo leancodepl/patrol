@@ -8,7 +8,8 @@ Patrol 4.0 introduces the **Platform Automation API** and starts the deprecation
 - `$.native2` (Native Automation 2.0)
 
 <Warning>
-  `$.native`, `$.native2`, `NativeAutomator`, `NativeAutomator2`, and `NativeAutomatorConfig` are deprecated and will be removed in a future release. Migrate to `$.platform` and `PlatformAutomatorConfig`.
+  `$.native`, `$.native2`, `NativeAutomator`, `NativeAutomator2`, `NativeAutomatorConfig`, and `NativeSelector` were removed in Patrol 5.0. Migrate to `$.platform` and `PlatformAutomatorConfig`.
+  On Patrol 5.0, `dart fix --apply` does most of the rewrite for you. See [Migrating to Patrol 5.0](#dart-fix-in-patrol-50) below.
 </Warning>
 
 ## Breaking changes you’ll likely hit
@@ -165,3 +166,41 @@ final platformConfig = PlatformAutomatorConfig.fromOptions(
   keyboardBehavior: KeyboardBehavior.alternative,
 );
 ```
+
+## dart fix in Patrol 5.0
+
+Patrol 5.0 removes the native API, and `patrol` ships data-driven fixes for it. After you upgrade,
+run:
+
+```bash
+dart fix --apply
+```
+
+It rewrites:
+
+| Before | After |
+|---|---|
+| `$.native.*`, `$.native2.*` | `$.platform.mobile.*` |
+| `$.nativeAutomator`, `$.nativeAutomator2` | `$.platformAutomator.mobile` |
+| `NativeSelector(...)` | `MobileSelector(...)` |
+| `NativeAutomator`, `NativeAutomator2` | `MobileAutomator` |
+| `NativeAutomatorConfig(...)` | `PlatformAutomatorConfig.fromOptions(...)` |
+| `patrolTest(nativeAutomatorConfig: ...)` | `patrolTest(platformAutomatorConfig: ...)` |
+
+<Info>
+  `dart fix` only fixes files that import `package:patrol/patrol.dart` themselves. A test that gets
+  Patrol through your own file (for example `import 'common.dart';` that exports `patrol.dart`) is
+  skipped. Add `import 'package:patrol/patrol.dart';` to those files, run `dart fix --apply`, and
+  then remove the import again if you don't need it.
+</Info>
+
+Fix the rest by hand. `dart analyze` lists them as methods that aren't defined for `MobileAutomator`:
+
+- Android-only methods, such as `pressBack()`, `pressDoubleRecentApps()`, `enableLocation()` and
+  `disableLocation()`: call them on `$.platform.android`.
+- iOS-only methods, such as `closeHeadsUpNotification()`: call them on `$.platform.ios`.
+- Calls with `appId:`, such as `$.native2.tap(appId: ..., NativeSelector(ios: ...))`: use
+  `$.platform.ios.tap(IOSSelector(...), appId: ...)`.
+- `getNativeViews()`: use `$.platform.android.getNativeViews(...)` or
+  `$.platform.ios.getNativeViews(...)`. `NativeView.fromAndroid` and `NativeView.fromIOS` still map
+  the results to `NativeView`.

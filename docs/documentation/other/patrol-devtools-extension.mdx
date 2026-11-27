@@ -85,13 +85,13 @@ When you find elements in the inspector, you can create cross-platform selectors
 
 ```dart
 // Cross-platform button using unique identifiers
-await $.platform.mobile.tap(NativeSelector(
+await $.platform.mobile.tap(MobileSelector(
   android: AndroidSelector(resourceId: 'com.example:id/login_btn'),
   ios: IOSSelector(identifier: 'loginButton'),
 ));
 
 // Using class name (Android) and element type (iOS)
-await $.platform.mobile.tap(NativeSelector(
+await $.platform.mobile.tap(MobileSelector(
   android: AndroidSelector(className: 'android.widget.Button'),
   ios: IOSSelector(elementType: 'XCUIElementTypeButton'),
 ));

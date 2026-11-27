@@ -59,13 +59,13 @@ void main() {
       await $.pumpWidgetAndSettle(const MyApp());
       await $.tap(#addPhotoButton); // Clicks a photo button inside your app to open camera
       await $.platform.mobile.grantPermissionWhenInUse(); // Some devices require permission to be granted before taking a photo
-      await $.platform.mobile.takeCameraPhoto(shutterButtonSelector: NativeSelector(
+      await $.platform.mobile.takeCameraPhoto(shutterButtonSelector: MobileSelector(
         android: AndroidSelector(
           resourceName: 'com.oplus.camera:id/shutter_button',
         ),
         ios: IOSSelector(label: 'Take Picture'),
       ),
-      doneButtonSelector: NativeSelector(
+      doneButtonSelector: MobileSelector(
         android: AndroidSelector(
           resourceName: 'com.oplus.camera:id/done_button',
         ),

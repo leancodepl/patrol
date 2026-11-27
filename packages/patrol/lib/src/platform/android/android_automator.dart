@@ -200,7 +200,7 @@ abstract interface class AndroidAutomator implements MobileAutomator {
   /// [dy] determines the vertical offset of the swipe. It must be in the inclusive 0-1 range.
   ///
   /// This is equivalent to:
-  /// $.native.swipe(
+  /// $.platform.android.swipe(
   ///    from: Offset(0, dy),
   ///    to: Offset(1, dy),
   ///  );

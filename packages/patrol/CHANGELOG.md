@@ -1,5 +1,10 @@
 ## Unreleased
 
+- **Breaking:** Remove the native API deprecated in 4.0: `$.native`, `$.native2`, `NativeAutomator`,
+  `NativeAutomator2`, `NativeAutomatorConfig`, `NativeSelector`, `GetNativeViewsResult` and the
+  `nativeAutomatorConfig` parameter of `patrolTest`. Use `$.platform`. `dart fix --apply` rewrites
+  most of the calls. See `migration5.md`.
+- **Breaking:** Remove the `timeout` parameter of `PatrolBinding.runTest`, deprecated since 2.6.
 - Add `$.entrypointArgs` with the Dart entrypoint arguments the native side of the app passes to
   the test bundle (`dartEntrypointArgs` on Android, `entrypointArgs` on iOS and macOS). Needs a
   `patrol_cli` release that includes this change. (#3366)

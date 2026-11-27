@@ -60,7 +60,7 @@ void main() {
       await $.platform.mobile.grantPermissionWhenInUse(); // Some devices require permission to be granted before picking an image
       await $.platform.mobile.pickImageFromGallery(
         index: 1,
-        imageSelector: NativeSelector(
+        imageSelector: MobileSelector(
           android: AndroidSelector(
             resourceName: 'com.oplus.gallery:id/image',
           ),
@@ -129,7 +129,7 @@ void main() {
       await $.platform.mobile.grantPermissionWhenInUse(); // Some devices require permission to be granted before picking an image
       await $.platform.mobile.pickMultipleImagesFromGallery(
         imageIndexes: [0, 1],
-        imageSelector: NativeSelector(
+        imageSelector: MobileSelector(
           android: AndroidSelector(
             resourceName: 'com.oplus.gallery:id/image',
           ),

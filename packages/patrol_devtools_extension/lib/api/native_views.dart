@@ -17,7 +17,7 @@ class GetNativeUITreeResponse {
   Map<String, dynamic> toJson() => _$GetNativeUITreeResponseToJson(this);
 }
 
-// this is copy paste from patrol/lib/src/native/native_automator.dart but don't have time/idea to make it better currently
+// this is copy paste from patrol/lib/src/platform/native_view.dart but don't have time/idea to make it better currently
 @JsonSerializable()
 class NativeView {
   NativeView({
