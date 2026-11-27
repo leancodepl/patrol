@@ -13,9 +13,16 @@ abstract class VideoRecordingManager {
 
   final List<String> _savedVideos = [];
 
-  /// Records that a video was successfully saved at [videoPath].
+  /// Called whenever a recording is saved, if anyone is interested.
+  void Function({required String testName, required String videoPath})?
+  onVideoSaved;
+
+  /// Records that a video for [testName] was successfully saved at [videoPath].
   @protected
-  void addSavedVideo(String videoPath) => _savedVideos.add(videoPath);
+  void addSavedVideo(String testName, String videoPath) {
+    _savedVideos.add(videoPath);
+    onVideoSaved?.call(testName: testName, videoPath: videoPath);
+  }
 
   /// One-line summary of saved recordings for the CLI summary, or `null` if
   /// nothing was recorded.

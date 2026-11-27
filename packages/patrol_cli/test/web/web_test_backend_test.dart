@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart';
+import 'package:file/memory.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/web/web_test_backend.dart';
 import 'package:test/test.dart';
@@ -116,6 +117,7 @@ void main() {
       backend = WebTestBackend(
         processManager: MockProcessManager(),
         parentDisposeScope: DisposeScope(),
+        rootDirectory: MemoryFileSystem.test().currentDirectory,
         logger: logger,
       );
     });
