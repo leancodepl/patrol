@@ -133,6 +133,10 @@ static inline void PatrolWithoutQuiescenceWait(void (^block)(void)) {
     }                                                                                                                \
                                                                                                                      \
     NSLog(@"App icon not found on any home screen: %@", appName);                                                    \
+    XCUIElement *alert = springboard.alerts.firstMatch;                                                              \
+    if (alert.exists) {                                                                                              \
+      NSLog(@"An alert hides the home screen: %@", alert.label);                                                     \
+    }                                                                                                                \
     return NO;                                                                                                       \
   }                                                                                                                  \
                                                                                                                      \
@@ -155,17 +159,18 @@ static inline void PatrolWithoutQuiescenceWait(void (^block)(void)) {
     NSArray<NSString *> *confirmTexts = @[ [ObjCLocalization getLocalizedStringWithKey:@"delete_app"], deleteText ]; \
     NSPredicate *isConfirmButton = [NSPredicate predicateWithFormat:@"label IN %@", confirmTexts];                   \
     XCUIElement *confirmButton = [springboard.alerts.buttons matchingPredicate:isConfirmButton].firstMatch;          \
-    /* Only the deletion alerts count, so an unrelated alert does not hold up the deletion. */                       \
-    XCUIElement *deletionAlert = [springboard.alerts containingPredicate:isConfirmButton].firstMatch;                \
     /* An alert or the context menu hides the icons below it from XCTest, and between two alerts neither             \
-       may be visible. So the app counts as deleted once neither the icon, the menu nor a deletion alert             \
-       has shown up for a while: 1 s after the final "Delete", 3 s otherwise, in case another alert                  \
-       comes. */                                                                                                     \
+       may be visible. So the app counts as deleted once neither the icon, the menu nor any alert has                \
+       shown up for a while: 1 s after the final "Delete", 3 s otherwise, in case another alert comes. */            \
+    XCUIElement *anyAlert = springboard.alerts.firstMatch;                                                           \
     NSDate *deadline = [NSDate dateWithTimeIntervalSinceNow:15.0 * patience];                                        \
     NSDate *goneSince = nil;                                                                                         \
     BOOL confirmedDelete = NO;                                                                                       \
     while (goneSince == nil || -goneSince.timeIntervalSinceNow < (confirmedDelete ? 1.0 : 3.0)) {                    \
       if (deadline.timeIntervalSinceNow <= 0) {                                                                      \
+        if (anyAlert.exists && !confirmButton.exists) {                                                              \
+          NSLog(@"An alert that is not about deleting the app is open: %@", anyAlert.label);                         \
+        }                                                                                                            \
         NSLog(@"Could not confirm deleting the app: %@", appName);                                                   \
         return NO;                                                                                                   \
       }                                                                                                              \
@@ -187,7 +192,7 @@ static inline void PatrolWithoutQuiescenceWait(void (^block)(void)) {
         goneSince = nil;                                                                                             \
         continue;                                                                                                    \
       }                                                                                                              \
-      if (icon.exists || removeAppButton.exists || deletionAlert.exists) {                                           \
+      if (icon.exists || removeAppButton.exists || anyAlert.exists) {                                                \
         goneSince = nil;                                                                                             \
       } else if (goneSince == nil) {                                                                                 \
         goneSince = [NSDate date];                                                                                   \
