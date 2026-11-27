@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:adb/adb.dart';
 import 'package:adb/src/internals.dart';
 import 'package:test/test.dart';
@@ -32,6 +34,27 @@ void main() {
             contains('The package service on emulator-5554'),
           ),
         ),
+      );
+    });
+
+    test('gives up while a check is still pending', () async {
+      await expectLater(
+        waitUntilReady(
+          'The package service',
+          () => Completer<bool>().future,
+          timeout: const Duration(milliseconds: 50),
+        ),
+        throwsA(isA<AdbTimeout>()),
+      );
+    });
+
+    test('does not count a check that succeeds after the timeout', () async {
+      await expectLater(
+        waitUntilReady('The package service', () async {
+          await Future<void>.delayed(const Duration(milliseconds: 100));
+          return true;
+        }, timeout: const Duration(milliseconds: 50)),
+        throwsA(isA<AdbTimeout>()),
       );
     });
   });

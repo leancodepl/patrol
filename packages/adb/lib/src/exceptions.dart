@@ -65,7 +65,7 @@ class AdbDeleteFailedInternalError extends AdbException {
 }
 
 /// Indicates that the ADB server or a device service did not become ready in
-/// time, as happens when the device is gone.
+/// time.
 class AdbTimeout extends AdbException {
   /// Creates a new [AdbTimeout].
   const AdbTimeout({required super.message});

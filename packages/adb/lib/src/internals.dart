@@ -5,9 +5,9 @@ import 'extensions.dart';
 
 const _interval = Duration(milliseconds: 100);
 
-/// Calls [isReady] every [interval] until it returns true. Throws [AdbTimeout]
-/// naming [what] once [timeout] has passed, so a device that is gone does not
-/// keep a caller polling forever.
+/// Calls [isReady], pausing [interval] between calls, until it returns true.
+/// Throws [AdbTimeout] naming [what] once [timeout] has passed, including while
+/// a call is still pending; a check that succeeds after that does not count.
 Future<void> waitUntilReady(
   String what,
   Future<bool> Function() isReady, {
@@ -15,10 +15,17 @@ Future<void> waitUntilReady(
   Duration interval = _interval,
 }) async {
   final stopwatch = Stopwatch()..start();
-  while (!await isReady()) {
+  while (true) {
+    final remaining = timeout - stopwatch.elapsed;
+    final ready =
+        remaining > Duration.zero &&
+        await isReady().timeout(remaining, onTimeout: () => false);
+    if (ready && stopwatch.elapsed <= timeout) {
+      return;
+    }
     if (stopwatch.elapsed >= timeout) {
       throw AdbTimeout(
-        message: '$what was not ready after ${timeout.inSeconds}s',
+        message: '$what was not ready after ${timeout.inMilliseconds} ms',
       );
     }
     await Future<void>.delayed(interval);
@@ -32,7 +39,7 @@ class AdbInternals {
   const AdbInternals({this.readyTimeout = const Duration(minutes: 2)});
 
   /// How long to wait for the ADB server or a device service before throwing
-  /// [AdbTimeout]. A freshly booted emulator can take a while.
+  /// [AdbTimeout].
   final Duration readyTimeout;
 
   /// Calls `adb devices` and returns its stdout.
