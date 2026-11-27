@@ -713,12 +713,14 @@ class AndroidTestBackend {
       );
     }
 
-    final (instrumentPackage, instrumentRunner) =
-        await _resolvePatrolInstrumentation(
-          packageName,
-          device,
-          testLayout: options.testLayout,
-        );
+    final (
+      instrumentPackage,
+      instrumentRunner,
+    ) = await _resolvePatrolInstrumentation(
+      packageName,
+      device,
+      testLayout: options.testLayout,
+    );
 
     await _disposeScope.run((scope) async {
       final processLogcat =
@@ -903,10 +905,7 @@ class AndroidTestBackend {
               packageName: instrumentPackage,
               intentClass: instrumentRunner,
               device: device.id,
-              arguments: {
-                'class': classArg,
-                'patrolAppId': ?targetAppId,
-              },
+              arguments: {'class': classArg, 'patrolAppId': ?targetAppId},
             )
             ..disposedByTree(scope);
       process

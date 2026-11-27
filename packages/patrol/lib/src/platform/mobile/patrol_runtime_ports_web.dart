@@ -3,6 +3,9 @@ class PatrolRuntimePorts {
   PatrolRuntimePorts._();
 
   /// No-op on web.
+  static Future<void> resolveNativeServerHost() async {}
+
+  /// No-op on web.
   static Future<void> ensureLoaded() async {}
 
   /// Always null on web.

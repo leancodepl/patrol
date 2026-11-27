@@ -630,7 +630,10 @@ void main() {
       });
 
       test('prints correct paths for debug build without flavor', () {
-        command.printApkPaths(buildMode: 'debug', testLayout: AndroidTestLayout.selfInstrumenting);
+        command.printApkPaths(
+          buildMode: 'debug',
+          testLayout: AndroidTestLayout.selfInstrumenting,
+        );
 
         verify(
           () => mockLogger.info(
@@ -645,7 +648,10 @@ void main() {
       });
 
       test('prints correct paths for release build without flavor', () {
-        command.printApkPaths(buildMode: 'release', testLayout: AndroidTestLayout.selfInstrumenting);
+        command.printApkPaths(
+          buildMode: 'release',
+          testLayout: AndroidTestLayout.selfInstrumenting,
+        );
 
         verify(
           () => mockLogger.info(
@@ -660,7 +666,11 @@ void main() {
       });
 
       test('prints correct paths for debug build with flavor', () {
-        command.printApkPaths(flavor: 'dev', buildMode: 'debug', testLayout: AndroidTestLayout.selfInstrumenting);
+        command.printApkPaths(
+          flavor: 'dev',
+          buildMode: 'debug',
+          testLayout: AndroidTestLayout.selfInstrumenting,
+        );
 
         verify(
           () => mockLogger.info(
@@ -675,7 +685,11 @@ void main() {
       });
 
       test('prints correct paths for release build with flavor', () {
-        command.printApkPaths(flavor: 'prod', buildMode: 'release', testLayout: AndroidTestLayout.selfInstrumenting);
+        command.printApkPaths(
+          flavor: 'prod',
+          buildMode: 'release',
+          testLayout: AndroidTestLayout.selfInstrumenting,
+        );
 
         verify(
           () => mockLogger.info(
@@ -690,7 +704,10 @@ void main() {
       });
 
       test('prints correct paths for custom build mode without flavor', () {
-        command.printApkPaths(buildMode: 'profile', testLayout: AndroidTestLayout.selfInstrumenting);
+        command.printApkPaths(
+          buildMode: 'profile',
+          testLayout: AndroidTestLayout.selfInstrumenting,
+        );
 
         verify(
           () => mockLogger.info(
@@ -705,7 +722,11 @@ void main() {
       });
 
       test('prints correct paths for custom build mode with flavor', () {
-        command.printApkPaths(flavor: 'staging', buildMode: 'profile', testLayout: AndroidTestLayout.selfInstrumenting);
+        command.printApkPaths(
+          flavor: 'staging',
+          buildMode: 'profile',
+          testLayout: AndroidTestLayout.selfInstrumenting,
+        );
 
         verify(
           () => mockLogger.info(
@@ -720,7 +741,10 @@ void main() {
       });
 
       test('handles uppercase build mode correctly', () {
-        command.printApkPaths(buildMode: 'DEBUG', testLayout: AndroidTestLayout.selfInstrumenting);
+        command.printApkPaths(
+          buildMode: 'DEBUG',
+          testLayout: AndroidTestLayout.selfInstrumenting,
+        );
 
         verify(
           () => mockLogger.info(
@@ -735,7 +759,11 @@ void main() {
       });
 
       test('handles mixed case build mode correctly with flavor', () {
-        command.printApkPaths(flavor: 'Dev', buildMode: 'Release', testLayout: AndroidTestLayout.selfInstrumenting);
+        command.printApkPaths(
+          flavor: 'Dev',
+          buildMode: 'Release',
+          testLayout: AndroidTestLayout.selfInstrumenting,
+        );
 
         verify(
           () => mockLogger.info(
@@ -750,7 +778,11 @@ void main() {
       });
 
       test('handles complex flavor names correctly', () {
-        command.printApkPaths(flavor: 'staging-prod', buildMode: 'release', testLayout: AndroidTestLayout.selfInstrumenting);
+        command.printApkPaths(
+          flavor: 'staging-prod',
+          buildMode: 'release',
+          testLayout: AndroidTestLayout.selfInstrumenting,
+        );
 
         verify(
           () => mockLogger.info(
@@ -765,7 +797,10 @@ void main() {
       });
 
       test('handles null flavor correctly', () {
-        command.printApkPaths(buildMode: 'debug', testLayout: AndroidTestLayout.selfInstrumenting);
+        command.printApkPaths(
+          buildMode: 'debug',
+          testLayout: AndroidTestLayout.selfInstrumenting,
+        );
 
         verify(
           () => mockLogger.info(
@@ -780,7 +815,11 @@ void main() {
       });
 
       test('prints paths in correct order', () {
-        command.printApkPaths(flavor: 'dev', buildMode: 'debug', testLayout: AndroidTestLayout.selfInstrumenting);
+        command.printApkPaths(
+          flavor: 'dev',
+          buildMode: 'debug',
+          testLayout: AndroidTestLayout.selfInstrumenting,
+        );
 
         final captured = verify(() => mockLogger.info(captureAny())).captured;
         expect(captured.length, 2);
@@ -789,13 +828,20 @@ void main() {
       });
 
       test('calls logger info exactly twice per invocation', () {
-        command.printApkPaths(buildMode: 'debug', testLayout: AndroidTestLayout.selfInstrumenting);
+        command.printApkPaths(
+          buildMode: 'debug',
+          testLayout: AndroidTestLayout.selfInstrumenting,
+        );
 
         verify(() => mockLogger.info(any())).called(2);
       });
 
       test('checks proper paths for flavor and build mode', () {
-        command.printApkPaths(flavor: 'dev', buildMode: 'debug', testLayout: AndroidTestLayout.selfInstrumenting);
+        command.printApkPaths(
+          flavor: 'dev',
+          buildMode: 'debug',
+          testLayout: AndroidTestLayout.selfInstrumenting,
+        );
 
         final captured = verify(() => mockLogger.info(captureAny())).captured;
         expect(
@@ -811,14 +857,22 @@ void main() {
       });
 
       test('generates consistent APK names for same parameters', () {
-        command.printApkPaths(flavor: 'prod', buildMode: 'release', testLayout: AndroidTestLayout.selfInstrumenting);
+        command.printApkPaths(
+          flavor: 'prod',
+          buildMode: 'release',
+          testLayout: AndroidTestLayout.selfInstrumenting,
+        );
         final firstCall = verify(() => mockLogger.info(captureAny())).captured;
 
         // Reset mock
         reset(mockLogger);
         when(() => mockLogger.info(any())).thenReturn(null);
 
-        command.printApkPaths(flavor: 'prod', buildMode: 'release', testLayout: AndroidTestLayout.selfInstrumenting);
+        command.printApkPaths(
+          flavor: 'prod',
+          buildMode: 'release',
+          testLayout: AndroidTestLayout.selfInstrumenting,
+        );
         final secondCall = verify(() => mockLogger.info(captureAny())).captured;
 
         expect(firstCall, equals(secondCall));

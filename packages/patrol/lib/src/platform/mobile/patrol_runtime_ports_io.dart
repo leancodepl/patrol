@@ -24,6 +24,32 @@ class PatrolRuntimePorts {
     defaultValue: 'localhost',
   );
 
+  /// Resolves the Android native-server host without touching a method channel.
+  ///
+  /// Safe to call before the Flutter binding is initialized. Call it before
+  /// the Live Patrol binding is installed so `main()` does not `await` after
+  /// the binding and before `test()` / `group()` declarations (that ordering
+  /// lets the test framework start with an empty suite).
+  static Future<void> resolveNativeServerHost() async {
+    if (!Platform.isAndroid ||
+        _configuredNativeServerHost != 'localhost' ||
+        _nativeServerHost != null) {
+      return;
+    }
+
+    try {
+      final addresses = await InternetAddress.lookup(
+        _configuredNativeServerHost,
+        type: InternetAddressType.IPv4,
+      );
+      if (addresses.isNotEmpty) {
+        _nativeServerHost = addresses.first.address;
+      }
+    } on Object catch (error) {
+      debugPrint('Failed to resolve Patrol native server host: $error');
+    }
+  }
+
   /// Loads ports from the native side.
   ///
   /// Must be called after the Flutter binding is initialized so the method
@@ -37,22 +63,11 @@ class PatrolRuntimePorts {
   /// registration and omits the plugin from release, [MissingPluginException]
   /// would land here. If that happens we fall back to default 8081/8082 ports,
   /// which still works for Patrol testing on a single device.
+  ///
+  /// Also runs [resolveNativeServerHost] so callers that only call this method
+  /// still get the Android host cache.
   static Future<void> ensureLoaded() async {
-    if (Platform.isAndroid &&
-        _configuredNativeServerHost == 'localhost' &&
-        _nativeServerHost == null) {
-      try {
-        final addresses = await InternetAddress.lookup(
-          _configuredNativeServerHost,
-          type: InternetAddressType.IPv4,
-        );
-        if (addresses.isNotEmpty) {
-          _nativeServerHost = addresses.first.address;
-        }
-      } on Object catch (error) {
-        debugPrint('Failed to resolve Patrol native server host: $error');
-      }
-    }
+    await resolveNativeServerHost();
 
     if (!(Platform.isIOS || Platform.isMacOS)) {
       return;
