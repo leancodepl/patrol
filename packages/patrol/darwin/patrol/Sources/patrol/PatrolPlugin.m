@@ -23,6 +23,7 @@ static NSString *const kGetRuntimePortsMethod = @"getRuntimePorts";
     NSMutableDictionary<NSString *, NSString *> *ports = [NSMutableDictionary dictionary];
     ports[@"testServerPort"] = environment[@"PATROL_TEST_SERVER_PORT"];
     ports[@"appServerPort"] = environment[@"PATROL_APP_SERVER_PORT"];
+    ports[@"hostServerPort"] = environment[@"PATROL_HOST_SERVER_PORT"];
     result(ports);
   } else {
     result(FlutterMethodNotImplemented);

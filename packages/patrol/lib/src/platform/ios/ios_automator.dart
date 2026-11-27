@@ -1,7 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:meta/meta.dart';
 import 'package:patrol/src/platform/contracts/contracts.dart'
     show AppleApp, IOSGetNativeViewsResponse, KeyboardBehavior;
 import 'package:patrol/src/platform/ios/ios_automator_config.dart';
+import 'package:patrol/src/platform/mobile/fold_posture.dart';
 import 'package:patrol/src/platform/mobile/mobile_automator.dart';
 import 'package:patrol/src/platform/selector.dart' show IOSSelector;
 
@@ -218,6 +220,10 @@ abstract interface class IOSAutomator implements MobileAutomator {
     String? appId,
   });
 
+  /// Captures a native screenshot tagged with [tag] and attaches it to the
+  /// running test's `.xcresult` (for a device farm to collect).
+  Future<void> takeNativeScreenshot(String tag);
+
   /// Take and confirm the photo
   ///
   /// This method taps on the camera shutter button to take a photo, then taps
@@ -263,4 +269,16 @@ abstract interface class IOSAutomator implements MobileAutomator {
     IOSSelector? imageSelector,
     Duration? timeout,
   });
+
+  /// Folds a foldable simulator, such as the iPhone Duo, to [posture].
+  /// **Experimental.**
+  @experimental
+  Future<void> setFoldPosture(FoldPosture posture);
+
+  /// Sets the hinge of a foldable simulator to [degrees], from 0 to 180.
+  ///
+  /// Works only with `patrol test` or `patrol develop` and uses private
+  /// simulator APIs. **Experimental.**
+  @experimental
+  Future<void> setHingeAngle(double degrees);
 }

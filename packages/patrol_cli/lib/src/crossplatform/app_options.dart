@@ -133,14 +133,35 @@ class AndroidAppOptions {
     );
   }
 
-  List<String> toGradleAssembleTestInvocation({required bool isWindows}) {
+  /// When [testUtilExport] is set, the same Gradle run also copies the
+  /// `androidTestUtil` APKs (orchestrator, test-services) into its `outputDir`
+  /// using the init script at its `initScript` path.
+  List<String> toGradleAssembleTestInvocation({
+    required bool isWindows,
+    ({String initScript, String outputDir})? testUtilExport,
+  }) {
     // for example: assembleDevDebugAndroidTest, assembleReleaseAndroidTest
-    return _toGradleInvocation(
+    final cmd = _toGradleInvocation(
       isWindows: isWindows,
       task: 'assemble$_effectiveFlavor${_buildMode}AndroidTest',
       noUninstallAfterTests: !uninstall,
     );
+    if (testUtilExport != null) {
+      cmd.addAll([
+        ':app:$exportAndroidTestUtilTask',
+        '--init-script',
+        testUtilExport.initScript,
+        '-P$androidTestUtilDirProperty=${testUtilExport.outputDir}',
+      ]);
+    }
+    return cmd;
   }
+
+  /// Gradle task registered by the test-util export init script.
+  static const exportAndroidTestUtilTask = 'patrolExportAndroidTestUtil';
+
+  /// Gradle property holding the directory the test-util APKs are copied to.
+  static const androidTestUtilDirProperty = 'patrol-test-util-dir';
 
   List<String> toGradleConnectedTestInvocation({
     required bool isWindows,
@@ -268,6 +289,7 @@ class IOSAppOptions {
     required this.testServerPort,
     this.fullIsolation = false,
     this.clearIOSPermissions = false,
+    this.screenshotOnFailure = false,
     this.emitTestManifest = false,
   });
 
@@ -281,6 +303,10 @@ class IOSAppOptions {
   final int testServerPort;
   final bool fullIsolation;
   final bool clearIOSPermissions;
+
+  /// Whether the native runner captures a failure screenshot when the Dart
+  /// failure hook can't (the app never became ready, or died mid-test).
+  final bool screenshotOnFailure;
 
   /// Whether to discover Dart tests at build time (host `flutter test`) and
   /// embed a manifest into the test bundle, so the native runner can skip the
@@ -347,7 +373,7 @@ class IOSAppOptions {
       ...['-derivedDataPath', '../build/ios_integ'],
       r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
       r'OTHER_LDFLAGS=$(inherited) -weak_framework XCTest -F$(PLATFORM_DIR)/Developer/Library/Frameworks -L$(PLATFORM_DIR)/Developer/usr/lib',
-      'OTHER_CFLAGS=\$(inherited) -D FULL_ISOLATION=${fullIsolation ? 1 : 0} -D CLEAR_PERMISSIONS=${clearIOSPermissions ? 1 : 0}',
+      'OTHER_CFLAGS=\$(inherited) -D FULL_ISOLATION=${fullIsolation ? 1 : 0} -D CLEAR_PERMISSIONS=${clearIOSPermissions ? 1 : 0} -D PATROL_SCREENSHOT_ON_FAILURE=${screenshotOnFailure ? 1 : 0}',
     ];
 
     return cmd;

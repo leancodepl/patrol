@@ -16,6 +16,7 @@ class PatrolRuntimePorts {
 
   static int? _testServerPort;
   static int? _appServerPort;
+  static int? _hostServerPort;
 
   /// Loads ports from the native side.
   ///
@@ -41,6 +42,7 @@ class PatrolRuntimePorts {
       );
       _testServerPort = _parsePort(result?['testServerPort']);
       _appServerPort = _parsePort(result?['appServerPort']);
+      _hostServerPort = _parsePort(result?['hostServerPort']);
     } on Object catch (error) {
       debugPrint(
         'Failed to load Patrol runtime ports from the native side: $error',
@@ -53,6 +55,9 @@ class PatrolRuntimePorts {
 
   /// Port of `PatrolAppService` inside the app under test, or null if not injected.
   static int? appServerPort() => _appServerPort;
+
+  /// Port of the `patrol_cli` host server on iOS simulators, or null if not injected.
+  static int? hostServerPort() => _hostServerPort;
 
   static int? _parsePort(Object? value) {
     if (value is int) {

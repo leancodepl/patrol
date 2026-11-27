@@ -1,6 +1,12 @@
-## Unreleased
+## 3.7.1
 
-- Add optional `description` parameter to Flutter actions (`tap`, `enterText`, `scrollTo`, etc.). When set, it replaces the auto-generated patrol log step text and wraps failures as `failed on: <description>`.
+- Fix the duration in the timeout exception that `dragUntilExists()` and `dragUntilVisible()` throw after running out of iterations: it now reports the time spent dragging instead of `settleBetweenScrollsTimeout`. (#3300)
+- Drop an unneeded `package:flutter/material.dart` import, which Flutter 3.47+ deprecates in favour
+  of `package:material_ui`. (#3399)
+
+## 3.7.0
+
+- Add optional `description` parameter to Flutter actions (`tap`, `enterText`, `scrollTo`, etc.). When set, it replaces the auto-generated patrol log step text and wraps failures as `failed on: <description>`. (#3242)
 - Add a regression test for finding widgets by keys containing special characters (diacritics, symbols, emoji). (#3169)
 - Fix doc comments that did not match the code in `waitUntilExists()`, `scrollUntilVisible()`, `dragUntilExists()`, `dragUntilVisible()` and `WaitUntilVisibleTimeoutException`, doc code samples that did not compile, and typos. (#3302)
 

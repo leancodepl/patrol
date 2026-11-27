@@ -10,4 +10,7 @@ class PatrolRuntimePorts {
 
   /// Always null on web.
   static int? appServerPort() => null;
+
+  /// Always null on web.
+  static int? hostServerPort() => null;
 }

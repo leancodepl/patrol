@@ -1,8 +1,8 @@
-## Unreleased
+## 0.10.2
 
-- Allow `equatable` 3.x by widening the constraint to `>=2.1.0 <4.0.0`. Apps still on `equatable` 2.x keep resolving.
-- Remove `@override` from `Entry` subclasses' `fromJson` factories, which Dart 3.13 reports as `invalid_annotation_target`.
-- Add an example that pipes `PatrolLogWriter` output into `PatrolLogReader`.
+- Allow `equatable` 3.x by widening the constraint to `>=2.1.0 <4.0.0`. Apps still on `equatable` 2.x keep resolving. (#3322)
+- Add an example that pipes `PatrolLogWriter` output into `PatrolLogReader`. (#3324)
+- Remove `@override` from `Entry` subclasses' `fromJson` factories, which Dart 3.13 reports as `invalid_annotation_target`. (#3324)
 
 ## 0.10.1
 

@@ -12,7 +12,7 @@ on:
   # Not `pull_request_target`: this workflow needs no secrets, and that trigger
   # would check out the base branch instead of the PR.
   pull_request:
-    types: [opened, synchronize]
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'packages/patrol/**'
       - 'packages/patrol_cli/**'
@@ -114,6 +114,7 @@ jobs:
 
 
   ios:
+    if: github.event.pull_request.draft != true
     name: iOS simulator
     runs-on: macos-latest
     timeout-minutes: 40
