@@ -53,22 +53,22 @@ class FlutterTool {
   /// Sends a Hot Restart to the attached app - the same as pressing `r`.
   ///
   /// If `flutter attach` hasn't connected yet the request is queued and sent
-  /// as soon as it does. Dropping it (the previous behaviour) left callers
-  /// such as patrol_mcp waiting for a test run that never started.
+  /// as soon as it does. Once `flutter attach` has exited without attaching,
+  /// the request is refused with a warning and neither callback fires.
   ///
   /// [onCompleted] fires once `flutter attach` reports the restart as
   /// completed ('Restarted application ...'), not when it is requested.
   /// Callers use it to tell output of the old and the new program apart.
   /// [onFailed] fires instead when the restart is rejected (compile error);
-  /// exactly one of the two fires, at most once.
+  /// for a request that is sent, exactly one of the two fires, at most once.
   void hotRestart({void Function()? onCompleted, void Function()? onFailed}) {
-    _onRestartCompleted = onCompleted;
-    _onRestartFailed = onFailed;
-    final process = _attachProcess;
     if (_attachFailure case final failure?) {
       _logger.warn(failure);
       return;
     }
+    _onRestartCompleted = onCompleted;
+    _onRestartFailed = onFailed;
+    final process = _attachProcess;
     if (process == null || !_hotRestartActive) {
       _logger.warn(
         'Hot Restart: not attached to the app yet, will restart once attached',
