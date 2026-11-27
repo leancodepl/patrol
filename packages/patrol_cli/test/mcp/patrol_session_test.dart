@@ -20,6 +20,7 @@ import 'package:process/process.dart';
 import 'package:test/test.dart';
 
 import '../src/mocks.dart';
+import '../src/processes.dart';
 import 'fake_develop.dart';
 
 void main() {
@@ -1448,6 +1449,50 @@ packages:
     });
   });
 
+  test('quit cancels a suite that is still starting', () async {
+    final lookupStarted = Completer<void>();
+    final session = sessionWith(
+      FakeDevelop(),
+      listAttachedDevices: slowLookup(lookupStarted),
+    );
+
+    final suite = session.startSuite(
+      targets: const [],
+      wait: const Duration(seconds: 10),
+    );
+    await lookupStarted.future;
+    expect(session.isSuiteRunning, isTrue);
+    final answer = await session.quit();
+
+    expect(answer, 'Cancelled the suite that was starting.');
+    expect((await suite).refusal, 'Cancelled the suite that was starting.');
+    expect(session.isSuiteRunning, isFalse);
+    expect(session.suiteStatus, isNull, reason: 'no suite should have started');
+  });
+
+  test(
+    'a suite refuses to start while the previous run is still returning',
+    () async {
+      final fake = FakeDevelop(runOutlivesExit: true);
+      final session = sessionWith(
+        fake,
+        teardownTimeout: const Duration(milliseconds: 20),
+      );
+      await startSession(session, 'app_test.dart');
+      await session.quit();
+
+      final refused = await session.startSuite(
+        targets: const [],
+        wait: const Duration(seconds: 10),
+      );
+
+      expect(refused.refusal, contains('still shutting down'));
+      expect(session.suiteStatus, isNull);
+      fake.endRun(0);
+      await session.dispose();
+    },
+  );
+
   group(
     'suite',
     () {
@@ -1547,6 +1592,40 @@ packages:
           expect(run.status.warning, contains('A suite is running'));
 
           expect(await session.quit(), 'Stopped the suite.');
+          expect(session.isSuiteRunning, isFalse);
+          expect(session.suiteStatus!['suiteState'], 'cancelled');
+        },
+      );
+
+      test(
+        'counts a stopping suite as running until patrol test exits',
+        () async {
+          final ready = File('${projectRoot.path}/ready');
+          final session = sessionWith(
+            FakeDevelop(),
+            suiteCommand: recordingSuite(
+              then:
+                  'trap "sleep 1; exit 130" INT; : > "${ready.path}"; '
+                  'sleep 30 & wait',
+            ),
+          );
+          await session.startSuite(
+            targets: const [],
+            wait: const Duration(milliseconds: 10),
+          );
+          await waitUntil(ready.existsSync, 'the suite to set its trap');
+
+          final firstQuit = session.quit();
+
+          expect(session.isSuiteRunning, isTrue);
+          expect(session.suiteStatus!['suiteState'], 'stopping');
+          final refused = await session.startSuite(
+            targets: const [],
+            wait: const Duration(milliseconds: 10),
+          );
+          expect(refused.refusal, contains('already running'));
+          expect(await session.quit(), 'Stopped the suite.');
+          expect(await firstQuit, 'Stopped the suite.');
           expect(session.isSuiteRunning, isFalse);
           expect(session.suiteStatus!['suiteState'], 'cancelled');
         },

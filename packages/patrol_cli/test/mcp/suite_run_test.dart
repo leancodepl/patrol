@@ -323,6 +323,29 @@ void main() {
       );
 
       test(
+        'counts a stopping run as running until it exits, and shares the stop',
+        () async {
+          final output = <String>[];
+          final run = await start(
+            'trap "sleep 1; exit 130" INT; echo ready; sleep 30 & wait',
+            output: output,
+          );
+          await printed(output, 'ready');
+
+          final first = run.stop();
+
+          expect(run.isRunning, isTrue);
+          expect(run.toMap()['suiteState'], 'stopping');
+          expect(identical(run.stop(), first), isTrue);
+
+          await first;
+
+          expect(run.isRunning, isFalse);
+          expect(run.toMap()['suiteState'], 'cancelled');
+        },
+      );
+
+      test(
         'kills a run that ignores SIGINT and SIGTERM, children included',
         () async {
           final childPid = File('${dir.path}/child.pid');

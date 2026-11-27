@@ -1119,15 +1119,22 @@ final class PatrolSession {
   /// Quits the running session and returns once it has released its resources.
   ///
   /// A run still starting is cancelled, and the start is waited for so it cannot
-  /// come up after this returns.
+  /// come up after this returns. A suite still starting is cancelled the same
+  /// way, and a running one is stopped as [SuiteRun.stop] stops it.
   Future<String> quit() async {
     if (_suiteStart case final start? when !start.isCompleted) {
       _suiteCancelRequested = true;
       await start.future.timeout(_teardownTimeout, onTimeout: () {});
+      if (!(_suite?.isRunning ?? false)) {
+        return _suiteCancelled;
+      }
     }
     if (_suite case final suite? when suite.isRunning) {
       await suite.stop();
-      return 'Stopped the suite.';
+      return suite.isRunning
+          ? 'Stopped the suite, but patrol test has not exited yet. Check '
+                'status before starting another run.'
+          : 'Stopped the suite.';
     }
     if (_starting) {
       _cancelRequested = true;
@@ -1510,11 +1517,13 @@ final class PatrolSession {
   Completer<void>? _suiteStart;
   var _suiteCancelRequested = false;
 
+  static const _suiteCancelled = 'Cancelled the suite that was starting.';
+
   bool get _suiteLive =>
       (_suiteStart != null && !_suiteStart!.isCompleted) ||
       (_suite?.isRunning ?? false);
 
-  /// Whether a suite run is starting or running.
+  /// Whether a suite run is starting, running or stopping.
   bool get isSuiteRunning => _suiteLive;
 
   /// The last suite run's state, or null when this server has run none.
@@ -1582,6 +1591,20 @@ final class PatrolSession {
     required String? device,
     required String? projectRoot,
   }) async {
+    await awaitTeardown();
+    if (_suiteCancelRequested) {
+      return (suite: null, refusal: _suiteCancelled);
+    }
+    // The previous run's own teardown uninstalls the app the suite installs.
+    if (_runInFlight) {
+      return (
+        suite: null,
+        refusal:
+            'The previous develop session is still shutting down (waited '
+            '${_teardownTimeout.inSeconds}s). Wait a moment and call test '
+            'again; restart the MCP server if this persists.',
+      );
+    }
     final first = targets.firstOrNull;
     if (await _anchor(testFile: first, requestedRoot: projectRoot)
         case final blocked?) {
@@ -1615,7 +1638,7 @@ final class PatrolSession {
       flutterCommand: flutterCommand,
     );
     if (_suiteCancelRequested) {
-      return (suite: null, refusal: 'Cancelled the suite that was starting.');
+      return (suite: null, refusal: _suiteCancelled);
     }
     if (picked.refusal case final refusal?) {
       return (suite: null, refusal: refusal);
@@ -1657,7 +1680,8 @@ final class PatrolSession {
     _deviceSelectionNote = null;
     unawaited(
       suite.done.then((_) async {
-        if (!_live) {
+        // The log is shared with whatever run started since.
+        if (!_live && !_suiteLive) {
           await _logStreaming.stopLogging();
         }
         try {

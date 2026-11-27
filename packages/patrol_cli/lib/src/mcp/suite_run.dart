@@ -15,12 +15,14 @@ import 'package:process/process.dart';
 /// How a suite run stands.
 enum SuiteState {
   running,
+  stopping,
   passed,
   failed,
   cancelled;
 
   String get summary => switch (this) {
     running => 'The suite is running.',
+    stopping => 'The suite is stopping.',
     passed => 'Every test in the suite passed ✅',
     failed => 'The suite failed ❌',
     cancelled => 'The suite was stopped before it finished.',
@@ -227,11 +229,13 @@ final class SuiteRun {
   SuiteState _state = SuiteState.running;
   SuiteState get state => _state;
 
-  bool get isRunning => _state == SuiteState.running;
+  /// Whether the run has not exited yet, stopping included.
+  bool get isRunning => !_finished.isCompleted;
 
   int? _exitCode;
   DateTime? _finishedAt;
   final _finished = Completer<void>();
+  Future<void>? _stop;
   final _output = <String>[];
 
   var _testsReported = 0;
@@ -250,18 +254,21 @@ final class SuiteRun {
   Future<void> waitFor(Duration timeout) =>
       _finished.future.timeout(timeout, onTimeout: () {});
 
-  /// Stops the run and waits for it to exit.
+  /// Stops the run: SIGINT, then up to the stop grace for it to exit, then
+  /// SIGKILL for the run and everything it spawned. On Windows it kills the
+  /// tree with `taskkill /T /F` at once.
   ///
-  /// SIGINT lets `patrol test` tear down what it started, as Ctrl+C does. A run
-  /// that is still alive after the grace period is killed with everything it
-  /// spawned: SIGKILL, because a run that ignored SIGINT can ignore SIGTERM
-  /// too, and a child left alive is reparented and out of reach. Windows has
-  /// no signal for another process, so it goes straight to `taskkill /T /F`.
-  Future<void> stop() async {
+  /// Each wait is bounded, so the run can still be exiting when this returns.
+  /// A call while a stop is under way shares it.
+  Future<void> stop() {
     if (!isRunning) {
-      return;
+      return Future.value();
     }
-    _state = SuiteState.cancelled;
+    return _stop ??= _stopRunning();
+  }
+
+  Future<void> _stopRunning() async {
+    _state = SuiteState.stopping;
     if (_platform.isWindows) {
       final scope = DisposeScope();
       _process.disposedByTree(scope);
@@ -287,9 +294,11 @@ final class SuiteRun {
     _finishedAt = _now();
     _readResults();
     _currentTest = null;
-    if (_state == SuiteState.running) {
-      _state = exitCode == 0 ? SuiteState.passed : SuiteState.failed;
-    }
+    _state = switch (_state) {
+      SuiteState.stopping => SuiteState.cancelled,
+      _ when exitCode == 0 => SuiteState.passed,
+      _ => SuiteState.failed,
+    };
     _finished.complete();
   }
 

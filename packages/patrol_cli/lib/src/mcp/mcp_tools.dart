@@ -100,7 +100,7 @@ const suiteStatusSchema = JsonObject(
       'The last suite run of this server. Present once a suite has started.',
   properties: {
     'suiteState': JsonString(
-      enumValues: ['running', 'passed', 'failed', 'cancelled'],
+      enumValues: ['running', 'stopping', 'passed', 'failed', 'cancelled'],
     ),
     'summary': JsonString(),
     'targets': JsonArray(items: JsonString()),
