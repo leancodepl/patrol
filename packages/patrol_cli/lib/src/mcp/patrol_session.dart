@@ -324,6 +324,7 @@ final class PatrolSession {
     if (_portForwarded ||
         device == null ||
         scope == null ||
+        scope.disposed ||
         device.targetPlatform != TargetPlatform.android) {
       return;
     }
@@ -334,6 +335,11 @@ final class PatrolSession {
       toDevice: port,
       device: device.id,
     );
+    if (scope.disposed) {
+      // The session ended while the forward was being set up.
+      await removeForward();
+      return;
+    }
     // A disposer that throws stops the rest of the session's teardown.
     scope.addDispose(() async {
       try {

@@ -132,6 +132,11 @@ class McpCommand extends PatrolCommand {
 
   static const commandName = 'mcp';
 
+  /// How long a closing server waits for the session teardown before it exits.
+  /// It covers the slowest Android teardown: Gradle's exit grace, stopping the
+  /// instrumentation and uninstalling the app.
+  static const _shutdownBudget = Duration(seconds: 60);
+
   final Logger _logger;
 
   /// The real stdout, captured at construction — that is, before [run] installs
@@ -445,8 +450,14 @@ class McpCommand extends PatrolCommand {
     }
 
     await shutdown().timeout(
-      const Duration(seconds: 10),
-      onTimeout: () => io.exit(0),
+      _shutdownBudget,
+      onTimeout: () {
+        _logger.err(
+          'Session teardown did not finish in ${_shutdownBudget.inSeconds} s. '
+          'Exiting anyway; Gradle, logcat or flutter attach may be left running.',
+        );
+        io.exit(0);
+      },
     );
     return 0;
   }

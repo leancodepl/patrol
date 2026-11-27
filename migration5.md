@@ -15,7 +15,7 @@ Update `patrol` and `patrol_cli` together: Patrol 5.0 is `patrol` 5.x with
 |---|---|---|
 | `patrol` | 5.x | |
 | `patrol_cli` | 5.x | |
-| `patrol_mcp` | not released yet | needs a release that depends on `patrol_cli` 5.x; until then it resolves `patrol_cli` 4.x |
+| `patrol_mcp` | discontinued | replaced by the `patrol mcp` command of `patrol_cli`, see below |
 | `patrol_finders` | 4.x | `pumpAndSettle()` returns `Future<int>`, see below |
 | `patrol_log` | 0.10.x, no change so far | |
 
@@ -189,6 +189,23 @@ patrol:
 
 or pass `--no-emit-test-manifest` to a single command. Nothing else is needed,
 `RunnerUITests.m` works in both modes.
+
+## `patrol_mcp` is replaced by `patrol mcp`
+
+**Packages:** `patrol_mcp`, `patrol_cli` (#3368)
+
+The MCP server ships with `patrol_cli` as the `patrol mcp` command. `patrol_mcp`
+gets no 5.x release.
+
+**What to do:**
+
+1. Remove the `patrol_mcp` dev dependency.
+2. In your MCP client config, replace `dart run patrol_mcp` with `patrol mcp`
+   (`patrol_cli` activated globally) or `dart run patrol_cli:main mcp`
+   (`patrol_cli` as a dev dependency).
+3. Pass flags for `patrol develop` after `--`, for example
+   `patrol mcp -- --flavor dev`. `PROJECT_ROOT`, `PATROL_FLAGS` and
+   `SHOW_TERMINAL` keep working.
 
 ## Inbox
 
