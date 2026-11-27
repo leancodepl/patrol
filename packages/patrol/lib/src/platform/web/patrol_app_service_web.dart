@@ -239,8 +239,6 @@ class PatrolAppService {
     _patrolLog.log(
       TestEntry(name: request.name, status: TestEntryStatus.success),
     );
-    return const RunDartTestResponse(
-      result: RunDartTestResponseResult.success,
-    );
+    return const RunDartTestResponse(result: RunDartTestResponseResult.success);
   }
 }
