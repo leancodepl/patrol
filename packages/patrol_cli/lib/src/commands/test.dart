@@ -73,7 +73,7 @@ class TestCommand extends PatrolCommand {
     usesWeb();
 
     argParser.addOption(
-      'results-file',
+      resultsFileOption,
       hide: true,
       help:
           'Appends every test and error entry of the run to this file, one '
@@ -81,6 +81,9 @@ class TestCommand extends PatrolCommand {
       valueHelp: 'path',
     );
   }
+
+  /// The option a `patrol mcp` suite run reads its results through.
+  static const resultsFileOption = 'results-file';
 
   final DeviceFinder _deviceFinder;
   final TestFinderFactory _testFinderFactory;
@@ -555,7 +558,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       bitRate: int.tryParse(stringArg('video-bit-rate') ?? ''),
     );
 
-    final results = switch (stringArg('results-file')) {
+    final results = switch (stringArg(resultsFileOption)) {
       final path? => File(path).openSync(mode: FileMode.append),
       null => null,
     };

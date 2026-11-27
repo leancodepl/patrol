@@ -6,6 +6,7 @@ import 'package:mcp_dart/mcp_dart.dart';
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/mcp/cli_origin.dart';
+import 'package:patrol_cli/src/mcp/suite_run.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:process/process.dart';
 
@@ -91,7 +92,7 @@ final class McpAnalytics {
     }
     final status = result.structuredContent;
     if (tool == 'test') {
-      return switch (status?['suiteState']) {
+      return switch (status?[SuiteRun.stateKey]) {
         'running' => 'timed_out',
         final String state => state,
         _ => 'ended',

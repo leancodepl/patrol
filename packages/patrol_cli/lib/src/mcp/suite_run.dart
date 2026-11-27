@@ -6,8 +6,10 @@ import 'package:args/args.dart';
 import 'package:dispose_scope/dispose_scope.dart' hide ProcessDisposed;
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/base/command_line.dart';
+import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/commands/develop_arg_parser.dart';
+import 'package:patrol_cli/src/commands/test.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:patrol_log/patrol_log.dart';
@@ -95,7 +97,7 @@ final class SuiteCommandLine {
       // The server compared the versions already, without the
       // `flutter doctor` the check spawns.
       if (!callerChecks) '--no-check-compatibility',
-      '--results-file=$resultsFile',
+      '--${TestCommand.resultsFileOption}=$resultsFile',
     ], dropped);
   }
 
@@ -235,6 +237,9 @@ final class SuiteRun {
   static const _maxFailuresListed = 10;
   static const _maxOutputLines = 40;
 
+  /// The key of [state] in [toMap].
+  static const stateKey = 'suiteState';
+
   SuiteState _state = SuiteState.running;
   SuiteState get state => _state;
 
@@ -312,7 +317,7 @@ final class SuiteRun {
   }
 
   void _pushOutput(String line) {
-    _output.add(line.replaceAll(_ansiEscape, ''));
+    _output.add(line.withoutAnsiEscapes);
     if (_output.length > _maxOutputLines) {
       _output.removeRange(0, _output.length - _maxOutputLines);
     }
@@ -386,7 +391,7 @@ final class SuiteRun {
     final passedWithoutTest =
         _state == SuiteState.passed && _testsReported == 0;
     return {
-      'suiteState': _state.name,
+      stateKey: _state.name,
       'summary': _state.summary,
       if (targets.isNotEmpty) 'targets': targets,
       'passed': _passed,
@@ -441,5 +446,3 @@ final class _Failure {
     if (_lines.isNotEmpty) 'error': _lines.join('\n'),
   };
 }
-
-final _ansiEscape = RegExp(r'\x1B\[[0-9;?]*[ -/]*[@-~]');

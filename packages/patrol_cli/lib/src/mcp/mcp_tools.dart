@@ -11,10 +11,14 @@ import 'package:patrol_cli/src/mcp/native_tree_service.dart';
 import 'package:patrol_cli/src/mcp/patrol_session.dart';
 import 'package:patrol_cli/src/mcp/project_resolver.dart';
 import 'package:patrol_cli/src/mcp/screenshot_service.dart';
+import 'package:patrol_cli/src/mcp/suite_run.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:process/process.dart';
 
 const _defaultTimeoutMinutes = 5.0;
+
+/// The argument of `test` and `status` that says how long to wait for a suite.
+const waitMinutesArg = 'waitMinutes';
 
 /// Output schema for `run` and `status` -- a serialized [PatrolStatus].
 /// Keys mirror `PatrolStatus.toMap`.
@@ -99,7 +103,7 @@ const suiteStatusSchema = JsonObject(
   description:
       'The last suite run of this server. Present once a suite has started.',
   properties: {
-    'suiteState': JsonString(
+    SuiteRun.stateKey: JsonString(
       enumValues: ['running', 'stopping', 'passed', 'failed', 'cancelled'],
     ),
     'summary': JsonString(),
@@ -136,7 +140,7 @@ const suiteStatusSchema = JsonObject(
     'projectRoot': JsonString(),
   },
   required: [
-    'suiteState',
+    SuiteRun.stateKey,
     'summary',
     'passed',
     'failed',
@@ -154,7 +158,7 @@ class SuiteArgs {
       ],
       tags = (json['tags'] as String?)?.trim().nullIfEmpty,
       excludeTags = (json['excludeTags'] as String?)?.trim().nullIfEmpty,
-      wait = _parseWait(json['waitMinutes'] as num?),
+      wait = _parseWait(json[waitMinutesArg] as num?),
       device = (json['device'] as String?)?.trim().nullIfEmpty,
       projectRoot = (json['projectRoot'] as String?)?.trim().nullIfEmpty;
 
@@ -291,7 +295,7 @@ class McpTools {
 
   Future<CallToolResult> _statusTool(Map<String, dynamic> args) =>
       withProject(projectRequired: false, () async {
-        if (args['waitMinutes'] case final num minutes) {
+        if (args[waitMinutesArg] case final num minutes) {
           await _session.waitForSuite(_parseWait(minutes));
         }
         return statusResult(_session.getStatus());

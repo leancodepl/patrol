@@ -9,6 +9,7 @@ import 'package:file/local.dart';
 import 'package:path/path.dart' as p;
 import 'package:patrol_cli/src/base/constants.dart' as constants;
 import 'package:patrol_cli/src/base/exceptions.dart';
+import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/commands/develop_options.dart';
 import 'package:patrol_cli/src/commands/develop_service.dart';
@@ -153,8 +154,6 @@ enum TestState {
     idle => 'Patrol session is idle',
   };
 }
-
-final _ansiEscape = RegExp(r'\x1B\[[0-9;?]*[ -/]*[@-~]');
 
 enum SessionCommand {
   hotRestart('R'),
@@ -1298,7 +1297,7 @@ final class PatrolSession {
   }
 
   String _normalizeLine(String line) {
-    return line.replaceAll(_ansiEscape, '').trim();
+    return line.withoutAnsiEscapes.trim();
   }
 
   /// Returns null once a hot restart will be acted on, or a message explaining

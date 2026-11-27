@@ -283,7 +283,7 @@ class McpCommand extends PatrolCommand {
             'excludeTags': JsonString(
               description: "Skip tests with these tags, e.g. 'slow'.",
             ),
-            'waitMinutes': JsonNumber(
+            waitMinutesArg: JsonNumber(
               description:
                   'How long to wait for the suite before returning its '
                   'progress (default: 5). The suite keeps running.',
@@ -329,7 +329,7 @@ class McpCommand extends PatrolCommand {
             'and of the last suite run',
         inputSchema: const ToolInputSchema(
           properties: {
-            'waitMinutes': JsonNumber(
+            waitMinutesArg: JsonNumber(
               description:
                   'Wait up to this long for a running suite to finish before '
                   'answering. Omit to answer at once.',

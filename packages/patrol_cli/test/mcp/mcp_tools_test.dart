@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:mcp_dart/mcp_dart.dart' hide Logger;
@@ -10,7 +11,10 @@ import 'package:patrol_cli/src/mcp/mcp_analytics.dart';
 import 'package:patrol_cli/src/mcp/mcp_tools.dart';
 import 'package:patrol_cli/src/mcp/patrol_session.dart';
 import 'package:patrol_cli/src/mcp/project_resolver.dart';
+import 'package:patrol_cli/src/mcp/suite_run.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
+import 'package:patrol_log/patrol_log.dart';
+import 'package:process/process.dart';
 import 'package:test/test.dart';
 
 import '../src/mocks.dart';
@@ -168,6 +172,48 @@ void main() {
     expect(
       sessionStatusSchema.properties!.keys,
       containsAll(status.toMap().keys),
+    );
+  });
+
+  test('the suite schema names every field a suite status can carry', () async {
+    final results = File('${projectRoot.path}/results.jsonl');
+    void report(Entry entry) => results.writeAsStringSync(
+      '${jsonEncode(entry.toJson())}\n',
+      mode: FileMode.append,
+    );
+    for (var i = 0; i < 11; i++) {
+      report(TestEntry(name: 't$i', status: TestEntryStatus.start));
+      report(
+        TestEntry(name: 't$i', status: TestEntryStatus.failure, error: 'e'),
+      );
+    }
+    report(TestEntry(name: 'current', status: TestEntryStatus.start));
+
+    Future<SuiteRun> start(String resultsFile, Future<int> exitCode) =>
+        SuiteRun.start(
+          processManager: _ExitingProcessManager(exitCode),
+          command: const ['patrol', 'test'],
+          projectRoot: projectRoot.path,
+          resultsFile: resultsFile,
+          targets: const ['a_test.dart'],
+          droppedFlags: const ['--open-devtools'],
+          deviceSelectionNote: 'note',
+          onOutput: (_) {},
+        );
+    final running = await start(results.path, Completer<int>().future);
+    final brokenBuild = await start(
+      '${projectRoot.path}/none.jsonl',
+      Future.value(1),
+    );
+    await brokenBuild.done;
+
+    final keys = {...running.toMap().keys, ...brokenBuild.toMap().keys};
+    expect(keys, containsAll(['currentTest', 'failuresNotListed', 'warning']));
+    expect(suiteStatusSchema.properties!.keys, containsAll(keys));
+    expect(
+      (suiteStatusSchema.properties![SuiteRun.stateKey]! as JsonString)
+          .enumValues,
+      SuiteState.values.map((state) => state.name),
     );
   });
 
@@ -434,4 +480,41 @@ void main() {
       expect(result.structuredContent!['suiteState'], 'cancelled');
     });
   }, skip: Platform.isWindows ? 'The suites are POSIX shell scripts.' : null);
+}
+
+final class _ExitingProcessManager extends Fake implements ProcessManager {
+  _ExitingProcessManager(this._exitCode);
+
+  final Future<int> _exitCode;
+
+  @override
+  Future<Process> start(
+    List<Object> command, {
+    String? workingDirectory,
+    Map<String, String>? environment,
+    bool includeParentEnvironment = true,
+    bool runInShell = false,
+    ProcessStartMode mode = ProcessStartMode.normal,
+  }) async => _FakeProcess(_exitCode);
+}
+
+final class _FakeProcess extends Fake implements Process {
+  _FakeProcess(this.exitCode);
+
+  @override
+  final Future<int> exitCode;
+
+  @override
+  Stream<List<int>> get stdout => const Stream.empty();
+
+  @override
+  Stream<List<int>> get stderr => const Stream.empty();
+
+  @override
+  IOSink get stdin => _ClosedSink();
+}
+
+final class _ClosedSink extends Fake implements IOSink {
+  @override
+  Future<void> close() async {}
 }
