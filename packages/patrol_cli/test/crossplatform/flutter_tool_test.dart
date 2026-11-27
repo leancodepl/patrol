@@ -173,10 +173,6 @@ void main() {
       ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
       when(() => processManager.start(any())).thenAnswer((_) async => process);
 
-      when(
-        () => processManager.run(any()),
-      ).thenAnswer((_) async => ProcessResult(0, 0, '', ''));
-
       unawaited(
         flutterTool.attach(
           flutterCommand: flutterCommand,
@@ -187,7 +183,7 @@ void main() {
           openBrowser: false,
         ),
       );
-      await Future<void>.delayed(const Duration(milliseconds: 20));
+      await untilCalled(() => processManager.start(any()));
 
       verify(() => processManager.start(any(that: contains('testDeviceId'))));
     });
@@ -204,10 +200,6 @@ void main() {
       ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
       when(() => processManager.start(any())).thenAnswer((_) async => process);
 
-      when(
-        () => processManager.run(any()),
-      ).thenAnswer((_) async => ProcessResult(0, 0, '', ''));
-
       unawaited(
         flutterTool.attach(
           flutterCommand: flutterCommand,
@@ -219,7 +211,7 @@ void main() {
           openBrowser: false,
         ),
       );
-      await Future<void>.delayed(const Duration(milliseconds: 20));
+      await untilCalled(() => processManager.start(any()));
 
       final args =
           (verify(() => processManager.start(captureAny())).captured.single
@@ -365,40 +357,48 @@ void main() {
   });
 
   group('adb forwards left by attach', () {
-    ProcessResult listing(String stdout) => ProcessResult(0, 0, stdout, '');
+    late StreamController<List<int>> attachStdout;
 
-    /// A `flutter attach` that stays up until the scope is disposed.
-    void stubAttachProcess() {
+    /// A finished adb run that printed [stdout], or one that never finishes.
+    MockProcess adbRun({String stdout = '', bool hangs = false}) {
       final process = MockProcess();
-      when(() => process.pid).thenReturn(424242);
       when(process.kill).thenReturn(true);
       when(
         () => process.stdout,
+      ).thenAnswer((_) => Stream.value(utf8.encode(stdout)));
+      when(
+        () => process.stderr,
       ).thenAnswer((_) => const Stream<List<int>>.empty());
+      when(
+        () => process.exitCode,
+      ).thenAnswer((_) => hangs ? Completer<int>().future : Future.value(0));
+      return process;
+    }
+
+    /// A `flutter attach` that stays up until the scope is disposed and
+    /// connects when the test writes its key commands to [attachStdout].
+    void stubAttachProcess() {
+      attachStdout = StreamController<List<int>>();
+      final process = MockProcess();
+      when(() => process.pid).thenReturn(424242);
+      when(process.kill).thenReturn(true);
+      when(() => process.stdout).thenAnswer((_) => attachStdout.stream);
       when(
         () => process.stderr,
       ).thenAnswer((_) => const Stream<List<int>>.empty());
       when(() => process.exitCode).thenAnswer((_) => Completer<int>().future);
-      when(() => processManager.start(any())).thenAnswer((_) async => process);
+      when(
+        () => processManager.start(any(that: contains('attach'))),
+      ).thenAnswer((_) async => process);
     }
 
-    test('removes the ones attach added, and only those', () async {
-      stubAttachProcess();
-      var listings = 0;
-      when(() => processManager.run(['adb', 'forward', '--list'])).thenAnswer(
-        (_) async => listing(
-          listings++ == 0
-              ? 'emulator-5554 tcp:8081 tcp:8081\n'
-              : 'emulator-5554 tcp:8081 tcp:8081\n'
-                    'emulator-5554 tcp:62910 tcp:33925\n'
-                    'emulator-5554 tcp:9000 tcp:9000\n'
-                    'other-device tcp:1 tcp:2\n',
-        ),
-      );
+    void stubForwardRemoval() {
       when(
-        () => processManager.run(any(that: contains('--remove'))),
-      ).thenAnswer((_) async => listing(''));
+        () => processManager.start(any(that: contains('--remove'))),
+      ).thenAnswer((_) async => adbRun());
+    }
 
+    Future<void> attachAndConnect({required bool removeAdbForwards}) async {
       unawaited(
         flutterTool.attach(
           flutterCommand: flutterCommand,
@@ -407,13 +407,35 @@ void main() {
           appId: 'appId',
           dartDefines: {},
           openBrowser: false,
+          removeAdbForwards: removeAdbForwards,
         ),
       );
-      await Future<void>.delayed(Duration.zero);
+      await untilCalled(
+        () => processManager.start(any(that: contains('attach'))),
+      );
+      attachStdout.add(utf8.encode('Flutter run key commands.\n'));
+      await pumpEventQueue();
+    }
+
+    test('removes the ones attach added before it connected', () async {
+      stubAttachProcess();
+      stubForwardRemoval();
+      const attachAdded =
+          'emulator-5554 tcp:8081 tcp:8081\n'
+          'emulator-5554 tcp:62910 tcp:33925\n'
+          'emulator-5554 tcp:9000 tcp:9000\n'
+          'emulator-5554 tcp:9222 localabstract:chrome_devtools_remote\n'
+          'other-device tcp:1 tcp:2\n';
+      final listings = ['emulator-5554 tcp:8081 tcp:8081\n', attachAdded];
+      when(
+        () => processManager.start(['adb', 'forward', '--list']),
+      ).thenAnswer((_) async => adbRun(stdout: listings.removeAt(0)));
+
+      await attachAndConnect(removeAdbForwards: true);
       await disposeScope.dispose();
 
       verify(
-        () => processManager.run([
+        () => processManager.start([
           'adb',
           '-s',
           'emulator-5554',
@@ -422,32 +444,65 @@ void main() {
           'tcp:62910',
         ]),
       ).called(1);
-      // Patrol's own forward maps a port to itself; another device's is not
-      // ours to touch.
-      verifyNever(() => processManager.run(any(that: contains('tcp:9000'))));
-      verifyNever(() => processManager.run(any(that: contains('tcp:1'))));
+      verifyNever(() => processManager.start(any(that: contains('tcp:9000'))));
+      verifyNever(() => processManager.start(any(that: contains('tcp:9222'))));
+      verifyNever(() => processManager.start(any(that: contains('tcp:1'))));
+      // Quitting removes the recorded set without listing again.
+      expect(listings, isEmpty);
+    });
+
+    test('leaves forwards alone when not asked to', () async {
+      stubAttachProcess();
+
+      await attachAndConnect(removeAdbForwards: false);
+      await disposeScope.dispose();
+
+      verifyNever(() => processManager.start(any(that: contains('adb'))));
     });
 
     test('is a no-op when adb is not there', () async {
       stubAttachProcess();
       when(
-        () => processManager.run(['adb', 'forward', '--list']),
+        () => processManager.start(['adb', 'forward', '--list']),
       ).thenThrow(const ProcessException('adb', ['forward', '--list']));
 
+      await attachAndConnect(removeAdbForwards: true);
+      await disposeScope.dispose();
+
+      verifyNever(() => processManager.start(any(that: contains('--remove'))));
+    });
+
+    test('kills an adb that hangs and attaches anyway', () async {
+      final tool = FlutterTool(
+        logger: MockLogger(),
+        parentDisposeScope: disposeScope,
+        processManager: processManager,
+        platform: platform,
+        stdin: const Stream<List<int>>.empty(),
+        adbTimeout: const Duration(milliseconds: 10),
+      );
+      stubAttachProcess();
+      final hung = adbRun(hangs: true);
+      when(
+        () => processManager.start(['adb', 'forward', '--list']),
+      ).thenAnswer((_) async => hung);
+
       unawaited(
-        flutterTool.attach(
+        tool.attach(
           flutterCommand: flutterCommand,
           deviceId: 'emulator-5554',
           target: 'target',
           appId: 'appId',
           dartDefines: {},
           openBrowser: false,
+          removeAdbForwards: true,
         ),
       );
-      await Future<void>.delayed(Duration.zero);
-      await disposeScope.dispose();
+      await untilCalled(
+        () => processManager.start(any(that: contains('attach'))),
+      );
 
-      verifyNever(() => processManager.run(any(that: contains('--remove'))));
+      verify(hung.kill).called(1);
     });
   });
 }
