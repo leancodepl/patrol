@@ -8,6 +8,14 @@ import 'package:flutter/services.dart';
 /// On iOS/macOS, XCTest sets ports in `XCUIApplication.launchEnvironment`.
 /// Flutter does not expose that to Dart [Platform.environment], so ports are
 /// read from native `ProcessInfo` over a method channel.
+///
+/// On Linux, `patrol_cli` sets the `PatrolAppService` port as the process
+/// environment variable `PATROL_APP_SERVER_PORT`, which Dart reads directly
+/// from [Platform.environment]. Linux has no native test server, so there is
+/// no test server port to inject.
+///
+/// Injected ports take precedence over the `--dart-define` values, which take
+/// precedence over the defaults (8081/8082).
 class PatrolRuntimePorts {
   PatrolRuntimePorts._();
 
@@ -32,6 +40,11 @@ class PatrolRuntimePorts {
   /// would land here. If that happens we fall back to default 8081/8082 ports,
   /// which still works for Patrol testing on a single device.
   static Future<void> ensureLoaded() async {
+    if (Platform.isLinux) {
+      loadFromEnvironment(Platform.environment);
+      return;
+    }
+
     if (!(Platform.isIOS || Platform.isMacOS)) {
       return;
     }
@@ -50,6 +63,16 @@ class PatrolRuntimePorts {
     }
   }
 
+  /// Reads the app server port from the process [environment].
+  ///
+  /// Used on Linux, where `patrol_cli` passes `PATROL_APP_SERVER_PORT` to the
+  /// app process. A missing, malformed or out-of-range value leaves the port
+  /// unset, so the `--dart-define` value or the default is used.
+  @visibleForTesting
+  static void loadFromEnvironment(Map<String, String> environment) {
+    _appServerPort = _parsePort(environment['PATROL_APP_SERVER_PORT']);
+  }
+
   /// Port of the native Patrol automation server, or null if not injected.
   static int? testServerPort() => _testServerPort;
 
@@ -60,12 +83,11 @@ class PatrolRuntimePorts {
   static int? hostServerPort() => _hostServerPort;
 
   static int? _parsePort(Object? value) {
-    if (value is int) {
-      return value;
-    }
-    if (value is String) {
-      return int.tryParse(value);
-    }
-    return null;
+    final port = switch (value) {
+      final int port => port,
+      final String text => int.tryParse(text),
+      _ => null,
+    };
+    return port != null && port >= 1 && port <= 65535 ? port : null;
   }
 }

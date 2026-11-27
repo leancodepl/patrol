@@ -13,11 +13,13 @@ import 'package:patrol_cli/src/commands/develop_options.dart';
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
+import 'package:patrol_cli/src/crossplatform/flutter_version_at_least.dart';
 import 'package:patrol_cli/src/crossplatform/test_discovery_mode.dart';
 import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
+import 'package:patrol_cli/src/linux/linux_test_backend.dart';
 import 'package:patrol_cli/src/macos/macos_test_backend.dart' hide BuildMode;
 import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
@@ -25,31 +27,16 @@ import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
 import 'package:patrol_cli/src/web/web_test_backend.dart';
 import 'package:patrol_log/patrol_log.dart';
-import 'package:version/version.dart';
 
 // TODO: Drop this gate once patrol's pubspec requires Flutter 3.47.0,
 // which makes it unreachable.
 const _minWebDevelopFlutter = '3.47.0';
 
-/// Compared against the lowest 3.47 prerelease, so 3.47 betas pass too.
-final _minWebDevelopFlutterVersion = Version.parse(
-  '$_minWebDevelopFlutter-0.0.pre',
-);
-
-/// Whether [flutterVersion] carries flutter/flutter#183838. An unknown version
-/// passes, so a format change upstream can't block web develop: that is one
-/// that doesn't parse, or 0.x, which Flutter reports (as `0.0.0-unknown`) when
-/// it can't read its git tags.
+/// Whether [flutterVersion] carries flutter/flutter#183838 (see
+/// [flutterVersionAtLeast] for prereleases and unknown versions).
 @visibleForTesting
-bool supportsWebHotRestart(String flutterVersion) {
-  final Version version;
-  try {
-    version = Version.parse(flutterVersion);
-  } on Object {
-    return true;
-  }
-  return version.major == 0 || version >= _minWebDevelopFlutterVersion;
-}
+bool supportsWebHotRestart(String flutterVersion) =>
+    flutterVersionAtLeast(flutterVersion, _minWebDevelopFlutter);
 
 /// Result of a completed test execution within a develop session.
 class TestCompletionResult {
@@ -72,7 +59,7 @@ class TestCompletionResult {
 bool shouldAttachUsingUrl(Device device) => switch (device.targetPlatform) {
   TargetPlatform.macOS => true,
   TargetPlatform.iOS => !device.real,
-  TargetPlatform.android || TargetPlatform.web => false,
+  TargetPlatform.android || TargetPlatform.web || TargetPlatform.linux => false,
 };
 
 /// Orchestrates a patrol develop session.
@@ -91,6 +78,7 @@ class DevelopService {
     required this._iosTestBackend,
     required this._macosTestBackend,
     required this._webTestBackend,
+    required this._linuxTestBackend,
     required this._flutterTool,
     required this._logger,
     required this._stdin,
@@ -115,6 +103,7 @@ class DevelopService {
   final IOSTestBackend _iosTestBackend;
   final MacOSTestBackend _macosTestBackend;
   final WebTestBackend _webTestBackend;
+  final LinuxTestBackend _linuxTestBackend;
   final FlutterTool _flutterTool;
   final Logger _logger;
   final Stream<List<int>> _stdin;
@@ -307,7 +296,9 @@ class DevelopService {
       TargetPlatform.android => androidFlavor,
       TargetPlatform.iOS => iosFlavor,
       TargetPlatform.macOS => iosFlavor,
-      _ => null,
+      // Linux has no pubspec config, so the flavor comes only from --flavor.
+      TargetPlatform.linux => options.flavor,
+      TargetPlatform.web => null,
     };
 
     final flutterOpts = FlutterAppOptions(
@@ -366,6 +357,11 @@ class DevelopService {
 
     final webOpts = WebAppOptions(flutter: flutterOpts);
 
+    final linuxOpts = LinuxAppOptions(
+      flutter: flutterOpts,
+      appServerPort: options.appServerPort,
+    );
+
     try {
       if (prebuiltApksDir == null) {
         await _build(androidOpts, iosOpts, macosOpts, webOpts, device);
@@ -392,6 +388,7 @@ class DevelopService {
         iosOpts,
         macosOpts,
         webOpts,
+        linuxOpts,
         uninstall: options.uninstall,
         device: device,
         openDevtools: options.openDevtools,
@@ -422,6 +419,8 @@ class DevelopService {
       TargetPlatform.iOS => () => _iosTestBackend.build(iosOpts),
       TargetPlatform.macOS => () => _macosTestBackend.build(macosOpts),
       TargetPlatform.web => () => _webTestBackend.buildForDevelop(webOpts),
+      // `flutter run` builds the app in develop.
+      TargetPlatform.linux => Future<void>.value,
     };
 
     try {
@@ -464,6 +463,7 @@ class DevelopService {
         }
       case TargetPlatform.macOS:
       case TargetPlatform.web:
+      case TargetPlatform.linux:
     }
 
     try {
@@ -499,7 +499,8 @@ class DevelopService {
     AndroidAppOptions android,
     IOSAppOptions iosOpts,
     MacOSAppOptions macos,
-    WebAppOptions web, {
+    WebAppOptions web,
+    LinuxAppOptions linux, {
     required bool uninstall,
     required Device device,
     required bool openDevtools,
@@ -620,6 +621,17 @@ class DevelopService {
           onLogEntry: onLogEntry,
           openDevtools: openDevtools,
         );
+      case TargetPlatform.linux:
+        action = () => _linuxTestBackend.develop(
+          _flutterTool,
+          linux,
+          device,
+          showFlutterLogs: showFlutterLogs,
+          hideTestSteps: hideTestSteps,
+          clearTestSteps: clearTestSteps,
+          onLogEntry: onLogEntry,
+          stdin: _stdin,
+        );
     }
 
     // Set once the user quits. Stopping the instrumentation ends the build,
@@ -678,7 +690,9 @@ class DevelopService {
         ),
       );
 
-      if (device.targetPlatform != TargetPlatform.web) {
+      // Web and Linux run the app with `flutter run`, which hot restarts it.
+      if (device.targetPlatform
+          case != TargetPlatform.web && != TargetPlatform.linux) {
         final attached = _flutterTool.attachForHotRestart(
           flutterCommand: flutterOpts.command,
           deviceId: device.id,
