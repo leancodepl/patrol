@@ -70,18 +70,24 @@ void main() {
 
   tearDown(() => projectRoot.deleteSync(recursive: true));
 
+  /// The session is disposed before [projectRoot] is deleted: it keeps its log
+  /// file there open, and Windows does not delete an open file.
   PatrolSession sessionWith(
     _FakeDevelop fake, {
     List<String> developArgs = const [],
     Duration readyTimeout = const Duration(milliseconds: 50),
-  }) => PatrolSession(
-    flutterProjectPath: projectRoot.path,
-    logger: MockLogger(),
-    developArgs: developArgs,
-    logFile: '${projectRoot.path}/patrol.log',
-    developServiceFactory: fake.create,
-    hotRestartReadyTimeout: readyTimeout,
-  );
+  }) {
+    final session = PatrolSession(
+      flutterProjectPath: projectRoot.path,
+      logger: MockLogger(),
+      developArgs: developArgs,
+      logFile: '${projectRoot.path}/patrol.log',
+      developServiceFactory: fake.create,
+      hotRestartReadyTimeout: readyTimeout,
+    );
+    addTearDown(session.dispose);
+    return session;
+  }
 
   /// Starts a session and returns once it is live: run() never completes on its
   /// own, so the first call comes back on its timeout.

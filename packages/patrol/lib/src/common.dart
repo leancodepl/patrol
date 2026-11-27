@@ -209,7 +209,7 @@ void patrolTest(
             TestFailure(:final message?) => message,
             _ => '$err\n$st',
           };
-          // Details first: `patrol mcp` stops collecting them at the failure entry.
+          // Details first: patrol_mcp stops collecting them at the failure entry.
           details
               .split('\n')
               .forEach((line) => patrolLog.log(ErrorEntry(message: line)));

@@ -28,13 +28,11 @@ typedef RootsReader = Future<List<String>> Function();
 /// clients spawn a separate server per window, so a single resolve is enough).
 class ProjectResolver {
   ProjectResolver({
-    required RootsReader readRoots,
-    String? projectRootOverride,
+    required this._readRoots,
+    this._projectRootOverride,
     Map<String, String>? environment,
     String Function()? currentDirectory,
-  }) : _readRoots = readRoots,
-       _projectRootOverride = projectRootOverride,
-       _env = environment ?? Platform.environment,
+  }) : _env = environment ?? Platform.environment,
        _currentDirectory = currentDirectory ?? (() => Directory.current.path);
 
   final RootsReader _readRoots;

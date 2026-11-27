@@ -107,9 +107,7 @@ extension on String {
 /// transport directly while every other write is redirected — see
 /// [PatrolSession.capturingStdout] and the guard in `patrolCommandRunner`.
 class McpCommand extends PatrolCommand {
-  McpCommand({required Logger logger})
-    : _logger = logger,
-      _protocolStdout = io.stdout {
+  McpCommand({required this._logger}) : _protocolStdout = io.stdout {
     argParser
       ..addOption(
         'project-root',

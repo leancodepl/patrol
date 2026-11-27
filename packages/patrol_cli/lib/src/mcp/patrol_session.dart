@@ -230,16 +230,14 @@ typedef DevelopServiceFactory =
 final class PatrolSession {
   PatrolSession({
     required this.flutterProjectPath,
-    required Logger logger,
+    required this._logger,
     io.Stdout? diagnosticSink,
     this.developArgs = const [],
     this.logFile,
     this.showTerminal = false,
     DevelopServiceFactory? developServiceFactory,
-    Duration hotRestartReadyTimeout = const Duration(seconds: 90),
-  }) : _hotRestartReadyTimeout = hotRestartReadyTimeout,
-       _logger = logger,
-       _diagnosticSink = diagnosticSink ?? io.stderr,
+    this._hotRestartReadyTimeout = const Duration(seconds: 90),
+  }) : _diagnosticSink = diagnosticSink ?? io.stderr,
        _createDevelopService =
            developServiceFactory ?? DevelopSessionFactory.create;
 

@@ -13,6 +13,7 @@ void main() {
     /// keeps meaning what it says after a compatibility entry changes.
     String versionThatIs({required bool compatible}) =>
         const [
+          '5.0.0-dev.1',
           '4.9.0',
           '4.8.0',
           '4.7.0',
