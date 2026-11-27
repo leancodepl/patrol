@@ -1,4 +1,4 @@
-import 'package:dispose_scope/dispose_scope.dart';
+import 'package:dispose_scope/dispose_scope.dart' hide ProcessDisposed;
 import 'package:file/file.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol_cli/src/base/logger.dart';
@@ -56,7 +56,7 @@ class TestManifestGenerator {
             runInShell: true,
             workingDirectory: _rootDirectory.path,
           )
-          ..disposedBy(scope);
+          ..disposedByTree(scope);
     final output = <String>[];
     void onLine(String line) {
       output.add(line);

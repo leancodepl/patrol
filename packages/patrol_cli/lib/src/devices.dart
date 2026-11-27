@@ -158,10 +158,8 @@ class DeviceFinder {
       'devices',
       '--machine',
     ], runInShell: true);
-    _disposeScope.addDispose(() {
-      process.kill();
-      flutterKilled = true; // `flutter` has exit code 0 on SIGINT
-    });
+    // `flutter` has exit code 0 on SIGINT.
+    process.disposedByTree(_disposeScope, onKill: () => flutterKilled = true);
 
     var output = '';
     process.listenStdOut((line) => output += line).disposedBy(_disposeScope);

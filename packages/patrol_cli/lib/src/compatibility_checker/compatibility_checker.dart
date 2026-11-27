@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:dispose_scope/dispose_scope.dart';
+import 'package:dispose_scope/dispose_scope.dart' hide ProcessDisposed;
 import 'package:file/file.dart';
 import 'package:patrol_cli/src/base/constants.dart' as constants;
 import 'package:patrol_cli/src/base/exceptions.dart';
@@ -84,7 +84,7 @@ Check the compatibility table at: https://patrol.leancode.co/documentation/compa
               workingDirectory: _projectRoot.path,
               runInShell: true,
             )
-            ..disposedBy(scope);
+            ..disposedByTree(scope);
 
       process
           .listenStdOut(
@@ -179,7 +179,7 @@ Future<void> _checkJavaVersion(
             workingDirectory: projectRoot.path,
             runInShell: true,
           )
-          ..disposedBy(scope);
+          ..disposedByTree(scope);
 
     processFlutter
         .listenStdOut(
@@ -197,7 +197,7 @@ Future<void> _checkJavaVersion(
                       workingDirectory: projectRoot.path,
                       runInShell: true,
                     )
-                    ..disposedBy(scope);
+                    ..disposedByTree(scope);
 
               processJava
                   .listenStdOut(

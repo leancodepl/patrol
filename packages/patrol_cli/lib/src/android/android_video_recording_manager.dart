@@ -2,9 +2,10 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:adb/adb.dart';
-import 'package:dispose_scope/dispose_scope.dart';
+import 'package:dispose_scope/dispose_scope.dart' hide ProcessDisposed;
 import 'package:file/file.dart';
 import 'package:patrol_cli/src/base/logger.dart';
+import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
 import 'package:patrol_cli/src/crossplatform/video_recording_manager.dart';
 import 'package:patrol_cli/src/devices.dart';
@@ -75,7 +76,7 @@ class AndroidVideoRecordingManager extends VideoRecordingManager {
         ],
         _currentDeviceVideoPath!,
       ], runInShell: true);
-      _currentRecordingProcess!.disposedBy(_scope);
+      _currentRecordingProcess!.disposedByTree(_scope);
 
       // Capture screenrecord output so startup failures surface instead of
       // silently producing no file (later failing on `adb pull`).
@@ -154,14 +155,14 @@ class AndroidVideoRecordingManager extends VideoRecordingManager {
     try {
       await _currentRecordingProcess!.exitCode.timeout(
         const Duration(seconds: 10),
-        onTimeout: () {
-          _currentRecordingProcess?.kill();
+        onTimeout: () async {
+          await _currentRecordingProcess?.killTree();
           return -1;
         },
       );
     } catch (err) {
       _logger.detail('Error while waiting for screenrecord to exit: $err');
-      _currentRecordingProcess?.kill();
+      await _currentRecordingProcess?.killTree();
     }
 
     // Give the device a moment to finish writing the file to disk.

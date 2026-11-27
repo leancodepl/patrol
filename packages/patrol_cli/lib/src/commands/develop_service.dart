@@ -508,6 +508,9 @@ class DevelopService {
   }) async {
     Future<void> Function() action;
     Future<void> Function()? finalizer;
+
+    // Ends what is still running on the device when the user quits.
+    Future<void> Function()? stopOnDevice;
     String? appId;
 
     final attachUsingUrl = shouldAttachUsingUrl(device);
@@ -558,8 +561,17 @@ class DevelopService {
                 videoConfig: videoConfig,
               );
         final package = android.packageName;
-        if (package != null && uninstall) {
-          finalizer = () => _androidTestBackend.uninstall(package, device);
+        if (package != null) {
+          // Quitting with `q` and disposing on SIGINT both stop the device
+          // side; whichever comes second waits for the first.
+          Future<void>? stopping;
+          Future<void> stop() => stopping ??= _androidTestBackend
+              .stopInstrumentation(package, device);
+          stopOnDevice = stop;
+          _androidTestBackend.stopOnDispose(stop);
+          if (uninstall) {
+            finalizer = () => _androidTestBackend.uninstall(package, device);
+          }
         }
       case TargetPlatform.macOS:
         appId = macos.bundleId;
@@ -606,7 +618,15 @@ class DevelopService {
         );
     }
 
+    // Set once the user quits. Stopping the instrumentation ends the build,
+    // so after a quit the build ending is how the session ends, not a
+    // failure, and the session lasts until the quit cleanup is done.
+    Completer<void>? quit;
+
     try {
+      if (device.targetPlatform == TargetPlatform.android) {
+        await _androidTestBackend.startAdbServer();
+      }
       final future = action();
 
       // If the backend settles before attach returns, the app shut down early.
@@ -638,13 +658,17 @@ class DevelopService {
       unawaited(
         future.then(
           (_) {
-            reportTestsCompleted(const TestCompletionResult(success: true));
+            if (quit == null) {
+              reportTestsCompleted(const TestCompletionResult(success: true));
+            }
             failPendingVmServiceUrl();
           },
           onError: (Object err, StackTrace st) {
-            reportTestsCompleted(
-              TestCompletionResult(success: false, error: err),
-            );
+            if (quit == null) {
+              reportTestsCompleted(
+                TestCompletionResult(success: false, error: err),
+              );
+            }
             failPendingVmServiceUrl();
           },
         ),
@@ -662,7 +686,30 @@ class DevelopService {
           debugUrl: vmServiceUrlCompleter?.future,
           forwardFlutterLogs: flutterLogs.forwardFlutterLogs,
           removeAdbForwards: device.targetPlatform == TargetPlatform.android,
-          onQuit: onQuitCleanup,
+          // Stop the device side first, so the Gradle run waiting on
+          // `am instrument` ends on its own while the backend is disposed. The
+          // uninstall runs here because the quit handler exits the process right
+          // after this returns; it is bounded because a device that is gone
+          // never answers.
+          onQuit: () async {
+            final done = quit = Completer<void>();
+            try {
+              await stopOnDevice?.call();
+              await finalizer?.call().timeout(
+                _quitUninstallTimeout,
+                onTimeout: () => _logger.warn(
+                  'Uninstalling the app did not finish within '
+                  '${_quitUninstallTimeout.inSeconds}s, quitting anyway.',
+                ),
+              );
+            } finally {
+              try {
+                await onQuitCleanup();
+              } finally {
+                done.complete();
+              }
+            }
+          },
         );
         if (prebuiltApksDir == null) {
           await attached;
@@ -703,11 +750,19 @@ class DevelopService {
 
       try {
         await future;
-        reportTestsCompleted(const TestCompletionResult(success: true));
       } catch (err) {
-        reportTestsCompleted(TestCompletionResult(success: false, error: err));
-        rethrow;
+        if (quit == null) {
+          reportTestsCompleted(
+            TestCompletionResult(success: false, error: err),
+          );
+          rethrow;
+        }
       }
+      if (quit case final quit?) {
+        await quit.future;
+        return;
+      }
+      reportTestsCompleted(const TestCompletionResult(success: true));
     } catch (err, st) {
       _logger
         ..err('$err')
@@ -716,13 +771,17 @@ class DevelopService {
       rethrow;
     } finally {
       try {
-        await finalizer?.call();
+        if (quit == null) {
+          await finalizer?.call();
+        }
       } catch (err) {
         _logger.err('Failed to call finalizer: $err');
         rethrow;
       }
     }
   }
+
+  static const _quitUninstallTimeout = Duration(seconds: 30);
 
   static const _defaultFailureMessage =
       'See the logs above to learn what happened. Also consider running with '
