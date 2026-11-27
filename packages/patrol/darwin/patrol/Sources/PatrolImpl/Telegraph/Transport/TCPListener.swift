@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  TCPListener.swift
 //  Telegraph
@@ -88,3 +89,5 @@ extension TCPListener: GCDAsyncSocketDelegate {
     delegate?.listenerDisconnected(self, error: err)
   }
 }
+
+#endif

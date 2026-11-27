@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  Array+Ext.swift
 //  Telegraph
@@ -19,3 +20,5 @@ extension Array {
     return compactMap { $0 as? T }
   }
 }
+
+#endif

@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 import Foundation
 
 /// Registers POST handlers on the Patrol automation server.
@@ -88,3 +89,5 @@ public class PatrolServerExtensions: NSObject {
 public func PatrolRegisterServerExtensionClass(_ cls: AnyClass) {
   PatrolServerExtensions.registerExtensionClass(cls)
 }
+
+#endif

@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  HTTPParser.swift
 //  Telegraph
@@ -264,3 +265,5 @@ extension Data {
     self.append(UnsafeRawPointer(chunk).assumingMemoryBound(to: UInt8.self), count: count)
   }
 }
+
+#endif

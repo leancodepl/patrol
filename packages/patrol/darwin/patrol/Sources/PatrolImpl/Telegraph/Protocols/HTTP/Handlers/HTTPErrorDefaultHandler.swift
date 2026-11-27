@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  HTTPErrorDefaultHandler.swift
 //  Telegraph
@@ -35,3 +36,5 @@ public class HTTPErrorDefaultHandler: HTTPErrorHandler {
     }
   }
 }
+
+#endif

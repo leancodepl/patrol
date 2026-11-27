@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  ServerDelegates.swift
 //  Telegraph
@@ -38,3 +39,5 @@ extension ServerWebSocketDelegate {
   ) {}
   public func serverDidDisconnect(_ server: Server) {}
 }
+
+#endif

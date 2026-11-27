@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  HTTPRequest+Host.swift
 //  Telegraph
@@ -25,3 +26,5 @@ extension HTTPRequest {
     headers.host = value
   }
 }
+
+#endif

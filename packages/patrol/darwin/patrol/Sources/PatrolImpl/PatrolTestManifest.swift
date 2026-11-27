@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 import Foundation
 
 /// Reads a build-time test manifest (produced by `patrol build ios
@@ -28,3 +29,5 @@ import Foundation
     }
   }
 }
+
+#endif

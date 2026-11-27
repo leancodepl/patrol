@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  TCPConnection.swift
 //  Telegraph
@@ -27,3 +28,5 @@ extension TCPConnection {
     ObjectIdentifier(self).hash(into: &hasher)
   }
 }
+
+#endif

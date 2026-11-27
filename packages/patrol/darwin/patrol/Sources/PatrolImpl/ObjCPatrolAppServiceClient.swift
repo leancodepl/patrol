@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 import Foundation
 
 /// Simplified objective-c RunDartTestResponse model that we use in PatrolIntegrationTestRunner.h
@@ -129,3 +130,5 @@ extension DartGroupEntry {
     return tests
   }
 }
+
+#endif

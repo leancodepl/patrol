@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  URL+Ext.swift
 //  Telegraph
@@ -31,3 +32,5 @@ extension URL {
     return FileManager.default.mimeType(pathExtension: pathExtension)
   }
 }
+
+#endif

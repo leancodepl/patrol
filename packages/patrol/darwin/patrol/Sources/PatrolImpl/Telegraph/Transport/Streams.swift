@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  Stream.swift
 //  Telegraph
@@ -16,3 +17,5 @@ public protocol WriteStream {
   func flush()
   func write(data: Data, timeout: TimeInterval)
 }
+
+#endif

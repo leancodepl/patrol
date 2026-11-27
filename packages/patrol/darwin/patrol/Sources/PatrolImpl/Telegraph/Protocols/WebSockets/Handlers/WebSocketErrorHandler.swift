@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  WebSocketErrorHandler.swift
 //  Telegraph
@@ -12,3 +13,5 @@ public protocol WebSocketErrorHandler {
   func incoming(error: Error, webSocket: WebSocket, message: WebSocketMessage?)
   func outgoing(error: Error, webSocket: WebSocket, message: WebSocketMessage?)
 }
+
+#endif

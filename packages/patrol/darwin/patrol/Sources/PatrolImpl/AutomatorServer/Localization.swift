@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 import Foundation
 import os
 
@@ -120,3 +121,5 @@ enum LocalizationError: LocalizedError {
     }
   }
 }
+
+#endif

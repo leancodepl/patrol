@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  HTTPHeader.swift
 //  Telegraph
@@ -59,3 +60,5 @@ extension Dictionary where Key == HTTPHeaderName, Value == String {
     set { self[HTTPHeaderName(key)] = newValue }
   }
 }
+
+#endif

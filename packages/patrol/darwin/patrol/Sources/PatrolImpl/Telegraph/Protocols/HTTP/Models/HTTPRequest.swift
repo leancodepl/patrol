@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  HTTPRequest.swift
 //  Telegraph
@@ -47,3 +48,5 @@ extension HTTPRequest: CustomStringConvertible {
       "<\(typeName): \(method) \(uri) \(version), headers: \(headers.count), body: \(body.count)>"
   }
 }
+
+#endif

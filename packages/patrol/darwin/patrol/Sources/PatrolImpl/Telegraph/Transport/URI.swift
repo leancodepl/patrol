@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  URI.swift
 //  Telegraph
@@ -120,3 +121,5 @@ extension String {
     return prefix + self
   }
 }
+
+#endif

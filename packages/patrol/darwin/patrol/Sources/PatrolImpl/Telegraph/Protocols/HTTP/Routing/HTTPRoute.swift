@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  HTTPRoute.swift
 //  Telegraph
@@ -113,3 +114,5 @@ extension HTTPRoute {
     return (true, routeParams)
   }
 }
+
+#endif

@@ -52,12 +52,17 @@ let package = Package(
     // https://github.com/leancodepl/patrol/issues/3177.
     .target(
       name: "PatrolImpl",
-      dependencies: [
-        // TODO: Add this when Patrol targets Flutter 3.41.0 or higher
-        // .product(name: "FlutterFramework", package: "FlutterFramework")
-        .product(name: "CocoaAsyncSocket", package: "CocoaAsyncSocket"),
-        "HTTPParserC",
-      ],
+      // TODO: Add this when Patrol targets Flutter 3.41.0 or higher
+      // .product(name: "FlutterFramework", package: "FlutterFramework")
+      //
+      // Without PATROL_ENABLED all PatrolImpl sources compile to nothing, so
+      // don't link their dependencies into normal (e.g. release) app builds.
+      dependencies: patrolEnabled
+        ? [
+          .product(name: "CocoaAsyncSocket", package: "CocoaAsyncSocket"),
+          "HTTPParserC",
+        ]
+        : [],
       path: "Sources/PatrolImpl",
       resources: [
         .process("Resources/PrivacyInfo.xcprivacy"),

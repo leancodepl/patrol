@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  HTTPErrorHandler.swift
 //  Telegraph
@@ -11,3 +12,5 @@ import Foundation
 public protocol HTTPErrorHandler {
   func respond(to error: Error) -> HTTPResponse?
 }
+
+#endif

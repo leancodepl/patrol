@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  HTTPVersion.swift
 //  Telegraph
@@ -27,3 +28,5 @@ extension HTTPVersion: CustomStringConvertible {
     return "HTTP/\(major).\(minor)"
   }
 }
+
+#endif

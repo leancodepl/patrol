@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  HTTPMethod.swift
 //  Telegraph
@@ -37,3 +38,5 @@ extension HTTPMethod: ExpressibleByStringLiteral {
     self.init(name: string)
   }
 }
+
+#endif

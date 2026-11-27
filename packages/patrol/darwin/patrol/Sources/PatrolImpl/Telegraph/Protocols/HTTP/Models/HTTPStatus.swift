@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  HTTPStatus.swift
 //  Telegraph
@@ -309,3 +310,5 @@ extension HTTPStatus {
   public static let networkAuthenticationRequired = HTTPStatus(
     code: 511, phrase: "Network Authentication Required")
 }
+
+#endif

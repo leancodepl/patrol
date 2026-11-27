@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  Certificate.swift
 //  Telegraph
@@ -52,3 +53,5 @@ extension Certificate {
     try KeychainManager.shared.remove(kSecClassCertificate, label: label)
   }
 }
+
+#endif

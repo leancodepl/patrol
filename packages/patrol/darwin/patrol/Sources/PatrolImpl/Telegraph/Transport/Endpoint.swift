@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  Endpoint.swift
 //  Telegraph
@@ -37,3 +38,5 @@ extension Endpoint {
     self.port = Int(port)
   }
 }
+
+#endif

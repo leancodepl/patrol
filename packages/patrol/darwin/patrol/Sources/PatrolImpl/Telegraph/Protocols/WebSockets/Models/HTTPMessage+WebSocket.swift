@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  HTTPMessage+WebSocket.swift
 //  Telegraph
@@ -77,3 +78,5 @@ extension HTTPResponse {
       && headers.webSocketAccept?.isEmpty == false
   }
 }
+
+#endif

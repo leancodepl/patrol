@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  HTTPParser+Raw.swift
 //  Telegraph
@@ -155,3 +156,5 @@ extension HTTPError {
     }
   }
 }
+
+#endif

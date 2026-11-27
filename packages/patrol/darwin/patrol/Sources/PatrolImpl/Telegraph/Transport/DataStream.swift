@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  DataStream.swift
 //  Telegraph
@@ -46,3 +47,5 @@ public final class DataStream {
     return read(count: data.count)
   }
 }
+
+#endif

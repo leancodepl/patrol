@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  Client+Config.swift
 //  Telegraph
@@ -22,3 +23,5 @@ extension WebSocketConfig {
     return config
   }
 }
+
+#endif

@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  WebSocketMessageHandler.swift
 //  Telegraph
@@ -10,3 +11,5 @@ public protocol WebSocketMessageHandler {
   func incoming(message: WebSocketMessage, from webSocket: WebSocket) throws
   func outgoing(message: WebSocketMessage, to webSocket: WebSocket) throws
 }
+
+#endif

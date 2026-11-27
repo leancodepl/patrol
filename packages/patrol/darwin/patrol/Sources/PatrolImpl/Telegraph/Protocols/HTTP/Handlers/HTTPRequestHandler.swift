@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  HTTPRequestHandler.swift
 //  Telegraph
@@ -24,3 +25,5 @@ extension Collection where Element == HTTPRequestHandler {
     }
   }
 }
+
+#endif

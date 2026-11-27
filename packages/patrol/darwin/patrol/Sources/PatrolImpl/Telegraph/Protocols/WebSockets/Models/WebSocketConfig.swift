@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  WebSocketConfig.swift
 //  Telegraph
@@ -32,3 +33,5 @@ public struct WebSocketConfig {
 
   public init() {}
 }
+
+#endif

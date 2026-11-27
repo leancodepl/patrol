@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  WebSocketParser.swift
 //  Telegraph
@@ -216,3 +217,5 @@ public class WebSocketParser {
     delegate?.parser(self, didCompleteMessage: completedMessage)
   }
 }
+
+#endif

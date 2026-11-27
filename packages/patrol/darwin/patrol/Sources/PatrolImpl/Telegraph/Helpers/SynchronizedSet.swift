@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  SynchronizedArray.swift
 //  Telegraph
@@ -69,3 +70,5 @@ extension SynchronizedSet {
     return innerSet
   }
 }
+
+#endif

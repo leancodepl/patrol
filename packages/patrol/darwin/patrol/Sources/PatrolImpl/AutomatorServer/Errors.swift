@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 import Foundation
 
 enum PatrolError: Error {
@@ -42,3 +43,5 @@ extension String.StringInterpolation {
     appendInterpolation("\"\(value)\"")
   }
 }
+
+#endif

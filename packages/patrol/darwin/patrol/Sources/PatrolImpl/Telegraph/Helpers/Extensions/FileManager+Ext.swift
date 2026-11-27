@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  FileManager+Ext.swift
 //  Telegraph
@@ -33,3 +34,5 @@ extension FileManager {
     return "application/octet-stream"
   }
 }
+
+#endif

@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  WebSocketMessageDefaultHandler.swift
 //  Telegraph
@@ -28,3 +29,5 @@ public class WebSocketMessageDefaultHandler: WebSocketMessageHandler {
 
   public func outgoing(message: WebSocketMessage, to webSocket: WebSocket) throws {}
 }
+
+#endif

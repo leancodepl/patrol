@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  HTTPResponse.swift
 //  Telegraph
@@ -79,3 +80,5 @@ extension HTTPResponse: CustomStringConvertible {
     return "<\(typeName): \(version) \(status), headers: \(headers.count), body: \(body.count)>"
   }
 }
+
+#endif

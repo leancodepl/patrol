@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  TCPSocket.swift
 //  Telegraph
@@ -187,3 +188,5 @@ extension TCPSocket: GCDAsyncSocketDelegate {
     completionHandler(trusted)
   }
 }
+
+#endif

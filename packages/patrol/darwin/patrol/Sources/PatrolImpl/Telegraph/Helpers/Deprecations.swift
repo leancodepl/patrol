@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  Deprecations.swift
 //  Telegraph
@@ -169,3 +170,5 @@ extension Server {
   @available(swift, obsoleted: 5, renamed: "responseFor(error:)")
   public func handleIncoming(error: Error) throws -> HTTPResponse? { return nil }
 }
+
+#endif

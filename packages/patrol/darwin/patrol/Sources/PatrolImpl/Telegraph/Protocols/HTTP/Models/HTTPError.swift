@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  HTTPError.swift
 //  Telegraph
@@ -51,3 +52,5 @@ extension HTTPError: LocalizedError {
     return description
   }
 }
+
+#endif

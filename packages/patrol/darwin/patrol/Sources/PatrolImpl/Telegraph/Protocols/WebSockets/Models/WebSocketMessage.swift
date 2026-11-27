@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  WebSocketMessage.swift
 //  Telegraph
@@ -97,3 +98,5 @@ extension WebSocketMessage: CustomStringConvertible {
     return info
   }
 }
+
+#endif

@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  DispatchTimer.swift
 //  Telegraph
@@ -86,3 +87,5 @@ extension DispatchWallTime {
     self.init(timespec: wallTime)
   }
 }
+
+#endif

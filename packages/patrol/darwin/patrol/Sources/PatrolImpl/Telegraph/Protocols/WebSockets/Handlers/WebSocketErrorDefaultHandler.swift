@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  WebSocketErrorDefaultHandler.swift
 //  Telegraph
@@ -17,3 +18,5 @@ public class WebSocketErrorDefaultHandler: WebSocketErrorHandler {
 
   public func outgoing(error: Error, webSocket: WebSocket, message: WebSocketMessage?) {}
 }
+
+#endif

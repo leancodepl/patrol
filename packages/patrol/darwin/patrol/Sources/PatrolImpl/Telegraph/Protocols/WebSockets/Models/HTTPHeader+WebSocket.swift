@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  HTTPHeader+WebSocket.swift
 //  Telegraph
@@ -36,3 +37,5 @@ extension Dictionary where Key == HTTPHeaderName, Value == String {
     set { self[.webSocketVersion] = newValue }
   }
 }
+
+#endif

@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  HTTPMessage.swift
 //  Telegraph
@@ -82,3 +83,5 @@ extension HTTPMessage {
     return headers.connection?.caseInsensitiveCompare("upgrade") == .orderedSame
   }
 }
+
+#endif

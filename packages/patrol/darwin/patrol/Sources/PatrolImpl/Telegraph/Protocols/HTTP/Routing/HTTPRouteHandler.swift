@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  HTTPRouteHandler.swift
 //  Telegraph
@@ -47,3 +48,5 @@ open class HTTPRouteHandler: HTTPRequestHandler {
     return HTTPResponse(.notFound)
   }
 }
+
+#endif

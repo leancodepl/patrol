@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  HTTPWebSocketHandler.swift
 //  Telegraph
@@ -51,3 +52,5 @@ open class HTTPWebSocketHandler: HTTPRequestHandler {
     return .webSocketHandshake(key: webSocketKey, protocolName: protocolName)
   }
 }
+
+#endif

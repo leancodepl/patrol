@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  Data+Ext.swift
 //  Telegraph
@@ -41,3 +42,5 @@ extension Data {
     }
   }
 }
+
+#endif

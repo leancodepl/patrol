@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  WebSocket+Write.swift
 //  Telegraph
@@ -84,3 +85,5 @@ extension WebSocketPayload {
     }
   }
 }
+
+#endif

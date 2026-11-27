@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  Server+Routing.swift
 //  Telegraph
@@ -60,3 +61,5 @@ extension Server {
     }
   }
 }
+
+#endif

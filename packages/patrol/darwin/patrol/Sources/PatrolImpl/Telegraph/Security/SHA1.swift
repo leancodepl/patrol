@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  SHA1.swift
 //  Telegraph
@@ -33,3 +34,5 @@ extension SHA1 {
     return SHA1(data: string.utf8Data).digest
   }
 }
+
+#endif

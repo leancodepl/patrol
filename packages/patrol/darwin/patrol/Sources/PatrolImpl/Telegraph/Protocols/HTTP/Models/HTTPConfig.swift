@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  HTTPConfig.swift
 //  Telegraph
@@ -35,3 +36,5 @@ public struct HTTPConfig {
     self.requestChain = requestHandlers.chain()
   }
 }
+
+#endif

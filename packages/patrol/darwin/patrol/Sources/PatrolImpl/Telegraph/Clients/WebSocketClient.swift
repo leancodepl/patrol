@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  WebSocketClient.swift
 //  Telegraph
@@ -292,3 +293,5 @@ extension WebSocketClient: WebSocketConnectionDelegate {
     _ webSocketConnection: WebSocketConnection, didSendMessage message: WebSocketMessage
   ) {}
 }
+
+#endif

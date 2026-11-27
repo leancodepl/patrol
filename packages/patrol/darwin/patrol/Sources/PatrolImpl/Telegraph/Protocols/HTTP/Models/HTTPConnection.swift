@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  HTTPConnection.swift
 //  Telegraph
@@ -174,3 +175,5 @@ extension HTTPConnection: TCPSocketDelegate {
   /// Raised when the socket sent data (ignore).
   public func socketDidWrite(_ socket: TCPSocket, tag: Int) {}
 }
+
+#endif

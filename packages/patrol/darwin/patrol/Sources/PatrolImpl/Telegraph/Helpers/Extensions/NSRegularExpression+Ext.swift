@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  NSRegularExpression+Ext.swift
 //  Telegraph
@@ -67,3 +68,5 @@ extension String {
     return String(self[from..<to])
   }
 }
+
+#endif

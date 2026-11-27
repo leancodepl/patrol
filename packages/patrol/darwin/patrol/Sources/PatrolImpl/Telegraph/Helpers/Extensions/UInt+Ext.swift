@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  UInt+Ext.swift
 //  Telegraph
@@ -54,3 +55,5 @@ extension UInt64 {
     ]
   }
 }
+
+#endif

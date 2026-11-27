@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  KeychainError.swift
 //  Telegraph
@@ -46,3 +47,5 @@ extension KeychainError: LocalizedError {
     return description
   }
 }
+
+#endif

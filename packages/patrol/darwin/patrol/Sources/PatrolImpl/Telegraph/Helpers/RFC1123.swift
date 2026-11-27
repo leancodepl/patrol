@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  RFC1123.swift
 //  Telegraph
@@ -30,3 +31,5 @@ extension Date {
     return RFC1123.formatter.string(from: self)
   }
 }
+
+#endif

@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  CertificateIdentity.swift
 //  Telegraph
@@ -61,5 +62,7 @@ extension CertificateIdentity {
       self.init(p12URL: p12URL, passphrase: "")
     }
   }
+
+#endif
 
 #endif

@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  TLSPolicy.swift
 //  Telegraph
@@ -48,3 +49,5 @@ extension TLSPolicy {
     return URLCredential(trust: trust)
   }
 }
+
+#endif

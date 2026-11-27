@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  WebSocketConnection.swift
 //  Telegraph
@@ -168,3 +169,5 @@ extension WebSocketConnection: WebSocketParserDelegate {
     received(message: message)
   }
 }
+
+#endif

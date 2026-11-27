@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  String+Ext.swift
 //  Telegraph
@@ -25,3 +26,5 @@ extension String {
     return prefix(count) + (ellipses ? "..." : "")
   }
 }
+
+#endif

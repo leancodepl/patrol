@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  TLSConfig.swift
 //  Telegraph
@@ -50,3 +51,5 @@ extension TLSConfig {
     return rawConfig
   }
 }
+
+#endif

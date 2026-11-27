@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  Server.swift
 //  Telegraph
@@ -278,3 +279,5 @@ extension Server: WebSocketConnectionDelegate {
     }
   }
 }
+
+#endif

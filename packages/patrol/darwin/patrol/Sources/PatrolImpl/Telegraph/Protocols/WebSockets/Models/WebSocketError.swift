@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  WebSocketError.swift
 //  Telegraph
@@ -45,3 +46,5 @@ extension WebSocketError: LocalizedError {
     return description
   }
 }
+
+#endif

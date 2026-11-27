@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 import Foundation
 
 class Logger {
@@ -19,3 +20,5 @@ class Logger {
     NSLog("\(TAG): ERROR: \(msg)")
   }
 }
+
+#endif

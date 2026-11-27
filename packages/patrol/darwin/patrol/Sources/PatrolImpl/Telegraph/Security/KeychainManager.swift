@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  KeychainManager.swift
 //  Telegraph
@@ -103,3 +104,5 @@ extension KeychainManager {
     guard status == errSecSuccess else { throw KeychainError(code: status) }
   }
 }
+
+#endif

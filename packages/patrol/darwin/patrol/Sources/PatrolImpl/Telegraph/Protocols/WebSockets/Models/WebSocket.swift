@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 //
 //  WebSocket.swift
 //  Telegraph
@@ -29,3 +30,5 @@ extension WebSocket {
     send(message: WebSocketMessage(text: text))
   }
 }
+
+#endif
