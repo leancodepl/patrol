@@ -187,6 +187,80 @@ jobs:
             exit 1
           fi
 
+  # A normal app build (without the patrol CLI, so without PATROL_ENABLED)
+  # must compile and must not contain Patrol's test server.
+  normal-build-ios:
+    name: iOS build without patrol CLI (${{ matrix.dependency-manager }})
+    runs-on: macos-26
+
+    strategy:
+      fail-fast: false
+      matrix:
+        flutter-version: ['3.38.x']
+        flutter-channel: ['stable']
+        dependency-manager: [cocoapods, swiftpm]
+
+    defaults:
+      run:
+        working-directory: packages/patrol/example
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          channel: ${{ matrix.flutter-channel }}
+
+      - name: Preload Flutter artifacts
+        run: flutter precache --ios
+
+      - name: Choose the dependency manager
+        run: |
+          if [ '${{ matrix.dependency-manager }}' = swiftpm ]; then
+            flutter config --enable-swift-package-manager
+          else
+            flutter config --no-enable-swift-package-manager
+          fi
+
+      - name: Build the app without the patrol CLI
+        run: flutter build ios --simulator --debug --flavor dev
+
+      - name: The app doesn't contain the test server
+        run: |
+          app=$(find build/ios/iphonesimulator -maxdepth 1 -name '*.app' | head -n 1)
+          if [ -z "$app" ]; then
+            echo "No .app found in build/ios/iphonesimulator"
+            exit 1
+          fi
+
+          forbidden='_OBJC_CLASS_\$_PatrolServer$'
+          if [ '${{ matrix.dependency-manager }}' = swiftpm ]; then
+            # With SwiftPM, CocoaAsyncSocket isn't linked without PATROL_ENABLED.
+            forbidden="$forbidden|_OBJC_CLASS_\\\$_GCDAsyncSocket\$"
+          fi
+
+          checked=0
+          failed=0
+          while IFS= read -r file; do
+            file -b "$file" | grep -q 'Mach-O' || continue
+            checked=$((checked + 1))
+            if nm -U "$file" 2>/dev/null | grep -Eq "$forbidden"; then
+              echo "Found a forbidden symbol in $file:"
+              nm -U "$file" | grep -E "$forbidden"
+              failed=1
+            fi
+          done < <(find "$app" -type f)
+
+          echo "Checked $checked Mach-O files in $app"
+          if [ "$checked" -eq 0 ]; then
+            echo "No Mach-O files found, the check didn't run"
+            exit 1
+          fi
+          exit "$failed"
+
   prepare-published-deps:
     name: Resolve against published dependencies
     runs-on: ubuntu-latest
