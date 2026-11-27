@@ -394,7 +394,10 @@ class IOSAppOptions {
         'RunnerUITests/RunnerUITests',
       ],
       ...['-destination', destination],
-      ...['-destination-timeout', '1'],
+      // Fail fast on simulators. A physical device can stay busy for a
+      // while (e.g. "Preparing" after the previous run), and xcodebuild waits
+      // only until it becomes available.
+      ...['-destination-timeout', if (device.real) '120' else '1'],
       ...['-resultBundlePath', resultBundlePath],
     ];
 
