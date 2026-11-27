@@ -10,34 +10,36 @@ const _dialogTimeout = Duration(seconds: 10);
 // see both location dialogs again.
 void main() {
   for (var i = 1; i <= _iterations; i++) {
-    patrol('grants location when in use, then always ($i of $_iterations)', (
-      $,
-    ) async {
-      expect(await Permission.locationWhenInUse.isGranted, isFalse);
-      expect(await Permission.locationAlways.isGranted, isFalse);
+    patrol(
+      'grants location when in use, then always ($i of $_iterations)',
+      ($) async {
+        expect(await Permission.locationWhenInUse.isGranted, isFalse);
+        expect(await Permission.locationAlways.isGranted, isFalse);
 
-      await createApp($);
-      await $('Open permissions screen').scrollTo().tap();
+        await createApp($);
+        await $('Open permissions screen').scrollTo().tap();
 
-      await $(K.requestLocationPermissionButton).scrollTo().tap();
-      expect(
-        await $.platform.mobile.isPermissionDialogVisible(
-          timeout: _dialogTimeout,
-        ),
-        isTrue,
-        reason: 'When In Use dialog not shown',
-      );
-      await $.platform.mobile.grantPermissionWhenInUse();
-      await $(
-        K.locationPermissionTile,
-      ).$(K.statusText).$('Granted').waitUntilVisible();
+        await $(K.requestLocationPermissionButton).scrollTo().tap();
+        expect(
+          await $.platform.mobile.isPermissionDialogVisible(
+            timeout: _dialogTimeout,
+          ),
+          isTrue,
+          reason: 'When In Use dialog not shown',
+        );
+        await $.platform.mobile.grantPermissionWhenInUse();
+        await $(
+          K.locationPermissionTile,
+        ).$(K.statusText).$('Granted').waitUntilVisible();
 
-      await $(K.requestLocationAlwaysPermissionButton).scrollTo().tap();
-      await _tapChangeToAlwaysAllow($);
-      // permission_handler completes the Always request before the user
-      // answers, so read the status again instead of trusting the tile.
-      expect(await _waitForLocationAlways(), isTrue);
-    }, tags: ['ios', 'clear_permissions_location_always']);
+        await $(K.requestLocationAlwaysPermissionButton).scrollTo().tap();
+        await _tapChangeToAlwaysAllow($);
+        // permission_handler completes the Always request before the user
+        // answers, so read the status again instead of trusting the tile.
+        expect(await _waitForLocationAlways(), isTrue);
+      },
+      tags: ['ios', 'clear_permissions_location_always'],
+    );
   }
 }
 

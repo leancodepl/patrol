@@ -10,24 +10,28 @@ const _dialogTimeout = Duration(seconds: 10);
 // Run alone, from a fresh install, with `--clear-permissions`: "2." checks
 // that the reset also clears a denied location permission.
 void main() {
-  patrol('2. asks for location again after a denial', ($) async {
-    final status = await Permission.locationWhenInUse.status;
-    print('Location status after reset: $status');
-    expect(status, PermissionStatus.denied);
+  patrol(
+    '2. asks for location again after a denial',
+    ($) async {
+      final status = await Permission.locationWhenInUse.status;
+      print('Location status after reset: $status');
+      expect(status, PermissionStatus.denied);
 
-    await createApp($);
-    await $('Open permissions screen').scrollTo().tap();
+      await createApp($);
+      await $('Open permissions screen').scrollTo().tap();
 
-    await $(K.requestLocationPermissionButton).scrollTo().tap();
-    expect(
-      await $.platform.mobile.isPermissionDialogVisible(
-        timeout: _dialogTimeout,
-      ),
-      isTrue,
-      reason: 'Location dialog not shown after a denial',
-    );
-    await $.platform.mobile.grantPermissionWhenInUse();
-  }, tags: ['ios', 'clear_permissions_denied_location']);
+      await $(K.requestLocationPermissionButton).scrollTo().tap();
+      expect(
+        await $.platform.mobile.isPermissionDialogVisible(
+          timeout: _dialogTimeout,
+        ),
+        isTrue,
+        reason: 'Location dialog not shown after a denial',
+      );
+      await $.platform.mobile.grantPermissionWhenInUse();
+    },
+    tags: ['ios', 'clear_permissions_denied_location'],
+  );
 
   patrol('1. denies location', ($) async {
     await createApp($);
