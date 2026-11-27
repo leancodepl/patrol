@@ -1072,6 +1072,7 @@ packages:
       terminalWarning: 'tw',
       cli: CliOrigin(version: '5.0.0', source: CliSource.global),
       cliPinWarning: 'c',
+      logFile: 'l',
     );
 
     expect(
