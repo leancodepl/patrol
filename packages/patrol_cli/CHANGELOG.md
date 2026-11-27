@@ -3,6 +3,10 @@
 - Fix the generated test bundle dropping the Dart entrypoint arguments passed by the native side of
   the app: `main` now takes them and passes them to tests as `$.entrypointArgs`. Needs a `patrol`
   release that includes this change. (#3366)
+- When Chromium cannot be installed for web tests because the OS is newer than the Playwright
+  bundled with `patrol`, the error now says to update `patrol` and, on Ubuntu, which
+  `PLAYWRIGHT_HOST_PLATFORM_OVERRIDE` value works as a fallback. On an Ubuntu older than 20.04 it
+  says the OS is too old instead.
 
 ## 5.0.0-dev.1
 
