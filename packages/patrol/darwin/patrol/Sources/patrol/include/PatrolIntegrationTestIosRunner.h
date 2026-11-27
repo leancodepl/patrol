@@ -24,6 +24,8 @@
   static NSMutableOrderedSet<NSString *> *_selectedTestNames = nil;                                                 \
   /* Set by +resetPermissions; tells the next launch to clear app-side caches. */                                   \
   static BOOL _patrolClearPermissionCachesOnLaunch = NO;                                                            \
+  /* Tests that have started, in run order: XCTest sorts them by name, not by Dart order. */                        \
+  static NSUInteger _patrolStartedTestCount = 0;                                                                    \
                                                                                                                     \
   +(NSArray<NSString *> *)selectedTestNames {                                                                       \
     return _selectedTestNames.array;                                                                                \
@@ -332,13 +334,14 @@
         NSLog(@"RunnerUITests running Dart test: %@", dartTestName);                                                \
         /* A capture that landed after the previous test's drain isn't ours. */                                     \
         [[PatrolScreenshotBuffer sharedBuffer] discardPending];                                                     \
+        BOOL isFirstTest = _patrolStartedTestCount++ == 0;                                                          \
                                                                                                                     \
-        if (CLEAR_PERMISSIONS && i > 0) {                                                                           \
+        if (CLEAR_PERMISSIONS && !isFirstTest) {                                                                    \
           [self resetPermissions];                                                                                  \
           NSLog(@"App permissions cleared");                                                                        \
         }                                                                                                           \
                                                                                                                     \
-        if (FULL_ISOLATION && i > 0) {                                                                              \
+        if (FULL_ISOLATION && !isFirstTest) {                                                                       \
           NSLog(@"Uninstalling app");                                                                               \
           [self uninstallApp];                                                                                      \
           NSLog(@"App uninstallation completed, launching fresh app instance");                                     \

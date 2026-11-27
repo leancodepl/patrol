@@ -174,8 +174,8 @@ patrol test --full-isolation
 
 ### Clearing permissions on iOS
 
-`--clear-permissions` resets permissions before every test except the first
-one:
+`--clear-permissions` resets permissions before every test except the one that
+runs first (XCTest runs tests in name order):
 
 - Patrol asks iOS to reset the authorization status of the resources in
   `XCUIProtectedResource` (location, camera, microphone, photos, contacts and
