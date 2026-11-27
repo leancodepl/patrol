@@ -5,7 +5,7 @@ on:
   # Not `pull_request_target`: this workflow needs no secrets, and that trigger
   # checked out the base branch, so every run tested master instead of the PR.
   pull_request:
-    types: [opened, synchronize]
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'packages/patrol/**'
       - 'packages/patrol_finders/**'
@@ -75,6 +75,7 @@ jobs:
           script: cd dev/cli_tests && dart pub get && dart patrol_develop_test.dart
 
   test-macos:
+    if: github.event.pull_request.draft != true
     name: Test `patrol develop` on macOS
     # macos-15 is on macOS 15.7, where simulator mDNS is broken and
     # `flutter attach` cannot discover the app. See flutter#166333.

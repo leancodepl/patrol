@@ -5,6 +5,7 @@ on:
   schedule:
     - cron: '0 0 * * *'
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'packages/patrol/**'
       - 'packages/patrol_finders/**'
@@ -24,6 +25,7 @@ concurrency:
 
 jobs:
   run_tests:
+    if: github.event.pull_request.draft != true
     name: Flutter ${{ matrix.flutter-version }} on ${{ matrix.device_model }}
     runs-on: macos-latest
     timeout-minutes: 25
