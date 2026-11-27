@@ -245,9 +245,10 @@ abstract final class ScreenshotService {
   }
 }
 
-/// Captures the tab with [pageId] on [debuggerPort], or the first page Chrome
-/// lists when it has no such tab, with the DevTools Protocol's
-/// `Page.captureScreenshot`. Every step is bounded: a browser that stopped
+/// Captures the tab in front on [debuggerPort], as a phone screenshot captures
+/// what is on screen, with the DevTools Protocol's `Page.captureScreenshot`.
+/// When Chrome cannot tell which tab is in front, it captures the tab with
+/// [pageId], then the first page. Every step is bounded: a browser that stopped
 /// answering fails the call.
 Future<Uint8List> captureChromePage(
   String debuggerPort, {
@@ -261,7 +262,33 @@ Future<Uint8List> captureChromePage(
         .timeout(step);
     final response = await request.close().timeout(step);
     final body = await response.transform(utf8.decoder).join().timeout(step);
-    final page = pickChromePage(jsonDecode(body) as List<Object?>, id: pageId);
+    final targets = jsonDecode(body) as List<Object?>;
+
+    final visibleIds = <String>{};
+    for (final page in chromePages(targets)) {
+      final socketUrl = page['webSocketDebuggerUrl'] as String?;
+      final id = page['id'] as String?;
+      if (socketUrl == null || id == null) {
+        continue;
+      }
+      try {
+        final result = await _callPage(socketUrl, 'Runtime.evaluate', {
+          'expression': 'document.visibilityState',
+        }, timeout: step);
+        final value = (result['result'] as Map<String, dynamic>?)?['value'];
+        if (value == 'visible') {
+          visibleIds.add(id);
+        }
+      } on Object {
+        // A page that does not answer is not the one in front.
+      }
+    }
+
+    final page = pickFrontPage(
+      targets,
+      visibleIds: visibleIds,
+      fallbackId: pageId,
+    );
     if (page == null) {
       throw Exception('Chrome lists no page to capture');
     }
@@ -269,28 +296,45 @@ Future<Uint8List> captureChromePage(
     if (socketUrl == null) {
       throw Exception('Chrome gives no debugger URL for the page');
     }
-
-    final socket = await WebSocket.connect(socketUrl).timeout(step);
-    try {
-      socket.add(jsonEncode({'id': 1, 'method': 'Page.captureScreenshot'}));
-      await for (final message in socket.timeout(step * 2)) {
-        final reply = jsonDecode(message as String) as Map<String, dynamic>;
-        if (reply['id'] != 1) {
-          continue;
-        }
-        final data = (reply['result'] as Map<String, dynamic>?)?['data'];
-        if (data is! String) {
-          throw Exception(
-            'Page.captureScreenshot failed: ${reply['error'] ?? 'no data'}',
-          );
-        }
-        return base64Decode(data);
-      }
-      throw Exception('Chrome closed the connection before answering');
-    } finally {
-      await socket.close();
+    final result = await _callPage(
+      socketUrl,
+      'Page.captureScreenshot',
+      const {},
+      timeout: step * 2,
+    );
+    final data = result['data'];
+    if (data is! String) {
+      throw Exception('Page.captureScreenshot returned no data');
     }
+    return base64Decode(data);
   } finally {
     httpClient.close(force: true);
+  }
+}
+
+/// Sends [method] to the page at [socketUrl] and returns its result, or throws
+/// with Chrome's error.
+Future<Map<String, dynamic>> _callPage(
+  String socketUrl,
+  String method,
+  Map<String, Object?> params, {
+  required Duration timeout,
+}) async {
+  final socket = await WebSocket.connect(socketUrl).timeout(timeout);
+  try {
+    socket.add(jsonEncode({'id': 1, 'method': method, 'params': params}));
+    await for (final message in socket.timeout(timeout)) {
+      final reply = jsonDecode(message as String) as Map<String, dynamic>;
+      if (reply['id'] != 1) {
+        continue;
+      }
+      if (reply['result'] case final Map<String, dynamic> result) {
+        return result;
+      }
+      throw Exception('$method failed: ${reply['error'] ?? 'no result'}');
+    }
+    throw Exception('Chrome closed the connection before answering $method');
+  } finally {
+    await socket.close();
   }
 }

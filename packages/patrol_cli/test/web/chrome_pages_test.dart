@@ -27,4 +27,37 @@ void main() {
       );
     });
   });
+
+  group('pickFrontPage', () {
+    final targets = <Object?>[
+      {'type': 'page', 'id': 'APP'},
+      {'type': 'service_worker', 'id': 'SW'},
+      {'type': 'page', 'id': 'OAUTH'},
+    ];
+
+    test('picks the tab in front, not the app tab', () {
+      expect(
+        pickFrontPage(targets, visibleIds: {'OAUTH'}, fallbackId: 'APP')?['id'],
+        'OAUTH',
+      );
+    });
+
+    test('falls back to the app tab when every page is visible', () {
+      expect(
+        pickFrontPage(
+          targets,
+          visibleIds: {'APP', 'OAUTH'},
+          fallbackId: 'APP',
+        )?['id'],
+        'APP',
+      );
+    });
+
+    test('falls back to the app tab when no page answers', () {
+      expect(
+        pickFrontPage(targets, visibleIds: {}, fallbackId: 'APP')?['id'],
+        'APP',
+      );
+    });
+  });
 }

@@ -127,8 +127,9 @@ under the Dart that activated it, which is independent of the project's pin.
 
 `run` with `device: "chrome"` drives a web develop session, which needs Flutter 3.47 or newer. A
 browser is never picked automatically: with no `device`, `run` chooses an Android device, then an
-Android emulator, an iOS device and an iOS simulator. `screenshot` captures the page through Chrome's
-debugging port. `native-tree` is not available for a web session.
+Android emulator, an iOS device and an iOS simulator. `screenshot` captures the tab in front through
+Chrome's debugging port, as on a phone it captures what is on screen, a tab the test opened
+included. `native-tree` is not available for a web session.
 
 ## Version compatibility
 
