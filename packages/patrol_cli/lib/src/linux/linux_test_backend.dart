@@ -3,7 +3,7 @@ import 'dart:collection';
 import 'dart:convert';
 import 'dart:io' as io;
 
-import 'package:dispose_scope/dispose_scope.dart';
+import 'package:dispose_scope/dispose_scope.dart' hide ProcessDisposed;
 import 'package:file/file.dart';
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
@@ -85,14 +85,14 @@ class LinuxTestBackend {
       );
 
       var flutterBuildKilled = false;
-      final process = await _processManager.start(
-        options.toFlutterBuildInvocation(options.flutter.buildMode),
-        runInShell: true,
-      );
-      scope.addDispose(() {
-        process.kill();
-        flutterBuildKilled = true; // `flutter build` has exit code 0 on SIGINT
-      });
+      // In a shell, so the process is a wrapper: kill its tree.
+      final process =
+          await _processManager.start(
+              options.toFlutterBuildInvocation(options.flutter.buildMode),
+              runInShell: true,
+            )
+            // `flutter build` has exit code 0 on SIGINT.
+            ..disposedByTree(scope, onKill: () => flutterBuildKilled = true);
       process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
       final exitCode = await process.exitCode;
