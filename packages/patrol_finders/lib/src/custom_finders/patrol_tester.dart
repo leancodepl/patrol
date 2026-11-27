@@ -16,6 +16,7 @@ class PatrolTesterConfig {
     this.dragDuration = const Duration(milliseconds: 100),
     this.settleBetweenScrollsTimeout = const Duration(seconds: 5),
     this.printLogs = false,
+    this.dragWithoutFling = false,
   });
 
   /// Time after which [PatrolFinder.waitUntilExists] fails if it doesn't find
@@ -58,6 +59,19 @@ class PatrolTesterConfig {
   /// If true, patrol finders logs will be printed to the console.
   final bool printLogs;
 
+  /// If true, scrolling methods such as [PatrolTester.scrollUntilVisible] hold
+  /// the pointer still before releasing each drag, so the scroll doesn't fling
+  /// on and the settle between drags doesn't wait for it to coast to a stop.
+  ///
+  /// To reach about as far as a step and its fling did, each drag then moves
+  /// the view by exactly 3 steps. Scrollables that snap to their items, such
+  /// as a [PageView] or a carousel, snap back without a fling and don't scroll
+  /// at all: pass `dragWithoutFling: false` to the call that scrolls them.
+  ///
+  /// The scrolling methods also take a `dragWithoutFling` argument, which
+  /// overrides this setting for a single call.
+  final bool dragWithoutFling;
+
   /// Creates a copy of this config but with the given fields replaced with the
   /// new values.
   PatrolTesterConfig copyWith({
@@ -68,6 +82,7 @@ class PatrolTesterConfig {
     Duration? dragDuration,
     Duration? settleBetweenScrollsTimeout,
     bool? printLogs,
+    bool? dragWithoutFling,
   }) {
     return PatrolTesterConfig(
       existsTimeout: existsTimeout ?? this.existsTimeout,
@@ -78,12 +93,22 @@ class PatrolTesterConfig {
       settleBetweenScrollsTimeout:
           settleBetweenScrollsTimeout ?? this.settleBetweenScrollsTimeout,
       printLogs: printLogs ?? this.printLogs,
+      dragWithoutFling: dragWithoutFling ?? this.dragWithoutFling,
     );
   }
 }
 
 /// Default amount to drag by when scrolling.
 const defaultScrollDelta = 64.0;
+
+/// How many steps a drag made with [PatrolTesterConfig.dragWithoutFling]
+/// covers. 3 default steps stay under the default 250 px cache extent.
+const _stepsPerDragWithoutFling = 3.0;
+
+/// Longer than the 40 ms after which Flutter's VelocityTracker treats the
+/// pointer as stopped, so a drag made with
+/// [PatrolTesterConfig.dragWithoutFling] ends with zero velocity.
+const _holdBeforeRelease = Duration(milliseconds: 50);
 
 /// Default maximum number of drags during scrolling.
 const defaultScrollMaxIteration = 15;
@@ -749,6 +774,7 @@ class PatrolTester {
     Duration? settleBetweenScrollsTimeout,
     Duration? dragDuration,
     SettlePolicy? settlePolicy,
+    bool? dragWithoutFling,
     bool enablePatrolLog = true,
     String? description,
   }) {
@@ -769,7 +795,12 @@ class PatrolTester {
           final start = tester.binding.clock.now();
           var iterationsLeft = maxIteration;
           while (iterationsLeft > 0 && finder.evaluate().isEmpty) {
-            await tester.timedDrag(viewPatrolFinder, moveStep, dragDuration!);
+            await _drag(
+              viewPatrolFinder,
+              moveStep,
+              dragDuration!,
+              withoutFling: dragWithoutFling ?? config.dragWithoutFling,
+            );
             await _performPump(
               settlePolicy: settlePolicy,
               settleTimeout: settleBetweenScrollsTimeout,
@@ -829,6 +860,7 @@ class PatrolTester {
     Duration? settleBetweenScrollsTimeout,
     Duration? dragDuration,
     SettlePolicy? settlePolicy,
+    bool? dragWithoutFling,
     Alignment alignment = Alignment.center,
     bool enablePatrolLog = true,
     String? description,
@@ -853,7 +885,12 @@ class PatrolTester {
           final start = tester.binding.clock.now();
           var iterationsLeft = maxIteration;
           while (iterationsLeft > 0 && hitTestableFinder.evaluate().isEmpty) {
-            await tester.timedDrag(viewPatrolFinder, moveStep, dragDuration!);
+            await _drag(
+              viewPatrolFinder,
+              moveStep,
+              dragDuration!,
+              withoutFling: dragWithoutFling ?? config.dragWithoutFling,
+            );
             await _performPump(
               settlePolicy: settlePolicy,
               settleTimeout: settleBetweenScrollsTimeout,
@@ -874,6 +911,43 @@ class PatrolTester {
     );
   }
 
+  /// One drag of [dragUntilExists] and [dragUntilVisible]; see
+  /// [PatrolTesterConfig.dragWithoutFling].
+  Future<void> _drag(
+    Finder view,
+    Offset moveStep,
+    Duration dragDuration, {
+    required bool withoutFling,
+  }) {
+    if (withoutFling) {
+      return _dragWithoutFling(
+        view,
+        moveStep * _stepsPerDragWithoutFling,
+        dragDuration,
+      );
+    }
+
+    return tester.timedDrag(view, moveStep, dragDuration);
+  }
+
+  /// Like [WidgetController.timedDrag], but holds the pointer still before
+  /// lifting it, so the scroll doesn't fling on and the settle after the drag
+  /// doesn't wait for it to coast to a stop.
+  Future<void> _dragWithoutFling(
+    Finder view,
+    Offset offset,
+    Duration duration,
+  ) async {
+    const moves = 10;
+    final gesture = await tester.startGesture(tester.getCenter(view));
+    for (var i = 0; i < moves; i++) {
+      await gesture.moveBy(offset / moves.toDouble());
+      await tester.pump(duration ~/ moves);
+    }
+    await tester.pump(_holdBeforeRelease);
+    await gesture.up();
+  }
+
   /// Scrolls [view] in its scrolling direction until this finder finds
   /// at least one existing widget.
   ///
@@ -890,6 +964,7 @@ class PatrolTester {
     Duration? settleBetweenScrollsTimeout,
     Duration? dragDuration,
     SettlePolicy? settlePolicy,
+    bool? dragWithoutFling,
     bool enablePatrolLog = true,
     String? description,
   }) {
@@ -937,6 +1012,7 @@ class PatrolTester {
             settleBetweenScrollsTimeout: settleBetweenScrollsTimeout,
             dragDuration: dragDuration,
             settlePolicy: settlePolicy,
+            dragWithoutFling: dragWithoutFling,
             enablePatrolLog: false,
           );
 
@@ -965,6 +1041,7 @@ class PatrolTester {
     Duration? settleBetweenScrollsTimeout,
     Duration? dragDuration,
     SettlePolicy? settlePolicy,
+    bool? dragWithoutFling,
     Alignment alignment = Alignment.center,
     bool enablePatrolLog = true,
     String? description,
@@ -1016,6 +1093,7 @@ class PatrolTester {
             settleBetweenScrollsTimeout: settleBetweenScrollsTimeout,
             dragDuration: dragDuration,
             settlePolicy: settlePolicy,
+            dragWithoutFling: dragWithoutFling,
             alignment: alignment,
             enablePatrolLog: false,
           );

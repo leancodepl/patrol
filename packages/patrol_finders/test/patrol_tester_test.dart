@@ -433,6 +433,23 @@ void main() {
     });
 
     group('dragUntilExists()', () {
+      patrolWidgetTest('drags without a fling when a single call asks for it', (
+        tester,
+      ) async {
+        final controller = ScrollController();
+        await tester.pumpWidget(_ListOf40Items(controller: controller));
+        await tester.dragUntilExists(
+          finder: find.text('item 20'),
+          view: find.byType(Scrollable),
+          moveStep: const Offset(0, -defaultScrollDelta),
+          dragWithoutFling: true,
+        );
+
+        // each drag moves exactly 3 steps, a fling would add to it
+        final drags = controller.offset / (3 * defaultScrollDelta);
+        expect(drags, moreOrLessEquals(drags.roundToDouble(), epsilon: 0.001));
+      });
+
       patrolWidgetTest(
         'throws exception when no Scrollable is found within timeout',
         (tester) async {
@@ -656,6 +673,86 @@ void main() {
               ),
             ),
           );
+        },
+      );
+
+      patrolWidgetTest('flings on after each drag by default', (tester) async {
+        final controller = ScrollController();
+        await tester.pumpWidget(_ListOf40Items(controller: controller));
+
+        await tester.dragUntilVisible(
+          finder: find.text('item 12'),
+          view: find.byType(Scrollable),
+          moveStep: const Offset(0, -defaultScrollDelta),
+        );
+
+        expect(controller.offset, greaterThan(defaultScrollDelta));
+      });
+
+      patrolWidgetTest('drags without a fling when a single call asks for it', (
+        tester,
+      ) async {
+        final controller = ScrollController();
+        await tester.pumpWidget(_ListOf40Items(controller: controller));
+
+        await tester.dragUntilVisible(
+          finder: find.text('item 12'),
+          view: find.byType(Scrollable),
+          moveStep: const Offset(0, -defaultScrollDelta),
+          dragWithoutFling: true,
+        );
+
+        expect(controller.offset, moreOrLessEquals(3 * defaultScrollDelta));
+      });
+
+      patrolWidgetTest(
+        'finds the widget with noSettle when dragging without a fling',
+        (tester) async {
+          // https://github.com/leancodepl/patrol/issues/3115: with noSettle a
+          // fling keeps the scrollable ignoring pointers, so the target is
+          // never hit-testable. Without a fling the scrollable is idle again.
+          await tester.pumpWidget(
+            MaterialApp(
+              home: CustomScrollView(
+                slivers: [
+                  SliverList.list(
+                    children: [
+                      for (var i = 0; i < 40; i++)
+                        SizedBox(height: 50, child: Text('item $i')),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+
+          await tester.dragUntilVisible(
+            finder: find.text('item 20'),
+            view: find.byType(Scrollable),
+            moveStep: const Offset(0, -defaultScrollDelta),
+            settlePolicy: SettlePolicy.noSettle,
+            dragWithoutFling: true,
+          );
+
+          expect(find.text('item 20').hitTestable(), findsOneWidget);
+        },
+      );
+
+      patrolWidgetTest(
+        'drags 3 steps and stops where the drag ends with dragWithoutFling',
+        config: const PatrolTesterConfig(dragWithoutFling: true),
+        (tester) async {
+          final controller = ScrollController();
+          await tester.pumpWidget(_ListOf40Items(controller: controller));
+
+          // item 12 starts just below the 600 px viewport
+          await tester.dragUntilVisible(
+            finder: find.text('item 12'),
+            view: find.byType(Scrollable),
+            moveStep: const Offset(0, -defaultScrollDelta),
+          );
+
+          expect(controller.offset, moreOrLessEquals(3 * defaultScrollDelta));
         },
       );
 
@@ -1407,4 +1504,23 @@ void main() {
       });
     });
   });
+}
+
+class _ListOf40Items extends StatelessWidget {
+  const _ListOf40Items({required this.controller});
+
+  final ScrollController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: ListView(
+        controller: controller,
+        children: [
+          for (var i = 0; i < 40; i++)
+            SizedBox(height: 50, child: Text('item $i')),
+        ],
+      ),
+    );
+  }
 }
