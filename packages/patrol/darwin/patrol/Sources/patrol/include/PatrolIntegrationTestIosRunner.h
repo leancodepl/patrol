@@ -7,8 +7,11 @@
 //  5. Copy the contents from RunnerUITests.m back here
 //  6. Go back to using a macro in RunnerUITests.m
 
-// For every Flutter dart test, dynamically generate an Objective-C method mirroring the test results
-// so it is reported as a native XCTest run result.
+// One runner for both test discovery modes. With build-time discovery, the
+// generated PatrolGeneratedTests.inc (#included right after this macro) declares
+// one subclass per Dart test file with real test_ methods, and this class runs
+// none. Without it, this class asks the app for its Dart tests at runtime and
+// registers one dynamic method per test, reported as a native XCTest result.
 #define PATROL_INTEGRATION_TEST_IOS_RUNNER(__test_class)                                                            \
   @interface __test_class : XCTestCase                                                                              \
   @property(class, strong, nonatomic, readonly) NSArray<NSString *> *selectedTestNames;                             \
@@ -17,6 +20,10 @@
   @implementation __test_class                                                                                      \
                                                                                                                     \
   static NSMutableOrderedSet<NSString *> *_selectedTestNames = nil;                                                 \
+  static PatrolServer *_patrolServer = nil;                                                                         \
+  static ObjCPatrolAppServiceClient *_patrolAppServiceClient = nil;                                                 \
+  static int _patrolGeneratedTestIndex = 0;                                                                         \
+  static NSError *_patrolServerStartError = nil;                                                                    \
                                                                                                                     \
   +(NSArray<NSString *> *)selectedTestNames {                                                                       \
     return _selectedTestNames.array;                                                                                \
@@ -40,6 +47,51 @@
   +(BOOL)isPatrolDevelopMode {                                                                                      \
     return [[NSProcessInfo processInfo].environment[@"PATROL_DEVELOP"] isEqualToString:@"1"];                       \
   }                                                                                                                 \
+                                                                                                                    \
+  /* True when build-time discovery generated test classes (PatrolGeneratedTests.inc)                               \
+     that subclass this one. They then own the tests, and this class runs none. */                                  \
+  +(BOOL)patrolHasGeneratedTests {                                                                                  \
+    static BOOL hasGeneratedTests = NO;                                                                             \
+    static dispatch_once_t onceToken;                                                                               \
+    dispatch_once(&onceToken, ^{                                                                                    \
+      unsigned int classCount = 0;                                                                                  \
+      Class *classes = objc_copyClassList(&classCount);                                                             \
+      for (unsigned int i = 0; i < classCount; i++) {                                                               \
+        if (class_getSuperclass(classes[i]) == [__test_class class]) {                                              \
+          hasGeneratedTests = YES;                                                                                  \
+          break;                                                                                                    \
+        }                                                                                                           \
+      }                                                                                                             \
+      free(classes);                                                                                                \
+    });                                                                                                             \
+    return hasGeneratedTests;                                                                                       \
+  }                                                                                                                 \
+                                                                                                                    \
+  +(BOOL)patrolStartServerIfNeeded {                                                                                \
+    if (_patrolServer != nil) {                                                                                     \
+      return YES;                                                                                                   \
+    }                                                                                                               \
+    PatrolServer *server = [[PatrolServer alloc] init];                                                             \
+    NSError *err = nil;                                                                                             \
+    [server startAndReturnError:&err];                                                                              \
+    if (err != nil) {                                                                                               \
+      NSLog(@"patrolServer.start(): failed, err: %@", err);                                                         \
+      _patrolServerStartError = err;                                                                                \
+      return NO;                                                                                                    \
+    }                                                                                                               \
+    _patrolServer = server;                                                                                         \
+    _patrolAppServiceClient = [[ObjCPatrolAppServiceClient alloc] initWithPort:server.boundAppPort];                \
+    return YES;                                                                                                     \
+  }                                                                                                                 \
+                                                                                                                    \
+  /* Allow the Local Network permission required by Dart Observatory */                                             \
+  +(void)patrolAllowLocalNetwork {                                                                                  \
+    XCUIApplication *springboard = [[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"];     \
+    if (springboard.alerts.buttons[@"Allow"].exists) {                                                              \
+      [springboard.alerts.buttons[@"Allow"] tap];                                                                   \
+    }                                                                                                               \
+  }                                                                                                                 \
+                                                                                                                    \
   +(void)launchPatrolAppWithServer : (PatrolServer *)server {                                                       \
     server.appReady = NO;                                                                                           \
     XCUIApplication *app = [[XCUIApplication alloc] init];                                                          \
@@ -51,8 +103,8 @@
     app.launchEnvironment = environment;                                                                            \
     [app launch];                                                                                                   \
   }                                                                                                                 \
-  +(BOOL)waitForPatrolAppReadyWithServer : (PatrolServer *)server {                                                 \
-    NSDate *deadline = [NSDate dateWithTimeIntervalSinceNow:60.0];                                                  \
+  +(BOOL)waitForPatrolAppReadyWithServer : (PatrolServer *)server timeout : (NSTimeInterval)timeout {               \
+    NSDate *deadline = [NSDate dateWithTimeIntervalSinceNow:timeout];                                               \
     while (!server.appReady && deadline.timeIntervalSinceNow > 0) {                                                 \
       [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                            \
     }                                                                                                               \
@@ -60,6 +112,9 @@
   }                                                                                                                 \
                                                                                                                     \
   +(BOOL)instancesRespondToSelector : (SEL)aSelector {                                                              \
+    if (self != [__test_class class] || (![self isPatrolDevelopMode] && [self patrolHasGeneratedTests])) {          \
+      return [super instancesRespondToSelector:aSelector];                                                          \
+    }                                                                                                               \
     NSString *name = NSStringFromSelector(aSelector);                                                               \
     /* Accumulate Marathon/dart selectors (spaces, '+', or escaped '+'). */                                         \
     if ([name containsString:@" "] || [name containsString:@"+"] || [name containsString:@"__PLUS__"]) {            \
@@ -188,19 +243,12 @@
     dispatch_once(&onceToken, ^{                                                                                    \
       IMP implementation = imp_implementationWithBlock(^(id _self) {                                                \
         NSLog(@"Patrol develop session: starting native automation server");                                        \
-        PatrolServer *server = [[PatrolServer alloc] init];                                                         \
-        NSError *err = nil;                                                                                         \
-        [server startAndReturnError:&err];                                                                          \
-        if (err != nil) {                                                                                           \
-          NSLog(@"patrolServer.start(): failed, err: %@", err);                                                     \
-          XCTFail(@"patrolServer.start() failed: %@", err);                                                         \
+        if (![__test_class patrolStartServerIfNeeded]) {                                                            \
+          XCTFail(@"patrolServer.start() failed: %@", _patrolServerStartError);                                     \
           return;                                                                                                   \
         }                                                                                                           \
-        XCUIApplication *springboard = [[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"]; \
-        if (springboard.alerts.buttons[@"Allow"].exists) {                                                          \
-          [springboard.alerts.buttons[@"Allow"] tap];                                                               \
-        }                                                                                                           \
-        [__test_class launchPatrolAppWithServer:server];                                                            \
+        [__test_class patrolAllowLocalNetwork];                                                                     \
+        [__test_class launchPatrolAppWithServer:_patrolServer];                                                     \
         NSLog(@"Patrol develop session: keeping XCTest alive for hot restart");                                     \
         while (true) {                                                                                              \
           [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                        \
@@ -216,40 +264,33 @@
   }                                                                                                                 \
                                                                                                                     \
   +(NSArray<NSInvocation *> *)testInvocations {                                                                     \
+    /* A class generated by build-time discovery: XCTest finds its test_ methods. */                                \
+    if (self != [__test_class class]) {                                                                             \
+      return [self isPatrolDevelopMode] ? @[] : [super testInvocations];                                            \
+    }                                                                                                               \
+                                                                                                                    \
     if ([self isPatrolDevelopMode]) {                                                                               \
       return [self patrolDevelopTestInvocations];                                                                   \
     }                                                                                                               \
                                                                                                                     \
-    static PatrolServer *server = nil;                                                                              \
-    static ObjCPatrolAppServiceClient *appServiceClientSingleton = nil;                                             \
-    if (server == nil) {                                                                                            \
-      server = [[PatrolServer alloc] init];                                                                         \
-                                                                                                                    \
-      NSError *err = nil;                                                                                           \
-      [server startAndReturnError:&err];                                                                            \
-      if (err != nil) {                                                                                             \
-        NSLog(@"patrolServer.start(): failed, err: %@", err);                                                       \
-        server = nil;                                                                                               \
-        appServiceClientSingleton = nil;                                                                            \
-        XCTFail(@"patrolServer.start() failed: %@", err);                                                           \
-        return @[];                                                                                                 \
-      }                                                                                                             \
-                                                                                                                    \
-      appServiceClientSingleton = [[ObjCPatrolAppServiceClient alloc] initWithPort:server.boundAppPort];            \
+    if ([self patrolHasGeneratedTests]) {                                                                           \
+      return @[];                                                                                                   \
     }                                                                                                               \
-    __block ObjCPatrolAppServiceClient *appServiceClient = appServiceClientSingleton;                               \
                                                                                                                     \
-    /* Allow the Local Network permission required by Dart Observatory */                                           \
-    XCUIApplication *springboard = [[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"];     \
-    XCUIElementQuery *systemAlerts = springboard.alerts;                                                            \
-    if (systemAlerts.buttons[@"Allow"].exists) {                                                                    \
-      [systemAlerts.buttons[@"Allow"] tap];                                                                         \
+    /* Runtime discovery: launch the app once and ask it for its Dart tests. */                                     \
+    if (![self patrolStartServerIfNeeded]) {                                                                        \
+      XCTFail(@"patrolServer.start() failed: %@", _patrolServerStartError);                                         \
+      return @[];                                                                                                   \
     }                                                                                                               \
+    PatrolServer *server = _patrolServer;                                                                           \
+    __block ObjCPatrolAppServiceClient *appServiceClient = _patrolAppServiceClient;                                 \
+                                                                                                                    \
+    [self patrolAllowLocalNetwork];                                                                                 \
                                                                                                                     \
     static NSArray<NSDictionary *> *allDartTests = nil;                                                             \
     if (allDartTests == nil) {                                                                                      \
       [__test_class launchPatrolAppWithServer:server];                                                              \
-      if (![__test_class waitForPatrolAppReadyWithServer:server]) {                                                 \
+      if (![__test_class waitForPatrolAppReadyWithServer:server timeout:60.0]) {                                    \
         XCTFail(@"Patrol app did not become ready on port %ld", (long)server.boundAppPort);                         \
         return @[];                                                                                                 \
       }                                                                                                             \
@@ -332,7 +373,7 @@
         }                                                                                                           \
                                                                                                                     \
         [__test_class launchPatrolAppWithServer:server];                                                            \
-        BOOL appReady = [__test_class waitForPatrolAppReadyWithServer:server];                                      \
+        BOOL appReady = [__test_class waitForPatrolAppReadyWithServer:server timeout:60.0];                         \
         XCTAssertTrue(appReady, @"Patrol app did not become ready on port %ld", (long)server.boundAppPort);         \
         if (!appReady) {                                                                                            \
           return;                                                                                                   \
@@ -380,224 +421,61 @@
     return invocations;                                                                                             \
   }                                                                                                                 \
                                                                                                                     \
+  /* Called by the test_ methods generated by build-time discovery. */                                              \
+  -(void)patrolExecuteDartTest : (NSString *)dartTestName skip : (BOOL)skip {                                       \
+    NSLog(@"RunnerUITests running Dart test: %@", dartTestName);                                                    \
+    if (![__test_class patrolStartServerIfNeeded]) {                                                                \
+      XCTFail(@"patrolServer.start() failed: %@", _patrolServerStartError);                                         \
+      return;                                                                                                       \
+    }                                                                                                               \
+    if (_patrolGeneratedTestIndex == 0) {                                                                           \
+      [__test_class patrolAllowLocalNetwork];                                                                       \
+    }                                                                                                               \
+    if (CLEAR_PERMISSIONS && _patrolGeneratedTestIndex > 0) {                                                       \
+      [__test_class resetPermissions];                                                                              \
+      NSLog(@"App permissions cleared");                                                                            \
+    }                                                                                                               \
+    if (FULL_ISOLATION && _patrolGeneratedTestIndex > 0) {                                                          \
+      NSLog(@"Uninstalling app");                                                                                   \
+      [__test_class uninstallApp];                                                                                  \
+      NSLog(@"App uninstallation completed, launching fresh app instance");                                         \
+    }                                                                                                               \
+    _patrolGeneratedTestIndex++;                                                                                    \
+                                                                                                                    \
+    [__test_class launchPatrolAppWithServer:_patrolServer];                                                         \
+    if (skip) {                                                                                                     \
+      XCTSkip(@"Skip that test \"%@\"", dartTestName);                                                              \
+    }                                                                                                               \
+                                                                                                                    \
+    if (![__test_class waitForPatrolAppReadyWithServer:_patrolServer timeout:180.0]) {                              \
+      XCTFail(@"App did not report PatrolAppService readiness on port %ld", (long)_patrolServer.boundAppPort);      \
+      return;                                                                                                       \
+    }                                                                                                               \
+                                                                                                                    \
+    __block ObjCRunDartTestResponse *response = NULL;                                                               \
+    __block NSError *error;                                                                                         \
+    [_patrolAppServiceClient runDartTestWithName:dartTestName                                                       \
+                                      completion:^(ObjCRunDartTestResponse *_Nullable r, NSError *_Nullable e) {    \
+                                        if (e != NULL) {                                                            \
+                                          error = e;                                                                \
+                                        } else {                                                                    \
+                                          response = r;                                                             \
+                                        }                                                                           \
+                                      }];                                                                           \
+                                                                                                                    \
+    while (!response && !error) {                                                                                   \
+      [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                            \
+    }                                                                                                               \
+    BOOL passed = response ? response.passed : NO;                                                                  \
+    NSString *details = response ? response.details : @"(no details - app likely crashed)";                         \
+    if (response && response.skipped) {                                                                             \
+      XCTSkip(@"%@", details);                                                                                      \
+    }                                                                                                               \
+    XCTAssertTrue(passed, @"%@", details);                                                                          \
+  }                                                                                                                 \
+                                                                                                                    \
   @end
 
-// Static-codegen variant: build-time `patrol build ios` generates real XCTest
-// methods (a #included .inc) that call patrolExecuteDartTest:. BEGIN opens the
-// class and shared infra; END closes it. No +testInvocations - XCTest discovers
-// the generated `test_` methods natively (Xcode navigator, -only-testing).
-#define PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN(__test_class)                                                  \
-  @interface __test_class : XCTestCase                                                                                 \
-  @end                                                                                                                 \
-                                                                                                                       \
-  @implementation __test_class                                                                                         \
-                                                                                                                       \
-  static PatrolServer *_patrolStaticServer = nil;                                                                      \
-  static ObjCPatrolAppServiceClient *_patrolStaticClient = nil;                                                        \
-  static int _patrolStaticTestIndex = 0;                                                                               \
-                                                                                                                       \
-  /* XCTest calls +setUp once per class, and the generated per-file classes all                                        \
-   * share one server and one port. */                                                                                 \
-  +(void)setUp {                                                                                                       \
-    [super setUp];                                                                                                     \
-    static dispatch_once_t patrolServerOnce;                                                                           \
-    dispatch_once(&patrolServerOnce, ^{                                                                                \
-      _patrolStaticServer = [[PatrolServer alloc] init];                                                               \
-      NSError *err = nil;                                                                                              \
-      [_patrolStaticServer startAndReturnError:&err];                                                                  \
-      if (err != nil) {                                                                                                \
-        NSLog(@"patrolServer.start(): failed, err: %@", err);                                                          \
-      }                                                                                                                \
-      _patrolStaticClient = [[ObjCPatrolAppServiceClient alloc] initWithPort:_patrolStaticServer.boundAppPort];        \
-                                                                                                                       \
-      XCUIApplication *springboard = [[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"];      \
-      if (springboard.alerts.buttons[@"Allow"].exists) {                                                               \
-        [springboard.alerts.buttons[@"Allow"] tap];                                                                    \
-      }                                                                                                                \
-    });                                                                                                                \
-  }                                                                                                                    \
-                                                                                                                       \
-  +(void)launchPatrolApp {                                                                                             \
-    _patrolStaticServer.appReady = NO;                                                                                 \
-    XCUIApplication *app = [[XCUIApplication alloc] init];                                                             \
-    NSMutableDictionary<NSString *, NSString *> *environment =                                                         \
-        [app.launchEnvironment mutableCopy] ?: [NSMutableDictionary dictionary];                                       \
-    environment[@"PATROL_TEST_SERVER_PORT"] =                                                                          \
-        [NSString stringWithFormat:@"%ld", (long)_patrolStaticServer.boundTestPort];                                   \
-    environment[@"PATROL_APP_SERVER_PORT"] =                                                                           \
-        [NSString stringWithFormat:@"%ld", (long)_patrolStaticServer.boundAppPort];                                    \
-    environment[@"PATROL_HOST_SERVER_PORT"] = NSProcessInfo.processInfo.environment[@"PATROL_HOST_PORT"];              \
-    app.launchEnvironment = environment;                                                                               \
-    [app launch];                                                                                                      \
-  }                                                                                                                    \
-                                                                                                                       \
-  +(void)resetPermissions {                                                                                            \
-    NSLog(@"Clearing permissions");                                                                                    \
-    XCUIApplication *app = [[XCUIApplication alloc] init];                                                             \
-    if (@available(iOS 13.4, *)) {                                                                                     \
-      [app resetAuthorizationStatusForResource:XCUIProtectedResourceLocation];                                         \
-      [app resetAuthorizationStatusForResource:XCUIProtectedResourceContacts];                                         \
-      [app resetAuthorizationStatusForResource:XCUIProtectedResourceCalendar];                                         \
-      [app resetAuthorizationStatusForResource:XCUIProtectedResourceReminders];                                        \
-      [app resetAuthorizationStatusForResource:XCUIProtectedResourcePhotos];                                           \
-      [app resetAuthorizationStatusForResource:XCUIProtectedResourceBluetooth];                                        \
-      [app resetAuthorizationStatusForResource:XCUIProtectedResourceMicrophone];                                       \
-      [app resetAuthorizationStatusForResource:XCUIProtectedResourceCamera];                                           \
-      [app resetAuthorizationStatusForResource:XCUIProtectedResourceHomeKit];                                          \
-      [app resetAuthorizationStatusForResource:XCUIProtectedResourceMediaLibrary];                                     \
-      [app resetAuthorizationStatusForResource:XCUIProtectedResourceKeyboardNetwork];                                  \
-    }                                                                                                                  \
-    if (@available(iOS 14.0, *)) {                                                                                     \
-      [app resetAuthorizationStatusForResource:XCUIProtectedResourceHealth];                                           \
-    }                                                                                                                  \
-    if (@available(iOS 15.0, *)) {                                                                                     \
-      [app resetAuthorizationStatusForResource:XCUIProtectedResourceUserTracking];                                     \
-      [app resetAuthorizationStatusForResource:XCUIProtectedResourceFocus];                                            \
-    }                                                                                                                  \
-    if (@available(iOS 15.4, *)) {                                                                                     \
-      [app resetAuthorizationStatusForResource:XCUIProtectedResourceLocalNetwork];                                     \
-    }                                                                                                                  \
-  }                                                                                                                    \
-                                                                                                                       \
-  +(void)uninstallApp {                                                                                                \
-    XCUIApplication *app = [[XCUIApplication alloc] init];                                                             \
-    NSString *appName = app.label;                                                                                     \
-    NSLog(@"Uninstalling app: %@", appName);                                                                           \
-                                                                                                                       \
-    [app terminate];                                                                                                   \
-                                                                                                                       \
-    XCUIApplication *springboard = [[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"];        \
-                                                                                                                       \
-    /* Go to home screen (springboard) by pressing home button */                                                      \
-    [[XCUIDevice sharedDevice] pressButton:XCUIDeviceButtonHome];                                                      \
-    [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                                 \
-                                                                                                                       \
-    /* Search for app icon on current screen and subsequent screens */                                                 \
-    BOOL appFound = NO;                                                                                                \
-    int maxScreens = 10; /* Maximum number of screens to check */                                                      \
-    int currentScreen = 0;                                                                                             \
-                                                                                                                       \
-    while (!appFound && currentScreen < maxScreens) {                                                                  \
-      NSLog(@"Checking screen %d for app: %@", currentScreen + 1, appName);                                            \
-                                                                                                                       \
-      /* Look for app icon on current screen */                                                                        \
-      XCUIElement *icon = springboard.icons[appName];                                                                  \
-                                                                                                                       \
-      if (icon.exists && icon.isHittable) {                                                                            \
-        NSLog(@"App icon found on screen %d: %@", currentScreen + 1, appName);                                         \
-        appFound = YES;                                                                                                \
-                                                                                                                       \
-        /* Long press on the app icon to bring up context menu */                                                      \
-        NSLog(@"Long pressing on app icon: %@", appName);                                                              \
-        [icon pressForDuration:1.3];                                                                                   \
-        [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:2.0]];                             \
-                                                                                                                       \
-        /* Perform uninstall based on localized strings */                                                             \
-        NSString *removeAppText = [ObjCLocalization getLocalizedStringWithKey:@"remove_app"];                          \
-        XCUIElement *removeAppButton = springboard.buttons[removeAppText];                                             \
-        if (!removeAppButton.exists) {                                                                                 \
-          NSLog(@"'%@' button not found", removeAppText);                                                              \
-          return;                                                                                                      \
-        }                                                                                                              \
-                                                                                                                       \
-        [removeAppButton tap];                                                                                         \
-                                                                                                                       \
-        NSString *deleteAppText = [ObjCLocalization getLocalizedStringWithKey:@"delete_app"];                          \
-        XCUIElement *deleteAppButton = springboard.alerts.buttons[deleteAppText];                                      \
-        if (deleteAppButton.exists) {                                                                                  \
-          [deleteAppButton tap];                                                                                       \
-          while (deleteAppButton.exists) {                                                                             \
-            [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];                         \
-          }                                                                                                            \
-        }                                                                                                              \
-                                                                                                                       \
-        NSString *deleteText = [ObjCLocalization getLocalizedStringWithKey:@"delete"];                                 \
-        XCUIElement *deleteButton = springboard.alerts.buttons[deleteText];                                            \
-        if (deleteButton.exists) {                                                                                     \
-          [deleteButton tap];                                                                                          \
-          while (deleteButton.exists) {                                                                                \
-            [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];                         \
-          }                                                                                                            \
-        }                                                                                                              \
-                                                                                                                       \
-        NSLog(@"App uninstallation completed");                                                                        \
-        return;                                                                                                        \
-      }                                                                                                                \
-                                                                                                                       \
-      currentScreen++;                                                                                                 \
-                                                                                                                       \
-      /* If app not found on current screen, swipe right to next screen */                                             \
-      if (currentScreen < maxScreens) {                                                                                \
-        NSLog(@"App not found on screen %d, swiping right to next screen", currentScreen);                             \
-        XCUICoordinate *startCoordinate = [springboard coordinateWithNormalizedOffset:CGVectorMake(0.8, 0.5)];         \
-        XCUICoordinate *endCoordinate = [springboard coordinateWithNormalizedOffset:CGVectorMake(0.2, 0.5)];           \
-        [startCoordinate pressForDuration:0.0                                                                          \
-                     thenDragToCoordinate:endCoordinate                                                                \
-                             withVelocity:XCUIGestureVelocityFast                                                      \
-                      thenHoldForDuration:0.0];                                                                        \
-        [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                             \
-      }                                                                                                                \
-    }                                                                                                                  \
-                                                                                                                       \
-    if (!appFound) {                                                                                                   \
-      NSLog(@"App icon not found on any home screen: %@", appName);                                                    \
-    }                                                                                                                  \
-  }                                                                                                                    \
-                                                                                                                       \
-  -(void)patrolExecuteDartTest : (NSString *)dartTestName skip : (BOOL)skip {                                          \
-    NSLog(@"RunnerUITests running Dart test: %@", dartTestName);                                                       \
-    if (CLEAR_PERMISSIONS && _patrolStaticTestIndex > 0) {                                                             \
-      [[self class] resetPermissions];                                                                                 \
-      NSLog(@"App permissions cleared");                                                                               \
-    }                                                                                                                  \
-    if (FULL_ISOLATION && _patrolStaticTestIndex > 0) {                                                                \
-      NSLog(@"Uninstalling app");                                                                                      \
-      [[self class] uninstallApp];                                                                                     \
-      NSLog(@"App uninstallation completed, launching fresh app instance");                                            \
-    }                                                                                                                  \
-    _patrolStaticTestIndex++;                                                                                          \
-                                                                                                                       \
-    [[self class] launchPatrolApp];                                                                                    \
-    if (skip) {                                                                                                        \
-      XCTSkip(@"Skip that test \"%@\"", dartTestName);                                                                 \
-    }                                                                                                                  \
-                                                                                                                       \
-    NSDate *_patrolReadyDeadline = [NSDate dateWithTimeIntervalSinceNow:180.0];                                        \
-    while (!_patrolStaticServer.appReady) {                                                                            \
-      if ([[NSDate date] compare:_patrolReadyDeadline] == NSOrderedDescending) {                                       \
-        XCTFail(@"App did not report PatrolAppService readiness on port %ld", (long)_patrolStaticServer.boundAppPort); \
-        return;                                                                                                        \
-      }                                                                                                                \
-      [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                               \
-    }                                                                                                                  \
-                                                                                                                       \
-    __block ObjCRunDartTestResponse *response = NULL;                                                                  \
-    __block NSError *error;                                                                                            \
-    [_patrolStaticClient runDartTestWithName:dartTestName                                                              \
-                                  completion:^(ObjCRunDartTestResponse *_Nullable r, NSError *_Nullable e) {           \
-                                    if (e != NULL) {                                                                   \
-                                      error = e;                                                                       \
-                                    } else {                                                                           \
-                                      response = r;                                                                    \
-                                    }                                                                                  \
-                                  }];                                                                                  \
-                                                                                                                       \
-    while (!response && !error) {                                                                                      \
-      [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                               \
-    }                                                                                                                  \
-    BOOL passed = response ? response.passed : NO;                                                                     \
-    NSString *details = response ? response.details : @"(no details - app likely crashed)";                            \
-    if (response && response.skipped) {                                                                                \
-      XCTSkip(@"%@", details);                                                                                         \
-    }                                                                                                                  \
-    XCTAssertTrue(passed, @"%@", details);                                                                             \
-  }
-
-#define PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_END @end
-
-// Base class for the generated per-file test classes: shared infrastructure, no
-// tests of its own. The generated `.inc` is included AFTER it and declares one
-// XCTestCase subclass per Dart test file, so reports group by file.
-#define PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE(__test_class) \
-  PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN(__test_class)      \
-  PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_END
+// Deprecated: the runner above handles build-time discovery too. Kept so that
+// RunnerUITests.m files set up for build-time discovery in Patrol 4.x still compile.
+#define PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE(__test_class) PATROL_INTEGRATION_TEST_IOS_RUNNER(__test_class)

@@ -291,6 +291,21 @@ void main() {
       },
     );
 
+    test('uses runtime discovery by default', () async {
+      final built = Completer<AndroidAppOptions>();
+      when(() => androidTestBackend.build(any())).thenAnswer((
+        invocation,
+      ) async {
+        built.complete(
+          invocation.positionalArguments.first as AndroidAppOptions,
+        );
+      });
+
+      unawaited(buildService().run(options).catchError((Object _) {}));
+
+      expect((await built.future).emitTestManifest, isFalse);
+    });
+
     /// Makes the pubspec report `patrol.emit_test_manifest: true`.
     void enableManifestInPubspec() {
       when(pubspecReader.read).thenReturn(

@@ -207,7 +207,7 @@ abstract class PatrolCommand extends Command<int> {
       );
   }
 
-  /// Registers the experimental `--emit-test-manifest` flag, shared by the iOS
+  /// Registers the `--emit-test-manifest` flag, shared by the iOS
   /// and Android build/test paths.
   ///
   /// Declared with a null default (via [optionalBoolArg]) so that "flag not
@@ -218,11 +218,12 @@ abstract class PatrolCommand extends Command<int> {
     argParser.addFlag(
       'emit-test-manifest',
       help:
-          'Experimental: discover Dart tests at build time (host `flutter '
-          'test`) and generate static native test methods, so each Dart test '
-          'becomes an individually-selectable native test and the runtime '
-          'discovery launch is skipped. Defaults to the '
-          '`patrol.emit_test_manifest` value in pubspec.yaml.',
+          'Discover Dart tests at build time (host `flutter test`) and '
+          'generate static native test methods, so each Dart test becomes an '
+          'individually-selectable native test and the runtime discovery '
+          'launch is skipped. Defaults to the `patrol.emit_test_manifest` value '
+          'in pubspec.yaml, or on when unset (off for `patrol develop`). Pass '
+          '--no-emit-test-manifest to use runtime discovery.',
       defaultsTo: null,
     );
   }

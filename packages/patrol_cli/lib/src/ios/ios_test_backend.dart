@@ -100,21 +100,14 @@ class IOSTestBackend {
         );
       }
 
-      // Build-time test discovery (experimental, opt-in). Runs a host
-      // `flutter test` in discovery mode that writes a manifest of the Dart
-      // test tree. Failures are non-fatal: the native side falls back to
-      // runtime discovery when the manifest is absent.
-      // Always start from a clean slate: drop any previously generated .inc so a
-      // stale one can't be #included and silently run old tests. On discovery
-      // failure the file stays absent, so the static #include fails loudly
-      // instead of compiling stale tests.
-      final generatedInc = _generatedIncFile;
-      if (generatedInc.existsSync()) {
-        generatedInc.deleteSync();
+      // Reset on every build, so a stale .inc never runs old tests.
+      _resetGeneratedInc();
+      if (_discoveryModeFile.existsSync()) {
+        _discoveryModeFile.deleteSync();
       }
+      _verifyRunnerSetup(emitTestManifest: options.emitTestManifest);
 
       if (options.emitTestManifest) {
-        _verifyStaticRunnerSetup();
         final manifestPath = await TestManifestGenerator(
           processManager: _processManager,
           rootDirectory: _rootDirectory,
@@ -122,13 +115,11 @@ class IOSTestBackend {
         ).generate(options.flutter, scope, targetPlatform: TargetPlatform.iOS);
         if (manifestPath == null) {
           throwToolExit(
-            'Build-time test discovery failed; fix the errors above or disable '
-            'emit_test_manifest.',
+            'Build-time test discovery failed; fix the errors above, or pass '
+            '--no-emit-test-manifest to use runtime discovery.',
           );
         }
         _generateXcodeTests(manifestPath);
-      } else {
-        _verifyRuntimeRunnerSetup();
       }
 
       // flutter build ios --config-only
@@ -171,6 +162,11 @@ class IOSTestBackend {
       exitCode = await process.exitCode;
       if (exitCode == 0) {
         task.complete('Completed building $subject');
+        _discoveryModeFile
+          ..createSync(recursive: true)
+          ..writeAsStringSync(
+            options.emitTestManifest ? _buildTimeMode : _runtimeMode,
+          );
       } else if (exitCode == _xcodebuildInterrupted) {
         const cause = 'xcodebuild was interrupted';
         task.fail('Failed to execute tests of $subject ($cause)');
@@ -199,97 +195,83 @@ class IOSTestBackend {
     });
   }
 
-  /// Fails fast when build-time discovery is enabled but the iOS UITest runner
-  /// hasn't been switched to the static form. The generated
-  /// `PatrolGeneratedTests.inc` is only compiled in when `RunnerUITests.m` uses
-  /// the STATIC macro and `#include`s that file; otherwise the build would
-  /// silently fall back to runtime discovery, which is confusing.
-  void _verifyStaticRunnerSetup() {
+  /// Why this project can't use build-time discovery on iOS, or null when it
+  /// can: `RunnerUITests.m` has to `#include` the generated tests. Patrol never
+  /// edits the file; the caller warns or fails with the lines to add.
+  String? discoverySetupProblem() {
     final runner = _runnerFile;
-    // Missing target is surfaced by the regular xcodebuild step; nothing to
-    // guard here.
+    // A missing target is reported by xcodebuild.
+    if (!runner.existsSync() ||
+        includesGeneratedTests(runner.readAsStringSync())) {
+      return null;
+    }
+    return "${runner.path} doesn't include the generated tests. Add these lines "
+        'right after PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerUITests):\n'
+        '\n'
+        '${_indented(_generatedIncInclude)}\n'
+        '\n'
+        'See $_discoveryDocsUrl';
+  }
+
+  /// Stops a build that would fail to compile or silently skip the generated
+  /// tests.
+  void _verifyRunnerSetup({required bool emitTestManifest}) {
+    final runner = _runnerFile;
     if (!runner.existsSync()) {
       return;
     }
 
-    if (_usesLegacyStaticRunner(runner)) {
+    if (_removedStaticMacro.hasMatch(runner.readAsStringSync())) {
       throwToolExit(
-        '${runner.path} #includes PatrolGeneratedTests.inc between the '
-        'PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN and _END macros. The '
-        'generated file now declares whole test classes and cannot be compiled '
-        'inside another class. Replace the macros with:\n'
+        '${runner.path} uses the PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN '
+        'and _END macros, which were removed in Patrol 5.0. Replace them with:\n'
         '\n'
-        '  PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE(RunnerUITests)\n'
-        '  #include "PatrolGeneratedTests.inc"\n'
+        '${_indented('PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerUITests)\n$_generatedIncInclude')}\n'
         '\n'
-        'See https://patrol.leancode.co/documentation/ci/build-time-test-discovery',
+        'See $_discoveryDocsUrl',
       );
     }
 
-    if (_usesStaticRunner(runner)) {
-      return;
+    if (emitTestManifest) {
+      final problem = discoverySetupProblem();
+      if (problem != null) {
+        throwToolExit(
+          'Build-time test discovery is on, but $problem\n'
+          'Or pass --no-emit-test-manifest to use runtime discovery.',
+        );
+      }
     }
-
-    throwToolExit(
-      "Build-time test discovery is enabled, but ${runner.path} isn't set up "
-      'for it. Replace the PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerUITests) '
-      'macro with the static form:\n'
-      '\n'
-      '  PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE(RunnerUITests)\n'
-      '  #include "PatrolGeneratedTests.inc"\n'
-      '\n'
-      'See https://patrol.leancode.co/documentation/ci/build-time-test-discovery',
-    );
   }
 
-  /// Fails fast when the runner is static but discovery is off: nobody
-  /// generates `PatrolGeneratedTests.inc` then, so the build would die on a bare
-  /// `'PatrolGeneratedTests.inc' file not found`.
-  void _verifyRuntimeRunnerSetup() {
-    final runner = _runnerFile;
-    if (!runner.existsSync() || !_usesStaticRunner(runner)) {
-      return;
-    }
+  static const _generatedIncName = 'PatrolGeneratedTests.inc';
 
-    throwToolExit(
-      '${runner.path} uses the static (build-time discovery) runner, but '
-      'build-time discovery is disabled, so PatrolGeneratedTests.inc is never '
-      'generated and the build cannot compile.\n'
-      '\n'
-      'Either enable discovery (patrol.emit_test_manifest: true in '
-      'pubspec.yaml, or --emit-test-manifest), or go back to runtime discovery '
-      'by restoring the PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerUITests) '
-      'macro.\n'
-      '\n'
-      'See https://patrol.leancode.co/documentation/ci/build-time-test-discovery',
-    );
-  }
+  static const _discoveryDocsUrl =
+      'https://patrol.leancode.co/documentation/ci/build-time-test-discovery';
+
+  static const _generatedIncInclude =
+      '#if __has_include("$_generatedIncName")\n'
+      '#include "$_generatedIncName"\n'
+      '#endif';
+
+  static final _removedStaticMacro = RegExp(
+    r'^[ \t]*PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN\b',
+    multiLine: true,
+  );
+
+  static String _indented(String lines) =>
+      lines.split('\n').map((l) => '  $l').join('\n');
+
+  /// Whether [runnerSource] pulls in `PatrolGeneratedTests.inc`.
+  @visibleForTesting
+  static bool includesGeneratedTests(String runnerSource) => RegExp(
+    '^[ \\t]*#[ \\t]*(?:include|import)[ \\t]*[<"]$_generatedIncName[>"]',
+    multiLine: true,
+  ).hasMatch(runnerSource);
 
   File get _runnerFile => _rootDirectory
       .childDirectory('ios')
       .childDirectory('RunnerUITests')
       .childFile('RunnerUITests.m');
-
-  /// Whether [runner] is set up for build-time discovery: a static macro plus
-  /// the `#include` that pulls in the generated tests.
-  bool _usesStaticRunner(File runner) {
-    final contents = runner.readAsStringSync();
-    return contents.contains('PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC') &&
-        contents.contains('#include "PatrolGeneratedTests.inc"');
-  }
-
-  /// Whether [runner] still has the 4.7.0 static form, with the `#include`
-  /// between the STATIC_BEGIN/STATIC_END macros instead of after STATIC_BASE.
-  bool _usesLegacyStaticRunner(File runner) {
-    final contents = runner.readAsStringSync();
-    final includeIndex = contents.indexOf(
-      '#include "PatrolGeneratedTests.inc"',
-    );
-    final endIndex = contents.indexOf(
-      'PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_END',
-    );
-    return includeIndex != -1 && endIndex != -1 && includeIndex < endIndex;
-  }
 
   /// Maps requested [onlyTests] entries to the generated XCTest selectors below
   /// the target, using the build-time manifest: a Dart test name becomes
@@ -301,12 +283,14 @@ class IOSTestBackend {
     if (onlyTests.isEmpty) {
       return const [];
     }
-    final manifest = TestManifest.loadFromBuild(_rootDirectory);
+    final manifest = hasGeneratedTests
+        ? TestManifest.loadFromBuild(_rootDirectory)
+        : null;
     if (manifest == null) {
       throwToolExit(
-        'No build-time test manifest found. Run `patrol build ios '
-        '--emit-test-manifest` (or set patrol.emit_test_manifest in pubspec) '
-        'before `patrol test-without-building`.',
+        'The app was built with runtime test discovery, so --only has no '
+        'generated tests to select. Run `patrol build ios` without '
+        '--no-emit-test-manifest before `patrol test-without-building`.',
       );
     }
     final tests = manifest.tests;
@@ -332,11 +316,11 @@ class IOSTestBackend {
 
   /// Every generated class, as an `-only-testing` selector, so a run restricted
   /// to Patrol's own tests stays restricted: the generated tests live in per-file
-  /// subclasses now, and selecting the base class would select nothing. Empty for
-  /// the runtime runner (whose tests are all in one class) and when the manifest
-  /// is missing, in which case the whole target runs.
+  /// subclasses, and selecting the base class would select nothing. Empty with
+  /// runtime discovery (whose tests are all in the base class) and when the
+  /// manifest is missing, in which case the whole target runs.
   List<String> _generatedClassSelectors() {
-    if (!_runnerFile.existsSync() || !_usesStaticRunner(_runnerFile)) {
+    if (!hasGeneratedTests) {
       return const [];
     }
     final manifest = TestManifest.loadFromBuild(_rootDirectory);
@@ -352,12 +336,61 @@ class IOSTestBackend {
   File get _generatedIncFile => _rootDirectory
       .childDirectory('ios')
       .childDirectory('RunnerUITests')
-      .childFile('PatrolGeneratedTests.inc');
+      .childFile(_generatedIncName);
+
+  static const _buildTimeMode = 'build-time';
+  static const _runtimeMode = 'runtime';
+
+  /// The discovery mode of the last build, stored with its artifacts, so a run
+  /// on another machine that only gets `build/` still knows it.
+  File get _discoveryModeFile => _rootDirectory
+      .childDirectory('build')
+      .childDirectory('ios_integ')
+      .childFile('patrol_test_discovery_mode');
+
+  /// Whether the last build generated test classes, i.e. ran with build-time
+  /// discovery.
+  @visibleForTesting
+  bool get hasGeneratedTests {
+    final mode = _discoveryModeFile;
+    if (mode.existsSync()) {
+      return mode.readAsStringSync().trim() == _buildTimeMode;
+    }
+    // Built by a patrol_cli that didn't record the mode.
+    final inc = _generatedIncFile;
+    return inc.existsSync() && inc.readAsStringSync().contains('@interface ');
+  }
+
+  static const _runtimeDiscoveryInc =
+      '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
+      '// Built with runtime test discovery: no generated tests.\n';
+
+  /// Leaves a `PatrolGeneratedTests.inc` that declares no tests when the runner
+  /// includes it (an unguarded `#include` needs the file to compile), and no
+  /// file otherwise.
+  void _resetGeneratedInc() {
+    final inc = _generatedIncFile;
+    final runner = _runnerFile;
+    if (!runner.existsSync() ||
+        !includesGeneratedTests(runner.readAsStringSync())) {
+      if (inc.existsSync()) {
+        inc.deleteSync();
+      }
+      return;
+    }
+    // An unchanged file keeps its mtime, so Xcode doesn't rebuild the target.
+    if (inc.existsSync() && inc.readAsStringSync() == _runtimeDiscoveryInc) {
+      return;
+    }
+    inc
+      ..createSync(recursive: true)
+      ..writeAsStringSync(_runtimeDiscoveryInc);
+  }
 
   /// Generates static XCTest methods from the manifest into the RunnerUITests
-  /// target. The file is `#included` by RunnerUITests.m (between the
-  /// PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN/END macros), so it compiles
-  /// as part of the test target - no project.pbxproj surgery needed.
+  /// target. The file is `#included` by RunnerUITests.m right after the runner
+  /// macro, so it compiles as part of the test target with no project.pbxproj
+  /// changes.
   ///
   /// Because the tests are now real, statically-discoverable XCTest methods,
   /// each can be selected individually with
@@ -401,7 +434,10 @@ class IOSTestBackend {
     void Function(String url)? onVmServiceUrl,
     VideoRecordingConfig? videoConfig,
   }) async {
-    final onlyTesting = onlyTests.isNotEmpty
+    // A develop session runs in the base runner class, whatever the mode.
+    final onlyTesting = interruptible
+        ? const <String>[]
+        : onlyTests.isNotEmpty
         ? _resolveOnlyTesting(onlyTests)
         : _generatedClassSelectors();
     await _disposeScope.run((scope) async {
@@ -496,8 +532,7 @@ class IOSTestBackend {
                 ),
                 resultBundlePath: reportPath,
                 onlyTesting: onlyTesting,
-                staticRunner:
-                    _runnerFile.existsSync() && _usesStaticRunner(_runnerFile),
+                staticRunner: !interruptible && hasGeneratedTests,
               ),
               runInShell: true,
               environment: {

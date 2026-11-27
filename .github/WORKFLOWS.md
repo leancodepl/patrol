@@ -31,6 +31,7 @@ This document describes all GitHub Actions workflows used in the Patrol project.
 | [test web][test-web] | No | Flutter 3.44.x (stable) | — | Runs web-specific E2E tests on Chrome in headless mode. Triggers on PR for web-related changes. Uses target file instead of tags. |
 | [test macos][test-macos] | PR, daily at 00:00 UTC | Flutter 3.44.x (stable) | — | Runs E2E tests on macOS desktop platform. Triggers on PR for changes to packages, e2e_app, and schema (excludes docs). Runs tests from `patrol_test/macos` directory. Uses xcresultparser to generate JUnit reports and converts them to CTRF format for test reporting. |
 | [test patrol develop][test-patrol-develop] | PR (opened/synchronize on package, e2e_app, and schema changes; excludes docs), manual | Flutter 3.44.x (stable) | — | Tests `patrol develop` command on Linux (Android emulator, API 34) and macOS (iOS simulator: iPhone 17 on iOS 26.2). The macOS job pins simulator runtime and passes `--ios 26.2` to `patrol_develop_test.dart` to keep xcode destination selection deterministic. Timeout: 30 minutes per job. |
+| [test discovery modes][test-discovery-modes] | PR (on package and e2e_app changes; excludes docs), manual | Flutter 3.44.x (stable) | none | Runs two e2e test files on an Android emulator and an iOS simulator with build-time test discovery (the default), checks the generated per-file test classes, runs one file with `patrol test-without-building --only`, then runs the same tests with runtime discovery: `--no-emit-test-manifest` on Android, and on iOS a pre-5.0 `RunnerUITests.m` that must fall back to runtime discovery with a warning, without the file being edited. |
 
 ## Package Preparation (CI) Workflows
 
@@ -172,6 +173,7 @@ A test is selected if it matches ALL conditions in the boolean expression (AND o
 [test-web]: workflows/test-web.yaml
 [test-macos]: workflows/test-macos.yaml
 [test-patrol-develop]: workflows/test-patrol-develop.yaml
+[test-discovery-modes]: workflows/test-build-time-discovery.yaml
 [patrol-prepare]: workflows/patrol-prepare.yaml
 [patrol_cli-prepare]: workflows/patrol_cli-prepare.yaml
 [patrol_finders-prepare]: workflows/patrol_finders-prepare.yaml

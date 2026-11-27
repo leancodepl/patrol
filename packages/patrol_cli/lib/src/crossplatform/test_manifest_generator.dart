@@ -1,5 +1,6 @@
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
+import 'package:meta/meta.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
@@ -30,9 +31,7 @@ class TestManifestGenerator {
   /// path to the generated manifest, or `null` if discovery failed.
   ///
   /// A `null` result is terminal for the callers: both the iOS and the Android
-  /// backend abort the build, because once discovery is opted into there is no
-  /// usable runtime-discovery path left (the iOS static runner has no
-  /// `+testInvocations`).
+  /// backend abort the build instead of silently using runtime discovery.
   Future<String?> generate(
     FlutterAppOptions flutter,
     DisposeScope scope, {
@@ -58,21 +57,43 @@ class TestManifestGenerator {
             workingDirectory: _rootDirectory.path,
           )
           ..disposedBy(scope);
-    process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
-    process.listenStdErr((l) => _logger.detail('\t$l')).disposedBy(scope);
+    final output = <String>[];
+    void onLine(String line) {
+      output.add(line);
+      _logger.detail('\t$line');
+    }
+
+    process.listenStdOut(onLine).disposedBy(scope);
+    process.listenStdErr(onLine).disposedBy(scope);
     final exitCode = await process.exitCode;
 
     if (exitCode != 0 || !manifestFile.existsSync()) {
-      task.fail(
-        'Build-time test discovery failed (exit code $exitCode); see the '
-        'output above (run with --verbose for the full host `flutter test` log)',
-      );
+      task.fail('Build-time test discovery failed (exit code $exitCode)');
+      if (_logger.level != Level.verbose) {
+        for (final line in failureExcerpt(output)) {
+          _logger.err('\t$line');
+        }
+        _logger.err('Run with --verbose for the full host `flutter test` log.');
+      }
       return null;
     }
 
     task.complete('Discovered Dart tests → ${manifestFile.path}');
     _reportDiscoveredTests(manifestFile, flutter);
     return manifestFile.absolute.path;
+  }
+
+  /// The part of the host `flutter test` [output] that explains a failure:
+  /// from the first error on, or the last lines when no error is marked.
+  @visibleForTesting
+  static List<String> failureExcerpt(List<String> output, {int maxLines = 40}) {
+    final firstError = output.indexWhere(
+      (line) => line.contains('[E]') || line.contains('Error: '),
+    );
+    final start = firstError == -1
+        ? (output.length - maxLines).clamp(0, output.length)
+        : firstError;
+    return output.skip(start).take(maxLines).toList();
   }
 
   /// Prints a human-readable summary of the discovered tests on the visible

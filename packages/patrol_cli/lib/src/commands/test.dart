@@ -11,6 +11,7 @@ import 'package:patrol_cli/src/coverage/coverage_mode.dart';
 import 'package:patrol_cli/src/coverage/coverage_tool.dart';
 import 'package:patrol_cli/src/coverage/web_coverage_tool.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
+import 'package:patrol_cli/src/crossplatform/test_discovery_mode.dart';
 import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
@@ -174,8 +175,16 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     final device = devices.single;
     final isWeb = device.targetPlatform == TargetPlatform.web;
 
-    final emitTestManifest =
-        optionalBoolArg('emit-test-manifest') ?? config.emitTestManifest;
+    final emitTestManifest = resolveEmitTestManifest(
+      targetPlatform: device.targetPlatform,
+      flag: optionalBoolArg('emit-test-manifest'),
+      pubspecValue: config.emitTestManifest,
+      testDirectory: config.projectTestDirectory,
+      logger: _logger,
+      setupProblem: device.targetPlatform == TargetPlatform.iOS
+          ? _iosTestBackend.discoverySetupProblem()
+          : null,
+    );
 
     // Validate that flavors are not used with web platform
     if (isWeb && stringArg('flavor') != null) {

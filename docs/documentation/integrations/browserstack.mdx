@@ -186,7 +186,7 @@ Generate the identifiers from the `.inc` the build wrote, so they stay
 byte-identical to what XCTest discovers, and distribute them round-robin:
 
 ```bash
-# After `patrol build ios` with emit_test_manifest enabled.
+# After `patrol build ios` with build-time test discovery (the default).
 ids=$(awk '/^@implementation /{cls=$2} /^- \(void\)test_/{m=$2; sub(/^\(void\)/,"",m); \
   print "RunnerUITests/" cls "/" m}' ios/RunnerUITests/PatrolGeneratedTests.inc)
 

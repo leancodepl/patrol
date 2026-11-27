@@ -49,6 +49,18 @@
 - **BREAKING CHANGE**
   - Remove `--tags` from `patrol develop`. It was accepted but never applied, so a session ran
     every test in the file. (#3382)
+  - Build-time test discovery is now the default for `patrol test` and `patrol build` on Android and
+    iOS, so native test names change to `PatrolGeneratedTests_<file>/test_<name>`. Pass
+    `--no-emit-test-manifest` or set `patrol.emit_test_manifest: false` to keep runtime discovery.
+    `patrol develop` keeps runtime discovery unless asked. See `migration5.md`.
+  - Tests under `integration_test/` fall back to runtime discovery with a warning, and an explicit
+    `--emit-test-manifest` there fails the build.
+  - On iOS, a `RunnerUITests.m` without the `#include` of the generated tests keeps runtime
+    discovery with a warning that shows the lines to add (an explicit opt-in fails instead). The removed
+    `PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN`/`_END` macros are reported with the
+    replacement. Requires `patrol` 5.0.
+- Show why build-time discovery failed (the failing part of the host `flutter test` output) without
+  `--verbose`.
 
 ## 4.10.0
 
