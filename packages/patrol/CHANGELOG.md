@@ -20,6 +20,7 @@
 - **Breaking:** `Selector.instance` now works on iOS: `tap`, `doubleTap`, `enterText` and
   `waitUntilVisible` target the n-th match instead of always the first. On iOS and macOS,
   `waitUntilVisible` with `instance` now fails when there are fewer matches, instead of passing.
+  (#3445)
 - Add `$.entrypointArgs` with the Dart entrypoint arguments the native side of the app passes to
   the test bundle (`dartEntrypointArgs` on Android, `entrypointArgs` on iOS and macOS). Needs a
   `patrol_cli` release that includes this change. (#3366)
