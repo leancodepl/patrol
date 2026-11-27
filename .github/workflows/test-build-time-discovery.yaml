@@ -108,7 +108,7 @@ jobs:
       - name: Verify the generated classes
         working-directory: dev/e2e_app
         run: |
-          generated_dir=android/app/src/androidTest/java/pl/leancode/patrol/e2e_app
+          generated_dir=android/patrolTest/src/main/java/pl/leancode/patrol/e2e_app/patrol_test
           echo "Generated files:"
           ls "$generated_dir"
 

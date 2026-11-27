@@ -53,8 +53,8 @@ class IOSAutomatorConfig extends MobileAutomatorConfig {
     void Function(String)? logger,
   }) {
     return IOSAutomatorConfig(
-      host: host ?? this.host,
-      port: port ?? this.port,
+      host: host ?? hostOverride,
+      port: port ?? portOverride,
       appName: appName ?? this.appName,
       connectionTimeout: connectionTimeout ?? this.connectionTimeout,
       findTimeout: findTimeout ?? this.findTimeout,

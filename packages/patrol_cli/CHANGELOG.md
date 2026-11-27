@@ -2,6 +2,11 @@
 
 - Experimental `patrol test` support for Windows desktop (build + out-of-process
   automator sidecar). `patrol develop` on Windows is not supported yet. (#3183)
+- Detect and support both Android test layouts: the self-instrumenting
+  `:patrolTest` module and the in-app `:app` androidTest source set. The generated
+  test bundle resolves the Android native-server host before
+  `PatrolBinding.ensureInitialized` (`resolveNativeServerHost` with `initialize`,
+  then `ensureLoaded` after the explorer). (#3280)
 - Fix the generated test bundle dropping the Dart entrypoint arguments passed by the native side of
   the app: `main` now takes them and passes them to tests as `$.entrypointArgs`. Needs a `patrol`
   release that includes this change. (#3366)

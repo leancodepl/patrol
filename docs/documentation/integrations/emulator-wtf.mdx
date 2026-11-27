@@ -19,10 +19,13 @@ patrol build android
 ```bash
 ew-cli \
   --app build/app/outputs/apk/debug/app-debug.apk \
-  --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+  --test build/patrolTest/outputs/apk/debug/patrolTest-debug.apk \
   --device model=Pixel7,version=34 \
   --use-orchestrator
 ```
+
+With the older in-app `androidTest` layout, use
+`build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk` instead.
 
 Credentials come from `--token` or the `EW_API_TOKEN` env var. See the
 [ew-cli docs][ew-cli] for devices, sharding and outputs.
@@ -33,6 +36,11 @@ Patrol can collect Dart line coverage on emulator.wtf the same way it does on
 [BrowserStack][bs coverage]: the app embeds it into the JaCoCo `.ec` files
 emulator.wtf already collects, and `patrol coverage pull` turns them into a
 `patrol_lcov.info`.
+
+<Warning>
+  Dart coverage needs the **in-app** `androidTest` layout. The self-instrumenting
+  [`:patrolTest`](/documentation#android-setup) runner rejects `coverage=true`.
+</Warning>
 
 <Steps>
   <Step>
@@ -79,6 +87,9 @@ emulator.wtf already collects, and `patrol coverage pull` turns them into a
       --outputs coverage \
       --outputs-dir ew-out
     ```
+
+    Coverage runs must use the in-app `androidTest` APK path above, not
+    `:patrolTest`.
 
     With the orchestrator, emulator.wtf downloads one `.ec` file per test into
     `ew-out`; without it, one per shard.

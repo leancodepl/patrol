@@ -30,7 +30,7 @@ class MacOSAutomatorConfig extends MobileAutomatorConfig {
   /// dart-defines.
   factory MacOSAutomatorConfig.fromIOSTransport(IOSAutomatorConfig ios) {
     return MacOSAutomatorConfig(
-      host: ios.host,
+      host: ios.hostOverride,
       port: ios.portOverride,
       connectionTimeout: ios.connectionTimeout,
       findTimeout: ios.findTimeout,
@@ -56,8 +56,8 @@ class MacOSAutomatorConfig extends MobileAutomatorConfig {
     void Function(String)? logger,
   }) {
     return MacOSAutomatorConfig(
-      host: host ?? this.host,
-      port: port ?? this.port,
+      host: host ?? hostOverride,
+      port: port ?? portOverride,
       bundleId: bundleId ?? this.bundleId,
       appName: appName ?? this.appName,
       connectionTimeout: connectionTimeout ?? this.connectionTimeout,

@@ -23,4 +23,8 @@ plugins {
     id("org.jetbrains.kotlin.android") version "2.3.20" apply false
 }
 
-include(":app")
+include(":app", ":patrolTest")
+
+include(":patrol_android_test")
+project(":patrol_android_test").projectDir =
+    project(":patrol").projectDir.resolve("../android_test")

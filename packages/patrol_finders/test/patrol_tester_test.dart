@@ -1301,6 +1301,92 @@ void main() {
       });
     });
 
+    group('pumpWidget()', () {
+      patrolWidgetTest('advances the clock by the named duration', ($) async {
+        final start = $.tester.binding.clock.now();
+
+        await $.pumpWidget(
+          const MaterialApp(home: Text('idle')),
+          duration: const Duration(seconds: 1),
+        );
+
+        final elapsed = $.tester.binding.clock.now().difference(start);
+        expect(elapsed, const Duration(seconds: 1));
+        expect($('idle'), findsOneWidget);
+      });
+
+      patrolWidgetTest('pumps a widget that has its own View', ($) async {
+        await $.pumpWidget(
+          View(
+            view: $.tester.view,
+            child: const MaterialApp(home: Text('own view')),
+          ),
+          wrapWithView: false,
+        );
+
+        expect($('own view'), findsOneWidget);
+      });
+    });
+
+    group('pumpWidgetAndSettle()', () {
+      Widget fadingInApp({Key? key}) {
+        return MaterialApp(
+          key: key,
+          home: TweenAnimationBuilder<double>(
+            tween: Tween(begin: 0, end: 1),
+            duration: const Duration(seconds: 1),
+            builder: (context, value, child) =>
+                Opacity(opacity: value, child: const Text('fading in')),
+          ),
+        );
+      }
+
+      patrolWidgetTest('returns 1 when nothing is scheduled', ($) async {
+        final frames = await $.pumpWidgetAndSettle(
+          const MaterialApp(home: Text('idle')),
+        );
+
+        expect(frames, 1);
+      });
+
+      patrolWidgetTest(
+        'returns the frame count of WidgetTester.pumpAndSettle after pumpWidget',
+        ($) async {
+          final patrolCount = await $.pumpWidgetAndSettle(
+            fadingInApp(key: UniqueKey()),
+          );
+
+          await $.tester.pumpWidget(fadingInApp(key: UniqueKey()));
+          final flutterCount = await $.tester.pumpAndSettle();
+
+          expect(patrolCount, greaterThan(1));
+          expect(patrolCount, flutterCount);
+        },
+      );
+
+      patrolWidgetTest('throws after timeout when it never settles', ($) async {
+        final start = $.tester.binding.clock.now();
+
+        await expectLater(
+          () => $.pumpWidgetAndSettle(
+            const MaterialApp(home: CircularProgressIndicator()),
+            timeout: const Duration(seconds: 2),
+          ),
+          throwsA(
+            isA<FlutterError>().having(
+              (err) => err.message,
+              'message',
+              'pumpAndSettle timed out',
+            ),
+          ),
+        );
+
+        final elapsed = $.tester.binding.clock.now().difference(start);
+        expect(elapsed, greaterThanOrEqualTo(const Duration(seconds: 2)));
+        expect(elapsed, lessThan(const Duration(seconds: 10)));
+      });
+    });
+
     group('pumpAndSettle()', () {
       Widget fadingApp() {
         var visible = true;

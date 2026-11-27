@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:fake_async/fake_async.dart';
 import 'package:file/memory.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:patrol_cli/src/android/android_test_layout.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/commands/develop_options.dart';
 import 'package:patrol_cli/src/commands/develop_service.dart';
@@ -71,6 +72,7 @@ void main() {
           appServerPort: 8080,
           testServerPort: 8081,
           uninstall: false,
+          testLayout: AndroidTestLayout.selfInstrumenting,
         ),
       );
       registerFallbackValue(
@@ -108,6 +110,9 @@ void main() {
       compatibilityChecker = MockCompatibilityChecker();
       pubspecReader = MockPubspecReader();
       androidTestBackend = MockAndroidTestBackend();
+      when(
+        () => androidTestBackend.detectTestLayout(),
+      ).thenReturn(AndroidTestLayout.selfInstrumenting);
       iosTestBackend = MockIOSTestBackend();
       macosTestBackend = MockMacOSTestBackend();
       webTestBackend = MockWebTestBackend();
@@ -874,7 +879,7 @@ void main() {
         await onQuit!();
 
         verify(
-          () => androidTestBackend.uninstall('com.example.app', androidDevice),
+          () => androidTestBackend.uninstall(any(), androidDevice),
         ).called(1);
 
         await expectLater(run, completes);
