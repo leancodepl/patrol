@@ -555,6 +555,30 @@ void main() {
         },
       );
 
+      test("fails with attach's reason when attach dies first", () async {
+        when(
+          () => flutterTool.attachFailure,
+        ).thenReturn('flutter attach exited with code 64');
+        attachCompleter.complete();
+
+        await expectLater(
+          buildService().run(prebuiltOptions),
+          throwsA(
+            isA<ToolExit>().having(
+              (e) => e.message,
+              'message',
+              contains('exited with code 64'),
+            ),
+          ),
+        );
+        verifyNever(
+          () => flutterTool.hotRestart(
+            onCompleted: any(named: 'onCompleted'),
+            onFailed: any(named: 'onFailed'),
+          ),
+        );
+      });
+
       test('is rejected on non-Android devices', () async {
         const iosDevice = Device(
           name: 'iPhone',

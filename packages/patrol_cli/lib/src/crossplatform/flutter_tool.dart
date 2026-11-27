@@ -91,6 +91,9 @@ class FlutterTool {
   /// unavailable from then on.
   Future<String> get attachFailed => _attachFailed.future;
 
+  /// Why `flutter attach` exited without attaching, once it has.
+  String? get attachFailure => _attachFailure;
+
   /// Forwards logs and hot restarts the app when "r" is pressed.
   Future<void> attachForHotRestart({
     required FlutterCommand flutterCommand,

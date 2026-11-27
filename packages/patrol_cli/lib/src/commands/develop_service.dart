@@ -606,9 +606,9 @@ class DevelopService {
           await attached;
         } else {
           // No Gradle ran before this point, so nothing has verified that the
-          // instrumentation actually came up. If the backend settles before
-          // attach connects (instrumentation not found, app crash on launch),
-          // fail instead of waiting forever for an attach that can't succeed.
+          // instrumentation came up. `attached` completes once attach connects
+          // or exits without attaching; fail if the backend settles first or
+          // attach is dead, instead of waiting for a session that can't start.
           final backendExitedFirst = await Future.any<bool>([
             attached.then((_) => false),
             future.then((_) => true, onError: (Object _) => true),
@@ -618,6 +618,9 @@ class DevelopService {
               'The instrumentation exited before `flutter attach` could '
               'connect - the app never came up. See the logs above.',
             );
+          }
+          if (_flutterTool.attachFailure case final reason?) {
+            throwToolExit(reason);
           }
           _logger.info(
             'Prebuilt APKs: the app launched with the placeholder test baked '
