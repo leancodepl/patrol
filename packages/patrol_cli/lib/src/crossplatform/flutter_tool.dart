@@ -210,6 +210,7 @@ class FlutterTool {
         }
       });
 
+      var quitting = false;
       _stdin
           .listen((event) async {
             final char = String.fromCharCode(event.first);
@@ -243,6 +244,10 @@ class FlutterTool {
 
               _logger.success(helpText.toString());
             } else if (char == 'q' || char == 'Q') {
+              if (quitting) {
+                return;
+              }
+              quitting = true;
               _logger.success('Quitting process...');
               if (!completer.isCompleted) {
                 completer.complete();

@@ -116,6 +116,57 @@ void main() {
         await processStdout.close();
       },
     );
+
+    test('a second q while quitting does not clean up again', () async {
+      final keys = StreamController<List<int>>();
+      var exits = 0;
+      final tool = FlutterTool(
+        logger: MockLogger(),
+        parentDisposeScope: DisposeScope(),
+        processManager: processManager,
+        platform: platform,
+        stdin: keys.stream,
+        onExit: () async => exits++,
+      );
+      final process = MockProcess();
+      final processStdout = StreamController<List<int>>();
+      when(() => process.stdout).thenAnswer((_) => processStdout.stream);
+      when(
+        () => process.stderr,
+      ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
+      when(() => process.exitCode).thenAnswer((_) => Completer<int>().future);
+      when(() => processManager.start(any())).thenAnswer((_) async => process);
+
+      var quits = 0;
+      final quitting = Completer<void>();
+      final attach = tool.attach(
+        flutterCommand: flutterCommand,
+        deviceId: 'testDeviceId',
+        target: 'target',
+        appId: 'appId',
+        dartDefines: {},
+        openBrowser: false,
+        onQuit: () async {
+          quits++;
+          await quitting.future;
+        },
+      );
+      processStdout.add(utf8.encode('Flutter run key commands.\n'));
+      await attach;
+
+      keys
+        ..add('q'.codeUnits)
+        ..add('q'.codeUnits);
+      await pumpEventQueue();
+      quitting.complete();
+      await pumpEventQueue();
+
+      expect(quits, 1);
+      expect(exits, 1);
+      await processStdout.close();
+      await keys.close();
+    });
+
     test(
       'hotRestart onFailed fires when Flutter rejects the restart',
       () async {
