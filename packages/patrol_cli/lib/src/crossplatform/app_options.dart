@@ -153,6 +153,7 @@ class AndroidAppOptions {
     required bool isWindows,
     String? onlyTestClass,
     String? targetAppId,
+    bool develop = false,
   }) {
     final projectPath = testLayout == AndroidTestLayout.selfInstrumenting
         ? ':patrolTest'
@@ -167,6 +168,7 @@ class AndroidAppOptions {
       // performing its runtime discovery launch.
       onlyTestClass: onlyTestClass,
       targetAppId: targetAppId,
+      develop: develop,
     );
   }
 
@@ -205,6 +207,7 @@ class AndroidAppOptions {
     bool noUninstallAfterTests = false,
     String? onlyTestClass,
     String? targetAppId,
+    bool develop = false,
   }) {
     final List<String> cmd;
     if (isWindows) {
@@ -271,6 +274,13 @@ class AndroidAppOptions {
     if (targetAppId != null) {
       cmd.add(
         '-Pandroid.testInstrumentationRunnerArguments.patrolAppId=$targetAppId',
+      );
+    }
+    // Develop never marks PatrolAppService ready; the runner must not apply the
+    // normal app-ready deadline (see PatrolJUnitRunner.awaitPatrolAppService).
+    if (develop) {
+      cmd.add(
+        '-Pandroid.testInstrumentationRunnerArguments.patrolDevelop=true',
       );
     }
     return cmd;

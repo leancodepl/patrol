@@ -513,6 +513,7 @@ class AndroidTestBackend {
                 isWindows: _platform.isWindows,
                 onlyTestClass: onlyTestClass,
                 targetAppId: targetAppId,
+                develop: interruptible,
               ),
               runInShell: true,
               environment: {
@@ -777,6 +778,8 @@ class AndroidTestBackend {
               packageName: instrumentPackage,
               intentClass: instrumentRunner,
               device: device.id,
+              // Same as Gradle develop: skip the app-ready deadline.
+              arguments: const {'patrolDevelop': 'true'},
             )
             ..disposedByTree(scope);
       process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
@@ -1125,17 +1128,11 @@ class AndroidTestBackend {
       }
     }
 
-    if (patrol.isNotEmpty) {
-      final chosen = patrol.first;
-      _logger.detail(
-        'Using instrumentation component ${chosen.package}/${chosen.runner} '
-        '(target=${chosen.target})',
-      );
-      return (chosen.package, chosen.runner);
-    }
-
+    // Do not fall back to another project's Patrol runner when the expected
+    // package is missing (layout mismatch / migration). Prefer the conventional
+    // component so `am instrument` fails loudly instead of driving the wrong app.
     _logger.detail(
-      'No Patrol instrumentation found; using default component '
+      'No Patrol instrumentation for $expectedPackage; using default component '
       '${fallback.$1}/${fallback.$2}',
     );
     return fallback;

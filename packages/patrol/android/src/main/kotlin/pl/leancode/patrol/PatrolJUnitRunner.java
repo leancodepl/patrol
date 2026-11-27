@@ -41,6 +41,8 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
     private static final String TARGET_APP_ID_METADATA = "pl.leancode.patrol.APP_ID";
     private static final String CLEAR_APP_DATA_ARGUMENT = "patrolClearAppData";
     private static final String CLEAR_APP_DATA_METADATA = "pl.leancode.patrol.CLEAR_APP_DATA";
+    /** Set by `patrol develop` so waitForPatrolAppService never times out. */
+    private static final String DEVELOP_ARGUMENT = "patrolDevelop";
     private static final long APP_READY_TIMEOUT_MS = 180_000;
     private static final long APP_READY_POLL_MS = 5_000;
 
@@ -561,7 +563,9 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         final String TAG = "PatrolJUnitRunner.setUp(): ";
 
         Logger.INSTANCE.i(TAG + "Waiting for PatrolAppService to report its readiness...");
-        final long deadline = SystemClock.elapsedRealtime() + APP_READY_TIMEOUT_MS;
+        final boolean develop = isDevelopSession();
+        final long deadline =
+                develop ? Long.MAX_VALUE : SystemClock.elapsedRealtime() + APP_READY_TIMEOUT_MS;
         while (true) {
             if (PatrolServer.Companion.getAppReady().block(APP_READY_POLL_MS)) {
                 Logger.INSTANCE.i(TAG + "PatrolAppService is ready to report Dart tests");
@@ -575,7 +579,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
                                 + " died before PatrolAppService became ready"
                 );
             }
-            if (SystemClock.elapsedRealtime() >= deadline) {
+            if (!develop && SystemClock.elapsedRealtime() >= deadline) {
                 throw new IllegalStateException(
                         "PatrolAppService did not become ready within "
                                 + (APP_READY_TIMEOUT_MS / 1000)
@@ -583,6 +587,12 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
                 );
             }
         }
+    }
+
+    private boolean isDevelopSession() {
+        final Bundle arguments = InstrumentationRegistry.getArguments();
+        return arguments != null
+                && "true".equalsIgnoreCase(arguments.getString(DEVELOP_ARGUMENT));
     }
 
     private boolean isAppProcessAlive(String appId) {
