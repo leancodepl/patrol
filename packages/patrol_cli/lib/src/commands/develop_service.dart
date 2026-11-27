@@ -675,18 +675,15 @@ class DevelopService {
           attachUsingUrl: attachUsingUrl,
           debugUrl: vmServiceUrlCompleter?.future,
           forwardFlutterLogs: flutterLogs.forwardFlutterLogs,
-          // Stop the device side first and give the Gradle process waiting on
-          // `am instrument` a moment to end before the backend is torn down.
-          // The uninstall runs here because the quit handler exits the process
-          // right after this returns. Both waits are bounded: a device that is
-          // gone never answers.
+          // Stop the device side first, so the Gradle run waiting on
+          // `am instrument` ends on its own while the backend is disposed. The
+          // uninstall runs here because the quit handler exits the process right
+          // after this returns; it is bounded because a device that is gone
+          // never answers.
           onQuit: () async {
             final done = quit = Completer<void>();
             try {
               await stopOnDevice?.call();
-              await future
-                  .then<void>((_) {}, onError: (Object _) {})
-                  .timeout(_quitBuildTimeout, onTimeout: () {});
               await finalizer?.call().timeout(
                 _quitUninstallTimeout,
                 onTimeout: () => _logger.warn(
@@ -773,7 +770,6 @@ class DevelopService {
     }
   }
 
-  static const _quitBuildTimeout = Duration(seconds: 10);
   static const _quitUninstallTimeout = Duration(seconds: 30);
 
   static const _defaultFailureMessage =

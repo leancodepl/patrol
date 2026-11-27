@@ -495,7 +495,7 @@ class AndroidTestBackend {
               },
               workingDirectory: _rootDirectory.childDirectory('android').path,
             )
-            ..disposedByTree(scope);
+            ..disposedByTree(scope, grace: _testRunExitGrace);
       process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
       process
           .listenStdErr((l) {
@@ -1143,6 +1143,11 @@ class AndroidTestBackend {
       _logger.warn('Failed to pull screenshots from device: $err');
     }
   }
+
+  /// How long disposing waits for a test run to end on its own. Stopping the
+  /// instrumentation or Ctrl+C ends it, and killing its tree mid-way can take
+  /// the Gradle daemon and the test report with it.
+  static const _testRunExitGrace = Duration(seconds: 10);
 
   /// Starts the adb server from a short-lived `adb start-server`. A server that
   /// a long-running adb client starts stays that client's child, so quitting

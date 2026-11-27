@@ -108,13 +108,21 @@ extension ProcessTreeDisposers on Process {
   /// no process group to signal, so the descendants have to be named: `taskkill
   /// /T` walks them on Windows, `pgrep -P` elsewhere.
   ///
-  /// [onKill] runs when disposing finds the process still running, right before
-  /// it is killed.
-  void disposedByTree(DisposeScope disposeScope, {void Function()? onKill}) {
+  /// [grace] is how long disposing waits for the process to end on its own
+  /// before killing it. [onKill] runs when disposing finds the process still
+  /// running, right before it is killed.
+  void disposedByTree(
+    DisposeScope disposeScope, {
+    void Function()? onKill,
+    Duration grace = Duration.zero,
+  }) {
     var exited = false;
     unawaited(exitCode.then((_) => exited = true));
 
     disposeScope.addDispose(() async {
+      if (!exited && grace > Duration.zero) {
+        await exitCode.timeout(grace, onTimeout: () => 0);
+      }
       // A PID is reused once its process is gone, so killing by PID after that
       // can hit an unrelated process - and `taskkill /T` its whole tree.
       if (exited) {

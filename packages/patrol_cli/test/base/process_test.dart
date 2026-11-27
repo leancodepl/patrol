@@ -117,6 +117,44 @@ void main() {
     });
   });
 
+  group('disposedByTree with a grace period', () {
+    test('lets a process that ends on its own finish', () async {
+      final scope = DisposeScope();
+      final process = Platform.isWindows
+          ? await Process.start('cmd.exe', ['/c', 'ping -n 2 127.0.0.1'])
+          : await Process.start('sh', ['-c', 'sleep 1']);
+      addTearDown(process.kill);
+      var killed = false;
+      process.disposedByTree(
+        scope,
+        grace: const Duration(seconds: 20),
+        onKill: () => killed = true,
+      );
+
+      await scope.dispose();
+
+      expect(killed, isFalse);
+      expect(await process.exitCode, 0);
+    });
+
+    test('kills a process that outlives it', () async {
+      final scope = DisposeScope();
+      final process = await _startSleeper();
+      addTearDown(process.kill);
+      var killed = false;
+      process.disposedByTree(
+        scope,
+        grace: const Duration(milliseconds: 200),
+        onKill: () => killed = true,
+      );
+
+      await scope.dispose();
+
+      expect(killed, isTrue);
+      await expectLater(process.exitCode, completes);
+    });
+  });
+
   group('killTree', () {
     test('kills the processes that the process spawned', () async {
       final process = await _startSleeper();
