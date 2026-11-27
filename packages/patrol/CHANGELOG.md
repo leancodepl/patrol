@@ -17,6 +17,9 @@
   seconds, or time out with `SettlePolicy.settle`, while a text field is focused on iOS (or a
   `CupertinoTextField` on any platform). To keep the blinking cursor, pass
   `deterministicCursor: false`. See `migration5.md`. (#3439)
+- **Breaking:** `Selector.instance` now works on iOS: `tap`, `doubleTap`, `enterText` and
+  `waitUntilVisible` target the n-th match instead of always the first. On iOS and macOS,
+  `waitUntilVisible` with `instance` now fails when there are fewer matches, instead of passing.
 - Add `$.entrypointArgs` with the Dart entrypoint arguments the native side of the app passes to
   the test bundle (`dartEntrypointArgs` on Android, `entrypointArgs` on iOS and macOS). Needs a
   `patrol_cli` release that includes this change. (#3366)

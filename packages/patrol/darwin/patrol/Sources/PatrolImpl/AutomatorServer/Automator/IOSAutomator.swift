@@ -269,7 +269,7 @@
         "waiting until \(view) in app \(bundleId) becomes visible"
       ) {
         let app = try self.getApp(withBundleId: bundleId)
-        let query = app.descendants(matching: .any).containing(selector.toNSPredicate())
+        let query = app.descendants(matching: .any).matching(selector.toNSPredicate())
         guard
           let element = self.waitFor(
             query: query, index: selector.instance ?? 0, timeout: timeout ?? self.timeout)

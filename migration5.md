@@ -297,3 +297,8 @@ the Inbox before 5.0.0 is released.
   needs flutter/flutter#183838; every other platform and `patrol test` on web keep the 3.44 floor.
   Upgrade Flutter, or point patrol at a newer SDK with `--flutter-command`, to keep using
   `patrol develop -d chrome`.
+- `fix/ios-selector-instance`, `patrol`: `Selector(instance: n)` now reaches iOS, so `tap`,
+  `doubleTap`, `enterText` and `waitUntilVisible` target the n-th match instead of the first, and
+  `waitUntilVisible` with `instance` fails on iOS and macOS when there are fewer matches. iOS counts
+  every matching element (a web heading and its text are 2 matches), so n can differ from Android.
+  Tests that passed `instance` for Android only: use `PlatformSelector` or drop `instance` on iOS.

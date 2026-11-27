@@ -94,6 +94,7 @@ class Selector implements CompoundSelector {
     textStartsWith: textStartsWith,
     textContains: textContains,
     identifier: resourceId,
+    instance: instance,
   );
 
   @override
