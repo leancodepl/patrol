@@ -9,6 +9,48 @@ import '../src/mocks.dart';
 import '../src/self_signed_certificate.dart';
 
 void main() {
+  group('playwrightUnsupportedPlatformHint', () {
+    test('suggests an update and the matching override on Ubuntu', () {
+      final hint = WebTestBackend.playwrightUnsupportedPlatformHint(
+        'Error: ERROR: Playwright does not support chromium on '
+        'ubuntu26.04-arm64\n    at Registry._installExecutables',
+      );
+
+      expect(hint, contains('cannot install Chromium on ubuntu26.04-arm64'));
+      expect(hint, contains('Update the patrol package'));
+      expect(
+        hint,
+        contains('PLAYWRIGHT_HOST_PLATFORM_OVERRIDE=ubuntu24.04-arm64'),
+      );
+    });
+
+    test('says the OS is too old on Ubuntu older than 20.04', () {
+      final hint = WebTestBackend.playwrightUnsupportedPlatformHint(
+        'Playwright does not support chromium on ubuntu18.04-x64',
+      );
+
+      expect(hint, contains('too old'));
+      expect(hint, isNot(contains('Update the patrol package')));
+      expect(hint, isNot(contains('PLAYWRIGHT_HOST_PLATFORM_OVERRIDE')));
+    });
+
+    test('suggests only an update on other platforms', () {
+      final hint = WebTestBackend.playwrightUnsupportedPlatformHint(
+        'Playwright does not support chromium on <unknown>',
+      );
+
+      expect(hint, contains('Update the patrol package'));
+      expect(hint, isNot(contains('PLAYWRIGHT_HOST_PLATFORM_OVERRIDE')));
+    });
+
+    test('returns null for an unrelated failure', () {
+      expect(
+        WebTestBackend.playwrightUnsupportedPlatformHint('ECONNRESET'),
+        isNull,
+      );
+    });
+  });
+
   group('extractWebServerUrl', () {
     test('returns the http URL of the web server', () {
       const line = 'lib/main.dart is being served at http://localhost:62133';

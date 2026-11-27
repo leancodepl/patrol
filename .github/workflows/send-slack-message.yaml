@@ -18,6 +18,10 @@ on:
       URL_TO_DETAILS:
         required: false
         type: string
+      TRIGGER_EVENT:
+        description: Event that started the tests, when the caller runs on workflow_run.
+        required: false
+        type: string
 
 jobs:
   send_slack_message:
@@ -72,7 +76,7 @@ jobs:
           echo "should_notify=$should_notify" >> $GITHUB_OUTPUT;
 
       - name: Share test results on Slack
-        if: steps.slack_message.outputs.should_notify == 'true' && github.event_name == 'schedule'
+        if: steps.slack_message.outputs.should_notify == 'true' && (inputs.TRIGGER_EVENT || github.event_name) == 'schedule'
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
