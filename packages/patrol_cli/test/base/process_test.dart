@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart' hide ProcessDisposed;
@@ -8,6 +7,7 @@ import 'package:platform/testing.dart' show TestNativePlatform;
 import 'package:test/test.dart';
 
 import '../src/mocks.dart';
+import '../src/processes.dart';
 
 /// Starts a process that stays alive until killed and keeps a child of its own -
 /// the shape of every wrapped process patrol starts (`cmd.exe /c`, `fvm`).
@@ -18,41 +18,16 @@ Future<Process> _startSleeper() {
   return Process.start('sh', ['-c', 'sleep 120 & wait']);
 }
 
-Future<List<int>> _pidsFrom(String executable, List<String> arguments) async {
-  final result = await Process.run(executable, arguments);
-
-  return LineSplitter.split(
-    result.stdout as String,
-  ).map((line) => int.tryParse(line.trim())).nonNulls.toList();
-}
-
 /// PIDs of the processes [pid] spawned, as reported by the OS.
 Future<List<int>> _childrenOf(int pid) {
   if (!Platform.isWindows) {
-    return _pidsFrom('pgrep', ['-P', '$pid']);
+    return pidsFrom('pgrep', ['-P', '$pid']);
   }
   final command =
       'Get-CimInstance Win32_Process -Filter "ParentProcessId = $pid"'
       ' | Select-Object -ExpandProperty ProcessId';
 
-  return _pidsFrom('powershell.exe', ['-NoProfile', '-Command', command]);
-}
-
-Future<bool> _isAlive(int pid) async {
-  if (!Platform.isWindows) {
-    final result = await Process.run('kill', ['-0', '$pid']);
-    return result.exitCode == 0;
-  }
-  final command =
-      'Get-Process -Id $pid -ErrorAction SilentlyContinue'
-      ' | Select-Object -ExpandProperty Id';
-  final alive = await _pidsFrom('powershell.exe', [
-    '-NoProfile',
-    '-Command',
-    command,
-  ]);
-
-  return alive.contains(pid);
+  return pidsFrom('powershell.exe', ['-NoProfile', '-Command', command]);
 }
 
 void main() {
@@ -91,7 +66,7 @@ void main() {
 
       await scope.dispose();
 
-      await _expectGone(children);
+      await expectGone(children);
     });
 
     test('tells the caller when it kills a running process', () async {
@@ -181,7 +156,7 @@ void main() {
       await process.killTree();
 
       await expectLater(process.exitCode, completes);
-      await _expectGone(children);
+      await expectGone(children);
     });
   });
 
@@ -231,19 +206,4 @@ Future<List<int>> _waitForChildren(int pid) async {
     reason: 'no child was spawned, so this proves nothing',
   );
   return children;
-}
-
-/// Waits for every one of [pids] to be gone. A killed child stays visible until
-/// it is reaped, so a single check can still see it.
-Future<void> _expectGone(List<int> pids) async {
-  for (final pid in pids) {
-    var alive = true;
-    for (var i = 0; i < 50 && alive; i++) {
-      alive = await _isAlive(pid);
-      if (alive) {
-        await Future<void>.delayed(const Duration(milliseconds: 100));
-      }
-    }
-    expect(alive, isFalse, reason: 'child $pid is still running');
-  }
 }

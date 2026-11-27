@@ -6,6 +6,8 @@ import 'package:patrol_log/patrol_log.dart';
 import 'package:process/process.dart';
 import 'package:test/test.dart';
 
+import '../src/processes.dart';
+
 void main() {
   group('SuiteCommandLine', () {
     SuiteCommandLine build(
@@ -157,17 +159,23 @@ void main() {
         mode: FileMode.append,
       );
 
-      Future<SuiteRun> start(String script, {List<String>? output}) =>
-          SuiteRun.start(
-            processManager: const LocalProcessManager(),
-            command: ['sh', '-c', script],
-            projectRoot: dir.path,
-            resultsFile: resultsFile,
-            targets: const [],
-            droppedFlags: const [],
-            stopGrace: const Duration(seconds: 5),
-            onOutput: (line) => output?.add(line),
-          );
+      Future<SuiteRun> start(
+        String script, {
+        List<String>? output,
+        Duration stopGrace = const Duration(seconds: 5),
+      }) => SuiteRun.start(
+        processManager: const LocalProcessManager(),
+        command: ['sh', '-c', script],
+        projectRoot: dir.path,
+        resultsFile: resultsFile,
+        targets: const [],
+        droppedFlags: const [],
+        stopGrace: stopGrace,
+        onOutput: (line) => output?.add(line),
+      );
+
+      Future<void> printed(List<String> output, String line) =>
+          waitUntil(() => output.contains(line), 'the run to print "$line"');
 
       test('counts the tests the run reports and passes on exit 0', () async {
         report(TestEntry(name: 'a', status: TestEntryStatus.start));
@@ -298,8 +306,12 @@ void main() {
       test(
         'stops a running suite with SIGINT and reports it cancelled',
         () async {
-          final run = await start('trap "exit 130" INT; sleep 30 & wait');
-          await Future<void>.delayed(const Duration(milliseconds: 200));
+          final output = <String>[];
+          final run = await start(
+            'trap "exit 130" INT; echo ready; sleep 30 & wait',
+            output: output,
+          );
+          await printed(output, 'ready');
 
           final watch = Stopwatch()..start();
           await run.stop();
@@ -335,15 +347,10 @@ void main() {
           final child = childPid.readAsStringSync().trim();
 
           await run.stop();
-          await Future<void>.delayed(const Duration(milliseconds: 200));
 
           expect(run.isRunning, isFalse);
           expect(run.toMap()['suiteState'], 'cancelled');
-          expect(
-            Process.runSync('kill', ['-0', child]).exitCode,
-            isNot(0),
-            reason: 'the child must not outlive the run',
-          );
+          await expectGone([int.parse(child)]);
         },
       );
     },

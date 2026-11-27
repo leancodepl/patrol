@@ -14,6 +14,7 @@ import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:test/test.dart';
 
 import '../src/mocks.dart';
+import '../src/processes.dart';
 import 'fake_develop.dart';
 
 void main() {
@@ -416,14 +417,17 @@ void main() {
     });
 
     test('a suite the client cancels is stopped', () async {
+      final ready = File('${projectRoot.path}/ready');
       final tools = toolsWith(
         FakeDevelop(),
-        suiteCommand: suite('trap "exit 130" INT; sleep 30 & wait'),
+        suiteCommand: suite(
+          'trap "exit 130" INT; : > "${ready.path}"; sleep 30 & wait',
+        ),
       );
       final abort = BasicAbortController();
 
       final call = tools.test({'waitMinutes': 1}, extra(abort));
-      await Future<void>.delayed(const Duration(milliseconds: 300));
+      await waitUntil(ready.existsSync, 'the suite to set its trap');
       abort.abort();
       final result = await call.timeout(const Duration(seconds: 10));
 
