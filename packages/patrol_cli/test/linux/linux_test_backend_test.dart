@@ -198,6 +198,7 @@ set(APPLICATION_ID "pl.leancode.example_app")
       'DISPLAY': ':99',
       'HOME': '/home/runner',
     },
+    String Function(FlutterCommand)? flutterVersionOf,
   }) {
     return LinuxTestBackend(
       processManager: processManager,
@@ -213,6 +214,7 @@ set(APPLICATION_ID "pl.leancode.example_app")
       readyTimeout: readyTimeout,
       killTimeout: const Duration(milliseconds: 200),
       flutterRunStopTimeout: const Duration(milliseconds: 200),
+      flutterVersionOf: flutterVersionOf ?? (_) => '3.47.0',
     );
   }
 
@@ -652,6 +654,69 @@ set(APPLICATION_ID "pl.leancode.example_app")
     }
   });
 
+  group('--flavor', () {
+    void stubBuild() {
+      when(
+        () => processManager.start(any(), runInShell: any(named: 'runInShell')),
+      ).thenAnswer((_) async {
+        final build = FakeProcess();
+        Timer.run(() => build.exit(0));
+        return build;
+      });
+    }
+
+    test('fails before building with a Flutter that has no --flavor for '
+        'Linux', () async {
+      stubBuild();
+      final backend = createBackend(
+        appServer(),
+        flutterVersionOf: (_) => '3.44.9',
+      );
+
+      await expectLater(
+        backend.build(_options(flavor: 'staging')),
+        throwsA(
+          isA<ToolExit>().having(
+            (e) => e.message,
+            'message',
+            allOf(
+              contains('--flavor on Linux requires Flutter 3.47.0 or newer'),
+              contains('found 3.44.9'),
+            ),
+          ),
+        ),
+      );
+      verifyNever(
+        () => processManager.start(any(), runInShell: any(named: 'runInShell')),
+      );
+    });
+
+    test('builds with a flavor on Flutter 3.47.0 and newer, its betas, and an '
+        'unknown version', () async {
+      stubBuild();
+      for (final version in [
+        '3.47.0',
+        '3.47.0-0.2.pre',
+        '3.50.1',
+        '0.0.0-unknown',
+        'not-a-version',
+      ]) {
+        await createBackend(
+          appServer(),
+          flutterVersionOf: (_) => version,
+        ).build(_options(flavor: 'staging'));
+      }
+    });
+
+    test('does not read the Flutter version without a flavor', () async {
+      stubBuild();
+      await createBackend(
+        appServer(),
+        flutterVersionOf: (_) => throw StateError('version read'),
+      ).build(_options());
+    });
+  });
+
   group('develop', () {
     // `develop` switches the terminal to interactive mode when the test
     // process's stdin is a terminal (or /dev/null).
@@ -757,6 +822,19 @@ set(APPLICATION_ID "pl.leancode.example_app")
       await disposed;
       await develop;
       expect(flutterRun.signals, isEmpty);
+    });
+
+    test('fails before flutter run with a flavor on an old Flutter', () async {
+      await expectLater(
+        createBackend(appServer(), flutterVersionOf: (_) => '3.44.9').develop(
+          flutterTool(),
+          _options(flavor: 'staging'),
+          _linuxDevice,
+          stdin: const Stream.empty(),
+        ),
+        throwsA(isA<ToolExit>()),
+      );
+      verifyNever(() => processManager.start(any()));
     });
 
     test('fails when flutter run exits on its own with an error', () async {

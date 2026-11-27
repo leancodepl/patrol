@@ -13,6 +13,7 @@ import 'package:patrol_cli/src/commands/develop_options.dart';
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
+import 'package:patrol_cli/src/crossplatform/flutter_version_at_least.dart';
 import 'package:patrol_cli/src/crossplatform/test_discovery_mode.dart';
 import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
@@ -26,31 +27,16 @@ import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
 import 'package:patrol_cli/src/web/web_test_backend.dart';
 import 'package:patrol_log/patrol_log.dart';
-import 'package:version/version.dart';
 
 // TODO: Drop this gate once patrol's pubspec requires Flutter 3.47.0,
 // which makes it unreachable.
 const _minWebDevelopFlutter = '3.47.0';
 
-/// Compared against the lowest 3.47 prerelease, so 3.47 betas pass too.
-final _minWebDevelopFlutterVersion = Version.parse(
-  '$_minWebDevelopFlutter-0.0.pre',
-);
-
-/// Whether [flutterVersion] carries flutter/flutter#183838. An unknown version
-/// passes, so a format change upstream can't block web develop: that is one
-/// that doesn't parse, or 0.x, which Flutter reports (as `0.0.0-unknown`) when
-/// it can't read its git tags.
+/// Whether [flutterVersion] carries flutter/flutter#183838 (see
+/// [flutterVersionAtLeast] for prereleases and unknown versions).
 @visibleForTesting
-bool supportsWebHotRestart(String flutterVersion) {
-  final Version version;
-  try {
-    version = Version.parse(flutterVersion);
-  } on Object {
-    return true;
-  }
-  return version.major == 0 || version >= _minWebDevelopFlutterVersion;
-}
+bool supportsWebHotRestart(String flutterVersion) =>
+    flutterVersionAtLeast(flutterVersion, _minWebDevelopFlutter);
 
 /// Result of a completed test execution within a develop session.
 class TestCompletionResult {

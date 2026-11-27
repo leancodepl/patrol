@@ -1,6 +1,8 @@
 ## Unreleased
 
-- Add Linux desktop support to `patrol build`, `patrol test` and `patrol develop` (Dart-only). (#3310)
+- Add Linux desktop support to `patrol build`, `patrol test` and `patrol develop` (Dart-only).
+  `--flavor` on Linux needs Flutter 3.47.0 or newer. See the
+  [docs](https://patrol.leancode.co/cli-commands/test#linux-desktop). (#3310)
 - Fix the generated test bundle dropping the Dart entrypoint arguments passed by the native side of
   the app: `main` now takes them and passes them to tests as `$.entrypointArgs`. Needs a `patrol`
   release that includes this change. (#3366)

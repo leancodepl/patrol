@@ -7,17 +7,20 @@ import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
+import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/coverage/bind_unused_port.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
+import 'package:patrol_cli/src/crossplatform/flutter_version_at_least.dart';
 import 'package:patrol_cli/src/crossplatform/stop_flutter_run.dart';
 import 'package:patrol_cli/src/crossplatform/test_manifest.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/linux/develop_keys.dart';
 import 'package:patrol_cli/src/linux/patrol_app_service_client.dart';
+import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:patrol_log/patrol_log.dart';
 import 'package:patrol_log/patrol_log_reader.dart';
 import 'package:platform/platform.dart';
@@ -46,7 +49,11 @@ class LinuxTestBackend {
     @visibleForTesting this._killTimeout = const Duration(seconds: 5),
     @visibleForTesting
     this._flutterRunStopTimeout = const Duration(seconds: 10),
-  }) : _disposeScope = DisposeScope(),
+    @visibleForTesting String Function(FlutterCommand)? flutterVersionOf,
+  }) : _flutterVersionOf =
+           flutterVersionOf ??
+           ((command) => FlutterVersion.fromCLI(command).version),
+       _disposeScope = DisposeScope(),
        _resolveAppServerPort = resolveAppServerPort ?? _freeAppServerPort {
     _disposeScope.disposedBy(parentDisposeScope);
   }
@@ -62,9 +69,15 @@ class LinuxTestBackend {
   final Duration _readyTimeout;
   final Duration _killTimeout;
   final Duration _flutterRunStopTimeout;
+  final String Function(FlutterCommand) _flutterVersionOf;
+
+  /// The first Flutter whose `flutter build linux` and `flutter run -d linux`
+  /// accept `--flavor`.
+  static const minFlavorFlutterVersion = '3.47.0';
 
   /// Runs `flutter build linux` for [options].
   Future<void> build(LinuxAppOptions options) async {
+    _assertFlavorSupported(options);
     await _disposeScope.run((scope) async {
       final subject = options.description;
       final task = _logger.task(
@@ -114,6 +127,7 @@ class LinuxTestBackend {
     bool clearTestSteps = false,
     void Function(Entry entry)? onLogEntry,
   }) async {
+    _assertFlavorSupported(options);
     _warnIfNoDisplay();
     await _disposeScope.run((scope) async {
       // Not in a shell, so the SIGKILL fallback of [stopFlutterRun] reaches
@@ -481,6 +495,30 @@ class LinuxTestBackend {
     _logger.err('Last ${lines.length} line(s) of the app output:');
     for (final line in lines) {
       _logger.err('  $line');
+    }
+  }
+
+  /// Fails before the build when [options] has a flavor that the Flutter SDK
+  /// can't build for Linux. Older SDKs reject `--flavor` with a usage error
+  /// that doesn't say why.
+  void _assertFlavorSupported(LinuxAppOptions options) {
+    if (options.flutter.flavor == null) {
+      return;
+    }
+    final String version;
+    try {
+      version = _flutterVersionOf(options.flutter.command);
+    } on Object catch (err) {
+      _logger.detail('Could not read the Flutter version: $err');
+      return;
+    }
+    if (!flutterVersionAtLeast(version, minFlavorFlutterVersion)) {
+      throwToolExit(
+        '--flavor on Linux requires Flutter $minFlavorFlutterVersion or newer, '
+        'but found $version.\n'
+        'Upgrade Flutter, or point patrol at a newer SDK with '
+        '--flutter-command, e.g. --flutter-command "fvm flutter".',
+      );
     }
   }
 
