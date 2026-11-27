@@ -192,7 +192,15 @@ class McpCommand extends PatrolCommand {
       deviceFinder: _deviceFinder,
       processManager: _processManager,
       analytics: McpAnalytics(
-        send: _analytics.sendCommand,
+        // A failed send logs nothing: the session's output would take the
+        // line as word from the run and reset its quiet clock.
+        send: (version, name, {eventData = const {}}) => _analytics.sendCommand(
+          version,
+          name,
+          eventData: eventData,
+          logger: Logger(level: Level.quiet),
+        ),
+        consented: () => _analytics.willSend,
         cliSource: session.cliOrigin.source,
         processManager: _processManager,
       ),

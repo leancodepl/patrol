@@ -182,7 +182,12 @@ project's dev dependency or a path. No paths, test names, errors or output are s
 
 It follows the CLI's consent. The server never asks itself: nothing is sent until the CLI has run
 once in a terminal and shown its analytics notice, and `PATROL_ANALYTICS_ENABLED=false` turns it
-off.
+off. A client started from the dock or a launcher doesn't read your shell profile, so set the
+variable in the server's config:
+
+```json
+"env": { "PATROL_ANALYTICS_ENABLED": "false" }
+```
 
 ## Troubleshooting
 

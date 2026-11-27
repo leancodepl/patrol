@@ -167,6 +167,7 @@ void main() {
 
   test('reports each tool call to analytics', () async {
     final events = <Map<String, Object?>>[];
+    final bothSent = Completer<void>();
     final processManager = MockProcessManager();
     when(
       () => processManager.run(any(), runInShell: any(named: 'runInShell')),
@@ -177,8 +178,12 @@ void main() {
       analytics: McpAnalytics(
         send: (_, _, {eventData = const {}}) async {
           events.add(eventData);
+          if (events.length == 2) {
+            bothSent.complete();
+          }
           return true;
         },
+        consented: () => true,
         cliSource: CliSource.project,
         processManager: processManager,
       ),
@@ -186,7 +191,7 @@ void main() {
 
     await tools.devices();
     await tools.run({'testFile': 'app_test.dart'}, extra());
-    await Future<void>.delayed(const Duration(milliseconds: 50));
+    await bothSent.future.timeout(const Duration(seconds: 5));
 
     expect(events.map((e) => (e['tool'], e['outcome'])), [
       ('devices', 'ok'),

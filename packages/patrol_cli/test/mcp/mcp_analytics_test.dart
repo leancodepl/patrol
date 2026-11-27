@@ -31,16 +31,18 @@ void main() {
     sent = [];
   });
 
-  McpAnalytics analytics({AnalyticsEventSink? send}) => McpAnalytics(
-    send:
-        send ??
-        (version, name, {eventData = const {}}) async {
-          sent.add((version: version, name: name, data: eventData));
-          return true;
-        },
-    cliSource: CliSource.global,
-    processManager: processManager,
-  );
+  McpAnalytics analytics({AnalyticsEventSink? send, bool consented = true}) =>
+      McpAnalytics(
+        send:
+            send ??
+            (version, name, {eventData = const {}}) async {
+              sent.add((version: version, name: name, data: eventData));
+              return true;
+            },
+        consented: () => consented,
+        cliSource: CliSource.global,
+        processManager: processManager,
+      );
 
   CallToolResult status(String testState, {bool isError = false}) =>
       CallToolResult(
@@ -114,6 +116,20 @@ void main() {
     verify(
       () => processManager.run(any(), runInShell: any(named: 'runInShell')),
     ).called(1);
+  });
+
+  test('asks Flutter nothing without consent', () async {
+    await analytics(consented: false).toolCalled(
+      tool: 'status',
+      result: status('idle'),
+      duration: Duration.zero,
+      flutterCommand: const FlutterCommand('flutter'),
+    );
+
+    expect(sent, isEmpty);
+    verifyNever(
+      () => processManager.run(any(), runInShell: any(named: 'runInShell')),
+    );
   });
 
   test('reports an unknown Flutter when it cannot be asked', () async {

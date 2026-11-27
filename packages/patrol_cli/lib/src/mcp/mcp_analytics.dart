@@ -23,6 +23,7 @@ typedef AnalyticsEventSink =
 final class McpAnalytics {
   McpAnalytics({
     required this._send,
+    required this._consented,
     required this._cliSource,
     required this._processManager,
   });
@@ -30,6 +31,9 @@ final class McpAnalytics {
   static const eventName = 'mcp_tool';
 
   final AnalyticsEventSink _send;
+
+  /// Whether the user's analytics consent allows sending now.
+  final bool Function() _consented;
   final CliSource _cliSource;
   final ProcessManager _processManager;
 
@@ -46,6 +50,9 @@ final class McpAnalytics {
     TargetPlatform? platform,
   }) async {
     try {
+      if (!_consented()) {
+        return;
+      }
       await _send(
         await _flutterVersion(flutterCommand),
         eventName,
