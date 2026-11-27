@@ -1059,6 +1059,44 @@ packages:
     });
   });
 
+  group('dartDefines', () {
+    test('of a cold start reach develop as --dart-define', () async {
+      final fake = FakeDevelop();
+      final session = sessionWith(fake);
+
+      await session.startAndWait(
+        'app_test.dart',
+        device: 'test-device',
+        timeout: const Duration(milliseconds: 50),
+        dartDefines: {'API_URL': 'https://staging.example.com'},
+      );
+
+      expect(fake.options.single.dartDefines, [
+        'API_URL=https://staging.example.com',
+      ]);
+    });
+
+    test('that change restart the same file through the develop service, '
+        'not a plain hot restart', () async {
+      final fake = FakeDevelop(hotRestartReady: Future<void>.value());
+      final session = sessionWith(fake);
+      await startSession(session, 'app_test.dart');
+
+      final result = await session.startAndWait(
+        'app_test.dart',
+        timeout: const Duration(milliseconds: 50),
+        dartDefines: {'API_URL': 'https://staging.example.com'},
+      );
+
+      expect(result.started, isTrue);
+      expect(fake.restartDefines, [
+        {'API_URL': 'https://staging.example.com'},
+      ]);
+      expect(fake.stdinChars, isNot(contains('R')));
+      expect(fake.events, ['create']);
+    });
+  });
+
   test('reset quits the running session and starts a new one', () async {
     final fake = FakeDevelop(hotRestartReady: Future<void>.value());
     final session = sessionWith(fake);

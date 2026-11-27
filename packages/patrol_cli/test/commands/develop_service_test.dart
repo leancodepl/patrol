@@ -740,6 +740,63 @@ void main() {
         expect(bundle.readAsStringSync(), previous);
       });
 
+      test('replaces flutter attach when the dart-defines change', () async {
+        Map<String, String>? reattachedWith;
+        void Function()? reattachCompleted;
+        when(
+          () => flutterTool.reattach(
+            dartDefines: any(named: 'dartDefines'),
+            onCompleted: any(named: 'onCompleted'),
+            onFailed: any(named: 'onFailed'),
+          ),
+        ).thenAnswer((invocation) async {
+          reattachedWith =
+              invocation.namedArguments[#dartDefines] as Map<String, String>;
+          reattachCompleted =
+              invocation.namedArguments[#onCompleted] as void Function()?;
+        });
+        final service = await startSession();
+
+        final switched = service.restartInto(
+          'b_test.dart',
+          dartDefines: {'API_URL': 'https://staging.example.com'},
+        );
+        await _waitFor(() => reattachCompleted != null);
+        reattachCompleted!();
+
+        expect(await switched, isNull);
+        expect(
+          reattachedWith,
+          containsPair('API_URL', 'https://staging.example.com'),
+        );
+        expect(reattachedWith, containsPair('PATROL_HOT_RESTART', 'true'));
+        expect(restartCompleted, isNull, reason: 'no plain hot restart');
+        expect(
+          service.changesDartDefines({
+            'API_URL': 'https://staging.example.com',
+          }),
+          isFalse,
+        );
+      });
+
+      test('refuses a dart-define patrol sets itself', () async {
+        final service = await startSession();
+
+        final switched = service.restartInto(
+          'b_test.dart',
+          dartDefines: {'PATROL_TEST_DIRECTORY': 'patrol_test'},
+        );
+
+        expect(await switched, contains('PATROL_TEST_DIRECTORY'));
+        verifyNever(
+          () => flutterTool.reattach(
+            dartDefines: any(named: 'dartDefines'),
+            onCompleted: any(named: 'onCompleted'),
+            onFailed: any(named: 'onFailed'),
+          ),
+        );
+      });
+
       test(
         'refuses in a session that runs a bundle it did not generate',
         () async {

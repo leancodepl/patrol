@@ -252,6 +252,16 @@ class McpCommand extends PatrolCommand {
                   'session hot-restarts into testFile and the app keeps its '
                   'state.',
             ),
+            'dartDefines': JsonObject(
+              additionalProperties: JsonString(),
+              description:
+                  'Optional --dart-define values for this run, e.g. '
+                  '{"API_URL":"https://staging.example.com"}, on top of the '
+                  "session's own. On a running session, a changed value "
+                  'reattaches to the app in seconds, without a rebuild, and '
+                  'stays for later runs; removing one takes reset. Defines '
+                  'read by native code need reset too.',
+            ),
             'projectRoot': JsonString(
               description:
                   'Optional project to run in, for work spanning more than one '

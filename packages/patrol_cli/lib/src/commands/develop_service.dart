@@ -127,6 +127,17 @@ class DevelopService {
   /// generated the bundle.
   ({String testDirectory, String testFileSuffix})? _bundleTarget;
 
+  /// The dart-defines the running `flutter attach` compiles with, and which of
+  /// them patrol sets itself; set by [run].
+  Map<String, String> _attachDartDefines = const {};
+  Set<String> _internalDartDefineKeys = const {};
+
+  /// Whether [dartDefines] would change what the session compiles with, which
+  /// takes a new `flutter attach` instead of a plain hot restart.
+  bool changesDartDefines(Map<String, String> dartDefines) => dartDefines
+      .entries
+      .any((define) => _attachDartDefines[define.key] != define.value);
+
   /// While false, log entries are not passed to [onLogEntry]: they belong to
   /// the program a hot restart is replacing.
   var _acceptLogEntries = true;
@@ -182,12 +193,18 @@ class DevelopService {
   /// Hot-restarts the running session into the test file [target] resolves
   /// to. The native app does not depend on the test file, so no build runs.
   ///
+  /// [dartDefines] are set on top of the session's own. A value that changes
+  /// what the session compiles with replaces its `flutter attach`, which keeps
+  /// them for later restarts too; defines read by native code still need a
+  /// new build.
+  ///
   /// Returns null once the app runs the new test. Otherwise returns why it
   /// does not, such as the compiler output of a rejected restart; the
   /// session then keeps running the previous test, and the bundle is restored
   /// so a later restart reruns it.
   Future<String?> restartInto(
     String target, {
+    Map<String, String> dartDefines = const {},
     Duration timeout = const Duration(minutes: 2),
   }) async {
     final bundleTarget = _bundleTarget;
@@ -199,6 +216,16 @@ class DevelopService {
       return 'Switching test files in a running session is not supported on '
           'web yet.';
     }
+
+    final patrolOwned = dartDefines.keys.where(
+      _internalDartDefineKeys.contains,
+    );
+    if (patrolOwned.isNotEmpty) {
+      return 'patrol sets ${patrolOwned.join(', ')} itself; leave '
+          '${patrolOwned.length == 1 ? 'it' : 'them'} out of dartDefines.';
+    }
+    final reattach = changesDartDefines(dartDefines);
+    final newDartDefines = {..._attachDartDefines, ...dartDefines};
 
     final String testFile;
     try {
@@ -216,23 +243,41 @@ class DevelopService {
     _testBundler.createDevelopTestBundle(bundleTarget.testDirectory, testFile);
 
     final outcome = Completer<String?>();
+    void onCompleted() {
+      if (!outcome.isCompleted) {
+        outcome.complete(null);
+      }
+    }
+
+    void onFailed(String compilerOutput) {
+      if (!outcome.isCompleted) {
+        outcome.complete(
+          compilerOutput.isEmpty
+              ? 'flutter attach rejected the hot restart.'
+              : compilerOutput,
+        );
+      }
+    }
+
     _acceptLogEntries = false;
-    _flutterTool.hotRestart(
-      onCompleted: () {
-        if (!outcome.isCompleted) {
-          outcome.complete(null);
-        }
-      },
-      onFailed: (compilerOutput) {
-        if (!outcome.isCompleted) {
-          outcome.complete(
-            compilerOutput.isEmpty
-                ? 'flutter attach rejected the hot restart.'
-                : compilerOutput,
-          );
-        }
-      },
-    );
+    if (reattach) {
+      _attachDartDefines = newDartDefines;
+      unawaited(
+        _flutterTool
+            .reattach(
+              dartDefines: newDartDefines,
+              onCompleted: onCompleted,
+              onFailed: onFailed,
+            )
+            .catchError((Object err) {
+              if (!outcome.isCompleted) {
+                outcome.complete('Could not attach with the new defines: $err');
+              }
+            }),
+      );
+    } else {
+      _flutterTool.hotRestart(onCompleted: onCompleted, onFailed: onFailed);
+    }
 
     String? failure;
     try {
@@ -415,6 +460,8 @@ class DevelopService {
       dartDefines,
       _dartDefinesReader,
     );
+    _attachDartDefines = mergedDartDefines;
+    _internalDartDefineKeys = internalDartDefines.keys.toSet();
 
     final flavor = switch (device.targetPlatform) {
       TargetPlatform.android => androidFlavor,

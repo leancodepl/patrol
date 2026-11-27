@@ -156,6 +156,94 @@ void main() {
       },
     );
 
+    test('reattach replaces flutter attach with one that has the new '
+        'dart-defines, then hot restarts through it', () async {
+      var exits = 0;
+      final keys = StreamController<List<int>>();
+      final tool = FlutterTool(
+        logger: MockLogger(),
+        parentDisposeScope: DisposeScope(),
+        processManager: processManager,
+        platform: platform,
+        stdin: keys.stream,
+        onExit: () async => exits++,
+      );
+
+      final events = <String>[];
+      final firstExit = Completer<int>();
+      final first = MockProcess();
+      final firstStdout = StreamController<List<int>>();
+      when(() => first.pid).thenReturn(999999);
+      when(() => first.stdout).thenAnswer((_) => firstStdout.stream);
+      when(() => first.stderr).thenAnswer((_) => const Stream.empty());
+      when(() => first.exitCode).thenAnswer((_) => firstExit.future);
+      when(first.kill).thenAnswer((_) {
+        events.add('kill first');
+        firstExit.complete(-15);
+        return true;
+      });
+
+      final second = MockProcess();
+      final secondStdin = _MockIOSink();
+      final secondStdout = StreamController<List<int>>();
+      when(() => second.stdout).thenAnswer((_) => secondStdout.stream);
+      when(() => second.stderr).thenAnswer((_) => const Stream.empty());
+      when(() => second.stdin).thenReturn(secondStdin);
+      when(() => secondStdin.add(any())).thenReturn(null);
+      when(() => second.exitCode).thenAnswer((_) => Completer<int>().future);
+
+      final started = <List<String>>[];
+      when(
+        () => processManager.start(
+          any(),
+          workingDirectory: any(named: 'workingDirectory'),
+        ),
+      ).thenAnswer((invocation) async {
+        final command = [
+          for (final part
+              in invocation.positionalArguments.first as List<Object>)
+            '$part',
+        ];
+        started.add(command);
+        events.add('start ${started.length}');
+        return started.length == 1 ? first : second;
+      });
+
+      final attach = tool.attach(
+        flutterCommand: flutterCommand,
+        deviceId: 'testDeviceId',
+        target: 'target',
+        appId: 'appId',
+        dartDefines: {'API_URL': 'one'},
+        openBrowser: false,
+      );
+      firstStdout.add(utf8.encode('Flutter run key commands.\n'));
+      await attach;
+
+      var completed = false;
+      final reattached = tool.reattach(
+        dartDefines: {'API_URL': 'two'},
+        onCompleted: () => completed = true,
+      );
+      await pumpEventQueue();
+      secondStdout.add(utf8.encode('Flutter run key commands.\n'));
+      await reattached;
+      secondStdout.add(utf8.encode('Restarted application in 969ms.\n'));
+      await pumpEventQueue();
+
+      expect(events, ['start 1', 'kill first', 'start 2']);
+      expect(
+        started.last,
+        containsAllInOrder(['--dart-define', 'API_URL=two']),
+      );
+      verify(() => secondStdin.add('R'.codeUnits)).called(1);
+      expect(completed, isTrue);
+      expect(exits, 0, reason: 'replacing flutter attach is not a quit');
+      await firstStdout.close();
+      await secondStdout.close();
+      await keys.close();
+    });
+
     group('t', () {
       late StreamController<List<int>> keys;
       late StreamController<List<int>> processStdout;

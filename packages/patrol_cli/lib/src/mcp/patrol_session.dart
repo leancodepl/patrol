@@ -719,6 +719,7 @@ final class PatrolSession {
     String? projectRoot,
     Duration? timeout,
     bool reset = false,
+    Map<String, String> dartDefines = const {},
   }) async {
     if (_starting) {
       return 'A run of "$_startingTestFile" is still starting. Wait for it, '
@@ -738,6 +739,7 @@ final class PatrolSession {
         device: device,
         projectRoot: projectRoot,
         timeout: timeout,
+        dartDefines: dartDefines,
       );
     }
 
@@ -761,7 +763,11 @@ final class PatrolSession {
         return _cancelled;
       }
       _deviceSelectionNote = null;
-      return await _startCold(testFile, device: device);
+      return await _startCold(
+        testFile,
+        device: device,
+        dartDefines: dartDefines,
+      );
     } finally {
       _starting = false;
       _startingTestFile = null;
@@ -777,6 +783,7 @@ final class PatrolSession {
     required String? device,
     required String? projectRoot,
     required Duration? timeout,
+    required Map<String, String> dartDefines,
   }) async {
     if (await _anchor(testFile: testFile, requestedRoot: projectRoot)
         case final blocked?) {
@@ -801,7 +808,9 @@ final class PatrolSession {
     if (await _waitForHotRestartReady(within: timeout) case final blocked?) {
       return blocked;
     }
-    if (_currentTestFile == testFile) {
+    final changesDefines =
+        _developService?.changesDartDefines(dartDefines) ?? false;
+    if (_currentTestFile == testFile && !changesDefines) {
       sendCommand(SessionCommand.hotRestart);
       return null;
     }
@@ -811,6 +820,7 @@ final class PatrolSession {
         testFile,
         projectRoot: projectRoot,
         timeout: timeout,
+        dartDefines: dartDefines,
       );
     } finally {
       _switchingTo = null;
@@ -820,12 +830,14 @@ final class PatrolSession {
   /// The test file a hot restart is switching the running session to.
   String? _switchingTo;
 
-  /// Hot-restarts the running session into another test file of its project.
-  /// The session keeps the test it ran when the restart fails.
+  /// Hot-restarts the running session into another test file of its project,
+  /// or with other dart-defines. The session keeps the test it ran when the
+  /// restart fails.
   Future<String?> _switchTo(
     String testFile, {
     required String? projectRoot,
     required Duration? timeout,
+    required Map<String, String> dartDefines,
   }) async {
     final live = _liveSession;
     final service = _developService;
@@ -852,6 +864,7 @@ final class PatrolSession {
 
     final failure = await service.restartInto(
       resolved.testFile ?? testFile,
+      dartDefines: dartDefines,
       timeout: timeout ?? const Duration(minutes: 2),
     );
     if (!identical(_liveSession, live) || !_isRunning) {
@@ -871,7 +884,11 @@ final class PatrolSession {
   ///
   /// Checks for a cancellation at every step that can be reached after a caller
   /// asked to stop.
-  Future<String?> _startCold(String testFile, {required String? device}) async {
+  Future<String?> _startCold(
+    String testFile, {
+    required String? device,
+    required Map<String, String> dartDefines,
+  }) async {
     await awaitTeardown();
     if (_cancelRequested) {
       return _cancelled;
@@ -895,6 +912,10 @@ final class PatrolSession {
     // that `patrol develop` accepts.
     final flagParts = [
       ...developArgs,
+      for (final define in dartDefines.entries) ...[
+        '--dart-define',
+        '${define.key}=${define.value}',
+      ],
       // The check runs `flutter doctor --verbose` before the build, and Android
       // runs with it end without PATROL_LOG entries.
       if (!_callerChecksCompatibility) '--no-check-compatibility',
@@ -1565,6 +1586,7 @@ final class PatrolSession {
     String? device,
     String? projectRoot,
     bool reset = false,
+    Map<String, String> dartDefines = const {},
   }) async {
     final refusal = await _start(
       testFile,
@@ -1572,6 +1594,7 @@ final class PatrolSession {
       projectRoot: projectRoot,
       timeout: timeout,
       reset: reset,
+      dartDefines: dartDefines,
     );
     if (refusal != null) {
       return (status: getStatus(overrideWarning: refusal), started: false);

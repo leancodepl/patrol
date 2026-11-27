@@ -164,8 +164,14 @@ MCP gives the agent the tools, while a skill teaches it how to use them to write
 A `run` on a running session hot-restarts it into the requested file, whichever file that is, so
 only the first `run` builds and installs the app. The native app does not depend on the test file,
 which is why only Dart changes reach a running session: test files and the app's `lib/`. A change
-that needs a native build (a new plugin, `android/` or `ios/`, a native `--dart-define`) needs a new
-session.
+that needs a native build (a new plugin, `android/` or `ios/`, a `--dart-define` read by native code)
+needs a new session.
+
+`dartDefines` on `run` sets `--dart-define` values on top of the session's own, e.g.
+`{"testFile": "patrol_test/login_test.dart", "dartDefines": {"API_URL": "https://staging.example.com"}}`.
+On a running session a changed value starts a new `flutter attach` with it, which takes about 10
+seconds instead of a rebuild, and the value stays for later runs. Removing a value takes
+`reset: true`.
 
 The app keeps the state the previous test left: its screens, its stored data and the permissions it
 was granted. Pass `reset: true` to quit the session and start a new one, which reinstalls the app
