@@ -79,6 +79,14 @@ class FlutterTool {
     callback?.call();
   }
 
+  final _hotRestartReady = Completer<void>();
+
+  /// Completes once `flutter attach` will act on a hot restart.
+  ///
+  /// A restart requested earlier is held until then, so a caller that reports
+  /// on the restart waits for this before claiming it was sent.
+  Future<void> get hotRestartReady => _hotRestartReady.future;
+
   /// Forwards logs and hot restarts the app when "r" is pressed.
   Future<void> attachForHotRestart({
     required FlutterCommand flutterCommand,
@@ -369,6 +377,9 @@ class FlutterTool {
                 attachForwards = _adbForwards(
                   deviceId,
                 ).then((after) => after.difference(before));
+              }
+              if (!_hotRestartReady.isCompleted) {
+                _hotRestartReady.complete();
               }
               if (_pendingHotRestart) {
                 _pendingHotRestart = false;

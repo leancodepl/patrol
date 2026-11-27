@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:patrol_cli/patrol_cli.dart'
-    show Device, FlutterCommand, TargetPlatform;
+import 'package:patrol_cli/src/devices.dart';
+import 'package:patrol_cli/src/runner/flutter_command.dart';
 
 /// Lists the devices Flutter reports as attached, by running
 /// `flutter devices --machine` as a subprocess and parsing its output.

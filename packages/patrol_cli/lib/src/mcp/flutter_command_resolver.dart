@@ -1,7 +1,7 @@
 import 'dart:io' as io;
 
 import 'package:path/path.dart' as p;
-import 'package:patrol_cli/patrol_cli.dart' show FlutterCommand;
+import 'package:patrol_cli/src/runner/flutter_command.dart';
 
 /// Outcome of resolving which Flutter command MCP-driven `patrol develop`
 /// sessions should use.

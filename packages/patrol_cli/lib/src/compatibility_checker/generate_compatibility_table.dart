@@ -135,4 +135,9 @@ separately here:
 The two build-time discovery rows are alternatives, not a range: the runner macro
 changed in the second one, so `patrol_cli` 4.8.0 and newer no longer accept the
 `STATIC_BEGIN`/`_END` form. Use the newest pair.
+
+## `patrol mcp`
+
+`patrol mcp` is a command of `patrol_cli`, so it follows the `patrol_cli` row of
+the table above.
 ''';
