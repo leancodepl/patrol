@@ -34,9 +34,13 @@ class DarwinGenerator {
   }
 
   OutputFile _guardWithPatrolEnabled(OutputFile file) {
+    // swift-format only honours swift-format-ignore-file in the comments
+    // before the first token, which is now `#if`, so repeat it above the guard.
     return OutputFile(
       filename: file.filename,
-      content: '#if PATROL_ENABLED\n${file.content}\n#endif\n',
+      content:
+          '// swift-format-ignore-file\n'
+          '#if PATROL_ENABLED\n${file.content}\n#endif\n',
     );
   }
 }

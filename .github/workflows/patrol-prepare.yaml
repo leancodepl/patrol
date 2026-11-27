@@ -180,9 +180,9 @@ jobs:
         run: |
           unguarded=$(find patrol/Sources/PatrolImpl -name '*.swift' \
             ! -path '*/AutomatorServer/PatrolServerExtension.swift' -exec sh -c \
-            'head -n 1 "$1" | grep -Eq "^#if PATROL_ENABLED( |$)" || echo "$1"' _ {} \;)
+            'grep -v -m1 "^//" "$1" | grep -Eq "^#if PATROL_ENABLED( |$)" || echo "$1"' _ {} \;)
           if [ -n "$unguarded" ]; then
-            echo "These files must start with '#if PATROL_ENABLED':"
+            echo "These files must start with '#if PATROL_ENABLED' (after any // comments):"
             echo "$unguarded"
             exit 1
           fi
