@@ -148,8 +148,8 @@ For each PR:
    - The compatibility table lives in patrol_cli, so its changes go in
      **patrol_cli's** PR. If only patrol is released and the table must change,
      patrol_cli needs a release too.
-   - **Stable patrol / patrol_cli releases only** (skip for `-dev.N`): review
-     `versionCompatibilityList` in
+   - **Stable patrol / patrol_cli releases, and `dev.1` of a new major** (skip
+     for other `-dev.N`): review `versionCompatibilityList` in
      `packages/patrol_cli/lib/src/compatibility_checker/version_compatibility.dart`.
      Normally the open `X+` row already covers the new pair. **Split it** — close
      the open row at the last released versions and open a new `<cli>+` /
@@ -157,6 +157,14 @@ For each PR:
      `^0.9.0` don't overlap; precedents 731e1d4a0, b00954520), when the
      patrol ↔ patrol_cli contract changes incompatibly, or when the minimum Flutter
      rises.
+   - **A new major splits the table in its first prerelease**, not at the
+     stable: close the previous major's row and open `X.0.0-dev.1+` /
+     `X.0.0-dev.1+`. A row starting at `X.0.0` would reject the dev releases,
+     and this way the prereleases run the same check the stable will.
+     Precedents: #2809 for 4.0, #3323 for 5.0. While the major is developed on
+     its own branch (`release/5.0`), each stable release of the previous major
+     has to extend that closed row on the branch when master is merged in
+     (#3400).
    - A new paired opt-in feature gets a row in `_optInFeaturesSection` in
      `generate_compatibility_table.dart` (edited by hand).
    - Feature PRs often write `Unreleased` as a minimum version in those rows

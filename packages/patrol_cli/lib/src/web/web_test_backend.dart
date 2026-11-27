@@ -13,15 +13,13 @@ import 'package:patrol_cli/src/coverage/bind_unused_port.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
 import 'package:patrol_cli/src/devices.dart';
+import 'package:patrol_cli/src/web/restart_teardown_window.dart';
 import 'package:patrol_cli/src/web/web_devtools_server.dart';
 import 'package:patrol_log/patrol_log.dart';
 import 'package:patrol_log/patrol_log_reader.dart';
 import 'package:process/process.dart';
 
 const _kDefaultWebServerTimeoutSeconds = 120;
-
-/// Backstop for the teardown window when no replacement run ever starts.
-const _kRestartTeardownWindow = Duration(seconds: 3);
 
 /// How long a hot restart counts as in flight before another "r" resends it.
 const _kRestartOutcomeWindow = Duration(seconds: 5);
@@ -37,12 +35,10 @@ const _developKeyCommands =
 
 class WebTestBackend {
   WebTestBackend({
-    required ProcessManager processManager,
+    required this._processManager,
     required DisposeScope parentDisposeScope,
-    required Logger logger,
-  }) : _processManager = processManager,
-       _logger = logger,
-       _disposeScope = DisposeScope() {
+    required this._logger,
+  }) : _disposeScope = DisposeScope() {
     _disposeScope.disposedBy(parentDisposeScope);
   }
 
@@ -70,23 +66,21 @@ class WebTestBackend {
 
   DateTime? _restartRequestedAt;
 
-  DateTime? _restartSettledAt;
-
-  /// Whether output still belongs to the run a restart is replacing.
-  bool get _inRestartTeardown {
-    if (_restartInFlight) {
-      return true;
-    }
-    final settled = _restartSettledAt;
-    return settled != null &&
-        DateTime.now().difference(settled) < _kRestartTeardownWindow;
-  }
+  @visibleForTesting
+  final restartTeardown = RestartTeardownWindow();
 
   /// Set once the resident `flutter run` is gone.
   int? _flutterExitCode;
 
   /// Set on quit so subprocess kills aren't surfaced as unexpected exits.
   bool _quitting = false;
+
+  /// Why the Playwright driver ended the session, so it fails instead of
+  /// reading as a quit.
+  String? _driverFailure;
+
+  /// The `npm`/`npx` install running before the driver starts, if any.
+  Process? _installProcess;
 
   FlutterTool? _flutterTool;
   bool _openDevtools = false;
@@ -220,6 +214,11 @@ class WebTestBackend {
     // Without this, a crash during startup is unhandled and skips `finally`.
     unawaited(exited.future.then((_) {}, onError: (Object _) {}));
 
+    // Ctrl+C reaches the driver too; on Windows it may not exit with 0.
+    final sigintSubscription = ProcessSignal.sigint.watch().listen((_) {
+      _quitting = true;
+    });
+
     final stdinSubscription = stdin.listen((event) async {
       if (event.isEmpty) {
         return;
@@ -239,6 +238,7 @@ class WebTestBackend {
           previousStdinModes = null;
         }
         _logger.success('Quitting process...');
+        await _killInstall();
         _playwrightDevelopProcess?.kill();
         await _stopFlutterProcess();
       }
@@ -247,11 +247,21 @@ class WebTestBackend {
     try {
       await _watchFlutterRun(flutterProcess, exited);
 
-      await _waitForWebDebugger(
-        flutterProcess,
-        debuggerPort,
-        serverTimeout: options.serverTimeout,
-      );
+      try {
+        await _waitForWebDebugger(
+          flutterProcess,
+          debuggerPort,
+          serverTimeout: options.serverTimeout,
+        );
+      } on Object {
+        if (_quitting) {
+          return;
+        }
+        rethrow;
+      }
+      if (_quitting) {
+        return;
+      }
 
       await _runPlaywrightDevelop(
         '$debuggerPort',
@@ -259,13 +269,11 @@ class WebTestBackend {
         showFlutterLogs: showFlutterLogs,
         hideTestSteps: hideTestSteps,
         clearTestSteps: clearTestSteps,
-        onLogEntry: (entry) {
-          if (entry is TestEntry && entry.status == TestEntryStatus.start) {
-            _restartSettledAt = null;
-          }
-          onLogEntry?.call(entry);
-        },
+        onLogEntry: onLogEntry,
       );
+      if (_quitting) {
+        return;
+      }
 
       _markAttached();
 
@@ -277,6 +285,8 @@ class WebTestBackend {
       await exited.future;
     } finally {
       await stdinSubscription.cancel();
+      await sigintSubscription.cancel();
+      _quitting = true;
       _playwrightDevelopProcess?.kill();
       await _stopFlutterProcess();
       final modes = previousStdinModes;
@@ -363,6 +373,7 @@ class WebTestBackend {
 
     _restartInFlight = true;
     _restartRequestedAt = DateTime.now();
+    restartTeardown.restartRequested();
     _logger.success('Hot Restart for entrypoint ${basename(target)}...');
     process.stdin.add('R'.codeUnits);
     await process.stdin.flush();
@@ -405,7 +416,7 @@ class WebTestBackend {
     process.stdout
         .transform(const SystemEncoding().decoder)
         .transform(const LineSplitter())
-        .listen(_onFlutterLine)
+        .listen(onFlutterLine)
         .disposedBy(_disposeScope);
 
     process.stderr
@@ -418,6 +429,7 @@ class WebTestBackend {
       _flutterExitCode = exitCode;
       _hotRestartActive = false;
       _restartInFlight = false;
+      restartTeardown.close();
       if (!debugServiceReady.isCompleted) {
         debugServiceReady.completeError(
           'Flutter process exited unexpectedly with code $exitCode',
@@ -426,7 +438,10 @@ class WebTestBackend {
       if (exited.isCompleted) {
         return;
       }
-      if (exitCode != 0 && !_quitting) {
+      final driverFailure = _driverFailure;
+      if (driverFailure != null) {
+        exited.completeError(driverFailure);
+      } else if (exitCode != 0 && !_quitting) {
         exited.completeError(
           'Flutter process exited unexpectedly with code $exitCode',
         );
@@ -438,11 +453,17 @@ class WebTestBackend {
 
   Completer<void>? _debugServiceReady;
 
-  void _onFlutterLine(String rawLine) {
+  @visibleForTesting
+  void onFlutterLine(String rawLine) {
     final line = rawLine.replaceFirst(_flutterLogPrefix, '');
 
     // Playwright re-emits these and its copy is the one PatrolLogReader reads.
     if (line.contains('PATROL_LOG')) {
+      if (restartTeardown.isOpen &&
+          RestartTeardownWindow.isReplacementRunMarker(line)) {
+        restartTeardown.close();
+        _logger.detail('Hot Restart: the replacement run started');
+      }
       return;
     }
 
@@ -465,7 +486,7 @@ class WebTestBackend {
 
     if (line.startsWith('Restarted application in')) {
       _restartInFlight = false;
-      _restartSettledAt = DateTime.now();
+      restartTeardown.restartCompleted();
       _logger.success(line);
       return;
     }
@@ -473,33 +494,43 @@ class WebTestBackend {
     if (line == 'Try again after fixing the above error(s).' ||
         line.contains('Failed to recompile application.')) {
       _restartInFlight = false;
+      restartTeardown.close();
       _logger.err('Hot restart failed. Fix the errors above and press "r".');
       return;
     }
 
-    // Failures from the run a restart replaces are noise; later ones are real.
-    if (_inRestartTeardown &&
-        (line.contains('EXCEPTION CAUGHT') ||
-            line.contains('RethrownDartError') ||
-            line.contains('Test failed.') ||
-            line.contains('Some tests failed.'))) {
-      _logger.detail('Flutter (restart teardown): $line');
-      return;
-    }
+    // flutter_test's reporter prints a failure as `... [E]` and the error on
+    // the next, indented line; that is the only place a setUpAll error shows.
+    final plain = line.replaceAll(_ansiEscape, '');
+    final isReporterError = _afterReporterError && plain.startsWith('  ');
+    _afterReporterError = plain.endsWith('[E]');
 
-    if (line.contains('EXCEPTION CAUGHT') ||
-        line.contains('TestFailure') ||
-        line.startsWith('Expected:') ||
-        line.startsWith('  Actual:') ||
-        line.startsWith('   Which:') ||
-        line.contains('Test failed.') ||
-        line.contains('Some tests failed.')) {
-      _logger.err(line);
+    if (_isFailureLine(line) || _afterReporterError || isReporterError) {
+      // Failures from the run a restart replaces are noise; later ones are real.
+      if (restartTeardown.isOpen) {
+        _logger.detail('Flutter (restart teardown): $line');
+      } else {
+        _logger.err(line);
+      }
       return;
     }
 
     _logger.detail('Flutter: $line');
   }
+
+  bool _afterReporterError = false;
+
+  static final _ansiEscape = RegExp(r'\x1b\[[0-9;]*m');
+
+  static bool _isFailureLine(String line) =>
+      line.contains('EXCEPTION CAUGHT') ||
+      line.contains('RethrownDartError') ||
+      line.contains('TestFailure') ||
+      line.startsWith('Expected:') ||
+      line.startsWith('  Actual:') ||
+      line.startsWith('   Which:') ||
+      line.contains('Test failed.') ||
+      line.contains('Some tests failed.');
 
   Future<Process> _startFlutterWebServer(
     WebAppOptions options, {
@@ -801,7 +832,17 @@ class WebTestBackend {
 
     final webRunnerPath = await _getWebRunnerPath();
     _ensureWebRunnerExists(webRunnerPath);
-    await _ensureNodeDependencies(webRunnerPath);
+    try {
+      await _ensureNodeDependencies(webRunnerPath);
+    } on Object {
+      if (_quitting) {
+        return;
+      }
+      rethrow;
+    }
+    if (_quitting) {
+      return;
+    }
 
     final testResultsDir =
         options.resultsDir ?? '${Directory.current.path}/test-results';
@@ -852,11 +893,20 @@ class WebTestBackend {
       if (_quitting) {
         return;
       }
-      _logger.err(
-        'The Playwright driver exited unexpectedly with code $exitCode. '
-        'Quitting the develop session.',
-      );
       _quitting = true;
+      if (exitCode == 0) {
+        // Also fires when Chrome crashes, so don't claim the user closed it.
+        _logger.info(
+          'The browser was closed or disconnected. Quitting the develop '
+          'session.',
+        );
+      } else {
+        _logger.err(
+          'The Playwright driver exited unexpectedly with code $exitCode. '
+          'Quitting the develop session.',
+        );
+        _driverFailure = 'The Playwright driver exited with code $exitCode';
+      }
       await _stopFlutterProcess();
     }).ignore();
   }
@@ -926,6 +976,36 @@ class WebTestBackend {
   static String? extractWebServerUrl(String line) =>
       RegExp(r'https?://[^/\s]+:\d+').firstMatch(line)?.group(0);
 
+  /// Returns what to do when `npx playwright install chromium` failed because
+  /// the bundled Playwright has no Chromium build for this OS, or null when
+  /// [output] shows a different failure.
+  @visibleForTesting
+  static String? playwrightUnsupportedPlatformHint(String output) {
+    final platform = RegExp(
+      r'does not support chromium on (\S+)',
+    ).firstMatch(output)?.group(1);
+    if (platform == null) {
+      return null;
+    }
+
+    final ubuntu = RegExp(
+      r'^ubuntu(\d+)\.\d+-(x64|arm64)$',
+    ).firstMatch(platform);
+    final major = int.tryParse(ubuntu?.group(1) ?? '');
+    if (major != null && major < 20) {
+      return 'Playwright has no Chromium build for $platform because this '
+          'Ubuntu version is too old. Run web tests on Ubuntu 20.04 or newer.';
+    }
+
+    final override = ubuntu == null
+        ? ''
+        : ', or set PLAYWRIGHT_HOST_PLATFORM_OVERRIDE=ubuntu24.04-${ubuntu.group(2)} '
+              'to use a supported Chromium build';
+    return 'The Playwright version bundled with the patrol package cannot '
+        'install Chromium on $platform. Update the patrol package to the '
+        'latest version$override.';
+  }
+
   @visibleForTesting
   Future<bool> verifyServerReady(String url) async {
     try {
@@ -957,17 +1037,13 @@ class WebTestBackend {
     }
   }
 
-  static const _kDependencyTimeoutSeconds = 120;
-
   Future<void> _ensureNodeDependencies(String webRunnerPath) async {
     _logger.info('Installing Node.js dependencies...');
 
-    final nodeResult = await _runInstallWithTimeout(
-      ['npm', 'install'],
-      workingDirectory: webRunnerPath,
-      timeoutMessage:
-          'npm install timed out after $_kDependencyTimeoutSeconds seconds',
-    );
+    final nodeResult = await _runInstall([
+      'npm',
+      'install',
+    ], workingDirectory: webRunnerPath);
 
     if (nodeResult.exitCode != 0) {
       throw ProcessException(
@@ -983,19 +1059,22 @@ class WebTestBackend {
     _logger
       ..info('Node.js dependencies installed successfully.')
       ..info('Installing Playwright dependencies...');
-    final result = await _runInstallWithTimeout(
-      ['npx', 'playwright', 'install', 'chromium'],
-      workingDirectory: webRunnerPath,
-      timeoutMessage:
-          'npx playwright install timed out after '
-          '$_kDependencyTimeoutSeconds seconds',
-    );
+    final result = await _runInstall([
+      'npx',
+      'playwright',
+      'install',
+      'chromium',
+    ], workingDirectory: webRunnerPath);
 
     if (result.exitCode != 0) {
+      final hint = playwrightUnsupportedPlatformHint(
+        '${result.stdout}\n${result.stderr}',
+      );
       throw ProcessException(
         'npx',
         ['playwright', 'install', 'chromium'],
-        'Failed to install Playwright dependencies:\n'
+        '${hint == null ? '' : '$hint\n'}'
+            'Failed to install Playwright dependencies:\n'
             'STDOUT: ${result.stdout}\n'
             'STDERR: ${result.stderr}',
         result.exitCode,
@@ -1003,17 +1082,17 @@ class WebTestBackend {
     }
   }
 
-  /// Runs [command], killing it and its children if it exceeds the timeout.
-  Future<ProcessResult> _runInstallWithTimeout(
+  /// Runs [command], kept in [_installProcess] so a quit can kill it.
+  Future<ProcessResult> _runInstall(
     List<String> command, {
     required String workingDirectory,
-    required String timeoutMessage,
   }) async {
     final process = await _processManager.start(
       command,
       workingDirectory: workingDirectory,
       runInShell: true,
     );
+    _installProcess = process;
 
     // Drain both pipes so a full buffer can't stall the process.
     final stdoutFuture = process.stdout
@@ -1023,27 +1102,26 @@ class WebTestBackend {
         .transform(const SystemEncoding().decoder)
         .join();
 
-    final int exitCode;
     try {
-      exitCode = await process.exitCode.timeout(
-        const Duration(seconds: _kDependencyTimeoutSeconds),
+      return ProcessResult(
+        process.pid,
+        await process.exitCode,
+        await stdoutFuture,
+        await stderrFuture,
       );
-    } on TimeoutException {
-      await _killProcessTree(process.pid);
-      process.kill(ProcessSignal.sigkill);
-      await Future.wait([
-        stdoutFuture,
-        stderrFuture,
-      ]).timeout(const Duration(seconds: 5), onTimeout: () => const []);
-      throw TimeoutException(timeoutMessage);
+    } finally {
+      _installProcess = null;
     }
+  }
 
-    return ProcessResult(
-      process.pid,
-      exitCode,
-      await stdoutFuture,
-      await stderrFuture,
-    );
+  /// Kills a running dependency install and everything it spawned.
+  Future<void> _killInstall() async {
+    final install = _installProcess;
+    if (install == null) {
+      return;
+    }
+    await _killProcessTree(install.pid);
+    install.kill(ProcessSignal.sigkill);
   }
 
   /// Kills every descendant of [pid]; `npm` children outlive the shell.

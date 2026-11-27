@@ -29,11 +29,13 @@ class FlutterCommand {
     };
 
     // `fvm flutter`, `mise exec -- flutter`, ...: swap the last `flutter` arg.
+    // Whatever follows it is a flutter flag that dart would reject.
     final lastFlutterArg = arguments.lastIndexWhere(flutterNames.contains);
     if (lastFlutterArg != -1) {
-      final newArguments = [...arguments];
-      newArguments[lastFlutterArg] = toDartName(arguments[lastFlutterArg]);
-      return FlutterCommand(executable, newArguments);
+      return FlutterCommand(executable, [
+        ...arguments.sublist(0, lastFlutterArg),
+        toDartName(arguments[lastFlutterArg]),
+      ]);
     }
 
     // A path (or bare name) ending in `flutter`: swap the last segment.
@@ -42,7 +44,7 @@ class FlutterCommand {
     final name = segments.last;
     if (flutterNames.contains(name)) {
       segments[segments.length - 1] = toDartName(name);
-      return FlutterCommand(segments.join(separator), arguments);
+      return FlutterCommand(segments.join(separator));
     }
 
     // Unrecognizable -- fall back to whatever `dart` is on PATH.

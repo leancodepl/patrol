@@ -34,15 +34,19 @@ final _minWebDevelopFlutterVersion = Version.parse(
   '$_minWebDevelopFlutter-0.0.pre',
 );
 
-/// Whether [flutterVersion] carries flutter/flutter#183838. An unparseable
-/// version passes, so a format change upstream can't block web develop.
+/// Whether [flutterVersion] carries flutter/flutter#183838. An unknown version
+/// passes, so a format change upstream can't block web develop: that is one
+/// that doesn't parse, or 0.x, which Flutter reports (as `0.0.0-unknown`) when
+/// it can't read its git tags.
 @visibleForTesting
 bool supportsWebHotRestart(String flutterVersion) {
+  final Version version;
   try {
-    return Version.parse(flutterVersion) >= _minWebDevelopFlutterVersion;
+    version = Version.parse(flutterVersion);
   } on Object {
     return true;
   }
+  return version.major == 0 || version >= _minWebDevelopFlutterVersion;
 }
 
 /// Result of a completed test execution within a develop session.
@@ -75,34 +79,22 @@ bool shouldAttachUsingUrl(Device device) => switch (device.targetPlatform) {
 /// extracted so it can be called from both the CLI and the MCP server.
 class DevelopService {
   DevelopService({
-    required DeviceFinder deviceFinder,
-    required TestFinderFactory testFinderFactory,
-    required TestBundler testBundler,
-    required DartDefinesReader dartDefinesReader,
-    required CompatibilityChecker compatibilityChecker,
-    required PubspecReader pubspecReader,
-    required AndroidTestBackend androidTestBackend,
-    required IOSTestBackend iosTestBackend,
-    required MacOSTestBackend macosTestBackend,
-    required WebTestBackend webTestBackend,
-    required FlutterTool flutterTool,
-    required Logger logger,
-    required Stream<List<int>> stdin,
+    required this._deviceFinder,
+    required this._testFinderFactory,
+    required this._testBundler,
+    required this._dartDefinesReader,
+    required this._compatibilityChecker,
+    required this._pubspecReader,
+    required this._androidTestBackend,
+    required this._iosTestBackend,
+    required this._macosTestBackend,
+    required this._webTestBackend,
+    required this._flutterTool,
+    required this._logger,
+    required this._stdin,
     this.onTestsCompleted,
     this.onLogEntry,
-  }) : _deviceFinder = deviceFinder,
-       _testFinderFactory = testFinderFactory,
-       _testBundler = testBundler,
-       _dartDefinesReader = dartDefinesReader,
-       _compatibilityChecker = compatibilityChecker,
-       _pubspecReader = pubspecReader,
-       _androidTestBackend = androidTestBackend,
-       _iosTestBackend = iosTestBackend,
-       _macosTestBackend = macosTestBackend,
-       _webTestBackend = webTestBackend,
-       _flutterTool = flutterTool,
-       _logger = logger,
-       _stdin = stdin;
+  });
 
   /// Optional callback invoked when the test backend process finishes,
   /// before [run] itself returns. This allows callers (e.g. MCP) to react

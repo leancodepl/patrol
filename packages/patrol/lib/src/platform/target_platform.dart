@@ -63,11 +63,6 @@ PatrolTargetPlatform parsePatrolTargetPlatform(String name) {
     'ios' => PatrolTargetPlatform.iOS,
     'macos' => PatrolTargetPlatform.macOS,
     'web' => PatrolTargetPlatform.web,
-    '' => throw StateError(
-      'patrolTargetPlatform was used during build-time test discovery, but the '
-      'discovery run did not report which platform it builds for. Update '
-      'patrol_cli.',
-    ),
     _ => throw StateError(
       'Build-time test discovery reported an unknown target platform "$name". '
       'Your patrol_cli and patrol versions are probably incompatible.',

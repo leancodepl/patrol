@@ -4,7 +4,7 @@ import 'package:patrol_cli/src/base/logger.dart';
 
 /// Utility class for interactive command-line prompts.
 class InteractivePrompts {
-  InteractivePrompts({required Logger logger}) : _logger = logger;
+  InteractivePrompts({required this._logger});
 
   final Logger _logger;
 

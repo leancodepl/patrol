@@ -109,13 +109,7 @@ class Selector implements CompoundSelector {
 /// - [Selector] for cross-platform selectors with unified properties.
 class PlatformSelector implements CompoundSelector {
   /// Creates a new [PlatformSelector].
-  PlatformSelector({
-    IOSSelector? ios,
-    AndroidSelector? android,
-    WebSelector? web,
-  }) : _ios = ios,
-       _android = android,
-       _web = web;
+  PlatformSelector({this._ios, this._android, this._web});
 
   final IOSSelector? _ios;
   final AndroidSelector? _android;
@@ -137,9 +131,7 @@ class PlatformSelector implements CompoundSelector {
 /// A mobile-specific selector for finding UI elements.
 class MobileSelector implements CompoundSelector {
   /// Creates a new [MobileSelector].
-  MobileSelector({IOSSelector? ios, AndroidSelector? android})
-    : _ios = ios,
-      _android = android;
+  MobileSelector({this._ios, this._android});
 
   final IOSSelector? _ios;
   final AndroidSelector? _android;

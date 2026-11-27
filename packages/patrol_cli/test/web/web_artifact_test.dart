@@ -11,21 +11,35 @@ void main() {
     test('names the missing app', () {
       fs.directory('out').createSync(recursive: true);
 
-      expect(WebArtifact.at('out', fs: fs).problem, contains('index.html'));
+      expect(WebArtifact.at('out', fs: fs).problem(), contains('index.html'));
     });
 
     test('names the missing runner', () {
       fs.file('out/app/index.html').createSync(recursive: true);
 
-      expect(WebArtifact.at('out', fs: fs).problem, contains('package.json'));
+      expect(WebArtifact.at('out', fs: fs).problem(), contains('package.json'));
     });
 
     test('is null for a complete artifact', () {
       fs.file('out/app/index.html').createSync(recursive: true);
       fs.file('out/runner/package.json').createSync(recursive: true);
 
-      expect(WebArtifact.at('out', fs: fs).problem, isNull);
+      expect(WebArtifact.at('out', fs: fs).problem(), isNull);
     });
+
+    test('needs only the runner when the app is served elsewhere', () {
+      fs.file('out/runner/package.json').createSync(recursive: true);
+
+      expect(WebArtifact.at('out', fs: fs).problem(servesApp: false), isNull);
+    });
+  });
+
+  test('file manager metadata does not make a directory foreign', () {
+    fs.file('out/app/index.html').createSync(recursive: true);
+    fs.file('out/.DS_Store').createSync();
+    fs.file('out/Thumbs.db').createSync();
+
+    expect(WebArtifact.at('out', fs: fs).holdsForeignEntries, isFalse);
   });
 
   test('a directory with unrelated files is not ours to overwrite', () {

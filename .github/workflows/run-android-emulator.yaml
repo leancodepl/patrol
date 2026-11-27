@@ -1,0 +1,264 @@
+name: run android emulator
+
+# Holds EW_API_TOKEN and runs only from master: never execute anything the build produced.
+
+on:
+  workflow_run:
+    workflows: ["test android emulator", "test android emulator webview"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      build_run_id:
+        description: ID of a successful run of an emulator build workflow
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+  statuses: write
+
+env:
+  EW_CLI_VERSION: 1.6.1
+  EW_CLI_SHA256: 188b9e47203b0de7e73591e2e77f8bfd158eebef2fb4a523793df82f1bb405bb
+
+jobs:
+  plan:
+    name: Plan
+    if: github.ref == 'refs/heads/master' && (github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      suite: ${{ steps.plan.outputs.suite }}
+      matrix: ${{ steps.plan.outputs.matrix }}
+      build_run_id: ${{ steps.build.outputs.run_id }}
+      workflow_name: ${{ steps.build.outputs.name }}
+      head_sha: ${{ steps.build.outputs.head_sha }}
+      event: ${{ steps.build.outputs.event }}
+      concurrency_key: ${{ steps.build.outputs.concurrency_key }}
+    steps:
+      - name: Find the build run
+        id: build
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INPUT_RUN_ID: ${{ inputs.build_run_id }}
+          EVENT_RUN_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          run_id="${INPUT_RUN_ID:-$EVENT_RUN_ID}"
+          if ! [[ "$run_id" =~ ^[0-9]+$ ]]; then
+            echo "::error::Invalid build run ID: $run_id"
+            exit 1
+          fi
+          run="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id")"
+          if [ "$(jq -r .conclusion <<< "$run")" != success ]; then
+            echo "::error::Build run $run_id did not succeed"
+            exit 1
+          fi
+          event="$(jq -r .event <<< "$run")"
+          if [ "$event" = pull_request ]; then
+            key="pr-$(jq -r '"\(.name)-\(.head_repository.full_name)-\(.head_branch)"' <<< "$run")"
+          else
+            key="build-$run_id"
+          fi
+          {
+            echo "run_id=$run_id"
+            echo "name=$(jq -r .name <<< "$run")"
+            echo "head_sha=$(jq -r .head_sha <<< "$run")"
+            echo "event=$event"
+            echo "concurrency_key=$key"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Pick the suite for the workflow that built the APKs
+        id: plan
+        env:
+          WORKFLOW_NAME: ${{ steps.build.outputs.name }}
+        run: |
+          case "$WORKFLOW_NAME" in
+            "test android emulator")
+              echo "suite=multi_api" >> "$GITHUB_OUTPUT"
+              echo 'matrix={"include":[{"label":"API 36","device":"model=Pixel7,version=36"},{"label":"API 35","device":"model=Pixel7,version=35"},{"label":"API 34","device":"model=Pixel7,version=34"},{"label":"API 33","device":"model=Pixel7,version=33"},{"label":"API 32","device":"model=Pixel7,version=32"}]}' >> "$GITHUB_OUTPUT"
+              ;;
+            "test android emulator webview")
+              echo "suite=ci_webview" >> "$GITHUB_OUTPUT"
+              echo 'matrix={"include":[{"label":"webview","device":""}]}' >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "::error::Unexpected workflow: $WORKFLOW_NAME"
+              exit 1
+              ;;
+          esac
+
+  run_tests:
+    name: ${{ matrix.label }} on emulator.wtf
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    # A newer push to the same PR, or a manual rerun of the same build, replaces this run.
+    concurrency:
+      group: ${{ github.workflow }}-${{ needs.plan.outputs.concurrency_key }}-${{ matrix.label }}
+      cancel-in-progress: true
+    outputs:
+      SLACK_MESSAGE_TITLE: ${{ needs.plan.outputs.workflow_name }} on emulator.wtf
+      TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
+      URL_TO_DETAILS: ${{ steps.tests_step.outputs.URL_TO_DETAILS }}
+
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+
+    env:
+      HEAD_SHA: ${{ needs.plan.outputs.head_sha }}
+      STATUS_CONTEXT: e2e android / ${{ matrix.label }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+    steps:
+      - name: Mark the commit status as pending
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/statuses/$HEAD_SHA" \
+            -f state=pending -f context="$STATUS_CONTEXT" \
+            -f target_url="$RUN_URL" -f description="Running on emulator.wtf"
+
+      # Only the emulator.wtf config, never from the PR.
+      - name: Check out emulator.wtf config
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: dev/e2e_app/emulatorwtf.yaml
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+
+      - name: Download APKs
+        uses: actions/download-artifact@v4
+        with:
+          name: e2e-apks
+          path: ${{ runner.temp }}/apks
+          run-id: ${{ needs.plan.outputs.build_run_id }}
+          github-token: ${{ github.token }}
+
+      - name: Check the downloaded files
+        run: |
+          cd "$RUNNER_TEMP/apks"
+          for f in app-debug.apk app-debug-androidTest.apk; do
+            if [ ! -f "$f" ] || [ -L "$f" ]; then
+              echo "::error::Missing or unexpected $f in the artifact"
+              exit 1
+            fi
+          done
+
+      - name: Install ew-cli
+        run: |
+          mkdir -p "$RUNNER_TEMP/ew-cli"
+          jar="$RUNNER_TEMP/ew-cli/ew-cli.jar"
+          curl -sSfL -o "$jar" \
+            "https://maven.emulator.wtf/releases/wtf/emulator/ew-cli/$EW_CLI_VERSION/ew-cli-$EW_CLI_VERSION.jar"
+          echo "$EW_CLI_SHA256  $jar" | sha256sum -c -
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Run tests on emulator.wtf
+        id: tests_step
+        working-directory: dev/e2e_app
+        env:
+          EW_API_TOKEN: ${{ secrets.EW_API_TOKEN }}
+          SUITE: ${{ needs.plan.outputs.suite }}
+          DEVICE: ${{ matrix.device }}
+          LABEL: ${{ matrix.label }}
+        run: |
+          args=()
+          if [ -n "$DEVICE" ]; then
+            args+=(--device "$DEVICE")
+          fi
+
+          set +e
+          output="$(java -jar "$RUNNER_TEMP/ew-cli/ew-cli.jar" "emulatorwtf.yaml:$SUITE" \
+            --app "$RUNNER_TEMP/apks/app-debug.apk" \
+            --test "$RUNNER_TEMP/apks/app-debug-androidTest.apk" \
+            "${args[@]}" \
+            --display-name "Patrol example app $LABEL (${HEAD_SHA::7})" \
+            --json)"
+          TESTS_EXIT_CODE=$?
+          set -e
+
+          link="$(echo "$output" | jq -r '.resultsUrl // empty' || true)"
+          if [ -n "$link" ]; then
+            echo "[Test details on emulator.wtf]($link) (LeanCode members only)" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          echo "URL_TO_DETAILS=$link" >> "$GITHUB_OUTPUT"
+          echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
+          exit $TESTS_EXIT_CODE
+
+      # Results come from the PR's test APK: parse as data only.
+      - name: List failed tests
+        if: always() && steps.tests_step.outcome != 'skipped'
+        working-directory: dev/e2e_app
+        shell: python3 -I {0}
+        run: |
+          import os, pathlib, re
+          import xml.etree.ElementTree as ET
+
+          def clean(text, limit):
+              text = re.sub(r"[^\x20-\x7e]", " ", text or "")
+              text = text.replace("`", "'").replace("|", "/").strip()
+              return text[:limit]
+
+          failed = {}
+          for path in pathlib.Path("ew-test_outputs").rglob("*.xml"):
+              if path.is_symlink() or path.stat().st_size > 20_000_000:
+                  continue
+              try:
+                  root = ET.parse(path).getroot()
+              except ET.ParseError:
+                  continue
+              for case in root.iter("testcase"):
+                  problem = case.find("failure")
+                  if problem is None:
+                      problem = case.find("error")
+                  if problem is None:
+                      continue
+                  name = clean(f"{case.get('classname', '')}.{case.get('name', '')}", 200)
+                  message = (problem.get("message") or problem.text or "").strip().splitlines()
+                  failed.setdefault(name, clean(message[0] if message else "", 300))
+
+          lines = [f"### Failed tests ({len(failed)})", ""]
+          if failed:
+              lines += ["| Test | Message |", "| --- | --- |"]
+              lines += [f"| `{name}` | " + (f"`{message}`" if message else "") + " |" for name, message in sorted(failed.items())[:100]]
+          else:
+              lines.append("No failed tests in the results.")
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as summary:
+              summary.write("\n".join(lines) + "\n")
+
+      - name: Report the commit status
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          case "$JOB_STATUS" in
+            success) state=success; description="Passed on emulator.wtf" ;;
+            failure) state=failure; description="Failed, see the failed tests in the run summary" ;;
+            *) state=error; description="Cancelled or superseded" ;;
+          esac
+          gh api "repos/$GITHUB_REPOSITORY/statuses/$HEAD_SHA" \
+            -f state="$state" -f context="$STATUS_CONTEXT" \
+            -f target_url="$RUN_URL" -f description="$description"
+
+  call_send_slack_message:
+    name: Notify on Slack
+    uses: ./.github/workflows/send-slack-message.yaml
+    needs: [plan, run_tests]
+    # A failed scheduled build skips the tests but must still alert.
+    if: always() && (needs.run_tests.result != 'skipped' || github.event.workflow_run.event == 'schedule')
+    with:
+      TESTS_EXIT_CODE: ${{ needs.run_tests.outputs.TESTS_EXIT_CODE }}
+      FAILURE_STATUS: ${{ needs.run_tests.result == 'failure' && 'failure' || '' }}
+      SLACK_MESSAGE_TITLE: ${{ needs.run_tests.outputs.SLACK_MESSAGE_TITLE || format('{0} on emulator.wtf', github.event.workflow_run.name) }}
+      URL_TO_DETAILS: ${{ needs.run_tests.outputs.URL_TO_DETAILS || github.event.workflow_run.html_url }}
+      TRIGGER_EVENT: ${{ needs.plan.outputs.event || github.event.workflow_run.event }}
+    secrets: inherit

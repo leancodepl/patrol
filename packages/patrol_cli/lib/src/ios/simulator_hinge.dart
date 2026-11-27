@@ -12,14 +12,11 @@ import 'package:process/process.dart';
 /// Runs a helper that sends Device Hub's hinge event over private XPC.
 class SimulatorHinge {
   SimulatorHinge({
-    required String deviceId,
-    required ProcessManager processManager,
-    required FileSystem fs,
-    required Logger logger,
-  }) : _deviceId = deviceId,
-       _processManager = processManager,
-       _fs = fs,
-       _logger = logger;
+    required this._deviceId,
+    required this._processManager,
+    required this._fs,
+    required this._logger,
+  });
 
   final String _deviceId;
   final ProcessManager _processManager;

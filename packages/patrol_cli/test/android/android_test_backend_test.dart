@@ -9,7 +9,7 @@ import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
-import 'package:platform/platform.dart';
+import 'package:platform/testing.dart';
 import 'package:test/test.dart';
 
 import '../src/fixtures.dart';
@@ -36,7 +36,7 @@ void main() {
       androidTestBackend = AndroidTestBackend(
         adb: adb,
         processManager: processManager,
-        platform: FakePlatform(),
+        platform: TestNativePlatform(),
         rootDirectory: rootDirectory,
         parentDisposeScope: DisposeScope(),
         logger: logger,

@@ -1,8 +1,6 @@
 package pl.leancode.patrol
 
 import android.content.Context
-import android.content.res.Resources
-import android.os.Build
 import android.os.LocaleList
 
 object Localization {
@@ -12,14 +10,9 @@ object Localization {
      * This ensures we operate on the actual language used by the system UI
      */
     private fun getDeviceLanguage(context: Context): String {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            // Use LocaleList to get the actual system default language
-            // This is more direct than using configuration.locales
-            LocaleList.getDefault().get(0).language
-        } else {
-            @Suppress("DEPRECATION")
-            Resources.getSystem().configuration.locale.language
-        }
+        // Use LocaleList to get the actual system default language
+        // This is more direct than using configuration.locales
+        return LocaleList.getDefault().get(0).language
     }
 
     /**

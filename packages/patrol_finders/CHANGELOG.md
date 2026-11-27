@@ -1,6 +1,14 @@
 ## Unreleased
 
-- Report the elapsed duration when drag helpers exhaust their iterations. (#2103)
+- **Breaking:** `PatrolTester.pumpAndSettle()` returns `Future<int>`, the number of pumped frames,
+  like `WidgetTester.pumpAndSettle()`. Overrides, implementations and mocks of it must return
+  `Future<int>`. (#3414)
+
+## 3.7.1
+
+- Fix the duration in the timeout exception that `dragUntilExists()` and `dragUntilVisible()` throw after running out of iterations: it now reports the time spent dragging instead of `settleBetweenScrollsTimeout`. (#3300)
+- Drop an unneeded `package:flutter/material.dart` import, which Flutter 3.47+ deprecates in favour
+  of `package:material_ui`. (#3399)
 
 ## 3.7.0
 

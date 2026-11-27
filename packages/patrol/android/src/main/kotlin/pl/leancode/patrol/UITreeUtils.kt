@@ -2,7 +2,6 @@ package pl.leancode.patrol
 
 import android.app.UiAutomation
 import android.graphics.Rect
-import android.os.Build
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.test.uiautomator.UiDevice
 import pl.leancode.patrol.contracts.Contracts.AndroidNativeView
@@ -33,17 +32,11 @@ private fun getWindowRoots(uiDevice: UiDevice, uiAutomation: UiAutomation): Arra
         roots.add(activeRoot)
     }
 
-    // Support multi-window searches for API level 21 and up.
-    val apiLevelActual = (
-        Build.VERSION.SDK_INT +
-            if ("REL" == Build.VERSION.CODENAME) 0 else 1
-        )
-    if (apiLevelActual >= Build.VERSION_CODES.LOLLIPOP) {
-        for (window in uiAutomation.windows) {
-            val root = window.root
-            if (root != null) {
-                roots.add(root)
-            }
+    // Add the roots of all the other windows too, for multi-window searches.
+    for (window in uiAutomation.windows) {
+        val root = window.root
+        if (root != null) {
+            roots.add(root)
         }
     }
     return roots.toTypedArray()
