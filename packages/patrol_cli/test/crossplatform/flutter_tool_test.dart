@@ -156,6 +156,94 @@ void main() {
       },
     );
 
+    group('t', () {
+      late StreamController<List<int>> keys;
+      late StreamController<List<int>> processStdout;
+      late FlutterTool tool;
+      late List<String> switchedTo;
+
+      setUp(() async {
+        keys = StreamController<List<int>>();
+        processStdout = StreamController<List<int>>();
+        switchedTo = [];
+        tool =
+            FlutterTool(
+                logger: MockLogger(),
+                parentDisposeScope: DisposeScope(),
+                processManager: processManager,
+                platform: platform,
+                stdin: keys.stream,
+                onExit: () async {},
+              )
+              ..testSwitcher = TestSwitcher(
+                listTests: () => [
+                  'patrol_test/a_test.dart',
+                  'patrol_test/b_test.dart',
+                ],
+                switchTo: (testFile) async {
+                  switchedTo.add(testFile);
+                  return null;
+                },
+              );
+        final process = MockProcess();
+        when(() => process.stdout).thenAnswer((_) => processStdout.stream);
+        when(
+          () => process.stderr,
+        ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
+        when(() => process.exitCode).thenAnswer((_) => Completer<int>().future);
+        when(
+          () => processManager.start(any()),
+        ).thenAnswer((_) async => process);
+
+        final attach = tool.attach(
+          flutterCommand: flutterCommand,
+          deviceId: 'testDeviceId',
+          target: 'target',
+          appId: 'appId',
+          dartDefines: {},
+          openBrowser: false,
+        );
+        processStdout.add(utf8.encode('Flutter run key commands.\n'));
+        await attach;
+      });
+
+      tearDown(() async {
+        await processStdout.close();
+        await keys.close();
+      });
+
+      test('switches to the test file whose number is typed', () async {
+        keys
+          ..add('t'.codeUnits)
+          ..add('2'.codeUnits)
+          ..add('\r'.codeUnits);
+        await pumpEventQueue();
+
+        expect(switchedTo, ['patrol_test/b_test.dart']);
+      });
+
+      test('is cancelled by any key other than a digit or Enter', () async {
+        keys
+          ..add('t'.codeUnits)
+          ..add('2'.codeUnits)
+          ..add('x'.codeUnits)
+          ..add('\r'.codeUnits);
+        await pumpEventQueue();
+
+        expect(switchedTo, isEmpty);
+      });
+
+      test('ignores a number no test file has', () async {
+        keys
+          ..add('t'.codeUnits)
+          ..add('9'.codeUnits)
+          ..add('\r'.codeUnits);
+        await pumpEventQueue();
+
+        expect(switchedTo, isEmpty);
+      });
+    });
+
     test('a second q while quitting does not clean up again', () async {
       final keys = StreamController<List<int>>();
       var exits = 0;

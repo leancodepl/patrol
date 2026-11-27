@@ -51,6 +51,18 @@ class FlutterTool {
   final Duration _restartRejectionGrace;
   Timer? _restartSettleTimer;
 
+  /// Lets `t` switch the test file the session runs; the key does nothing
+  /// while this is null.
+  TestSwitcher? testSwitcher;
+
+  String get _keyCommands => [
+    'Patrol develop key commands:',
+    'r Hot restart',
+    if (testSwitcher != null) 't Switch test file',
+    'h Print this help message',
+    'q Quit (terminate the process and application on the device)',
+  ].join('\n');
+
   var _hotRestartActive = false;
   var _logsActive = false;
   var _logsSkipped = false;
@@ -345,10 +357,73 @@ class FlutterTool {
       });
 
       var quitting = false;
+
+      // The test files offered after `t`, while the user is choosing one.
+      List<String>? choices;
+      var typed = '';
+
+      Future<void> onChoiceKey(List<String> offered, String char) async {
+        if (RegExp('[0-9]').hasMatch(char)) {
+          typed += char;
+          return;
+        }
+        choices = null;
+        final index = int.tryParse(typed);
+        typed = '';
+        if ((char != '\r' && char != '\n') || index == null) {
+          _logger.info('Test switch cancelled.');
+          return;
+        }
+        if (index < 1 || index > offered.length) {
+          _logger.warn('No test file numbered $index.');
+          return;
+        }
+        final testFile = offered[index - 1];
+        final switcher = testSwitcher;
+        if (switcher == null) {
+          return;
+        }
+        _logger.success('Hot Restart into $testFile...');
+        final failure = await switcher.switchTo(testFile);
+        if (failure != null) {
+          _logger.warn(
+            'Still running the previous test file: '
+            '${failure.split('\n').first}',
+          );
+        }
+      }
+
+      void offerTestFiles(TestSwitcher switcher) {
+        final offered = switcher.listTests();
+        if (offered.isEmpty) {
+          _logger.warn('No test files to switch to.');
+          return;
+        }
+        choices = offered;
+        _logger.info(
+          [
+            'Type the number of the test file to run, then Enter:',
+            for (final (i, file) in offered.indexed) '${i + 1} $file',
+          ].join('\n'),
+        );
+      }
+
       _stdin
           .listen((event) async {
+            if (choices case final offered?) {
+              for (final char in String.fromCharCodes(event).split('')) {
+                if (choices == null) {
+                  break;
+                }
+                await onChoiceKey(offered, char);
+              }
+              return;
+            }
+
             final char = String.fromCharCode(event.first);
-            if (char == 'r' || char == 'R') {
+            if ((char == 't' || char == 'T') && testSwitcher != null) {
+              offerTestFiles(testSwitcher!);
+            } else if (char == 'r' || char == 'R') {
               if (!_hotRestartActive) {
                 _logger.warn(
                   'Hot Restart: not attached to the app yet, will restart once '
@@ -363,12 +438,7 @@ class FlutterTool {
               );
               process.stdin.add('R'.codeUnits);
             } else if (char == 'h' || char == 'H') {
-              final helpText = StringBuffer(
-                'Patrol develop key commands:\n'
-                'r Hot restart\n'
-                'h Print this help message\n'
-                'q Quit (terminate the process and application on the device)',
-              );
+              final helpText = StringBuffer(_keyCommands);
 
               if (_devtoolsUrl.isNotEmpty) {
                 helpText.writeln('\nDevTools: $_devtoolsUrl');
@@ -410,11 +480,7 @@ class FlutterTool {
           .listenStdOut((line) {
             if (line == 'Flutter run key commands.' && !completer.isCompleted) {
               _logger.success(
-                'Hot Restart: attached to the app\n'
-                'Patrol develop key commands:\n'
-                'r Hot restart\n'
-                'h Print this help message\n'
-                'q Quit (terminate the process and application on the device)',
+                'Hot Restart: attached to the app\n$_keyCommands',
               );
               _hotRestartActive = true;
               if (forwardsBefore case final before?) {
@@ -635,6 +701,18 @@ String getObservationUrl(String line) {
     );
   }
   return line.substring(startIndex);
+}
+
+/// What `t` in a develop session needs to switch the test file it runs.
+class TestSwitcher {
+  const TestSwitcher({required this.listTests, required this.switchTo});
+
+  /// The test files to offer, as the user names them.
+  final List<String> Function() listTests;
+
+  /// Hot-restarts the session into the test file. Returns null once it runs
+  /// it, otherwise why it does not.
+  final Future<String?> Function(String testFile) switchTo;
 }
 
 class StdinModes {

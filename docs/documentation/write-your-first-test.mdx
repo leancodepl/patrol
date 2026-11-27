@@ -58,6 +58,8 @@ void main() {
 
 We could start writing the test right now and then re-run it from scratch every time we add a new line of test code by calling `patrol test --target patrol_test/app_test.dart` but since we’re writing a Patrol test that runs on an Android or iOS device, constantly building the whole Flutter app is not time effective. Thankfully, Patrol offers a different approach - hot restarting the tests! We can run the command `patrol develop --target patrol_test/app_test.dart` right now and anytime we add a new line of test code, we can just type “r” in the terminal to re-run the tests without the time-costly app building. Just make sure that you have an emulator running first - Patrol will select it automatically.
 
+To run another test file without rebuilding, type “t” in the same terminal, then the file's number from the list and Enter. Only Dart changes reach a running session: test files and the app's `lib/`.
+
 First, we need to perform any initializations that need to happen before the app is run and pump the top-level widget of our app. We’re effectively doing what the `main` function inside `main.dart` does - this time not for just running the app as usual but for running an automated Patrol test.
 
 ```dart

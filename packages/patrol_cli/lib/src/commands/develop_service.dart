@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:meta/meta.dart';
+import 'package:path/path.dart' as p;
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/android/android_test_layout.dart';
@@ -317,6 +318,17 @@ class DevelopService {
     // because the proxy entrypoint in integration_test/ causes broken
     // relative imports under the web compiler.
     final isWeb = device.targetPlatform == TargetPlatform.web;
+    _flutterTool.testSwitcher = _bundleTarget == null || isWeb
+        ? null
+        : TestSwitcher(
+            listTests: () => [
+              for (final testFile in testFinder.findAllTests(
+                testFileSuffix: config.testFileSuffix,
+              ))
+                p.relative(testFile),
+            ],
+            switchTo: restartInto,
+          );
     final File entrypoint;
     if (isWeb) {
       entrypoint = _testBundler.getBundledTestFile(testDirectory);

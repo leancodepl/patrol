@@ -79,6 +79,8 @@
   restart instead of refusing it, so trying another file needs no rebuild. A file that does not
   compile leaves the session on the previous test and returns the compiler output. `reset: true`
   quits the session and starts a new one with clean app data.
+- `t` in `patrol develop` lists the project's test files and hot restarts into the one whose number
+  you type, without a rebuild.
 
 - **BREAKING CHANGE**
   - Remove `--tags` from `patrol develop`. It was accepted but never applied, so a session ran
