@@ -161,6 +161,14 @@ class PatrolAppService {
 
   final _testExecutionCompleted = Completer<_TestExecutionResult>();
   PatrolPhaseContinuation? _continuation;
+  RunDartTestRequest? _currentRequest;
+
+  /// The request to run a Dart test, or `null` before Playwright sent it.
+  RunDartTestRequest? get currentRequest => _currentRequest;
+
+  /// Always `false`: web has no relaunch loop, and a phase that asks for one
+  /// fails the test instead (see [runDartTest]).
+  bool get willRelaunchApp => false;
 
   /// A future that completes when the Dart test file (whose execution was
   /// requested) completes.
@@ -214,6 +222,7 @@ class PatrolAppService {
 
   /// Runs a Dart test with the given [request].
   Future<RunDartTestResponse> runDartTest(RunDartTestRequest request) async {
+    _currentRequest = request;
     _testExecutionRequested.complete(request);
     final result = await testExecutionCompleted;
     if (!result.passed) {

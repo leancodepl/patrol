@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
+import 'package:patrol/src/phases.dart' show PatrolPhaseContinuation;
 import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:patrol/src/platform/mobile/patrol_app_service_io.dart';
 
@@ -136,6 +137,79 @@ void main() {
         service.runDartTest(const RunDartTestRequest(name: 'b_test')),
         throwsA(isA<AssertionError>()),
       );
+    });
+  });
+
+  group('PatrolAppService phases', () {
+    PatrolAppService newService() =>
+        PatrolAppService(topLevelDartTestGroup: _group('', [_test('a_test')]));
+
+    test('remembers the request and the phase it asks for', () async {
+      final service = newService();
+      expect(service.currentRequest, isNull);
+
+      final response = service.runDartTest(
+        const RunDartTestRequest(name: 'a_test', phaseIndex: 2),
+      );
+      await service.testExecutionRequested;
+      expect(service.currentRequest?.phaseIndex, 2);
+
+      await service.markDartTestAsCompleted(
+        dartFileName: 'a_test',
+        passed: true,
+        details: null,
+      );
+      expect((await response).result, RunDartTestResponseResult.success);
+    });
+
+    test('relaunches the app after a passing phase with a next one', () async {
+      final service = newService();
+      final response = service.runDartTest(
+        const RunDartTestRequest(name: 'a_test'),
+      );
+      await service.testExecutionRequested;
+      expect(service.willRelaunchApp, isFalse);
+
+      service.setContinuation(
+        PatrolPhaseContinuation(
+          nextPhaseIndex: 1,
+          launchUrl: 'patrol://settings',
+        ),
+      );
+      expect(service.willRelaunchApp, isTrue);
+
+      await service.markDartTestAsCompleted(
+        dartFileName: 'a_test',
+        passed: true,
+        details: null,
+      );
+      final result = await response;
+      expect(result.result, RunDartTestResponseResult.continuation);
+      expect(result.nextPhaseIndex, 1);
+      expect(result.nextPhaseLaunchUrl, 'patrol://settings');
+      // Still true for the tests that run after it before the app is killed.
+      expect(service.willRelaunchApp, isTrue);
+    });
+
+    test('a failure reported after the phase cancels the relaunch', () async {
+      final service = newService();
+      final response = service.runDartTest(
+        const RunDartTestRequest(name: 'a_test'),
+      );
+      await service.testExecutionRequested;
+      service.setContinuation(
+        PatrolPhaseContinuation(nextPhaseIndex: 1, launchUrl: null),
+      );
+
+      // For example a tearDown that threw after the phase body passed.
+      await service.markDartTestAsCompleted(
+        dartFileName: 'a_test',
+        passed: false,
+        details: 'boom',
+      );
+
+      expect((await response).result, RunDartTestResponseResult.failure);
+      expect(service.willRelaunchApp, isFalse);
     });
   });
 

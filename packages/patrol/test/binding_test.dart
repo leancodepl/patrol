@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
+import 'package:patrol/src/phases.dart' show PatrolPhaseContinuation;
 import 'package:patrol/src/platform/contracts/contracts.dart';
 
 DartGroupEntry _entry(
@@ -22,7 +23,8 @@ class _FakePlatformAutomator implements PlatformAutomator {
 
 void main() {
   // PatrolBinding's tearDown() waits for the native side to request a test.
-  // Request one that is not in this file, so tearDown() reports nothing.
+  // Request one that is not in this file, so tearDown() reports nothing. The
+  // request is for phase 1, as after the first relaunch of a phased test.
   final binding = PatrolBinding(_FakePlatformAutomator())
     ..logger = (_) {}
     ..patrolAppService = PatrolAppService(
@@ -33,7 +35,7 @@ void main() {
       ]),
     )
     ..patrolAppService.runDartTest(
-      const RunDartTestRequest(name: 'other_test other'),
+      const RunDartTestRequest(name: 'other_test other', phaseIndex: 1),
     );
 
   // The host engine always starts on `/`, so equality can't tell the native
@@ -60,6 +62,27 @@ void main() {
 
       tester.platformDispatcher.defaultRouteNameTestValue = '/details/42';
       expect(tester.platformDispatcher.defaultRouteName, '/details/42');
+    });
+  });
+
+  group('PatrolBinding phases', () {
+    int? phaseInSetUp;
+    setUp(() => phaseInSetUp = binding.currentPhaseIndex);
+
+    test('reports the phase the native side asked this process to run', () {
+      // Hooks see it too, not only code that runs after a test body set it.
+      expect(phaseInSetUp, 1);
+      expect(binding.currentPhaseIndex, 1);
+    });
+
+    test('reports a relaunch once a phase asks for the next one', () {
+      expect(binding.willRelaunchApp, isFalse);
+
+      binding.patrolAppService.setContinuation(
+        PatrolPhaseContinuation(nextPhaseIndex: 2, launchUrl: null),
+      );
+
+      expect(binding.willRelaunchApp, isTrue);
     });
   });
 }

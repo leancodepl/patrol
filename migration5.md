@@ -341,8 +341,8 @@ the Inbox before 5.0.0 is released.
   activity class (`MainActivity.class` is not on the test APK). Update `patrol` and
   `patrol_cli` together.
 - #3282, `patrol`: multi-phase `phases([...])` tests are unsupported with `patrol test --coverage`
-  (VM). Run without `--coverage`, or use a single phase. `setUp`/`tearDown` run per phase; use
-  `PatrolBinding.instance.currentPhaseIndex` when cleanup must wait until the last phase.
+  (VM). Run without `--coverage`, or use a single phase. Hooks run in every phase's process; put
+  cleanup in `patrolTearDown` and skip it while `PatrolBinding.instance.willRelaunchApp` is `true`.
 - #3382, `patrol_cli`: `patrol develop` no longer accepts `--tags`, which it never applied. Remove
   `--tags` from `patrol develop` commands and scripts; `patrol test` keeps it.
 - #3040, `patrol_cli`: `patrol develop` on web requires Flutter 3.47.0 or newer, since hot restart

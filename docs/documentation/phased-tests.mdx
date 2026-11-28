@@ -49,25 +49,41 @@ asserts a different PID.
 
 ## setUp / tearDown and timeouts
 
-Every phase is its own Dart test process. That means:
+Every phase runs in its own app process, and every process runs your test file
+from the top. That means:
 
-- Your `setUp` / `tearDown`, `patrolSetUp` / `patrolTearDown`, and `setUpAll`
-  run **around every phase**, not once for the whole phased test.
+- `setUp` / `tearDown`, `patrolSetUp` / `patrolTearDown` and `setUpAll` run
+  **in every phase's process**, not once for the whole phased test.
+- A plain `setUp` / `tearDown` also runs for the other tests of the file in that
+  process, for example right before your test's next phase starts.
+  `patrolSetUp` / `patrolTearDown` run only for the test the native side asked
+  for.
 - The test `timeout` applies to **each** phase separately.
 
-A `tearDown` that clears storage or logs out will therefore run right after
-phase 0 and can delete the state phase 1 is meant to find after the kill. Skip
-that cleanup between phases with [`PatrolBinding.instance.currentPhaseIndex`]:
+So a hook that clears storage or logs out can delete the state the next phase
+is meant to find after the kill. Put such cleanup in `patrolTearDown` and skip
+it while `PatrolBinding.instance.willRelaunchApp` is `true`: it becomes `true`
+once a phase that isn't the last one passes. To run something only in the
+first process, check `PatrolBinding.instance.currentPhaseIndex` in
+`patrolSetUp` (`0` for the first phase and for tests without phases):
 
 ```dart
-tearDown(() async {
-  final phase = PatrolBinding.instance.currentPhaseIndex;
-  if (phase != null && phase < lastPhaseIndex) {
-    return;
+patrolSetUp(() async {
+  if (PatrolBinding.instance.currentPhaseIndex == 0) {
+    await seedTestData(); // only before the first phase
   }
-  // Clear storage / log out only after the last phase.
+});
+
+patrolTearDown(() async {
+  if (PatrolBinding.instance.willRelaunchApp) {
+    return; // the next phase checks this state after the relaunch
+  }
+  await clearStorage();
 });
 ```
+
+`setUpAll` runs before the native side asks for a test, so it can't tell the
+phases apart. Keep state resets out of it in files with phased tests.
 
 ## How to launch the next process
 
@@ -132,5 +148,4 @@ Dart runs.
 
 [native automation]: /documentation/native/usage
 [`:patrolTest`]: /documentation#android-setup
-[`PatrolBinding.instance.currentPhaseIndex`]: /documentation/phased-tests
 [`app_links`]: https://pub.dev/packages/app_links

@@ -118,6 +118,18 @@ class PatrolAppService extends PatrolAppServiceServer {
 
   var _testExecutionCompleted = Completer<_TestExecutionResult>();
   PatrolPhaseContinuation? _continuation;
+  RunDartTestRequest? _currentRequest;
+
+  /// The latest request from the native side to run a Dart test, or `null`
+  /// before the native side asked for one.
+  RunDartTestRequest? get currentRequest => _currentRequest;
+
+  /// Whether the native side will kill the app and relaunch it for the next
+  /// phase of a phased test.
+  ///
+  /// Stays `true` until the app is killed, so it also holds for the tests that
+  /// run in this process after the phase that set it.
+  bool get willRelaunchApp => _continuation != null;
 
   /// A future that completes when the Dart test file (whose execution was
   /// requested by the native side) completes.
@@ -158,6 +170,9 @@ class PatrolAppService extends PatrolAppServiceServer {
 
     final completed = _testExecutionCompleted;
     final continuation = passed ? _continuation : null;
+    // A failure (even one reported after the phase body, e.g. in tearDown)
+    // ends the test, so the app is not relaunched.
+    _continuation = continuation;
     if (reuseAcrossTests) {
       // The orchestrator is off, so this same app service will serve the next
       // test too. Swap in fresh completers *before* unblocking runDartTest, so
@@ -300,6 +315,7 @@ class PatrolAppService extends PatrolAppServiceServer {
       );
     }
 
+    _currentRequest = request;
     _testExecutionRequested.complete(request);
 
     final testExecutionResult = await testExecutionCompleted;

@@ -222,12 +222,32 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
       _entrypointArgs = List.unmodifiable(value);
   List<String> _entrypointArgs = const [];
 
-  /// Index of the phase running in this process for a phased test.
+  /// The phase the native side asked this process to run: `0` for the first
+  /// process of a test, `1` after the first relaunch, and so on. Tests without
+  /// phases always run in phase `0`.
   ///
-  /// `null` when the current test is not phased, or before `patrolTest` sets
-  /// it. Use this in `setUp` / `tearDown` (and `patrolSetUp` / `patrolTearDown`)
-  /// when cleanup should run only after the last phase.
-  int? currentPhaseIndex;
+  /// It's `null` until the native side asks for a test. `patrolSetUp`,
+  /// `patrolTearDown` and the test body run after that; a plain `setUp` can
+  /// run before it.
+  int? get currentPhaseIndex {
+    if (_isDevelopMode) {
+      // patrol develop runs every test in one process and never relaunches.
+      return 0;
+    }
+    final request = patrolAppService.currentRequest;
+    return request == null ? null : request.phaseIndex ?? 0;
+  }
+
+  /// Whether Patrol will kill the app and relaunch it for the next phase of a
+  /// phased test.
+  ///
+  /// Becomes `true` once a phase that isn't the last one passes, and stays
+  /// `true` until the app is killed. Check it in `patrolTearDown` before
+  /// clearing state, so the next phase still finds that state. (A plain
+  /// `tearDown` also runs for the other tests of the file in every phase's
+  /// process, so it can't protect that state.)
+  bool get willRelaunchApp =>
+      !_isDevelopMode && patrolAppService.willRelaunchApp;
 
   /// The singleton instance of this object.
   ///
