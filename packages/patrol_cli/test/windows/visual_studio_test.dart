@@ -28,25 +28,26 @@ void main() {
     );
   });
 
-  group('parseVswhereOutput', () {
-    test('reads version and path of the first install', () {
-      final install = parseVswhereOutput(r'''
-[
-  {
-    "installationPath": "C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise",
-    "installationVersion": "18.12.12412.261"
-  }
-]
-''');
+  group('visualStudioInstallFrom', () {
+    test('reads the trimmed version and path vswhere printed', () {
+      final install = visualStudioInstallFrom(
+        version: '18.12.12412.261\r\n',
+        path: '${vs2026.path}\r\n',
+      );
       expect(install?.version, vs2026.version);
       expect(install?.path, vs2026.path);
     });
 
-    test('is null when vswhere finds nothing or prints garbage', () {
-      expect(parseVswhereOutput('[]'), isNull);
-      expect(parseVswhereOutput(''), isNull);
-      expect(parseVswhereOutput(r'[{"installationPath": "C:\\VS"}]'), isNull);
+    test('is null when vswhere found no install', () {
+      expect(visualStudioInstallFrom(version: '', path: ''), isNull);
+      expect(visualStudioInstallFrom(version: '18.0', path: ' '), isNull);
     });
+  });
+
+  test('vswhere output with malformed UTF-8 still decodes', () {
+    // flutter/flutter#102451: vswhere writes invalid UTF-8 on some locales.
+    final decoded = vswhereEncoding.decode([0x31, 0x38, 0xFF, 0x2E, 0x30]);
+    expect(decoded, startsWith('18'));
   });
 
   test('configure arguments pin the generator and the install', () {
@@ -64,10 +65,19 @@ void main() {
     expect(args, contains('-DCMAKE_GENERATOR_INSTANCE=${vs2026.path}'));
   });
 
-  test('vswhere asks for an install with the C++ desktop tools as JSON', () {
+  test('vswhere asks for the C++ tools and the bundled CMake', () {
     expect(
-      vswhereArguments(),
-      containsAllInOrder(['-requires', vcToolsComponent, '-format', 'json']),
+      vswhereArguments('installationPath'),
+      containsAllInOrder([
+        '-requires',
+        ...requiredComponents,
+        '-property',
+        'installationPath',
+      ]),
+    );
+    expect(
+      requiredComponents,
+      contains('Microsoft.VisualStudio.Component.VC.CMake.Project'),
     );
     expect(
       vswherePath({'ProgramFiles(x86)': r'D:\PF86'}),

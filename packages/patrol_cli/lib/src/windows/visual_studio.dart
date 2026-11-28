@@ -2,8 +2,15 @@ import 'dart:convert';
 
 import 'package:path/path.dart' as p;
 
-/// Component every Visual Studio install that builds the runner must have.
-const vcToolsComponent = 'Microsoft.VisualStudio.Component.VC.Tools.x86.x64';
+/// Components every Visual Studio install that builds the runner must have:
+/// the C++ compiler and the CMake bundled with Visual Studio.
+const requiredComponents = [
+  'Microsoft.VisualStudio.Component.VC.Tools.x86.x64',
+  'Microsoft.VisualStudio.Component.VC.CMake.Project',
+];
+
+/// Decodes `vswhere.exe` output, which is not valid UTF-8 on some locales.
+const vswhereEncoding = Utf8Codec(allowMalformed: true);
 
 /// A Visual Studio install reported by `vswhere.exe`.
 class VisualStudioInstall {
@@ -52,41 +59,30 @@ String vswherePath(Map<String, String> environment) {
   );
 }
 
-/// Arguments for `vswhere.exe` that describe the newest Visual Studio
-/// (including Build Tools) with the C++ desktop toolchain, as JSON.
-List<String> vswhereArguments() => [
+/// Arguments for `vswhere.exe` that print [property] of the newest Visual
+/// Studio (including Build Tools) with [requiredComponents].
+List<String> vswhereArguments(String property) => [
   '-latest',
   '-products',
   '*',
   '-requires',
-  vcToolsComponent,
-  '-format',
-  'json',
-  '-utf8',
+  ...requiredComponents,
+  '-property',
+  property,
 ];
 
-/// Reads the install from `vswhere -format json` output, or null when it
-/// lists none.
-VisualStudioInstall? parseVswhereOutput(String output) {
-  final Object? decoded;
-  try {
-    decoded = jsonDecode(output);
-  } on FormatException {
+/// The install described by the `installationVersion` and `installationPath`
+/// values `vswhere.exe` printed, or null when it found none.
+VisualStudioInstall? visualStudioInstallFrom({
+  required String version,
+  required String path,
+}) {
+  final trimmedVersion = version.trim();
+  final trimmedPath = path.trim();
+  if (trimmedVersion.isEmpty || trimmedPath.isEmpty) {
     return null;
   }
-  if (decoded is! List || decoded.isEmpty) {
-    return null;
-  }
-  final install = decoded.first;
-  if (install is! Map) {
-    return null;
-  }
-  final version = install['installationVersion'];
-  final path = install['installationPath'];
-  if (version is! String || path is! String) {
-    return null;
-  }
-  return VisualStudioInstall(version: version, path: path);
+  return VisualStudioInstall(version: trimmedVersion, path: trimmedPath);
 }
 
 /// Arguments for configuring the runner with [install]'s generator and

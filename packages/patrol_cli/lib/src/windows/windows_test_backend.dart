@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io' as io;
 
 import 'package:dispose_scope/dispose_scope.dart' hide ProcessDisposed;
@@ -180,20 +179,26 @@ class WindowsTestBackend {
   Future<(VisualStudioInstall, String)> _findVisualStudio(Progress task) async {
     const missing =
         'Visual Studio 2022 or 2026 with the "Desktop development with C++" '
-        'workload is required to build patrol_windows_runner.';
+        'workload, including "C++ CMake tools for Windows", is required to '
+        'build patrol_windows_runner.';
     final vswhere = vswherePath(io.Platform.environment);
     if (!_fs.file(vswhere).existsSync()) {
       task.fail('Visual Studio not found');
       throwToolExit('$missing\n`$vswhere` does not exist.');
     }
 
-    final result = await _processManager.run([
-      vswhere,
-      ...vswhereArguments(),
-    ], stdoutEncoding: utf8);
-    final install = result.exitCode == 0
-        ? parseVswhereOutput(result.stdout as String)
-        : null;
+    Future<String> query(String property) async {
+      final result = await _processManager.run([
+        vswhere,
+        ...vswhereArguments(property),
+      ], stdoutEncoding: vswhereEncoding);
+      return result.exitCode == 0 ? result.stdout as String : '';
+    }
+
+    final install = visualStudioInstallFrom(
+      version: await query('installationVersion'),
+      path: await query('installationPath'),
+    );
     final generator = install?.cmakeGenerator;
     if (install == null || generator == null) {
       task.fail('Visual Studio not found');
@@ -217,7 +222,18 @@ class WindowsTestBackend {
     final task = _logger.task('Building patrol_windows_runner');
     final (install, generator) = await _findVisualStudio(task);
     final bundledCmake = install.bundledCmakePath;
-    final cmake = _fs.file(bundledCmake).existsSync() ? bundledCmake : 'cmake';
+    final String cmake;
+    if (_fs.file(bundledCmake).existsSync()) {
+      cmake = bundledCmake;
+    } else if (_processManager.canRun('cmake')) {
+      cmake = 'cmake';
+    } else {
+      task.fail('CMake not found');
+      throwToolExit(
+        'CMake was not found at `$bundledCmake` or on PATH. Add '
+        '"C++ CMake tools for Windows" to Visual Studio ${install.version}.',
+      );
+    }
 
     Future<void> runCmake(List<String> args, {required String label}) async {
       var killed = false;
