@@ -206,16 +206,28 @@ final class SuiteRun {
       now: now ?? DateTime.now,
     );
     unawaited(process.stdin.close().catchError((Object _) {}));
+    final drained = <Future<void>>[];
     for (final stream in [process.stdout, process.stderr]) {
+      final done = Completer<void>();
+      drained.add(done.future);
       stream
           .transform(const Utf8Decoder(allowMalformed: true))
           .transform(const LineSplitter())
           .listen((line) {
             run._pushOutput(line);
             onOutput(line);
-          });
+          }, onDone: done.complete);
     }
-    unawaited(process.exitCode.then(run._finish));
+    unawaited(
+      process.exitCode.then((exitCode) async {
+        // The last lines can still be in flight when the exit code arrives. A
+        // child that inherited the pipes keeps them open, hence the bound.
+        await Future.wait(
+          drained,
+        ).timeout(const Duration(seconds: 1), onTimeout: () => const []);
+        run._finish(exitCode);
+      }),
+    );
     return run;
   }
 
