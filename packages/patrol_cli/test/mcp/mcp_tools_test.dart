@@ -309,6 +309,23 @@ void main() {
       expect(await sent(), [('run', 'session_error')]);
     });
 
+    test(
+      'reports the platform of the device a suite runs on',
+      () async {
+        final tools = toolsWith(
+          FakeDevelop(),
+          suiteCommand: const ['sh', '-c', 'exit 0', 'patrol'],
+          analytics: analytics(),
+        );
+
+        await tools.test({'waitMinutes': 1}, extra());
+
+        expect(await sent(), [('test', 'passed')]);
+        expect(events.single['platform'], 'android');
+      },
+      skip: Platform.isWindows ? 'The suite is a POSIX shell script.' : null,
+    );
+
     test('reports a tool that throws as an error, and still throws', () async {
       final tools = toolsWith(FakeDevelop(), analytics: analytics());
 
@@ -462,22 +479,29 @@ void main() {
       );
     });
 
-    test('a suite the client cancels is stopped', () async {
+    test('a suite the client stops waiting for keeps running', () async {
       final ready = File('${projectRoot.path}/ready');
+      final go = File('${projectRoot.path}/go');
       final tools = toolsWith(
         FakeDevelop(),
         suiteCommand: suite(
-          'trap "exit 130" INT; : > "${ready.path}"; sleep 30 & wait',
+          ': > "${ready.path}"; while [ ! -e "${go.path}" ]; do sleep 0.05; done',
         ),
       );
       final abort = BasicAbortController();
 
       final call = tools.test({'waitMinutes': 1}, extra(abort));
-      await waitUntil(ready.existsSync, 'the suite to set its trap');
+      await waitUntil(ready.existsSync, 'the suite to start');
       abort.abort();
       final result = await call.timeout(const Duration(seconds: 10));
 
-      expect(result.structuredContent!['suiteState'], 'cancelled');
+      expect(result.structuredContent!['suiteState'], 'running');
+      go.createSync();
+      final status = await tools.status({'waitMinutes': 1});
+      expect(
+        (status.structuredContent!['suite']! as Map)['suiteState'],
+        'passed',
+      );
     });
   }, skip: Platform.isWindows ? 'The suites are POSIX shell scripts.' : null);
 }

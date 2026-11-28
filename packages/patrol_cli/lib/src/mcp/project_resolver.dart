@@ -165,12 +165,12 @@ class ProjectResolver {
     if (_path.isAbsolute(testFile)) {
       return _path.relative(testFile, from: root);
     }
-    if (_fs.file(_path.join(root, testFile)).existsSync()) {
+    if (_exists(_path.join(root, testFile))) {
       return testFile;
     }
     for (final dir in searchIn ?? _signalDirectories()) {
       final candidate = _path.join(dir, testFile);
-      if (_fs.file(candidate).existsSync()) {
+      if (_exists(candidate)) {
         return _path.relative(_path.canonicalize(candidate), from: root);
       }
     }
@@ -229,17 +229,24 @@ class ProjectResolver {
     return owner != null && _path.equals(_path.canonicalize(owner), root);
   }
 
-  /// The project owning [testFile] when it exists under [dir].
+  /// The project owning [testFile], a test file or a directory of them, when
+  /// it exists under [dir].
   String? _fromTestFile(String dir, String? testFile) {
     if (testFile == null || testFile.trim().isEmpty) {
       return null;
     }
     final candidate = _path.join(dir, testFile);
+    if (_fs.directory(candidate).existsSync()) {
+      return _findPubspecDir(candidate);
+    }
     if (!_fs.file(candidate).existsSync()) {
       return null;
     }
     return _findPubspecDir(_path.dirname(candidate));
   }
+
+  bool _exists(String path) =>
+      _fs.file(path).existsSync() || _fs.directory(path).existsSync();
 
   /// The roots the client last advertised, kept for turning a workspace-relative
   /// test file into one the project can open.

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:mcp_dart/mcp_dart.dart';
+import 'package:patrol_cli/src/base/extensions/completer.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/mcp/device_selection.dart';
@@ -254,7 +255,7 @@ class McpTools {
         tool: tool,
         outcome: outcome,
         duration: watch.elapsed,
-        platform: _session.device?.targetPlatform,
+        platform: _session.device?.targetPlatform ?? _session.suitePlatform,
         flutterCommand: () => _session.flutterCommand,
         workingDirectory: _session.projectRoot,
       ),
@@ -325,10 +326,12 @@ class McpTools {
     SuiteArgs args,
     RequestHandlerExtra extra,
   ) async {
-    // The client gave up on the call, so nothing will read the suite's result.
-    final abortSub = extra.signal.onAbort.listen((_) {
-      unawaited(_session.quit());
-    });
+    // A client that gives up on the call can still read the result with
+    // status, so the suite keeps running.
+    final cancelled = Completer<void>();
+    final abortSub = extra.signal.onAbort.listen(
+      (_) => cancelled.maybeComplete(),
+    );
     try {
       final started = await _session.startSuite(
         targets: args.targets,
@@ -337,6 +340,7 @@ class McpTools {
         device: args.device,
         projectRoot: args.projectRoot,
         wait: args.wait,
+        stopWaiting: cancelled.future,
       );
       if (started.refusal case final refusal?) {
         return CallToolResult(

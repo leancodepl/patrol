@@ -604,10 +604,12 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       final path? => File(path).openSync(mode: FileMode.append),
       null => null,
     };
+    // An entry can still arrive from a log reader after the run returns.
+    var resultsClosed = false;
     void Function(Entry)? onLogEntry;
     if (results != null) {
       onLogEntry = (entry) {
-        if (entry is TestEntry || entry is ErrorEntry) {
+        if (!resultsClosed && (entry is TestEntry || entry is ErrorEntry)) {
           results.writeStringSync('${jsonEncode(entry.toJson())}\n');
         }
       };
@@ -674,6 +676,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
         ..err(defaultFailureMessage);
       allPassed = false;
     } finally {
+      resultsClosed = true;
       results?.closeSync();
       try {
         await finalizer?.call();

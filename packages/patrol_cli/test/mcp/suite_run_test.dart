@@ -384,6 +384,48 @@ void main() {
       );
 
       test(
+        'keeps the result of a run that exited while its last output drains',
+        () async {
+          // The background sleep holds the pipes open after the shell exits.
+          final run = await start('sleep 3 & exit 0');
+          addTearDown(run.done.ignore);
+          await Future<void>.delayed(const Duration(milliseconds: 300));
+
+          expect(run.isRunning, isTrue);
+          await run.stop();
+          await run.done;
+
+          expect(run.toMap()['suiteState'], 'passed');
+        },
+      );
+
+      test('counts an entry read half-written once, whole', () async {
+        final entry = jsonEncode(
+          TestEntry(name: 'a', status: TestEntryStatus.success).toJson(),
+        );
+        final half = entry.length ~/ 2;
+        final run = await start('sleep 30');
+        addTearDown(run.stop);
+        File(resultsFile).writeAsStringSync(
+          '${jsonEncode(TestEntry(name: 'a', status: TestEntryStatus.start).toJson())}\n'
+          '${entry.substring(0, half)}',
+        );
+
+        expect(run.toMap()['passed'], 0);
+        expect(run.toMap()['currentTest'], 'a');
+
+        File(resultsFile).writeAsStringSync(
+          '${entry.substring(half)}\n',
+          mode: FileMode.append,
+        );
+
+        final status = run.toMap();
+        expect(status['passed'], 1);
+        expect(status, isNot(contains('currentTest')));
+        expect(run.toMap()['passed'], 1);
+      });
+
+      test(
         'kills a run that ignores SIGINT and SIGTERM, children included',
         () async {
           final childPid = File('${dir.path}/child.pid');

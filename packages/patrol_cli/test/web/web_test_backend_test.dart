@@ -92,6 +92,36 @@ void main() {
       verifyNever(() => processManager.start(any()));
     });
 
+    test("fails with the end of Flutter's stderr when it exits before "
+        'serving', () async {
+      when(() => flutterProcess.stderr).thenAnswer(
+        (_) => Stream<List<int>>.value(
+          utf8.encode(
+            [
+              for (var i = 0; i < 40; i++) 'line $i',
+              "lib/main.dart:3:1: Error: Expected ';' after this.",
+            ].join('\n'),
+          ),
+        ),
+      );
+      final execution = webTestBackend.execute(_options, _webDevice);
+      await untilCalled(() => processManager.start(any()));
+
+      flutterExitCode.complete(1);
+
+      await expectLater(
+        execution,
+        throwsA(
+          allOf(
+            contains('Flutter process exited unexpectedly with code 1'),
+            contains("lib/main.dart:3:1: Error: Expected ';' after this."),
+            contains('line 39'),
+            isNot(contains('line 10\n')),
+          ),
+        ),
+      );
+    });
+
     test('fails when Flutter exits with code 0 before serving', () async {
       final execution = webTestBackend.execute(_options, _webDevice);
       await untilCalled(() => processManager.start(any()));
