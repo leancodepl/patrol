@@ -10,8 +10,11 @@ import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
+import 'package:patrol_cli/src/crossplatform/executed_tests_check.dart';
 import 'package:patrol_cli/src/crossplatform/patrol_build_environment.dart';
+import 'package:patrol_cli/src/crossplatform/test_manifest_generator.dart';
 import 'package:patrol_cli/src/devices.dart';
+import 'package:patrol_cli/src/ios/xcode_runner_setup.dart';
 import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 
@@ -80,6 +83,29 @@ class MacOSTestBackend {
 
       Process process;
 
+      final runnerSetup = _runnerSetup
+        ..prepareBuild(emitTestManifest: options.emitTestManifest);
+
+      if (options.emitTestManifest) {
+        final manifestPath =
+            await TestManifestGenerator(
+              processManager: _processManager,
+              rootDirectory: _rootDirectory,
+              logger: _logger,
+            ).generate(
+              options.flutter,
+              scope,
+              targetPlatform: TargetPlatform.macOS,
+            );
+        if (manifestPath == null) {
+          throwToolExit(
+            'Build-time test discovery failed; fix the errors above, or pass '
+            '--no-emit-test-manifest to use runtime discovery.',
+          );
+        }
+        runnerSetup.generateTests(manifestPath);
+      }
+
       // flutter build macos --config-only
 
       var flutterBuildKilled = false;
@@ -120,6 +146,7 @@ class MacOSTestBackend {
       exitCode = await process.exitCode;
       if (exitCode == 0) {
         task.complete('Completed building $subject');
+        runnerSetup.recordBuild(emitTestManifest: options.emitTestManifest);
       } else if (exitCode == _xcodebuildInterrupted) {
         const cause = 'xcodebuild was interrupted';
         task.fail('Failed to execute tests of $subject ($cause)');
@@ -132,17 +159,46 @@ class MacOSTestBackend {
     });
   }
 
+  XcodeRunnerSetup get _runnerSetup => XcodeRunnerSetup.macos(
+    fs: _fs,
+    rootDirectory: _rootDirectory,
+    logger: _logger,
+  );
+
+  /// Why this project can't use build-time discovery on macOS, or null when it
+  /// can: `RunnerUITests.m` has to `#include` the generated tests. Patrol never
+  /// edits the file; the caller warns or fails with the lines to add.
+  String? discoverySetupProblem() => _runnerSetup.discoverySetupProblem();
+
   /// Executes the tests of the given [options] on the given [device].
   ///
   /// [build] must be called before this method.
   ///
   /// If [interruptible] is true, then no exception is thrown on SIGINT. This is
   /// used for Hot Restart.
+  ///
+  /// [onlyTests] selects Dart tests or test files through the build-time
+  /// manifest.
   Future<void> execute(
     MacOSAppOptions options,
     Device device, {
     bool interruptible = false,
+    List<String> onlyTests = const [],
   }) async {
+    final runnerSetup = _runnerSetup;
+    // A develop session runs in the base runner class, whatever the mode.
+    final onlyTesting = interruptible
+        ? const <String>[]
+        : runnerSetup.onlyTestingFor(onlyTests);
+    final executedTestsCheck = ExecutedTestsCheck.forRun(
+      _rootDirectory,
+      _logger,
+      platform: TargetPlatform.macOS,
+      emitTestManifest:
+          options.emitTestManifest && runnerSetup.hasGeneratedTests,
+      interruptible: interruptible,
+      onlyTests: onlyTests,
+    );
     await _disposeScope.run((scope) async {
       final subject = '${options.description} on ${device.description}';
       final task = _logger.task('Running $subject');
@@ -161,6 +217,8 @@ class MacOSTestBackend {
                   sdkVersion: sdkVersion,
                 ),
                 resultBundlePath: resultsPath,
+                onlyTesting: onlyTesting,
+                staticRunner: !interruptible && runnerSetup.hasGeneratedTests,
               ),
               runInShell: true,
               environment: {
@@ -172,12 +230,18 @@ class MacOSTestBackend {
               workingDirectory: _rootDirectory.childDirectory('macos').path,
             )
             ..disposedByTree(_disposeScope);
-      process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
+      process
+          .listenStdOut((l) {
+            executedTestsCheck?.onRunnerOutput(l);
+            _logger.detail('\t$l');
+          })
+          .disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
 
       final exitCode = await process.exitCode;
 
       if (exitCode == 0) {
+        executedTestsCheck?.verifyTask(task, subject);
         task.complete('Completed executing $subject');
       } else if (exitCode != 0 && interruptible) {
         task.complete('App shut down on request');

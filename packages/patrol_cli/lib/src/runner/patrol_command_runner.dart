@@ -39,6 +39,7 @@ import 'package:patrol_cli/src/runner/patrol_command.dart' show addGlobalFlags;
 import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
 import 'package:patrol_cli/src/web/web_test_backend.dart';
+import 'package:patrol_cli/src/windows/windows_test_backend.dart';
 import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 import 'package:pub_updater/pub_updater.dart';
@@ -163,6 +164,14 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       logger: _logger,
     );
 
+    final windowsTestBackend = WindowsTestBackend(
+      processManager: _processManager,
+      fs: _fs,
+      rootDirectory: rootDirectory,
+      parentDisposeScope: _disposeScope,
+      logger: _logger,
+    );
+
     final testFinderFactory = TestFinderFactory(rootDirectory: rootDirectory);
 
     final deviceFinder = DeviceFinder(
@@ -244,6 +253,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         iosTestBackend: iosTestBackend,
         macOSTestBackend: macosTestBackend,
         webTestBackend: webTestBackend,
+        windowsTestBackend: windowsTestBackend,
         coverageTool: CoverageTool(
           fs: _fs,
           rootDirectory: rootDirectory,
@@ -272,6 +282,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         iosTestBackend: iosTestBackend,
         webTestBackend: webTestBackend,
         fs: _fs,
+        macosTestBackend: macosTestBackend,
         analytics: _analytics,
         logger: _logger,
       ),
@@ -287,6 +298,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       McpCommand(
         deviceFinder: deviceFinder,
         processManager: _processManager,
+        analytics: _analytics,
         logger: _logger,
       ),
     );
@@ -389,7 +401,7 @@ To install a specific version of Patrol CLI, run:
         _handleFirstRun();
       }
 
-      final topLevelResults = parse(_normalizeArgs(args));
+      final topLevelResults = parse(args);
       verbose = topLevelResults['verbose'] == true;
 
       if (verbose) {
@@ -438,47 +450,6 @@ To install a specific version of Patrol CLI, run:
     }
 
     return exitCode;
-  }
-
-  /// Rewrites the deprecated `--web-headless=<value>` and
-  /// `--web-headless <value>` forms to the `--web-headless`/`--no-web-headless`
-  /// flag syntax, warning about the deprecation.
-  List<String> _normalizeArgs(Iterable<String> args) {
-    final list = args.toList();
-    final result = <String>[];
-
-    for (var i = 0; i < list.length; i++) {
-      final arg = list[i];
-
-      // Everything after `--` is positional, not options.
-      if (arg == '--') {
-        result.addAll(list.sublist(i));
-        break;
-      }
-
-      bool? headless;
-      if (arg == '--web-headless' && i + 1 < list.length) {
-        headless = bool.tryParse(list[i + 1]);
-        if (headless != null) {
-          i++;
-        }
-      } else if (arg.startsWith('--web-headless=')) {
-        headless = bool.tryParse(arg.substring('--web-headless='.length));
-      }
-
-      if (headless == null) {
-        result.add(arg);
-        continue;
-      }
-
-      _logger.warn(
-        'Passing a value to --web-headless is deprecated. '
-        'Use --web-headless or --no-web-headless instead.',
-      );
-      result.add(headless ? '--web-headless' : '--no-web-headless');
-    }
-
-    return result;
   }
 
   @override
@@ -541,10 +512,6 @@ To install a specific version of Patrol CLI, run:
   @visibleForTesting
   bool testWantsUpdateCheck(String? commandName) =>
       _wantsUpdateCheck(commandName);
-
-  /// For testing purposes only
-  @visibleForTesting
-  List<String> testNormalizeArgs(Iterable<String> args) => _normalizeArgs(args);
 
   /// For testing purposes only
   @visibleForTesting

@@ -14,13 +14,14 @@ void main() {
   group('Analytics with no env variable', () {
     late Analytics analytics;
     late FileSystem fs;
+    late MockHttpClient httpClient;
 
     setUp(() {
       setUpFakes();
 
       fs = MemoryFileSystem.test();
 
-      final httpClient = MockHttpClient();
+      httpClient = MockHttpClient();
       when(
         () => httpClient.post(
           any(),
@@ -67,6 +68,35 @@ void main() {
 
       // then
       expect(sent, false);
+    });
+
+    test('reports a failed post to the logger it is given', () async {
+      _createFakeFileSystem(fs, analyticsEnabled: true);
+      when(
+        () => httpClient.post(
+          any(),
+          body: any(named: 'body'),
+          headers: any(named: 'headers'),
+        ),
+      ).thenThrow(Exception('offline'));
+      final logger = MockLogger();
+
+      final sent = await analytics.sendCommand(
+        FlutterVersion.test(),
+        'test command',
+        logger: logger,
+      );
+
+      expect(sent, false);
+      verify(() => logger.info('Failed to post analytics')).called(1);
+    });
+
+    test('says whether it would send', () {
+      expect(analytics.willSend, false);
+      _createFakeFileSystem(fs, analyticsEnabled: true);
+      expect(analytics.willSend, true);
+      _createFakeFileSystem(fs, analyticsEnabled: false);
+      expect(analytics.willSend, false);
     });
   });
 

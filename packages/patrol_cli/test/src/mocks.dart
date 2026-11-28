@@ -69,10 +69,14 @@ class MockAnalytics extends Mock implements Analytics {
   bool get enabled => false;
 
   @override
+  bool get willSend => false;
+
+  @override
   Future<bool> sendCommand(
     FlutterVersion flutterVersion,
     String name, {
     Map<String, Object?> eventData = const {},
+    logger.Logger? logger,
   }) async {
     return false;
   }

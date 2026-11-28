@@ -68,12 +68,14 @@ class TestCompletionResult {
 ///
 /// xcodebuild launches the app, so discovery is unreliable on the iOS
 /// simulator; physical iOS devices keep discovery. macOS always uses the URL,
-/// Android and web use discovery.
+/// Android, web, and Windows use discovery.
 @visibleForTesting
 bool shouldAttachUsingUrl(Device device) => switch (device.targetPlatform) {
   TargetPlatform.macOS => true,
   TargetPlatform.iOS => !device.real,
-  TargetPlatform.android || TargetPlatform.web => false,
+  TargetPlatform.android ||
+  TargetPlatform.web ||
+  TargetPlatform.windows => false,
 };
 
 /// Orchestrates a patrol develop session.
@@ -128,6 +130,9 @@ class DevelopService {
   /// The Chrome debugger port used by the web develop session.
   String? get webDebuggerPort => _webTestBackend.debuggerPort;
 
+  /// The Chrome tab the web develop session's app runs in.
+  String? get webAppPageId => _webTestBackend.appPageId;
+
   /// Fails fast when the SDK predates flutter/flutter#183838. Without it a web
   /// Hot Restart reports success and keeps serving the previous test bundle.
   void _assertWebHotRestartSupported(FlutterCommand flutterCommand) {
@@ -152,8 +157,22 @@ class DevelopService {
     }
   }
 
-  /// Completes once the session will act on a hot restart.
-  Future<void> get hotRestartReady => _flutterTool.hotRestartReady;
+  /// Completes once the session will act on a hot restart. A web session is
+  /// driven by its own `flutter run`, the others by `flutter attach`, which
+  /// fails this with a [ToolExit] naming why it exited. Only the session's own
+  /// one ever completes, and callers ask before [run] has picked the device.
+  Future<void> get hotRestartReady {
+    // Checked first: an attach that died after attaching has already completed
+    // its readiness, which would win the race below.
+    if (_flutterTool.attachFailure case final failure?) {
+      return Future.error(ToolExit(failure));
+    }
+    return Future.any([
+      _webTestBackend.hotRestartReady,
+      _flutterTool.hotRestartReady,
+      _flutterTool.attachFailed.then<void>((reason) => throw ToolExit(reason)),
+    ]);
+  }
 
   /// Runs the full develop flow: discover device, read config, bundle test,
   /// build, execute, and attach for hot restart.
@@ -207,6 +226,12 @@ class DevelopService {
     // https://github.com/leancodepl/patrol/issues/1974
     if (device.targetPlatform == TargetPlatform.macOS) {
       throwToolExit('macOS is not supported with develop');
+    }
+
+    // Reject before writing the develop entrypoint proxy, so a failed run does
+    // not leave integration_test/patrol_test_bundle.dart behind.
+    if (device.targetPlatform == TargetPlatform.windows) {
+      throwToolExit('Windows is not supported with develop');
     }
 
     if (device.targetPlatform == TargetPlatform.web) {
@@ -322,6 +347,11 @@ class DevelopService {
       buildNumber: options.buildNumber,
     );
 
+    warnIfEmitTestManifestOnWeb(
+      targetPlatform: device.targetPlatform,
+      flag: options.emitTestManifest,
+      logger: _logger,
+    );
     // A hot-restart session runs through runtime discovery, so develop only
     // generates native tests when asked to. They then cover just its target.
     final emitTestManifest = resolveEmitTestManifest(
@@ -426,6 +456,9 @@ class DevelopService {
       TargetPlatform.iOS => () => _iosTestBackend.build(iosOpts),
       TargetPlatform.macOS => () => _macosTestBackend.build(macosOpts),
       TargetPlatform.web => () => _webTestBackend.buildForDevelop(webOpts),
+      TargetPlatform.windows => () => throwToolExit(
+        'Windows is not supported with develop',
+      ),
     };
 
     try {
@@ -465,6 +498,7 @@ class DevelopService {
         }
       case TargetPlatform.macOS:
       case TargetPlatform.web:
+      case TargetPlatform.windows:
     }
 
     try {
@@ -621,6 +655,8 @@ class DevelopService {
           onLogEntry: onLogEntry,
           openDevtools: openDevtools,
         );
+      case TargetPlatform.windows:
+        throwToolExit('Windows is not supported with develop');
     }
 
     // Set once the user quits. Stopping the instrumentation ends the build,
@@ -669,7 +705,7 @@ class DevelopService {
             failPendingVmServiceUrl();
           },
           onError: (Object err, StackTrace st) {
-            if (quit == null) {
+            if (quit == null && err is! ToolInterrupted) {
               reportTestsCompleted(
                 TestCompletionResult(success: false, error: err),
               );
@@ -700,13 +736,7 @@ class DevelopService {
             final done = quit = Completer<void>();
             try {
               await stopOnDevice?.call();
-              await finalizer?.call().timeout(
-                _quitUninstallTimeout,
-                onTimeout: () => _logger.warn(
-                  'Uninstalling the app did not finish within '
-                  '${_quitUninstallTimeout.inSeconds}s, quitting anyway.',
-                ),
-              );
+              await _boundedUninstall(finalizer);
             } finally {
               try {
                 await onQuitCleanup();
@@ -720,9 +750,9 @@ class DevelopService {
           await attached;
         } else {
           // No Gradle ran before this point, so nothing has verified that the
-          // instrumentation actually came up. If the backend settles before
-          // attach connects (instrumentation not found, app crash on launch),
-          // fail instead of waiting forever for an attach that can't succeed.
+          // instrumentation came up. `attached` completes once attach connects
+          // or exits without attaching; fail if the backend settles first or
+          // attach is dead, instead of waiting for a session that can't start.
           final backendExitedFirst = await Future.any<bool>([
             attached.then((_) => false),
             future.then((_) => true, onError: (Object _) => true),
@@ -731,6 +761,13 @@ class DevelopService {
             throwToolExit(
               'The instrumentation exited before `flutter attach` could '
               'connect - the app never came up. See the logs above.',
+            );
+          }
+          if (_flutterTool.attachExitCode case final code?) {
+            throwToolExit(
+              '`flutter attach` exited with code $code, so the session ends: '
+              'with --use-prebuilt-apks the requested target starts only '
+              'through a hot restart, which needs `flutter attach`.',
             );
           }
           _logger.info(
@@ -755,6 +792,8 @@ class DevelopService {
 
       try {
         await future;
+      } on ToolInterrupted {
+        rethrow;
       } catch (err) {
         if (quit == null) {
           reportTestsCompleted(
@@ -768,6 +807,10 @@ class DevelopService {
         return;
       }
       reportTestsCompleted(const TestCompletionResult(success: true));
+    } on ToolExit {
+      rethrow;
+    } on ToolInterrupted {
+      rethrow;
     } catch (err, st) {
       _logger
         ..err('$err')
@@ -777,7 +820,7 @@ class DevelopService {
     } finally {
       try {
         if (quit == null) {
-          await finalizer?.call();
+          await _boundedUninstall(finalizer);
         }
       } catch (err) {
         _logger.err('Failed to call finalizer: $err');
@@ -786,7 +829,19 @@ class DevelopService {
     }
   }
 
-  static const _quitUninstallTimeout = Duration(seconds: 30);
+  /// Runs [finalizer], the uninstall, for at most [_uninstallTimeout]: a device
+  /// that is gone never answers it.
+  Future<void> _boundedUninstall(Future<void> Function()? finalizer) async {
+    await finalizer?.call().timeout(
+      _uninstallTimeout,
+      onTimeout: () => _logger.warn(
+        'Uninstalling the app did not finish within '
+        '${_uninstallTimeout.inSeconds}s, moving on.',
+      ),
+    );
+  }
+
+  static const _uninstallTimeout = Duration(seconds: 30);
 
   static const _defaultFailureMessage =
       'See the logs above to learn what happened. Also consider running with '

@@ -31,7 +31,9 @@ Future<void> main(List<String> args) async {
     Platform.resolvedExecutable, // the `dart` running this script
     ['run', 'bin/main.dart', 'mcp'],
     workingDirectory: Directory.current.path,
-    environment: fakeHome == null ? null : _pristineEnvironment(fakeHome.path),
+    environment: fakeHome == null
+        ? _noAnalytics
+        : {..._pristineEnvironment(fakeHome.path), ..._noAnalytics},
     // `CI` and the vendor variables cannot be unset from a workflow's `env:`,
     // so the child gets a built-from-scratch environment instead.
     includeParentEnvironment: fakeHome == null,
@@ -200,11 +202,12 @@ Future<void> _checkProjectFromCall({required String serverDart}) async {
   final project = Directory.systemTemp.createTempSync('patrol_smoke_project');
   File('${project.path}/pubspec.yaml').writeAsStringSync('name: app\n');
 
-  final process = await Process.start(serverDart, [
-    'run',
-    '${Directory.current.path}/bin/main.dart',
-    'mcp',
-  ], workingDirectory: outside.path);
+  final process = await Process.start(
+    serverDart,
+    ['run', '${Directory.current.path}/bin/main.dart', 'mcp'],
+    workingDirectory: outside.path,
+    environment: _noAnalytics,
+  );
   unawaited(process.stdin.done.catchError((Object _) {}));
   final stderrBuffer = StringBuffer();
   process.stderr
@@ -252,6 +255,26 @@ Future<void> _checkProjectFromCall({required String serverDart}) async {
   process.stdin.writeln(
     jsonEncode({'jsonrpc': '2.0', 'method': 'notifications/initialized'}),
   );
+  // No project has resolved yet: the tools that need none must still answer.
+  final devices = await call('tools/call', {
+    'name': 'devices',
+    'arguments': <String, dynamic>{},
+  });
+  final devicesText =
+      (((devices['result'] as Map<String, dynamic>?)?['content'] as List?)
+                  ?.first
+              as Map?)?['text']
+          as String?;
+  if (devicesText == null ||
+      devicesText.contains('Project root not resolved')) {
+    _fail(
+      process,
+      'devices did not answer on a server with no project: '
+      '${devices['error'] ?? devicesText}',
+      stderrBuffer,
+    );
+  }
+
   final response = await call('tools/call', {
     'name': 'run',
     'arguments': {
@@ -287,9 +310,19 @@ Future<void> _checkProjectFromCall({required String serverDart}) async {
       stderrBuffer,
     ),
   );
-  outside.deleteSync(recursive: true);
-  project.deleteSync(recursive: true);
-  stdout.writeln('[smoke] project OK — a run reaches the project it names');
+  // On Windows a process started inside a directory (the adb server
+  // `flutter devices` starts) keeps it from being deleted.
+  for (final dir in [outside, project]) {
+    try {
+      dir.deleteSync(recursive: true);
+    } on FileSystemException catch (err) {
+      stdout.writeln('[smoke] could not remove ${dir.path}: ${err.osError}');
+    }
+  }
+  stdout.writeln(
+    '[smoke] project OK — devices answers before a project resolves, and a '
+    'run reaches the project it names',
+  );
 }
 
 /// Asks the server for its tools and asserts the surface agents rely on: every
@@ -384,6 +417,9 @@ Future<void> _checkTools(
     '${properties.length} arguments',
   );
 }
+
+/// The smoke run's tool calls are not usage, so it reports none.
+const _noAnalytics = {'PATROL_ANALYTICS_ENABLED': 'false'};
 
 /// A from-scratch environment with no CI markers, pointing the CLI's analytics
 /// config at [home] so it reports a first run. `PlatformX.home` force-unwraps

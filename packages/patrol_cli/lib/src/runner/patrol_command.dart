@@ -28,6 +28,10 @@ abstract class PatrolCommand extends Command<int> {
   /// Seconds to wait after the individual test case finishes executing.
   final defaultWait = 0;
 
+  /// Rejects stray positional args, e.g. the `false` in `--web-headless false`.
+  @override
+  bool get takesArguments => false;
+
   var _usesBuildOption = false;
 
   final _defaultTestServerPort = defaultTestServerPort;
@@ -208,8 +212,8 @@ abstract class PatrolCommand extends Command<int> {
       );
   }
 
-  /// Registers the `--emit-test-manifest` flag, shared by the iOS
-  /// and Android build/test paths.
+  /// Registers the `--emit-test-manifest` flag, shared by the Android, iOS
+  /// and macOS build/test paths.
   ///
   /// Declared with a null default (via [optionalBoolArg]) so that "flag not
   /// passed" is distinguishable from an explicit `--no-emit-test-manifest`;

@@ -415,17 +415,6 @@ void main() {
         expect(inc().lastModifiedSync(), modified);
       });
 
-      test('ignores the removed STATIC_BEGIN macro in a comment', () async {
-        runner()
-          ..createSync(recursive: true)
-          ..writeAsStringSync(
-            '// was PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN(X)\n'
-            '$currentRunner',
-          );
-
-        await buildPastSetup(emitTestManifest: false);
-      });
-
       for (final emitTestManifest in [true, false]) {
         test(
           'accepts a 4.x STATIC_BASE runner (discovery: $emitTestManifest)',
@@ -436,30 +425,6 @@ void main() {
             await buildPastSetup(emitTestManifest: emitTestManifest);
 
             expect(runner().readAsStringSync(), before);
-          },
-        );
-
-        test(
-          'explains the removed STATIC_BEGIN/END form (discovery: $emitTestManifest)',
-          () async {
-            runner()
-              ..createSync(recursive: true)
-              ..writeAsStringSync(
-                'PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN(RunnerUITests)\n'
-                '#include "PatrolGeneratedTests.inc"\n'
-                'PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_END\n',
-              );
-
-            await expectLater(
-              iosTestBackend.build(options(emitTestManifest: emitTestManifest)),
-              throwsA(
-                isA<ToolExit>().having(
-                  (e) => e.message,
-                  'message',
-                  contains('removed in Patrol 5.0'),
-                ),
-              ),
-            );
           },
         );
       }

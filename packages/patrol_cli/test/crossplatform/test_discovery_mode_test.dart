@@ -30,6 +30,40 @@ void main() {
     setupProblem: setupProblem,
   );
 
+  group('warnIfEmitTestManifestOnWeb', () {
+    test('warns when the flag is passed for web', () {
+      warnIfEmitTestManifestOnWeb(
+        targetPlatform: TargetPlatform.web,
+        flag: true,
+        logger: logger,
+      );
+
+      verify(
+        () => logger.warn(any(that: contains('not supported on web'))),
+      ).called(1);
+    });
+
+    test('stays quiet without the flag or off web', () {
+      warnIfEmitTestManifestOnWeb(
+        targetPlatform: TargetPlatform.web,
+        flag: null,
+        logger: logger,
+      );
+      warnIfEmitTestManifestOnWeb(
+        targetPlatform: TargetPlatform.web,
+        flag: false,
+        logger: logger,
+      );
+      warnIfEmitTestManifestOnWeb(
+        targetPlatform: TargetPlatform.macOS,
+        flag: true,
+        logger: logger,
+      );
+
+      verifyNever(() => logger.warn(any()));
+    });
+  });
+
   group('resolveEmitTestManifest', () {
     test('is on by default', () {
       expect(resolve(), isTrue);
@@ -49,23 +83,22 @@ void main() {
       expect(resolve(flag: true, pubspecValue: false), isTrue);
     });
 
-    test('is off without a warning or error on web and macOS', () {
-      for (final platform in [TargetPlatform.web, TargetPlatform.macOS]) {
-        expect(
-          resolve(
-            targetPlatform: platform,
-            testDirectory: 'integration_test',
-            pubspecValue: true,
-          ),
-          isFalse,
-        );
-        expect(resolve(targetPlatform: platform, flag: true), isFalse);
-      }
+    test('is off without a warning or error on web', () {
+      expect(
+        resolve(
+          targetPlatform: TargetPlatform.web,
+          testDirectory: 'integration_test',
+          pubspecValue: true,
+        ),
+        isFalse,
+      );
+      expect(resolve(targetPlatform: TargetPlatform.web, flag: true), isFalse);
       verifyNever(() => logger.warn(any()));
     });
 
-    test('is on by default on iOS', () {
+    test('is on by default on iOS and macOS', () {
       expect(resolve(targetPlatform: TargetPlatform.iOS), isTrue);
+      expect(resolve(targetPlatform: TargetPlatform.macOS), isTrue);
     });
 
     test('falls back to runtime discovery under integration_test/', () {

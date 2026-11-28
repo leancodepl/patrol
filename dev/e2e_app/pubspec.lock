@@ -882,10 +882,10 @@ packages:
     dependency: transitive
     description:
       name: patrol_finders
-      sha256: "8608cdacaab90a3b00ecd7b09df11f13a62b01dea13c211b9f13fd86854e103a"
+      sha256: e34f926810805ecd939c517189be746ec953a90afe6e37c33c405578eafbad7f
       url: "https://pub.dev"
     source: hosted
-    version: "3.6.0"
+    version: "4.0.0-dev.1"
   patrol_log:
     dependency: transitive
     description:

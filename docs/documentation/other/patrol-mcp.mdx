@@ -15,10 +15,10 @@ install, and the agent's tools always match the CLI that runs the tests.
 An agent gets:
 
 - `run` — runs a test file and waits for it to finish, hot-restarting an already loaded one.
-- `devices` — lists attached Android and iOS devices to pass as `run`'s `device`.
+- `devices` — lists attached Android and iOS devices and browsers to pass as `run`'s `device`.
 - `status` — the session's state and its recent output.
 - `screenshot` — a screenshot from the session's device.
-- `native-tree` — the native UI tree from the session's device.
+- `native-tree` — the native UI tree from the session's Android or iOS device.
 - `quit` — stops the session.
 
 ## Setup
@@ -56,6 +56,11 @@ One server serves every project you open.
   }
 }
 ```
+
+A server launched this way runs the project's pinned CLI, so it runs tests only in that project and
+the projects below it. Every `run` and `status` result names the CLI serving it in `cli`. A
+globally activated server serving a project that pins another `patrol_cli` adds `cliPinWarning`,
+which carries this block's `command` and `args` for the project's own config.
 
 Editors differ only in where that block goes:
 
@@ -103,13 +108,18 @@ an app in a subdirectory (or a package in a pub workspace) is reached from the r
 A session holds its project while it lives — the app, the device and the ports belong to it — so a
 `run` naming another project is refused until the loaded session is quit.
 
+A git worktree is a project of its own. `PROJECT_ROOT=.` in an editor config resolves to the tree the
+server was started in, so a test that lives in another worktree is reached by passing that worktree as
+`projectRoot`, or by naming `testFile` with its absolute path: the project owning the file wins over
+every configured signal, and moves the server once no session is running.
+
 ## Options
 
 | Option | What it does |
 | --- | --- |
 | `--project-root` | The project to work in, when the editor's signals don't point at it. |
 | `--log-file` | Where the session writes its log. |
-| `--show-terminal` | Opens a macOS Terminal with the live log. |
+| `--show-terminal` | Opens a macOS Terminal window with the live log, once per log file for the server's lifetime. When it does not open, results carry `terminalWarning`. |
 | after `--` | Flags for `patrol develop`, e.g. `patrol mcp -- --flavor dev --verbose`. |
 
 `PROJECT_ROOT`, `SHOW_TERMINAL` and `PATROL_FLAGS` work as well, and the CLI's own environment
@@ -117,6 +127,14 @@ variables apply — `PATROL_FLUTTER_COMMAND` overrides which Flutter the develop
 
 Under FVM, the develop session uses the pinned Flutter automatically. The globally activated CLI runs
 under the Dart that activated it, which is independent of the project's pin.
+
+## Running in a browser
+
+`run` with `device: "chrome"` drives a web develop session, which needs Flutter 3.47 or newer. A
+browser is never picked automatically: with no `device`, `run` chooses an Android device, then an
+Android emulator, an iOS device and an iOS simulator. `screenshot` captures the tab in front through
+Chrome's debugging port, as on a phone it captures what is on screen, a tab the test opened
+included. `native-tree` is not available for a web session.
 
 ## Version compatibility
 
@@ -139,6 +157,42 @@ To migrate, drop `patrol_mcp` from your `pubspec.yaml` and point your editor's M
 Patrol also ships [agent skills](/documentation/other/agent-skills) that complement this server: the
 MCP gives the agent the tools, while a skill teaches it how to use them to write tests well.
 
+## When a test fails
+
+A failed `run` carries `error`: the first failing test's name and the error lines patrol reported
+for it. A `finishedFailed` run without `error` failed before any test did: the build, the app or
+the session itself, and `warning` and `output` say why. `output` holds the session's recent log,
+including what the build writes to stderr. `logFile` names the file holding the whole log; follow
+it with `tail -F` to watch a run as it goes.
+
+## A run that goes quiet
+
+Once the app is up and while a run is in progress, `run` and `status` results carry
+`quietForSeconds` — how long the session has heard nothing from the device — and `lastTestEntry`,
+the last test it saw. Until the app comes up, while it may still be building, installing or
+launching, nothing counts as quiet. Once the quiet passes three minutes the result also carries a
+`stallNote` naming it, and a `run` that reaches its timeout says how long the quiet lasted. `quit`
+stops such a run; the next `run` starts a fresh session.
+
+## Analytics
+
+`patrol mcp` reports each tool call to the same anonymous usage analytics as the CLI: the tool, how
+the call ended, how long it took, the device platform, and whether the CLI is a global install, a
+project's dev dependency or a path. No paths, test names, errors or output are sent.
+
+A `run` ends as `passed`, `failed`, `session_error` (it failed before any test did), `refused`,
+`timed_out` or `ended` (the session ended without a result). Every other tool ends as `ok` or
+`error`, and a tool call that throws ends as `error`.
+
+It follows the CLI's consent. The server never asks itself: nothing is sent until the CLI has run
+once in a terminal and shown its analytics notice, and `PATROL_ANALYTICS_ENABLED=false` turns it
+off. A client started from the dock or a launcher doesn't read your shell profile, so set the
+variable in the server's config:
+
+```json
+"env": { "PATROL_ANALYTICS_ENABLED": "false" }
+```
+
 ## Troubleshooting
 
 - Open your editor at the project root, or pass `--project-root`. When no signal leads to a project,
@@ -147,3 +201,6 @@ MCP gives the agent the tools, while a skill teaches it how to use them to write
 - Confirm the MCP server is enabled in your editor's settings.
 - The chosen Flutter command, and everything else the session logs, goes to the server's stderr —
   your editor's MCP log.
+- After a Dart or Flutter upgrade, run `patrol --version` once. The first start of a globally
+  activated CLI on a new SDK prints pub's resolution output to stdout, which some editors refuse in
+  place of the server's first message.

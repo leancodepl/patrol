@@ -1,0 +1,73 @@
+import 'dart:io';
+
+import 'package:flutter_test/flutter_test.dart';
+import 'package:patrol/patrol.dart';
+import 'package:windows_poc/main.dart';
+
+/// Opens File Explorer to a temp folder via [WindowsAutomator.launchApp],
+/// activates the window, and taps a known file with UI Automation.
+void main() {
+  patrolTest('launchApp opens Explorer and taps a file', ($) async {
+    await $.pumpWidgetAndSettle(const WindowsPocApp());
+
+    final folder = Directory(
+      '${Directory.systemTemp.path}${Platform.pathSeparator}PatrolExplorerDemo',
+    );
+    if (folder.existsSync()) {
+      folder.deleteSync(recursive: true);
+    }
+    folder.createSync();
+    addTearDown(() {
+      if (folder.existsSync()) {
+        folder.deleteSync(recursive: true);
+      }
+    });
+
+    // No extension on purpose: with "Hide extensions for known file types"
+    // (the Windows default), Explorer exposes `foo.txt` to UIA as `foo`.
+    // An extensionless name is the same either way.
+    const fileName = 'patrol_explorer_target';
+    final file = File(
+      '${folder.path}${Platform.pathSeparator}$fileName',
+    );
+    file.writeAsStringSync('hello from patrol windows explorer demo');
+
+    // launchApp: start Explorer at our folder (no fixture EXE needed).
+    await $.platform.windows.launchApp(
+      appPath: 'explorer.exe',
+      arguments: '"${folder.path}"',
+      activate: false,
+    );
+
+    // Explorer reuses the shell — activate by window title (folder name).
+    const explorerScope = WindowsScope(windowName: 'PatrolExplorerDemo');
+    await $.platform.windows.activateApp(windowName: 'PatrolExplorerDemo');
+
+    // Scope finds to the Explorer window so unrelated desktop UI cannot match.
+    final fileSelector = WindowsSelector(
+      name: fileName,
+      within: explorerScope,
+    );
+
+    await $.platform.windows.waitUntilVisible(fileSelector);
+    expect(
+      await $.platform.windows.isElementVisible(fileSelector),
+      isTrue,
+    );
+
+    final item = await $.platform.windows.findElement(fileSelector);
+    expect(item, isNotNull);
+    expect(item!.name, fileName);
+
+    // Select the file in Explorer (outside Flutter).
+    await $.platform.windows.tap(fileSelector);
+    await Future<void>.delayed(const Duration(milliseconds: 400));
+
+    // Bring Explorer forward again to prove activateApp after interaction.
+    await $.platform.windows.activateApp(windowName: 'PatrolExplorerDemo');
+    expect(
+      await $.platform.windows.isElementVisible(fileSelector),
+      isTrue,
+    );
+  });
+}

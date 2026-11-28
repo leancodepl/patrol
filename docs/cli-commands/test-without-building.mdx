@@ -18,7 +18,7 @@ To see all available options and flags, run
 
 This command runs the tests produced by a previous `patrol build`, reusing its
 artifacts. Nothing is bundled or compiled. Android installs the previously built
-app and test APKs before invoking `adb shell am instrument`; iOS uses
+app and test APKs before invoking `adb shell am instrument`; iOS and macOS use
 `xcodebuild test-without-building`.
 
 It requires [build-time test discovery][discovery] (the default, unless
@@ -86,7 +86,7 @@ The command runs exactly what was last built, so use it while the app and test
 code are unchanged — a fast loop for debugging one failing test. After changing
 Dart or native code, run `patrol build` again.
 
-On Android and iOS, `--flavor` and the build-mode flags
+On Android, iOS and macOS, `--flavor` and the build-mode flags
 (`--debug`/`--profile`/`--release`) are still accepted, because they select
 **which built artifacts** to run.
 

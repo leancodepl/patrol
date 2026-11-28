@@ -1,4 +1,4 @@
-## Unreleased
+## 4.0.0-dev.1
 
 - Add `PatrolTesterConfig.dragWithoutFling`. When true, scrolling methods such as `scrollTo()`
   end each drag without a fling and cover 3 steps per drag, so they no longer wait for the scroll
@@ -8,6 +8,15 @@
 - **Breaking:** `PatrolTester.pumpAndSettle()` returns `Future<int>`, the number of pumped frames,
   like `WidgetTester.pumpAndSettle()`. Overrides, implementations and mocks of it must return
   `Future<int>`. (#3414)
+- Fix `PatrolFinder.matches()` throwing a `TypeError` on chained finders (`$(#a).$(#b)`) and on
+  `first`, `last` and `at()`. They now skip offstage widgets, like the finder itself; simple
+  finders behave as before and also match offstage widgets. (#3433)
+- **Breaking:** `PatrolTester.pumpWidget()` takes `duration` and `phase` as named parameters, like
+  `pumpWidgetAndSettle()`, and gets `wrapWithView` from `WidgetTester.pumpWidget()`. Callers,
+  overrides and mocks must pass them by name; overrides must also take `wrapWithView`. (#3433)
+- **Breaking:** `PatrolTester.pumpWidgetAndSettle()` returns `Future<int>`, the number of frames
+  pumped while settling, and gets `wrapWithView`. Overrides, implementations and mocks of it must
+  return `Future<int>`, and overrides must take `wrapWithView`. (#3433)
 
 ## 3.7.1
 

@@ -7,6 +7,7 @@ import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
+import 'package:patrol_cli/src/macos/macos_test_backend.dart' hide BuildMode;
 import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:patrol_cli/src/test_bundler.dart';
@@ -39,6 +40,7 @@ class TestWithoutBuildingCommand extends PatrolCommand {
     required this._iosTestBackend,
     required this._webTestBackend,
     required this._fs,
+    required this._macosTestBackend,
     required this._analytics,
     required this._logger,
   }) {
@@ -72,7 +74,7 @@ class TestWithoutBuildingCommand extends PatrolCommand {
       )
       ..addOption(
         'bundle-id',
-        help: 'Bundle identifier of the iOS app under test.',
+        help: 'Bundle identifier of the iOS or macOS app under test.',
         valueHelp: 'pl.leancode.AwesomeApp',
       )
       ..addOption(
@@ -91,6 +93,7 @@ class TestWithoutBuildingCommand extends PatrolCommand {
   final IOSTestBackend _iosTestBackend;
   final WebTestBackend _webTestBackend;
   final FileSystem _fs;
+  final MacOSTestBackend _macosTestBackend;
 
   final Analytics _analytics;
   final Logger _logger;
@@ -132,10 +135,10 @@ class TestWithoutBuildingCommand extends PatrolCommand {
         : await _deviceFinder.find(wantDevices, flutterCommand: flutterCommand);
     final device = devices.single;
 
-    if (device.targetPlatform != TargetPlatform.android &&
-        device.targetPlatform != TargetPlatform.iOS) {
+    if (device.targetPlatform == TargetPlatform.web) {
       _logger.err(
-        'patrol test-without-building supports Android and iOS only.',
+        'patrol test-without-building runs on Android, iOS and macOS devices. '
+        'For web, pass --input with a directory from `patrol build web`.',
       );
       return 1;
     }
@@ -143,6 +146,7 @@ class TestWithoutBuildingCommand extends PatrolCommand {
     final onlyTests = stringsArg('only');
     final flavor = switch (device.targetPlatform) {
       TargetPlatform.android => stringArg('flavor') ?? config.android.flavor,
+      TargetPlatform.macOS => stringArg('flavor') ?? config.macos.flavor,
       _ => stringArg('flavor') ?? config.ios.flavor,
     };
 
@@ -205,7 +209,21 @@ class TestWithoutBuildingCommand extends PatrolCommand {
             onlyTests: onlyTests,
           );
         case TargetPlatform.macOS:
+          await _macosTestBackend.execute(
+            MacOSAppOptions(
+              flutter: flutterOpts,
+              bundleId: stringArg('bundle-id') ?? config.macos.bundleId,
+              scheme: buildMode.createScheme(flavor),
+              configuration: buildMode.createConfiguration(flavor),
+              appServerPort: super.appServerPort,
+              testServerPort: super.testServerPort,
+              emitTestManifest: true,
+            ),
+            device,
+            onlyTests: onlyTests,
+          );
         case TargetPlatform.web:
+        case TargetPlatform.windows:
           return 1; // unreachable, guarded above
       }
     } catch (err, st) {
