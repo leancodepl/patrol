@@ -3,6 +3,7 @@ import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/base/constants.dart' as constants;
+import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/extensions/command_runner.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/compatibility_checker/version_compatibility.dart';
@@ -226,6 +227,14 @@ packages:
       expect(result, equals(1));
       verify(() => logger.err(exception.message)).called(1);
       verify(() => logger.info(exception.usage)).called(1);
+    });
+
+    test('exits with 130 on ToolInterrupted', () async {
+      const exception = ToolInterrupted('xcodebuild');
+      when(() => logger.info(any())).thenThrow(exception);
+      final result = await commandRunner.run(['--version']);
+      expect(result, equals(exitCodeInterrupted));
+      verify(() => logger.err(exception.message)).called(1);
     });
 
     test('prints usage when no command is passed', () async {

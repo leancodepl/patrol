@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:glob/glob.dart';
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
+import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/commands/dart_define_utils.dart';
@@ -17,6 +18,7 @@ import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/macos/macos_test_backend.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
+import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
@@ -38,6 +40,8 @@ class TestCommand extends PatrolCommand {
     required WebCoverageTool webCoverageTool,
     required Analytics analytics,
     required Logger logger,
+    FlutterVersion Function(FlutterCommand) readFlutterVersion =
+        FlutterVersion.fromCLI,
   }) : _deviceFinder = deviceFinder,
        _testBundler = testBundler,
        _testFinderFactory = testFinderFactory,
@@ -51,7 +55,8 @@ class TestCommand extends PatrolCommand {
        _coverageTool = coverageTool,
        _webCoverageTool = webCoverageTool,
        _analytics = analytics,
-       _logger = logger {
+       _logger = logger,
+       _readFlutterVersion = readFlutterVersion {
     usesTargetOption();
     usesDeviceOption();
     usesBuildModeOption();
@@ -96,6 +101,7 @@ class TestCommand extends PatrolCommand {
 
   final Analytics _analytics;
   final Logger _logger;
+  final FlutterVersion Function(FlutterCommand) _readFlutterVersion;
 
   @override
   String get name => 'test';
@@ -106,7 +112,7 @@ class TestCommand extends PatrolCommand {
   @override
   Future<int> run() async {
     unawaited(
-      _analytics.sendCommand(FlutterVersion.fromCLI(flutterCommand), name),
+      _analytics.sendCommand(_readFlutterVersion(flutterCommand), name),
     );
 
     final config = _pubspecReader.read();
@@ -443,7 +449,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
 
     // Converted after the run, once the runner has written the raw JS coverage.
     // _execute signals failures via its return value, so failed runs still
-    // produce a report.
+    // produce a report. An interrupt throws out of _execute and skips it.
     if (coverageMode == CoverageMode.web) {
       await _webCoverageTool.run(
         flutterPackageName: config.flutterPackageName,
@@ -561,7 +567,9 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
         );
         final package = android.packageName;
         if (package != null && uninstall) {
-          finalizer = () => _androidTestBackend.uninstall(package, device);
+          finalizer = () => _boundedUninstall(
+            () => _androidTestBackend.uninstall(package, device),
+          );
         }
       case TargetPlatform.macOS:
         action = () => _macosTestBackend.execute(macos, device);
@@ -594,8 +602,12 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     }
 
     var allPassed = true;
+    var interrupted = false;
     try {
       await action();
+    } on ToolInterrupted {
+      interrupted = true;
+      rethrow;
     } catch (err, st) {
       _logger
         ..err('$err')
@@ -607,12 +619,29 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
         await finalizer?.call();
       } catch (err) {
         _logger.err('Failed to call finalizer: $err');
-        rethrow;
+        // A throw from here replaces the interrupt and its exit code 130.
+        if (!interrupted) {
+          rethrow;
+        }
       }
     }
 
     return allPassed;
   }
+
+  /// Runs [uninstall] for at most [_uninstallTimeout]: a device that is gone
+  /// never answers it.
+  Future<void> _boundedUninstall(Future<void> Function() uninstall) async {
+    await uninstall().timeout(
+      _uninstallTimeout,
+      onTimeout: () => _logger.warn(
+        'Uninstalling the app did not finish within '
+        '${_uninstallTimeout.inSeconds}s, moving on.',
+      ),
+    );
+  }
+
+  static const _uninstallTimeout = Duration(seconds: 30);
 
   void useCoverageOptions() {
     argParser
