@@ -20,6 +20,9 @@
 - `patrol test-without-building` on Android now installs the `androidTestUtil` APKs (orchestrator,
   test-services) from the last `patrol build android`, so tools that write through `TestStorage`,
   such as allure-android, work on a fresh device. (#3427)
+- Fix Ctrl+C during `patrol develop -d chrome` startup waiting out the web server timeout (120 s by
+  default). The session now stops Flutter, the dependency install and the Playwright driver,
+  together with the processes they spawned, at any point before it attaches.
 
 ## 5.0.0-dev.1
 
