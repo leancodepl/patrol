@@ -190,27 +190,25 @@ jobs:
   # A normal app build (without the patrol CLI, so without PATROL_ENABLED)
   # must compile and must not contain Patrol's test server.
   normal-build-ios:
-    name: iOS build without patrol CLI (${{ matrix.dependency-manager }}, ${{ matrix.flutter-version }})
+    name: iOS build without patrol CLI (${{ matrix.dependency-manager }})
     runs-on: macos-26
 
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - dependency-manager: cocoapods
-            flutter-version: '3.38.x'
-            flutter-channel: 'stable'
-          # With SwiftPM, resolving the example app's packages needs the
-          # FlutterFramework package, which Flutter 3.38 doesn't generate
-          # ("Flutter/ephemeral/Packages/.packages/FlutterFramework doesn't
-          # exist").
-          - dependency-manager: swiftpm
-            flutter-version: '3.44.x'
-            flutter-channel: 'stable'
+        flutter-version: ['3.38.x']
+        flutter-channel: ['stable']
+        dependency-manager: [cocoapods, swiftpm]
+
+    # A fresh app that only adds patrol as a dev dependency, like a user's app.
+    # The example app's other plugins (Firebase etc.) make its SwiftPM build
+    # need a newer Flutter and are slow and flaky to resolve.
+    env:
+      APP_DIR: ${{ github.workspace }}/../no_cli_app
 
     defaults:
       run:
-        working-directory: packages/patrol/example
+        working-directory: ${{ github.workspace }}/..
 
     steps:
       - name: Clone repository
@@ -233,10 +231,18 @@ jobs:
             flutter config --no-enable-swift-package-manager
           fi
 
+      - name: Create an app that depends on patrol
+        run: |
+          flutter create --platforms ios --org pl.leancode.check no_cli_app
+          cd no_cli_app
+          flutter pub add "dev:patrol:{\"path\":\"$GITHUB_WORKSPACE/packages/patrol\"}"
+
       - name: Build the app without the patrol CLI
-        run: flutter build ios --simulator --debug --flavor dev
+        working-directory: ${{ env.APP_DIR }}
+        run: flutter build ios --simulator --debug
 
       - name: The app doesn't contain the test server
+        working-directory: ${{ env.APP_DIR }}
         run: |
           app=$(find build/ios/iphonesimulator -maxdepth 1 -name '*.app' | head -n 1)
           if [ -z "$app" ]; then
