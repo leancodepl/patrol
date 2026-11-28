@@ -79,6 +79,7 @@ void main() {
       requiredComponents,
       contains('Microsoft.VisualStudio.Component.VC.CMake.Project'),
     );
+    expect(vswhereArguments('installationPath'), contains('-utf8'));
     expect(
       vswherePath({'ProgramFiles(x86)': r'D:\PF86'}),
       r'D:\PF86\Microsoft Visual Studio\Installer\vswhere.exe',

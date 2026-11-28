@@ -69,6 +69,7 @@ List<String> vswhereArguments(String property) => [
   ...requiredComponents,
   '-property',
   property,
+  '-utf8',
 ];
 
 /// The install described by the `installationVersion` and `installationPath`
