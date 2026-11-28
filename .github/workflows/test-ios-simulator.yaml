@@ -94,13 +94,16 @@ jobs:
 
           sleep 10 # See https://github.com/leancodepl/patrol/issues/1282
 
-          # Running single test to verify workflow stability
-          # Test: pull_to_refresh_test.dart
+          # Only two tests, to keep the macOS runner load low:
+          # - pull_to_refresh_test.dart verifies the workflow itself.
+          # - restart_app_test.dart is the only CI run of the iOS runner's phase
+          #   loop: it kills and relaunches the app, the last time via a deep link.
           # Patrol records one MP4 per test case via --record-video (iOS simulator).
           # Videos are written to dev/e2e_app/videos and uploaded as artifacts below.
           TESTS_EXIT_CODE=0
           patrol test \
           --target patrol_test/pull_to_refresh_test.dart \
+          --target patrol_test/restart_app_test.dart \
           --verbose \
           --ios 26.2 \
           --full-isolation \

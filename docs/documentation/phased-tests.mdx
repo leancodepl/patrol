@@ -1,0 +1,157 @@
+---
+title: Phased tests
+---
+
+A Patrol test is normally one Dart callback in one app process. **Phased tests**
+split that callback into consecutive phases. When a phase finishes, the native
+runner **kills the app and starts a new process** for the next phase.
+
+Use this when you need to keep testing after the app's process is gone:
+in-memory state is lost, `main()` runs again, and persisted files survive.
+
+On Android Patrol stops the app with `am force-stop`, which also cancels its
+alarms and scheduled jobs and removes its notifications. iOS terminates the app
+without that. A phase that checks something scheduled before the kill can
+therefore pass on iOS and fail on Android.
+
+## Basic usage
+
+Pass `phases([...])` **directly** as the `patrolTest` / `patrol` body. Wrapping
+it in another callback loses the phase metadata and throws at runtime:
+
+```dart title="patrol_test/restart_app_test.dart"
+import 'dart:io';
+
+import 'package:patrol/patrol.dart';
+
+void main() {
+  patrolTest(
+    'restarts the app between phases',
+    phases([
+      PatrolPhase(($) async {
+        await $.pumpWidgetAndSettle(const MyApp());
+        // First process: write whatever you need to survive the kill.
+      }),
+      PatrolPhase(($) async {
+        await $.pumpWidgetAndSettle(const MyApp());
+        // Second process: the previous Dart isolate is gone.
+      }),
+    ]),
+  );
+}
+```
+
+The test **passes only if Dart reports success after the last phase**.
+
+Each phase is a fresh Flutter app. Pump your root widget again at the start of
+every phase (the same `createApp` / `$.pumpWidgetAndSettle` you already use).
+
+A working example lives in
+[`restart_app_test.dart`](https://github.com/leancodepl/patrol/blob/master/dev/e2e_app/patrol_test/restart_app_test.dart)
+in the Patrol repository: phase 1 writes the current PID to a file, phase 2
+asserts a different PID.
+
+## setUp / tearDown and timeouts
+
+Every phase runs in its own app process, and every process runs the code of
+all the test files in the run from the top. That means:
+
+- `setUp` / `tearDown`, `patrolSetUp` / `patrolTearDown` and `setUpAll` /
+  `tearDownAll` run **in every phase's process**, not once for the whole phased
+  test.
+- Plain `setUp` / `tearDown` and `setUpAll` / `tearDownAll` also run for the
+  other tests of the run in that process: for the ones before your test right
+  before its next phase starts, and for the ones after it between a phase
+  passing and the kill. `patrolSetUp` / `patrolTearDown` run only for the test
+  the native side asked for.
+- The test `timeout` applies to **each** phase separately.
+
+So a hook that clears storage or logs out can delete the state the next phase
+is meant to find after the kill. Put such cleanup in `patrolTearDown` and skip
+it while `PatrolBinding.instance.willRelaunchApp` is `true`: it becomes `true`
+once a phase that isn't the last one passes. To run something only in the
+first process, check `PatrolBinding.instance.currentPhaseIndex` in
+`patrolSetUp` (`0` for the first phase and for tests without phases):
+
+```dart
+patrolSetUp(() async {
+  if (PatrolBinding.instance.currentPhaseIndex == 0) {
+    await seedTestData(); // only before the first phase
+  }
+});
+
+patrolTearDown(() async {
+  if (PatrolBinding.instance.willRelaunchApp) {
+    return; // the next phase checks this state after the relaunch
+  }
+  await clearStorage();
+});
+```
+
+Plain `setUp` / `tearDown` and `setUpAll` / `tearDownAll` can't tell the
+phases apart, so keep state resets out of them in a run with phased tests.
+
+## How to launch the next process
+
+By default the next phase starts the same way as a normal Patrol launch (the
+app's launcher activity / default URL).
+
+To open the next process through a deep link, set `launch` on **that** phase
+(phase 2 or later). Prefer a **custom scheme** your app already handles
+(`myapp://settings`), or a host you have registered as an Android App Link /
+iOS Universal Link. A bare `https://` URL that the OS opens in Safari will not
+reach your app:
+
+```dart
+patrolTest(
+  'cold-starts from a deep link after a kill',
+  phases([
+    PatrolPhase(($) async {
+      await $.pumpWidgetAndSettle(const MyApp());
+      // ...
+    }),
+    PatrolPhase(
+      ($) async {
+        await $.pumpWidgetAndSettle(const MyApp());
+        // Assert the route / screen the URL opened.
+      },
+      launch: PatrolAppLaunch.deepLink('myapp://settings'),
+    ),
+  ]),
+);
+```
+
+`PatrolAppLaunch.normal()` is the default. A non-normal `launch` on the **first**
+phase is rejected: that process is already started by the native runner before
+Dart runs.
+
+### Platform notes for deep links
+
+- **Android:** the launch intent's data becomes the engine's initial route, so
+  Flutter's built-in deep linking / `WidgetsApp` can open the matching screen.
+- **iOS:** Flutter's built-in deep linking does **not** receive the URL in a
+  Patrol process (the first frame belongs to `flutter_test`). Read the initial
+  link with a native plugin such as [`app_links`] instead. A phase launched
+  through a deep link needs iOS 16.4 or newer: below that, XCTest can't open a
+  URL in the app, and the test fails before the app is killed.
+
+## Requirements and limits
+
+<Warning>
+  **Android** phased tests need the self-instrumenting [`:patrolTest`] layout.
+  The older in-app `androidTest` runner lives inside the app it would kill, so
+  there a test with more than one phase fails before its first phase runs.
+</Warning>
+
+- **Android and iOS only.** On macOS, Windows and web a test with more than one
+  phase fails before its first phase runs.
+- **`patrol test` / `patrol build`, not `patrol develop`.** Hot Restart cannot
+  survive killing the app. Phased tests throw in develop mode.
+- **`--coverage` (VM) with more than one phase is not supported.** Each phase
+  is a new process; coverage collection stops after the suite test count.
+- A phased list must contain **at least one** phase. One phase is valid; it
+  behaves like a normal test (no kill).
+
+[native automation]: /documentation/native/usage
+[`:patrolTest`]: /documentation#android-setup
+[`app_links`]: https://pub.dev/packages/app_links

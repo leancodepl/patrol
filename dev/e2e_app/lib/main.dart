@@ -108,6 +108,8 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
   @override
   void initState() {
     super.initState();
+    // Also delivers the link the app was cold-started with (for example by
+    // PatrolAppLaunch.deepLink): app_links replays it to the first listener.
     _linkSubscription = _appLinks.uriLinkStream.listen((uri) {
       if (!mounted) {
         return;

@@ -29,6 +29,10 @@
   `waitUntilVisible` target the n-th match instead of always the first. On macOS, `$.platform.tap`
   does too. On iOS and macOS, `waitUntilVisible` with `instance` now fails when there are fewer
   matches, instead of passing. (#3445)
+- **Breaking:** `ObjCRunDartTestResponse`, which the iOS and macOS runner macros
+  use, reports `result` and the next phase instead of `passed` and `skipped`. A
+  `RunnerUITests.m` that copies a runner macro's body instead of expanding the
+  macro has to read `result`. See `migration5.md`. (#3282)
 - Experimental Windows support via `$.platform.windows` (out-of-process automator sidecar):
   find/tap/`enterText`/`pressKey`, `WindowsSelector` with optional `WindowsScope` (defaults to the
   app under test), and `WindowsKey` helpers. (#3183)
@@ -38,6 +42,20 @@
 - Add `$.entrypointArgs` with the Dart entrypoint arguments the native side of the app passes to
   the test bundle (`dartEntrypointArgs` on Android, `entrypointArgs` on iOS and macOS). Needs
   `patrol_cli` 5.0. (#3366)
+- Add `phases()` so a Patrol test can continue after the app is killed and
+  relaunched (normal start or a deep link). Runs on iOS and on Android with the
+  self-instrumenting `:patrolTest` layout; on macOS, web, Windows and the in-app
+  Android layout, and with `--coverage`, a test with more than one phase fails
+  before its first phase runs. Unsupported in `patrol develop`. A phase
+  launched through a deep link needs iOS 16.4 or newer.
+  See [Phased tests](https://patrol.leancode.co/documentation/phased-tests).
+  (#3282)
+- In a phase launched with `PatrolAppLaunch.deepLink`, report the default route
+  name the native side started the engine with (on Android, the link's path)
+  instead of the `/` flutter_test puts in its place. Other tests keep `/`. On
+  iOS Flutter's built-in deep linking still does not receive that URL in a
+  Patrol process; use a native initial-link plugin (for example `app_links`)
+  there. (#3282)
 - Add native screenshots on iOS: `screenshot_on_failure: true` and `$.takeNativeScreenshot('tag')`
   now work on simulators and physical devices. See the
   [docs](https://patrol.leancode.co/cli-commands/test#on-ios). (#3271)
@@ -61,6 +79,9 @@
   ubuntu26.04-x64", and `npx playwright install` hanging on Node.js 26 and newer Node.js 24
   releases. With `--web-reporter junit`, some failures are now reported as `<error>` instead of
   `<failure>`. (#3401)
+- Fix web test discovery failing with `page.goto: Timeout 30000ms exceeded` when a debug web build
+  takes longer than 30 s to load, for example on a small CI runner. The setup navigation now waits
+  up to 300 s, like the runner's other waits for the app. (#3389)
 - Fix `patrol develop` on web slowing down and eventually hanging after a handful of hot restarts,
   with render assertions filling the console. Those assertions are no longer reported as failures
   of the running test. (#3040)

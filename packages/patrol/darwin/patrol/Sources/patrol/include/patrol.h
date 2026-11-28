@@ -36,10 +36,14 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface ObjCRunDartTestResponse : NSObject
-@property(nonatomic, readonly) BOOL passed;
-@property(nonatomic, readonly) BOOL skipped;
+@property(nonatomic, readonly) NSString *result;
 @property(nonatomic, readonly, nullable) NSString *details;
-- (instancetype)initWithPassed:(BOOL)passed skipped:(BOOL)skipped details:(NSString *_Nullable)details;
+@property(nonatomic, readonly, nullable) NSNumber *nextPhaseIndex;
+@property(nonatomic, readonly, nullable) NSString *nextPhaseLaunchUrl;
+- (instancetype)initWithResult:(NSString *)result
+                       details:(NSString *_Nullable)details
+                nextPhaseIndex:(NSNumber *_Nullable)nextPhaseIndex
+            nextPhaseLaunchUrl:(NSString *_Nullable)nextPhaseLaunchUrl;
 @end
 
 @interface ObjCPatrolAppServiceClient : NSObject
@@ -48,6 +52,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)listDartTestsWithCompletion:(void (^)(NSArray<NSDictionary *> *_Nullable tests,
                                               NSError *_Nullable error))completion;
 - (void)runDartTestWithName:(NSString *)name
+                 completion:(void (^)(ObjCRunDartTestResponse *_Nullable response, NSError *_Nullable error))completion;
+- (void)runDartTestWithName:(NSString *)name
+                 phaseIndex:(NSNumber *_Nullable)phaseIndex
                  completion:(void (^)(ObjCRunDartTestResponse *_Nullable response, NSError *_Nullable error))completion;
 @end
 
