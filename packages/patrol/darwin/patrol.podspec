@@ -42,7 +42,16 @@ Runs tests that use flutter_test and patrol APIs as native macOS / iOS integrati
   ]
 
   # Flutter.framework does not contain a i386 slice.
-  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
+  # PATROL_ENABLED=1 (build setting or xcodebuild environment) compiles the
+  # test-only code; the same pod binary also goes into the app target.
+  s.pod_target_xcconfig = {
+    'DEFINES_MODULE' => 'YES',
+    'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386',
+    'PATROL_SWIFT_CONDITION_1' => 'PATROL_ENABLED',
+    'PATROL_OBJC_DEFINE_1' => 'PATROL_ENABLED=1',
+    'SWIFT_ACTIVE_COMPILATION_CONDITIONS' => '$(inherited) $(PATROL_SWIFT_CONDITION_$(PATROL_ENABLED))',
+    'GCC_PREPROCESSOR_DEFINITIONS' => '$(inherited) $(PATROL_OBJC_DEFINE_$(PATROL_ENABLED))',
+  }
   s.swift_version = '5.0'
 
   s.dependency 'CocoaAsyncSocket', '~> 7.6'

@@ -164,6 +164,9 @@ jobs:
       - name: Run one test file without rebuilding
         run: patrol test-without-building -d macos --only patrol_test/macos/macos_app_test.dart --verbose
 
+      - name: Run one test file with runtime discovery
+        run: patrol test -t patrol_test/macos/macos_app_test.dart -d macos --no-emit-test-manifest --verbose
+
       - name: Check a runner without the generated tests
         run: |
           runner=macos/RunnerUITests/RunnerUITests.m

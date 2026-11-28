@@ -85,8 +85,9 @@
     `--emit-test-manifest` there fails the build.
   - On iOS, a `RunnerUITests.m` without the `#include` of the generated tests keeps runtime
     discovery with a warning that shows the lines to add (an explicit opt-in fails instead). The removed
-    `PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN`/`_END` macros are reported with the
-    replacement. Requires `patrol` 5.0.
+    `PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE` stops the build with a hint to rename it to
+    `PATROL_INTEGRATION_TEST_IOS_RUNNER`, and the removed `..._STATIC_BEGIN`/`_END` macros are
+    reported with the replacement. Requires `patrol` 5.0.
   - With build-time discovery, runs in which tests didn't run fail instead of passing with
     `Total: 0`. A missing Android Patrol test class (`MainActivityTest.java`) stops the build, a run
     that executed fewer tests than discovered fails and lists them, and the app fails when it
@@ -100,6 +101,8 @@
   with `patrol test -d chrome` or `patrol develop -d chrome` prints a warning. (#3432)
 - Show why build-time discovery failed (the failing part of the host `flutter test` output) without
   `--verbose`.
+- On iOS and macOS, `patrol build`, `patrol test` and `patrol develop` pass `PATROL_ENABLED=1` to
+  `xcodebuild`, which compiles the runner class of `patrol` 5.0 into the patrol pod.
 
 ## 4.10.0
 

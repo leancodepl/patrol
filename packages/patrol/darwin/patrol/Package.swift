@@ -12,6 +12,16 @@ let patrolImplSwiftSettings: [SwiftSetting] =
   ? [.define("PATROL_ENABLED")]
   : []
 
+let patrolCSettings: [CSetting] =
+  patrolEnabled
+  ? [.define("PATROL_ENABLED", to: "1")]
+  : []
+
+let patrolLinkerSettings: [LinkerSetting] =
+  patrolEnabled
+  ? [.unsafeFlags(["-weak_framework", "XCTest"])]
+  : []
+
 let patrolImplBaseLinkerSettings: [LinkerSetting] = [
   .linkedFramework("UIKit", .when(platforms: [.iOS])),
   .linkedFramework("AppKit", .when(platforms: [.macOS])),
@@ -71,15 +81,17 @@ let package = Package(
     ),
     // Public module named `patrol`. Flutter's registrants import this
     // (`@import patrol` on iOS, `import patrol` on macOS) and users
-    // `@import patrol` from RunnerUITests. Hosts ObjC PatrolPlugin, runner
-    // macros, and ObjC interface stubs for PatrolImpl's @objc types so a
-    // single `@import patrol` is enough — without re-exporting the Swift
+    // `@import patrol` from RunnerUITests. Hosts ObjC PatrolPlugin, the runner
+    // base class and macros, and ObjC interface stubs for PatrolImpl's @objc
+    // types so a single `@import patrol` is enough, without re-exporting the Swift
     // module into the Clang interface.
     .target(
       name: "patrol",
       dependencies: ["PatrolImpl"],
       path: "Sources/patrol",
-      publicHeadersPath: "include"
+      publicHeadersPath: "include",
+      cSettings: patrolCSettings,
+      linkerSettings: patrolLinkerSettings
     ),
   ]
 )

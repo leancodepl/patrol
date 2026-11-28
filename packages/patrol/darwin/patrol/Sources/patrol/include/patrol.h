@@ -65,6 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
 NS_ASSUME_NONNULL_END
 
 #import "PatrolExtensionRegistry.h"
+#import "PatrolIntegrationTestCase.h"
 #import "PatrolIntegrationTestIosRunner.h"
 #import "PatrolIntegrationTestMacosRunner.h"
 #import "PatrolPlugin.h"

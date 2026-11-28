@@ -402,9 +402,10 @@ class IOSAppOptions {
       ],
       '-quiet',
       ...['-derivedDataPath', '../build/ios_integ'],
+      'PATROL_ENABLED=1',
       r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
       r'OTHER_LDFLAGS=$(inherited) -weak_framework XCTest -F$(PLATFORM_DIR)/Developer/Library/Frameworks -L$(PLATFORM_DIR)/Developer/usr/lib',
-      'OTHER_CFLAGS=\$(inherited) -D FULL_ISOLATION=${fullIsolation ? 1 : 0} -D CLEAR_PERMISSIONS=${clearIOSPermissions ? 1 : 0} -D PATROL_SCREENSHOT_ON_FAILURE=${screenshotOnFailure ? 1 : 0}',
+      'OTHER_CFLAGS=\$(inherited) -D PATROL_ENABLED=1 -D FULL_ISOLATION=${fullIsolation ? 1 : 0} -D CLEAR_PERMISSIONS=${clearIOSPermissions ? 1 : 0} -D PATROL_SCREENSHOT_ON_FAILURE=${screenshotOnFailure ? 1 : 0}',
     ];
 
     return cmd;
@@ -526,8 +527,10 @@ class MacOSAppOptions {
       ...['-configuration', configuration],
       '-quiet',
       ...['-derivedDataPath', '../build/macos_integ'],
+      'PATROL_ENABLED=1',
       r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
       r'OTHER_LDFLAGS=$(inherited) -weak_framework XCTest -F$(PLATFORM_DIR)/Developer/Library/Frameworks -L$(PLATFORM_DIR)/Developer/usr/lib',
+      r'OTHER_CFLAGS=$(inherited) -D PATROL_ENABLED=1',
     ];
 
     return cmd;

@@ -8,8 +8,8 @@
   (#3417)
 - **Breaking:** `PATROL_INTEGRATION_TEST_IOS_RUNNER` now runs both build-time and runtime test
   discovery: followed by `#include "PatrolGeneratedTests.inc"`, it runs the generated tests when the
-  file declares any, and discovers tests at runtime otherwise. `..._STATIC_BASE` is a deprecated
-  alias, and the 4.7.0 `..._STATIC_BEGIN`/`_END` macros are removed. See `migration5.md`.
+  file declares any, and discovers tests at runtime otherwise. The 4.x `..._STATIC_BASE` and 4.7.0
+  `..._STATIC_BEGIN`/`_END` macros are removed. See `migration5.md`.
 - **Breaking:** With build-time test discovery, a test the app registers that discovery didn't find
   (for example one behind `Platform.isAndroid`) fails every test of the run with the list of
   missing tests, instead of silently never running. Requires `patrol_cli` 5.0. (#3425)
@@ -42,6 +42,15 @@
   [docs](https://patrol.leancode.co/cli-commands/test#on-ios). (#3271)
 - `PATROL_INTEGRATION_TEST_MACOS_RUNNER` runs build-time discovered tests the same way, so build-time
   test discovery works on macOS. (#3432)
+- **Breaking:** The iOS and macOS runner logic moved out of the `PATROL_INTEGRATION_TEST_IOS_RUNNER` and
+  `PATROL_INTEGRATION_TEST_MACOS_RUNNER` macros into `PatrolIntegrationTestCase`, a class compiled into
+  the patrol pod or Swift package when it's built with `PATROL_ENABLED=1`. `RunnerUITests.m` stays the
+  same. Builds without `patrol_cli` pass `PATROL_ENABLED=1` instead of `OTHER_SWIFT_FLAGS` and
+  `OTHER_CFLAGS`. See `migration5.md`.
+- macOS runtime discovery names tests like iOS does (spaces become `+`), so `-only-testing` can select
+  them.
+- On iOS, a skipped build-time discovered test no longer launches the app, or deletes it for
+  `--full-isolation`, first.
 
 ## 5.0.0-dev.1
 

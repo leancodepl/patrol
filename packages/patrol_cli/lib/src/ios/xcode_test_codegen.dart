@@ -11,7 +11,7 @@ import 'package:patrol_cli/src/crossplatform/test_manifest.dart';
 ///
 /// One XCTestCase subclass is generated per Dart test file, all inheriting the
 /// shared infrastructure from the base class opened by
-/// `PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE`, so reports group by file
+/// `PATROL_INTEGRATION_TEST_{IOS,MACOS}_RUNNER`, so reports group by file
 /// and a whole file is selectable with one `-only-testing` value. Class and
 /// method names come from [generatePerFileTestNames], the same source the
 /// Android codegen uses, so both platforms report the same names.
