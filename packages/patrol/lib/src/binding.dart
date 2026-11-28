@@ -227,9 +227,7 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
   /// `null` when the current test is not phased, or before `patrolTest` sets
   /// it. Use this in `setUp` / `tearDown` (and `patrolSetUp` / `patrolTearDown`)
   /// when cleanup should run only after the last phase.
-  int? get currentPhaseIndex => _currentPhaseIndex;
-  set currentPhaseIndex(int? value) => _currentPhaseIndex = value;
-  int? _currentPhaseIndex;
+  int? currentPhaseIndex;
 
   /// The singleton instance of this object.
   ///

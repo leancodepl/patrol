@@ -119,11 +119,13 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
 
     // Cold starts (e.g. PatrolAppLaunch.deepLink) deliver the URL before the
     // stream listener is attached; the stream covers warm opens.
-    unawaited(_appLinks.getInitialLink().then((uri) {
-      if (uri != null) {
-        openLink(uri);
-      }
-    }));
+    unawaited(
+      _appLinks.getInitialLink().then((uri) {
+        if (uri != null) {
+          openLink(uri);
+        }
+      }),
+    );
     _linkSubscription = _appLinks.uriLinkStream.listen(openLink);
   }
 
