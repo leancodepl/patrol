@@ -24,6 +24,14 @@
 - **Breaking:** Bump `patrol_finders` to `^4.0.0-dev.1`: `$.pumpAndSettle()` and
   `$.pumpWidgetAndSettle()` return the number of pumped frames, and `$.pumpWidget()` takes named
   arguments. See `migration5.md` and the `patrol_finders` changelog. (#3448)
+- **Breaking:** `Selector.instance` now works on iOS: `tap`, `doubleTap`, `enterText` and
+  `waitUntilVisible` target the n-th match instead of always the first. On macOS, `$.platform.tap`
+  does too. On iOS and macOS, `waitUntilVisible` with `instance` now fails when there are fewer
+  matches, instead of passing. (#3445)
+- Fix `doubleTap`, `enterText`, `waitUntilVisible`, `tapOnNotificationBySelector` and
+  `getNativeViews` with a selector `instance` on Android failing with "instance() argument is not
+  supported for BySelector". `tapOnNotificationBySelector` taps the n-th match, and `getNativeViews`
+  returns every match, as on iOS. (#3445)
 - Add the optional self-instrumenting Android `:patrolTest` layout, which runs
   JUnit outside the app process. The in-app `androidTest` layout remains
   supported. Needs a matching `patrol_cli` release: an older CLI still runs the

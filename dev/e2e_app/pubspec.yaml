@@ -45,6 +45,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - assets/duplicate_text.html
     - assets/gpx.gpx
     - assets/iframe_content.html
     - assets/offscreen_content.html

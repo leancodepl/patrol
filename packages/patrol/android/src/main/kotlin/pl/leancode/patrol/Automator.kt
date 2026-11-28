@@ -712,10 +712,10 @@ class Automator private constructor() {
         delay()
     }
 
-    fun tapOnNotification(selector: UiSelector, bySelector: BySelector, timeout: Long? = null) {
+    fun tapOnNotification(selector: UiSelector, bySelector: BySelector, index: Int, timeout: Long? = null) {
         Logger.d("tapOnNotification()")
 
-        if (waitForView(bySelector, 0, timeout) == null) {
+        if (waitForView(bySelector, index, timeout) == null) {
             throw UiObjectNotFoundException("$bySelector")
         }
         val obj = uiDevice.findObject(selector)

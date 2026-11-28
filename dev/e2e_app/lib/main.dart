@@ -330,6 +330,17 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
           TextButton(
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute<void>(
+                builder: (_) => const WebViewScreen(
+                  title: 'WebView (duplicate text)',
+                  asset: 'assets/duplicate_text.html',
+                ),
+              ),
+            ),
+            child: const Text('Open webview (duplicate text)'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
                 builder: (_) => const PermissionsScreen(),
               ),
             ),
