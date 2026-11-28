@@ -4,6 +4,7 @@ import 'dart:io' as io;
 
 import 'package:mcp_dart/mcp_dart.dart';
 import 'package:patrol_cli/src/analytics/analytics.dart';
+import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/mcp/cli_origin.dart';
 import 'package:patrol_cli/src/mcp/suite_run.dart';
@@ -147,6 +148,8 @@ final class McpAnalytics {
     } on Object {
       return null;
     }
+    // A wrapper that reads stdin waits on it until the timeout.
+    unawaited(process.stdin.close().catchError((Object _) {}));
     final stdout = process.stdout.transform(utf8.decoder).join();
     unawaited(process.stderr.drain<void>());
     try {
@@ -163,7 +166,8 @@ final class McpAnalytics {
         json['channel'] as String,
       );
     } on TimeoutException {
-      process.kill();
+      // runInShell puts cmd.exe or fvm between this process and flutter.
+      unawaited(process.killTree());
       stdout.ignore();
       return null;
     } on Object {

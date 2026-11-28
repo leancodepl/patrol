@@ -26,9 +26,13 @@ void main() {
   }) {
     final process = MockProcess();
     final output = StreamController<List<int>>();
+    final input = StreamController<List<int>>();
+    unawaited(input.stream.drain<void>());
     when(() => process.stdout).thenAnswer((_) => output.stream);
     when(() => process.stderr).thenAnswer((_) => const Stream.empty());
-    when(() => process.pid).thenReturn(1);
+    when(() => process.stdin).thenReturn(IOSink(input));
+    // No real process has this PID, so killing its tree reaches nothing else.
+    when(() => process.pid).thenReturn(999999999);
     when(process.kill).thenAnswer((_) {
       unawaited(output.close());
       return true;
@@ -245,6 +249,7 @@ void main() {
     await report(reporter);
 
     expect(sent.single.version.version, 'unknown');
+    await untilCalled(hung.kill);
     verify(hung.kill).called(1);
 
     whenStarted().thenAnswer((_) async => flutterVersionProcess());
@@ -252,6 +257,15 @@ void main() {
 
     expect(sent.last.version.version, '3.47.5');
     verifyStarted(2);
+  });
+
+  test('closes the stdin of flutter --version', () async {
+    final process = flutterVersionProcess();
+    whenStarted().thenAnswer((_) async => process);
+
+    await report(analytics());
+
+    await expectLater(process.stdin.done, completes);
   });
 
   test('a failing send never reaches the tool call', () async {

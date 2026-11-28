@@ -404,6 +404,70 @@ void main() {
       expect((await built.future).emitTestManifest, isFalse);
     });
 
+    test('hotRestartReady fails with why flutter attach exited', () async {
+      when(
+        () => webTestBackend.hotRestartReady,
+      ).thenAnswer((_) => Completer<void>().future);
+      when(
+        () => flutterTool.hotRestartReady,
+      ).thenAnswer((_) => Completer<void>().future);
+      when(() => flutterTool.attachFailed).thenAnswer(
+        (_) async =>
+            'Hot Restart is not available: `flutter attach` exited '
+            'with code 64',
+      );
+
+      await expectLater(
+        buildService().hotRestartReady,
+        throwsA(
+          isA<ToolExit>().having(
+            (e) => e.message,
+            'message',
+            contains('exited with code 64'),
+          ),
+        ),
+      );
+    });
+
+    test('hotRestartReady completes once flutter attach is ready', () async {
+      when(
+        () => webTestBackend.hotRestartReady,
+      ).thenAnswer((_) => Completer<void>().future);
+      when(() => flutterTool.hotRestartReady).thenAnswer((_) async {});
+      when(
+        () => flutterTool.attachFailed,
+      ).thenAnswer((_) => Completer<String>().future);
+
+      await expectLater(buildService().hotRestartReady, completes);
+    });
+
+    test('hotRestartReady fails at once when flutter attach died after '
+        'attaching', () async {
+      when(
+        () => webTestBackend.hotRestartReady,
+      ).thenAnswer((_) => Completer<void>().future);
+      when(
+        () => flutterTool.hotRestartReady,
+      ).thenAnswer((_) => Future<void>.value());
+      when(() => flutterTool.attachFailure).thenReturn(
+        'Hot Restart is not available: `flutter attach` exited with code 1',
+      );
+      when(
+        () => flutterTool.attachFailed,
+      ).thenAnswer((_) => Completer<String>().future);
+
+      await expectLater(
+        buildService().hotRestartReady,
+        throwsA(
+          isA<ToolExit>().having(
+            (e) => e.message,
+            'message',
+            contains('exited with code 1'),
+          ),
+        ),
+      );
+    });
+
     group('with prebuilt APKs', () {
       const prebuiltOptions = DevelopOptions(
         target: 'onboarding_test.dart',
@@ -580,6 +644,38 @@ void main() {
           );
         },
       );
+
+      test("fails with attach's exit code when attach dies first", () async {
+        const stderrLine = 'Could not find an option named "--flavor".';
+        when(() => flutterTool.attachExitCode).thenReturn(64);
+        when(() => flutterTool.attachFailure).thenReturn(
+          'Hot Restart is not available: `flutter attach` exited with code '
+          '64:\n\t$stderrLine',
+        );
+        attachCompleter.complete();
+
+        await expectLater(
+          buildService().run(prebuiltOptions),
+          throwsA(
+            isA<ToolExit>().having(
+              (e) => e.message,
+              'message',
+              allOf(
+                contains('exited with code 64'),
+                contains('requested target'),
+                isNot(contains(stderrLine)),
+              ),
+            ),
+          ),
+        );
+        verifyNever(() => logger.err(any(that: contains('please report it'))));
+        verifyNever(
+          () => flutterTool.hotRestart(
+            onCompleted: any(named: 'onCompleted'),
+            onFailed: any(named: 'onFailed'),
+          ),
+        );
+      });
 
       test('is rejected on non-Android devices', () async {
         const iosDevice = Device(
@@ -988,6 +1084,9 @@ void main() {
         when(
           () => flutterTool.hotRestartReady,
         ).thenAnswer((_) => Completer<void>().future);
+        when(
+          () => flutterTool.attachFailed,
+        ).thenAnswer((_) => Completer<String>().future);
 
         final ready = buildService().hotRestartReady;
         webReady.complete();
@@ -1061,6 +1160,58 @@ void main() {
           videoConfig: any(named: 'videoConfig'),
         ),
       ]);
+    });
+
+    test('passes an interrupt on without the failure message or a test '
+        'result', () async {
+      when(
+        () => androidTestBackend.execute(
+          any(),
+          any(),
+          interruptible: any(named: 'interruptible'),
+          showFlutterLogs: any(named: 'showFlutterLogs'),
+          hideTestSteps: any(named: 'hideTestSteps'),
+          flavor: any(named: 'flavor'),
+          clearTestSteps: any(named: 'clearTestSteps'),
+          onLogEntry: any(named: 'onLogEntry'),
+          videoConfig: any(named: 'videoConfig'),
+        ),
+      ).thenAnswer((_) async => throwToolInterrupted('the run'));
+      when(
+        () => flutterTool.attachForHotRestart(
+          flutterCommand: any(named: 'flutterCommand'),
+          deviceId: any(named: 'deviceId'),
+          target: any(named: 'target'),
+          appId: any(named: 'appId'),
+          dartDefines: any(named: 'dartDefines'),
+          openDevtools: any(named: 'openDevtools'),
+          attachUsingUrl: any(named: 'attachUsingUrl'),
+          forwardFlutterLogs: any(named: 'forwardFlutterLogs'),
+          removeAdbForwards: any(named: 'removeAdbForwards'),
+          onQuit: any(named: 'onQuit'),
+        ),
+      ).thenAnswer((_) async {});
+      _lastResult = null;
+
+      await expectLater(
+        buildService().run(
+          const DevelopOptions(
+            target: 'onboarding_test.dart',
+            flutterCommand: FlutterCommand('flutter'),
+            buildMode: BuildMode.debug,
+            testServerPort: 8081,
+            appServerPort: 8080,
+            generateBundle: false,
+            uninstall: false,
+            checkCompatibility: false,
+            packageName: 'com.example.app',
+          ),
+        ),
+        throwsA(isA<ToolInterrupted>()),
+      );
+
+      verifyNever(() => logger.err(any(that: contains('please report it'))));
+      expect(_lastResult, isNull);
     });
 
     test('ends normally when the build fails because of a quit', () async {
@@ -1554,6 +1705,13 @@ void main() {
     test('is false on web', () {
       expect(
         shouldAttachUsingUrl(device(TargetPlatform.web, real: false)),
+        isFalse,
+      );
+    });
+
+    test('is false on Windows', () {
+      expect(
+        shouldAttachUsingUrl(device(TargetPlatform.windows, real: false)),
         isFalse,
       );
     });

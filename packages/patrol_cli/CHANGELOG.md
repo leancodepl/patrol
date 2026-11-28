@@ -1,7 +1,11 @@
 ## Unreleased
 
+- Experimental `patrol test` support for Windows desktop (build + out-of-process
+  automator sidecar). `patrol develop` on Windows is not supported yet. (#3183)
 - `patrol develop` stops waiting for the app's uninstall after 30 s when a session ends without `q`,
   for example when the device goes away. (#3370)
+- `patrol mcp` refuses a `run` that would hot restart the running session right away, with the
+  exit code and stderr of `flutter attach`, once attach has exited. (#3375)
 - Detect and support both Android test layouts: the self-instrumenting
   `:patrolTest` module and the in-app `:app` androidTest source set. The generated
   test bundle resolves the Android native-server host before
@@ -17,6 +21,22 @@
 - Add native screenshots on iOS, collected by `patrol test` from the `.xcresult` into
   `<test-directory>/screenshots`. Requires Xcode 16 or newer. See the
   [docs](https://patrol.leancode.co/cli-commands/test#on-ios). (#3271)
+- `patrol test-without-building` on Android now installs the `androidTestUtil` APKs (orchestrator,
+  test-services) from the last `patrol build android`, so tools that write through `TestStorage`,
+  such as allure-android, work on a fresh device. (#3427)
+- Fix Ctrl+C during a web `patrol test` being ignored until the web app finished building, after
+  which the run hung. It now stops the Flutter web server and exits at any phase of the run. (#3339)
+- Report a dead `flutter attach` or `flutter logs` in `patrol develop`. (#3234)
+- Fix Ctrl+C during `patrol develop -d chrome` startup waiting out the web server timeout (120 s by
+  default). The session now stops Flutter, the dependency install and the Playwright driver,
+  together with the processes they spawned, at any point before it attaches. (#3453)
+- **BREAKING CHANGE**
+  - `--web-headless` no longer takes a value: `--web-headless=true` and `--web-headless false` fail.
+    Use `--web-headless` or `--no-web-headless`. Every command except `patrol mcp` now rejects
+    leftover positional arguments instead of ignoring them. (#3452)
+  - A `RunnerUITests.m` with the 4.7.0 `PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN`/`_END`
+    macros now fails in `xcodebuild` instead of with a Patrol hint. Replace them with the snippet
+    from `migration5.md`. (#3452)
 
 ## 5.0.0-dev.1
 
@@ -102,6 +122,13 @@
     `Total: 0`. A missing Android Patrol test class (`MainActivityTest.java`) stops the build, a run
     that executed fewer tests than discovered fails and lists them, and the app fails when it
     registers a test that discovery didn't find. Requires `patrol` 5.0. See `migration5.md`. (#3425)
+- Support build-time test discovery on macOS: `patrol build macos` and `patrol test -d macos` use it
+  by default, and `patrol test-without-building --only` runs on macOS. Like on iOS, a
+  `macos/RunnerUITests/RunnerUITests.m` without the `#include` of the generated tests falls back to
+  runtime discovery with a warning. A run that executes fewer tests than discovered fails, as on
+  iOS. Requires `patrol` 5.0. (#3432)
+- Web keeps runtime test discovery: `emit_test_manifest` is ignored there, and `--emit-test-manifest`
+  with `patrol test -d chrome` or `patrol develop -d chrome` prints a warning. (#3432)
 - Show why build-time discovery failed (the failing part of the host `flutter test` output) without
   `--verbose`.
 
