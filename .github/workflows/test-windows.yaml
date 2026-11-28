@@ -36,7 +36,7 @@ jobs:
 
     defaults:
       run:
-        shell: bash
+        shell: pwsh
         working-directory: dev/windows_poc/app
 
     steps:
@@ -81,7 +81,6 @@ jobs:
 
       - name: Capture screen on failure
         if: failure()
-        shell: pwsh
         working-directory: .
         run: |
           Add-Type -AssemblyName System.Windows.Forms, System.Drawing
