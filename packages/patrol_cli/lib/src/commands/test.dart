@@ -182,9 +182,16 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       pubspecValue: config.emitTestManifest,
       testDirectory: config.projectTestDirectory,
       logger: _logger,
-      setupProblem: device.targetPlatform == TargetPlatform.iOS
-          ? _iosTestBackend.discoverySetupProblem()
-          : null,
+      setupProblem: switch (device.targetPlatform) {
+        TargetPlatform.iOS => _iosTestBackend.discoverySetupProblem(),
+        TargetPlatform.macOS => _macosTestBackend.discoverySetupProblem(),
+        _ => null,
+      },
+    );
+    warnIfEmitTestManifestOnWeb(
+      targetPlatform: device.targetPlatform,
+      flag: optionalBoolArg('emit-test-manifest'),
+      logger: _logger,
     );
 
     // Validate that flavors are not used with web platform
@@ -355,6 +362,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       configuration: buildMode.createConfiguration(macosFlavor),
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
+      emitTestManifest: emitTestManifest,
     );
 
     final webCoverageDataDir = coverageMode == CoverageMode.web

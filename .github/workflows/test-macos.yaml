@@ -160,6 +160,28 @@ jobs:
           name: Test result from ${{ matrix.device_model }}.xcresult
           path: ${{ env.XCRESULT_PATH }}
 
+      # After the reports, so the steps above see only the main run's xcresult.
+      - name: Run one test file without rebuilding
+        run: patrol test-without-building -d macos --only patrol_test/macos/macos_app_test.dart --verbose
+
+      - name: Check a runner without the generated tests
+        run: |
+          runner=macos/RunnerUITests/RunnerUITests.m
+          sed -i '' -E '/PatrolGeneratedTests\.inc|^#if __has_include|^#endif/d' "$runner"
+          cat "$runner"
+
+          # An explicit opt-in stops before building.
+          if patrol build macos -t patrol_test/macos/macos_app_test.dart --emit-test-manifest > explicit.log 2>&1; then
+            echo "Expected the build to fail"; cat explicit.log; exit 1
+          fi
+          grep -q "doesn't include the generated tests" explicit.log
+
+          # The default falls back to runtime discovery with a warning.
+          patrol build macos -t patrol_test/macos/macos_app_test.dart > default.log 2>&1 || { cat default.log; exit 1; }
+          grep -q "Using runtime test discovery" default.log
+
+          git checkout -- "$runner"
+
   call_send_slack_message:
     name: Notify on Slack
     uses: ./.github/workflows/send-slack-message.yaml

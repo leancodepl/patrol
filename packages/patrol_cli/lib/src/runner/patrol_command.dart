@@ -208,8 +208,8 @@ abstract class PatrolCommand extends Command<int> {
       );
   }
 
-  /// Registers the `--emit-test-manifest` flag, shared by the iOS
-  /// and Android build/test paths.
+  /// Registers the `--emit-test-manifest` flag, shared by the Android, iOS
+  /// and macOS build/test paths.
   ///
   /// Declared with a null default (via [optionalBoolArg]) so that "flag not
   /// passed" is distinguishable from an explicit `--no-emit-test-manifest`;

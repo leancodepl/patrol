@@ -821,6 +821,82 @@ void main() {
     });
   });
 
+  group('MacOSAppOptions.testWithoutBuildingInvocation', () {
+    const macos = Device(
+      name: 'macos',
+      id: 'macos',
+      targetPlatform: TargetPlatform.macOS,
+      real: true,
+    );
+    final options = MacOSAppOptions(
+      flutter: const FlutterAppOptions(
+        command: flutterCommand,
+        target: 'patrol_test/test_bundle.dart',
+        buildMode: BuildMode.debug,
+        flavor: null,
+        buildName: null,
+        buildNumber: null,
+        dartDefines: {},
+        dartDefineFromFilePaths: [],
+      ),
+      scheme: 'Runner',
+      configuration: 'Debug',
+      appServerPort: 8082,
+      testServerPort: 8081,
+    );
+
+    test('runtime runner selects the RunnerUITests class', () {
+      final invocation = options.testWithoutBuildingInvocation(
+        macos,
+        xcTestRunPath: 'run.xctestrun',
+        resultBundlePath: '',
+      );
+
+      expect(
+        invocation,
+        containsAllInOrder(<String>[
+          '-only-testing',
+          'RunnerUITests/RunnerUITests',
+        ]),
+      );
+    });
+
+    test('one -only-testing per selector, target-prefixed', () {
+      final invocation = options.testWithoutBuildingInvocation(
+        macos,
+        xcTestRunPath: 'run.xctestrun',
+        resultBundlePath: '',
+        onlyTesting: [
+          'PatrolGeneratedTests_example_test',
+          'PatrolGeneratedTests_app_test/test_taps',
+        ],
+        staticRunner: true,
+      );
+
+      expect(
+        invocation,
+        containsAllInOrder(<String>[
+          '-only-testing',
+          'RunnerUITests/PatrolGeneratedTests_example_test',
+          '-only-testing',
+          'RunnerUITests/PatrolGeneratedTests_app_test/test_taps',
+        ]),
+      );
+      expect(invocation, isNot(contains('RunnerUITests/RunnerUITests')));
+    });
+
+    test('static runner with nothing selected leaves the run unrestricted', () {
+      final invocation = options.testWithoutBuildingInvocation(
+        macos,
+        xcTestRunPath: 'run.xctestrun',
+        resultBundlePath: '',
+        staticRunner: true,
+      );
+
+      expect(invocation, isNot(contains('-only-testing')));
+    });
+  });
+
   group('WebAppOptions', () {
     late WebAppOptions options;
 

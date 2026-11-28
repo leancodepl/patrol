@@ -40,6 +40,8 @@
 - Add native screenshots on iOS: `screenshot_on_failure: true` and `$.takeNativeScreenshot('tag')`
   now work on simulators and physical devices. See the
   [docs](https://patrol.leancode.co/cli-commands/test#on-ios). (#3271)
+- `PATROL_INTEGRATION_TEST_MACOS_RUNNER` runs build-time discovered tests the same way, so build-time
+  test discovery works on macOS. (#3432)
 
 ## 5.0.0-dev.1
 

@@ -91,6 +91,13 @@
     `Total: 0`. A missing Android Patrol test class (`MainActivityTest.java`) stops the build, a run
     that executed fewer tests than discovered fails and lists them, and the app fails when it
     registers a test that discovery didn't find. Requires `patrol` 5.0. See `migration5.md`. (#3425)
+- Support build-time test discovery on macOS: `patrol build macos` and `patrol test -d macos` use it
+  by default, and `patrol test-without-building --only` runs on macOS. Like on iOS, a
+  `macos/RunnerUITests/RunnerUITests.m` without the `#include` of the generated tests falls back to
+  runtime discovery with a warning. A run that executes fewer tests than discovered fails, as on
+  iOS. Requires `patrol` 5.0. (#3432)
+- Web keeps runtime test discovery: `emit_test_manifest` is ignored there, and `--emit-test-manifest`
+  with `patrol test -d chrome` or `patrol develop -d chrome` prints a warning. (#3432)
 - Show why build-time discovery failed (the failing part of the host `flutter test` output) without
   `--verbose`.
 

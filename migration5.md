@@ -156,9 +156,9 @@ unchanged.
 
 **Packages:** `patrol`, `patrol_cli`
 
-`patrol test` and `patrol build` on Android and iOS now discover your tests on
-your computer before the build and generate one native test class per Dart test
-file. Before 5.0 this was opt-in (`emit_test_manifest: true`). Runtime
+`patrol test` and `patrol build` on Android, iOS and macOS now discover your
+tests on your computer before the build and generate one native test class per
+Dart test file. Before 5.0 this was opt-in (`emit_test_manifest: true`). Runtime
 discovery is still there as an opt-out, and `patrol develop` keeps using it
 unless you turn build-time discovery on.
 
@@ -166,7 +166,7 @@ What changes for you:
 
 | | Before | 5.0 |
 |---|---|---|
-| iOS native test name | `RunnerUITests/<dart test name>` | `PatrolGeneratedTests_<file>/test_<name>` |
+| iOS and macOS native test name | `RunnerUITests/<dart test name>` | `PatrolGeneratedTests_<file>/test_<name>` |
 | Android native test name | `MainActivityTest#runDartTest[<dart test name>]` | `PatrolGeneratedTests_<file>#test_<name>` |
 | Tests in `integration_test/` | Runtime discovery | Runtime discovery, with a warning on every build |
 | Registration that depends on `Platform` | Works | The run fails (see [Runs in which tests didn't run fail](#runs-in-which-tests-didnt-run-fail)) |
@@ -194,9 +194,11 @@ What changes for you:
    A test file that throws while it loads (for example
    `throw UnsupportedError('Unsupported platform')` in `main()`) fails the
    build, and the error is shown.
-3. **iOS: include the generated tests in `RunnerUITests.m`.** Add three lines
-   after the runner macro in `ios/RunnerUITests/RunnerUITests.m`. The file then
-   looks like this and works with both discovery modes:
+3. **iOS and macOS: include the generated tests in `RunnerUITests.m`.** Add
+   three lines after the runner macro in `ios/RunnerUITests/RunnerUITests.m`
+   (and in `macos/RunnerUITests/RunnerUITests.m`, after
+   `PATROL_INTEGRATION_TEST_MACOS_RUNNER`). The iOS file then looks like this
+   and works with both discovery modes:
 
    ```objc
    @import XCTest;
@@ -209,7 +211,7 @@ What changes for you:
    #endif
    ```
 
-   Patrol doesn't edit the file. Until the lines are there, iOS builds use
+   Patrol doesn't edit the file. Until the lines are there, iOS and macOS builds use
    runtime discovery and print a warning with them (a build with
    `--emit-test-manifest` or `emit_test_manifest: true` stops instead). A runner
    set up for the 4.x opt-in
@@ -255,7 +257,9 @@ runs that used to pass while running fewer tests now fail:
 | A test registered only on the device (`Platform.isAndroid` around `patrolTest`) | Never runs, passes | Every test fails with the list of missing tests |
 
 Runtime discovery doesn't run these checks, including the fallback for tests
-in `integration_test/` or an iOS `RunnerUITests.m` without the `#include`.
+in `integration_test/` or an iOS or macOS `RunnerUITests.m` without the
+`#include`. On macOS a run counts the tests `xcodebuild` reports, because the
+CLI doesn't read the app's logs there.
 
 **What to do:**
 
@@ -306,6 +310,19 @@ return as soon as the app settles.
   that character stays visible until the field loses focus.
 - **To keep the blinking cursor:** pass `deterministicCursor: false` to
   `patrolTest`.
+
+## Web stays on runtime test discovery
+
+**Packages:** `patrol_cli`
+
+Build-time discovery doesn't run on web: it compiles tests for the Dart VM on
+your computer, which can't compile web-only imports (`package:web`,
+`dart:ui_web`). Web keeps discovering tests in the browser, which already gives
+Playwright the full list before the run, so `--web-shard` works as before.
+
+**What to do:** nothing. `emit_test_manifest` in `pubspec.yaml` is ignored on
+web, and `--emit-test-manifest` with `patrol test -d chrome` or
+`patrol develop -d chrome` only prints a warning.
 
 ## Inbox
 
