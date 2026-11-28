@@ -220,6 +220,7 @@ final class SuiteRun {
     }
     unawaited(
       process.exitCode.then((exitCode) async {
+        run._exited = true;
         // The last lines can still be in flight when the exit code arrives. A
         // child that inherited the pipes keeps them open, hence the bound.
         await Future.wait(
@@ -262,6 +263,9 @@ final class SuiteRun {
   bool get isRunning => !_finished.isCompleted;
 
   int? _exitCode;
+
+  /// Set when the exit code arrives, before the last output is read.
+  var _exited = false;
   DateTime? _finishedAt;
   final _finished = Completer<void>();
   Future<void>? _stop;
@@ -285,12 +289,14 @@ final class SuiteRun {
 
   /// Stops the run: SIGINT, then up to the stop grace for it to exit, then
   /// SIGKILL for the run and everything it spawned. On Windows it kills the
-  /// tree with `taskkill /T /F` at once.
+  /// tree with `taskkill /T /F` at once. The grace covers any `patrol test`
+  /// that does not exit on SIGINT.
   ///
   /// Each wait is bounded, so the run can still be exiting when this returns.
-  /// A call while a stop is under way shares it.
+  /// A call while a stop is under way shares it, and a call after the run
+  /// exited changes nothing.
   Future<void> stop() {
-    if (!isRunning) {
+    if (!isRunning || _exited) {
       return Future.value();
     }
     return _stop ??= _stopRunning();
@@ -305,7 +311,8 @@ final class SuiteRun {
     } else {
       _process.kill(io.ProcessSignal.sigint);
       await _finished.future.timeout(_stopGrace, onTimeout: () {});
-      if (!_finished.isCompleted) {
+      // Once the run exited, its PID can belong to an unrelated process.
+      if (!_exited) {
         // Collected before anything dies, while the children still name
         // their parent.
         final tree = await descendantPids(_process.pid);
