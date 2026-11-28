@@ -38,6 +38,9 @@ jobs:
     name: Android emulator
     runs-on: ubuntu-latest
     timeout-minutes: 40
+    env:
+      # Next to the host test (MainActivityTest.java), relative to dev/e2e_app.
+      GENERATED_DIR: android/patrolTest/src/main/java/pl/leancode/patrol/e2e_app/patrol_test
 
     steps:
       - name: Clone repository
@@ -80,6 +83,8 @@ jobs:
           target: google_apis_playstore
           arch: x86_64
           ram-size: 3072M
+          # 37.4.2: on 37.3.10 with Flutter 3.44 the emulator dies mid-test.
+          emulator-build: '16982698'
           disk-size: 6G
           emulator-options: -no-snapshot-save -no-window -noaudio -no-boot-anim
           working-directory: dev/e2e_app
@@ -95,7 +100,7 @@ jobs:
       - name: Verify the runtime discovery run left no generated classes
         working-directory: dev/e2e_app
         run: |
-          generated_dir=android/app/src/androidTest/java/pl/leancode/patrol/e2e_app
+          generated_dir=$GENERATED_DIR
           ls "$generated_dir"
           if ls "$generated_dir"/PatrolGeneratedTests*.java 2>/dev/null; then
             echo "::error::Runtime discovery left generated classes behind"; exit 1
@@ -108,7 +113,7 @@ jobs:
       - name: Verify the generated classes
         working-directory: dev/e2e_app
         run: |
-          generated_dir=android/patrolTest/src/main/java/pl/leancode/patrol/e2e_app/patrol_test
+          generated_dir=$GENERATED_DIR
           echo "Generated files:"
           ls "$generated_dir"
 
