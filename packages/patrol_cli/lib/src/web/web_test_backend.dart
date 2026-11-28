@@ -149,6 +149,7 @@ class WebTestBackend {
     bool showFlutterLogs = false,
     bool hideTestSteps = false,
     bool clearTestSteps = false,
+    void Function(Entry entry)? onLogEntry,
   }) async {
     _logger
       ..detail('Starting web test execution...')
@@ -177,6 +178,7 @@ class WebTestBackend {
         showFlutterLogs: showFlutterLogs,
         hideTestSteps: hideTestSteps,
         clearTestSteps: clearTestSteps,
+        onLogEntry: onLogEntry,
       );
     } catch (_) {
       _throwIfInterrupted();
@@ -630,6 +632,8 @@ class WebTestBackend {
     return process;
   }
 
+  static const _maxStderrTailLines = 30;
+
   Future<String> _waitForWebServer(
     Process flutterProcess, {
     int? serverTimeout,
@@ -679,11 +683,17 @@ class WebTestBackend {
           }
         });
 
+    final stderrTail = <String>[];
+    final stderrDrained = Completer<void>();
     stderrSubscription = flutterProcess.stderr
         .transform(const SystemEncoding().decoder)
         .transform(const LineSplitter())
         .listen((line) {
           _logger.detail('Flutter stderr: $line');
+          stderrTail.add(line);
+          if (stderrTail.length > _maxStderrTailLines) {
+            stderrTail.removeAt(0);
+          }
 
           if (line.contains('FATAL') ||
               line.contains('Failed to bind') ||
@@ -696,15 +706,23 @@ class WebTestBackend {
               );
             }
           }
-        });
+        }, onDone: stderrDrained.complete);
 
     // `flutter` can exit with code 0 on SIGINT.
-    flutterProcess.exitCode.then((exitCode) {
+    flutterProcess.exitCode.then((exitCode) async {
+      // The lines explaining the exit, such as compile errors, can still be in
+      // flight when the exit code arrives.
+      await stderrDrained.future.timeout(
+        const Duration(seconds: 1),
+        onTimeout: () {},
+      );
       if (!completer.isCompleted) {
-        stdoutSubscription.cancel();
-        stderrSubscription.cancel();
+        unawaited(stdoutSubscription.cancel());
+        unawaited(stderrSubscription.cancel());
+        final tail = stderrTail.where((line) => line.trim().isNotEmpty);
         completer.completeError(
-          'Flutter process exited unexpectedly with code $exitCode',
+          'Flutter process exited unexpectedly with code $exitCode'
+          '${tail.isEmpty ? '' : ':\n${tail.join('\n')}'}',
         );
       }
     }).ignore();
@@ -822,6 +840,7 @@ class WebTestBackend {
     required bool hideTestSteps,
     required bool clearTestSteps,
     String? runnerPath,
+    void Function(Entry entry)? onLogEntry,
   }) async {
     _throwIfInterrupted();
 
@@ -880,6 +899,7 @@ class WebTestBackend {
               hideTestSteps: hideTestSteps || isShardedRun,
               clearTestSteps: clearTestSteps,
               hideTestLifecycle: isShardedRun,
+              onLogEntry: onLogEntry,
             )
             ..listen()
             ..startTimer();

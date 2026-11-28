@@ -40,3 +40,17 @@ List<String> splitCommandLine(String input) {
   }
   return args;
 }
+
+/// Joins [args] into a line [splitCommandLine] splits back into [args].
+///
+/// An argument holding whitespace or a quote is wrapped in the quote it does
+/// not contain; one holding both kinds of quote cannot be joined that way.
+String joinCommandLine(List<String> args) => [
+  for (final arg in args)
+    if (!arg.contains(RegExp('[\\s"\']')) && arg.isNotEmpty)
+      arg
+    else if (arg.contains('"'))
+      "'$arg'"
+    else
+      '"$arg"',
+].join(' ');

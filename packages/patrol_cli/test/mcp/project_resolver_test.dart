@@ -159,6 +159,21 @@ void main() {
       );
     });
 
+    test('an absolute test directory moves a cached project', () async {
+      final main = project('main');
+      final other = project('other');
+      testFile(other, 'patrol_test/login_test.dart');
+      final subject = resolver(projectRootOverride: main, cwd: main);
+
+      expect(await subject.resolve().root, main);
+
+      final resolved = await subject.resolve(
+        testFile: p.join(other, 'patrol_test'),
+      );
+      expect(resolved.root, other);
+      expect(resolved.testFile, 'patrol_test');
+    });
+
     test('a root asked for without remembering leaves the cache', () async {
       final anchored = project('anchored');
       final asked = project('asked');

@@ -76,4 +76,21 @@ void main() {
       );
     });
   });
+
+  group('joinCommandLine', () {
+    test('splits back into the arguments it joined', () {
+      for (final args in [
+        ['fvm', 'flutter'],
+        [r'C:\my sdk\bin\flutter.bat', '--verbose'],
+        ["/Users/o'brien/flutter", "--dart-define=NAME=it's"],
+        ['--dart-define=A="b c"', ''],
+      ]) {
+        expect(splitCommandLine(joinCommandLine(args)), args);
+      }
+    });
+
+    test('leaves arguments without spaces or quotes as they are', () {
+      expect(joinCommandLine(['fvm', 'flutter']), 'fvm flutter');
+    });
+  });
 }
