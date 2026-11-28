@@ -37,7 +37,8 @@
   [docs](https://patrol.leancode.co/cli-commands/test#on-ios). (#3271)
 - Fix `enterText` and `enterTextByIndex` on iOS leaving a trailing newline in multi-line native text
   fields (for example the Messages compose field) with the default `KeyboardBehavior.showAndDismiss`,
-  so selectors by the entered text didn't match. (#3449)
+  so selectors by the entered text didn't match. The keyboard still stays open in these fields.
+  (#3449)
 
 ## 5.0.0-dev.1
 

@@ -121,6 +121,10 @@ abstract interface class IOSAutomator implements MobileAutomator {
   /// The native view specified by [selector] must be:
   ///  * TextField or SecureTextField on iOS
   ///
+  /// With [KeyboardBehavior.showAndDismiss], the default, Return is typed
+  /// after [text] to dismiss the keyboard. A multi-line field keeps the
+  /// keyboard open instead, and the newline that Return adds is removed.
+  ///
   /// See also:
   ///  * [enterTextByIndex], which is less flexible but also less verbose
   Future<void> enterText(
@@ -141,6 +145,10 @@ abstract interface class IOSAutomator implements MobileAutomator {
   ///
   /// Native views considered to be texts fields are:
   ///  * TextField or SecureTextField on iOS
+  ///
+  /// With [KeyboardBehavior.showAndDismiss], the default, Return is typed
+  /// after [text] to dismiss the keyboard. A multi-line field keeps the
+  /// keyboard open instead, and the newline that Return adds is removed.
   ///
   /// See also:
   ///  * [enterText], which allows for more precise specification of the text

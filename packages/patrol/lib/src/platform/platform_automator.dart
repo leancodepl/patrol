@@ -406,6 +406,10 @@ class MobileAutomator {
   ///  * EditText or AutoCompleteTextView on Android
   ///  * TextField or SecureTextField on iOS
   ///
+  /// On iOS, with [KeyboardBehavior.showAndDismiss], the default, Return is
+  /// typed after [text] to dismiss the keyboard. A multi-line field keeps the
+  /// keyboard open instead, and the newline that Return adds is removed.
+  ///
   /// See also:
   ///  * [enterTextByIndex], which is less flexible but also less verbose
   ///
@@ -448,6 +452,10 @@ class MobileAutomator {
   /// Native views considered to be texts fields are:
   ///  * EditText on Android
   ///  * TextField or SecureTextField on iOS
+  ///
+  /// On iOS, with [KeyboardBehavior.showAndDismiss], the default, Return is
+  /// typed after [text] to dismiss the keyboard. A multi-line field keeps the
+  /// keyboard open instead, and the newline that Return adds is removed.
   ///
   /// See also:
   ///  * [enterText], which allows for more precise specification of the text
