@@ -606,9 +606,9 @@ class DevelopService {
           await attached;
         } else {
           // No Gradle ran before this point, so nothing has verified that the
-          // instrumentation actually came up. If the backend settles before
-          // attach connects (instrumentation not found, app crash on launch),
-          // fail instead of waiting forever for an attach that can't succeed.
+          // instrumentation came up. `attached` completes once attach connects
+          // or exits without attaching; fail if the backend settles first or
+          // attach is dead, instead of waiting for a session that can't start.
           final backendExitedFirst = await Future.any<bool>([
             attached.then((_) => false),
             future.then((_) => true, onError: (Object _) => true),
@@ -617,6 +617,13 @@ class DevelopService {
             throwToolExit(
               'The instrumentation exited before `flutter attach` could '
               'connect - the app never came up. See the logs above.',
+            );
+          }
+          if (_flutterTool.attachExitCode case final code?) {
+            throwToolExit(
+              '`flutter attach` exited with code $code, so the session ends: '
+              'with --use-prebuilt-apks the requested target starts only '
+              'through a hot restart, which needs `flutter attach`.',
             );
           }
           _logger.info(
@@ -646,6 +653,8 @@ class DevelopService {
         reportTestsCompleted(TestCompletionResult(success: false, error: err));
         rethrow;
       }
+    } on ToolExit {
+      rethrow;
     } catch (err, st) {
       _logger
         ..err('$err')

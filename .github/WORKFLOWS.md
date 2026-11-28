@@ -59,13 +59,19 @@ Package-level `pana` scoring only runs for packages published to pub.dev (`patro
 | [patrol_log publish][patrol_log-publish] | Tag push (`patrol_log-v*`) | Publishes `patrol_log` package to pub.dev. Sends Slack notification for releases. |
 | [adb publish][adb-publish] | Tag push (`adb-v*`) | Publishes `adb` package to pub.dev. |
 
-### PR-Triggered Workflows with Permission Checks
+### Android Emulator Tests on PRs
 
-Some workflows run on `pull_request_target` (which has access to secrets) require repository write permission:
-- [test android emulator][test-android-emulator] - Requires repository write permission
-- [test android emulator webview][test-android-emulator-webview] - Requires repository write permission
+The emulator tests are split so that PR code, including PRs from forks, never runs next to the emulator.wtf token:
 
-These workflows verify the user has write access before running. If you don't have write access, the workflow will fail with a permission error. Contact a Patrol team member to run these workflows on your PR.
+1. [test android emulator][test-android-emulator] and [test android emulator webview][test-android-emulator-webview] run on `pull_request`, schedule and `workflow_dispatch`. They build the app and test APKs once, with no secrets, and upload them as the `e2e-apks` artifact.
+2. [run android emulator][run-android-emulator] starts on `workflow_run` when a build succeeds. It runs only from master, takes `emulatorwtf.yaml` from master, runs the APKs on emulator.wtf with the token, and never executes anything from the build.
+3. It reports each run as an `e2e android / API <n>` or `e2e android / webview` commit status on the PR's head commit, linking to its run. The run summary lists the failed tests, so contributors without emulator.wtf access can see them.
+
+On a fork PR, a maintainer reviews the changes and approves the workflows; nothing else is needed. To run the tests again for a build, start [run android emulator][run-android-emulator] on master with `workflow_dispatch` and the build's run ID, within 7 days of the build (the APK artifact expires after that). The results come from an APK the PR built, so on fork PRs they are informative, and the scheduled runs on master stay the trusted signal.
+
+Because the builds run on `pull_request`, GitHub takes their definition from the PR merged into its base branch. A PR into `release/5.0` therefore builds with the Flutter version pinned on `release/5.0`. Changes to `run-android-emulator.yaml` or `emulatorwtf.yaml` take effect only once they are on master.
+
+[label pull request][label_pull_request] is the only workflow on `pull_request_target`, so it can label fork PRs too. It doesn't check out PR code. From December 2, 2026, GitHub blocks `pull_request_target` in public repositories unless an Actions event policy allows it, so this workflow needs such a policy.
 
 ## Semver Check Workflows
 
@@ -90,7 +96,8 @@ All three use the local [check-semver][check-semver-action] composite action. It
 |--------------|---------|-------------|
 | [Verify Version Compatibility][verify_compatibility] | PR/push (on compatibility checker changes) | Runs compatibility tests and verifies compatibility tables are up-to-date. |
 | [check skills][check-skills] | PR (on `skills/`, `.agents/skills/`, `.claude/skills`, or script changes), manual | Validates the agent-skills setup via `tool/check_skills.sh`: the `.claude/skills` symlink resolves to `.agents/skills`, and every `SKILL.md` has valid frontmatter (`name` matches its folder and is kebab-case, plus a non-empty `description`). |
-| [send slack message][send-slack-message] | Reusable workflow | Reusable workflow for sending test results notifications to Slack. Invoked by test workflows; the Slack step runs only when `github.event_name == 'schedule'` in the **caller** workflow (so scheduled cron runs notify; PR, push, `workflow_dispatch`, and other triggers do not). |
+| [run android emulator][run-android-emulator] | After an emulator build (`workflow_run`) | Runs the APKs from [test android emulator][test-android-emulator] and [test android emulator webview][test-android-emulator-webview] on emulator.wtf and reports commit statuses. See [Android Emulator Tests on PRs](#android-emulator-tests-on-prs). |
+| [send slack message][send-slack-message] | Reusable workflow | Reusable workflow for sending test results notifications to Slack. Invoked by test workflows; the Slack step runs only when `github.event_name == 'schedule'` in the **caller** workflow (so scheduled cron runs notify; PR, push, `workflow_dispatch`, and other triggers do not). A caller on `workflow_run` passes the original event as `TRIGGER_EVENT`. |
 | [label pull request][label_pull_request] | All PRs | Automatically labels PRs based on changed files. |
 | [Add prioritized issues to project][add-to-project] | Issue labeled (P0, P1, P2) | Automatically adds prioritized issues to GitHub project board. |
 | [Potential Duplicates][potential-duplicates] | Issue opened/edited | Automatically detects and labels potential duplicate issues using similarity threshold. |
@@ -154,6 +161,7 @@ A test is selected if it matches ALL conditions in the boolean expression (AND o
 [test-android-device]: workflows/test-android-device.yaml
 [test-android-emulator]: workflows/test-android-emulator.yaml
 [test-android-emulator-webview]: workflows/test-android-emulator-webview.yaml
+[run-android-emulator]: workflows/run-android-emulator.yaml
 [test-android-locales]: workflows/test-android-locales.yaml
 [test-flutter-beta]: workflows/test-flutter-beta.yaml
 [test-flutter-main]: workflows/test-flutter-main.yaml

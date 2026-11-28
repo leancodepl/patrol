@@ -345,6 +345,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       testServerPort: super.testServerPort,
       fullIsolation: boolArg('full-isolation'),
       clearIOSPermissions: boolArg('clear-permissions'),
+      screenshotOnFailure: config.screenshotOnFailure,
       emitTestManifest: emitTestManifest,
     );
 
@@ -572,6 +573,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
           hideTestSteps: hideTestSteps,
           clearTestSteps: clearTestSteps,
           videoConfig: videoConfig,
+          screenshotsOutputDir: screenshotsOutputDir,
         );
         final bundleId = ios.bundleId;
         if (bundleId != null && uninstall) {

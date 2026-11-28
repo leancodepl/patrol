@@ -23,6 +23,9 @@ When working with Patrol tests:
 - Use `patrol-run({ "testFile": "patrol_test/your_test.dart" })` to run tests and wait for completion
 - If no session running: starts new session with specified test file
 - If session already running: automatically restarts current tests
+- A restart is a hot restart: app data and the answers given to permission dialogs stay from the previous run, so a test must not assume a fresh install. Reset the state the app persists (secure storage, local databases, shared preferences) in the helper that starts the app, before the app starts
+- A run also leaves what it changed outside the app, such as a record it created on the test backend, and a hot restart keeps a native screen the run left open. A run that failed halfway skipped any cleanup at its end, so the next run starts from that state
+- When a rerun opens on a screen the test does not expect, or fails at a step that passed in the run before, the state the previous run left is a likely cause: a user still logged in, a permission dialog that no longer appears, a record that already exists, a native screen still open. Check where that run stopped
 - Use `patrol-screenshot({ "platform": "android" })` or `patrol-screenshot({ "platform": "ios" })` to capture screenshots for debugging test failures
 - Use `patrol-quit({})` to quit the session gracefully
 - Use `patrol-status({})` to check current status and recent output
@@ -50,18 +53,24 @@ When working with Patrol tests:
 - Don't write try catch blocks unless absolutely necessary
 - After writing test check if it works by running it with MCP server, fix it if it fails
 - If test fails because element was not found, check if it need to be scrolled to in the app code and adjust the test if needed
+- Give a test only the steps its journey needs. A step copied from another test, such as logging in, costs every run its time and can fail for reasons the test is not about
+- On a screen with an animation that never ends (a spinner, a looping animation), every action waits out the settle timeout (10 seconds by default) and `$.pumpAndSettle` fails. Pass `settlePolicy: SettlePolicy.noSettle` to the actions on that screen instead of adding waits
 
 ## Assertion Rules
 
 - Don't write assertions after actions, but do write them at the end of the test
 - Prefer using `waitUntilVisible` as assertion at the end of the test
 - Use `expect()` for assertions only when `waitUntilVisible` is not enough
+- An assertion must be able to fail. Before asserting that something is not visible, assert something only the expected screen shows: an absence check also passes on the wrong screen
+- Don't assert a value the app already had before the test acted: an action that does nothing would pass. Pick an expected value different from the starting one. When a flow returns to its starting value on purpose, also assert the value in between
+- Assert something only the expected item has, such as its name. That the right kind of screen opened also holds when the screen shows the wrong item
 
 ## Native Dialog Handling
 
 - ALWAYS handle native dialogs that appear during the flow:
   - Handle dialogs immediately after the action that triggers them
   - For native permissions prefer `$.platform.mobile.grantPermissionWhenInUse` over `$.platform.mobile.tap`
+  - A restart of a running session does not reset permissions, so a dialog the previous run answered may not appear again. Check `$.platform.mobile.isPermissionDialogVisible()` before handling it
 
 # Test Keys
 

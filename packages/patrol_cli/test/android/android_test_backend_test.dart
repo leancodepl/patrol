@@ -135,6 +135,274 @@ void main() {
       );
     });
 
+    group('installTestUtilApks', () {
+      late List<List<String>> runs;
+
+      void stubAdb({
+        String sdk = '34',
+        int appopsExitCode = 0,
+        int installExitCode = 0,
+      }) {
+        runs = [];
+        when(
+          () => processManager.run(any(), runInShell: any(named: 'runInShell')),
+        ).thenAnswer((invocation) async {
+          final cmd = (invocation.positionalArguments.first as List)
+              .cast<String>();
+          runs.add(cmd);
+          return ProcessResult(
+            0,
+            cmd.contains('appops')
+                ? appopsExitCode
+                : cmd.contains('install')
+                ? installExitCode
+                : 0,
+            cmd.contains('getprop') ? '$sdk\n' : '',
+            '',
+          );
+        });
+      }
+
+      void createTestUtilApks(List<String> names) {
+        final dir = androidTestBackend.androidTestUtilDirectory
+          ..createSync(recursive: true);
+        for (final name in names) {
+          dir.childFile(name).createSync();
+        }
+      }
+
+      List<List<String>> installs() =>
+          runs.where((cmd) => cmd.contains('install')).toList();
+
+      test(
+        'installs every exported APK with -g and --force-queryable',
+        () async {
+          stubAdb();
+          createTestUtilApks([
+            'test-services-1.5.0.apk',
+            'orchestrator-1.5.1.apk',
+          ]);
+
+          await androidTestBackend.installTestUtilApks(androidDevice);
+
+          final dir = androidTestBackend.androidTestUtilDirectory;
+          expect(installs(), [
+            [
+              'adb',
+              '-s',
+              androidDeviceId,
+              'install',
+              '-r',
+              '-t',
+              '-g',
+              '--force-queryable',
+              dir.childFile('orchestrator-1.5.1.apk').path,
+            ],
+            [
+              'adb',
+              '-s',
+              androidDeviceId,
+              'install',
+              '-r',
+              '-t',
+              '-g',
+              '--force-queryable',
+              dir.childFile('test-services-1.5.0.apk').path,
+            ],
+          ]);
+        },
+      );
+
+      test('omits --force-queryable below API 30', () async {
+        stubAdb(sdk: '29');
+        createTestUtilApks(['orchestrator-1.5.1.apk']);
+
+        await androidTestBackend.installTestUtilApks(androidDevice);
+
+        expect(installs().single, isNot(contains('--force-queryable')));
+        expect(installs().single, contains('-g'));
+      });
+
+      test('lets test-services manage external storage on API 30+', () async {
+        stubAdb();
+        createTestUtilApks(['test-services-1.5.0.apk']);
+
+        await androidTestBackend.installTestUtilApks(androidDevice);
+
+        expect(
+          runs.where((cmd) => cmd.contains('appops')).single,
+          containsAllInOrder([
+            'appops',
+            'set',
+            'androidx.test.services',
+            'MANAGE_EXTERNAL_STORAGE',
+            'allow',
+          ]),
+        );
+      });
+
+      test('omits -g below API 23', () async {
+        stubAdb(sdk: '22');
+        createTestUtilApks(['orchestrator-1.5.1.apk']);
+
+        await androidTestBackend.installTestUtilApks(androidDevice);
+
+        expect(installs().single, isNot(contains('-g')));
+      });
+
+      test('warns and continues when a helper APK fails to install', () async {
+        stubAdb(installExitCode: 1);
+        createTestUtilApks([
+          'orchestrator-1.5.1.apk',
+          'test-services-1.5.0.apk',
+        ]);
+
+        await androidTestBackend.installTestUtilApks(androidDevice);
+
+        expect(installs(), hasLength(2));
+        verify(
+          () => logger.warn(any(that: contains('Failed to install'))),
+        ).called(2);
+      });
+
+      test(
+        'installs the app, the androidTest APK and then the helper APKs',
+        () async {
+          stubAdb();
+          final apkDir = rootDirectory
+              .childDirectory('build')
+              .childDirectory('app')
+              .childDirectory('outputs')
+              .childDirectory('apk');
+          final appApk =
+              apkDir.childDirectory('debug').childFile('app-debug.apk')
+                ..createSync(recursive: true);
+          final testApk =
+              apkDir
+                  .childDirectory('androidTest')
+                  .childDirectory('debug')
+                  .childFile('app-debug-androidTest.apk')
+                ..createSync(recursive: true);
+          createTestUtilApks(['orchestrator-1.5.1.apk']);
+
+          await androidTestBackend.installForRunWithoutBuilding(
+            const AndroidAppOptions(
+              flutter: FlutterAppOptions(
+                command: FlutterCommand('flutter'),
+                target: 'patrol_test/test_bundle.dart',
+                buildMode: BuildMode.debug,
+                flavor: null,
+                buildName: null,
+                buildNumber: null,
+                dartDefines: {},
+                dartDefineFromFilePaths: [],
+              ),
+              appServerPort: 1,
+              testServerPort: 2,
+              uninstall: false,
+            ),
+            androidDevice,
+          );
+
+          expect(installs().map((cmd) => cmd.last), [
+            appApk.path,
+            testApk.path,
+            androidTestBackend.androidTestUtilDirectory
+                .childFile('orchestrator-1.5.1.apk')
+                .path,
+          ]);
+        },
+      );
+
+      test('warns when appops fails', () async {
+        stubAdb(appopsExitCode: 1);
+        createTestUtilApks(['test-services-1.5.0.apk']);
+
+        await androidTestBackend.installTestUtilApks(androidDevice);
+
+        verify(() => logger.warn(any(that: contains('appops')))).called(1);
+      });
+
+      test('skips appops below API 30', () async {
+        stubAdb(sdk: '29');
+        createTestUtilApks(['test-services-1.5.0.apk']);
+
+        await androidTestBackend.installTestUtilApks(androidDevice);
+
+        expect(runs.where((cmd) => cmd.contains('appops')), isEmpty);
+      });
+
+      test('installs nothing when the build exported no APKs', () async {
+        stubAdb();
+        createTestUtilApks([]);
+
+        await androidTestBackend.installTestUtilApks(androidDevice);
+
+        expect(runs, isEmpty);
+      });
+
+      test(
+        'warns when the app declares androidTestUtil but nothing was exported',
+        () async {
+          stubAdb();
+          rootDirectory
+              .childDirectory('android')
+              .childDirectory('app')
+              .childFile('build.gradle.kts')
+            ..createSync(recursive: true)
+            ..writeAsStringSync(
+              'dependencies { androidTestUtil("androidx.test:orchestrator") }',
+            );
+
+          await androidTestBackend.installTestUtilApks(androidDevice);
+
+          expect(runs, isEmpty);
+          verify(() => logger.warn(any())).called(1);
+        },
+      );
+
+      test('stays silent when the app does not use androidTestUtil', () async {
+        stubAdb();
+
+        await androidTestBackend.installTestUtilApks(androidDevice);
+
+        verifyNever(() => logger.warn(any()));
+      });
+    });
+
+    group('prepareTestUtilExport', () {
+      late File staleApk;
+
+      setUp(() {
+        staleApk = androidTestBackend.androidTestUtilDirectory.childFile(
+          'orchestrator-1.4.0.apk',
+        )..createSync(recursive: true);
+      });
+
+      test('clears the old export and writes the init script', () {
+        final export = androidTestBackend.prepareTestUtilExport(
+          emitTestManifest: true,
+        );
+
+        expect(staleApk.existsSync(), isFalse);
+        expect(export, isNotNull);
+        expect(fs.file(export!.initScript).existsSync(), isTrue);
+        expect(
+          export.outputDir,
+          androidTestBackend.androidTestUtilDirectory.absolute.path,
+        );
+      });
+
+      test('clears the old export and exports nothing without discovery', () {
+        final export = androidTestBackend.prepareTestUtilExport(
+          emitTestManifest: false,
+        );
+
+        expect(staleApk.existsSync(), isFalse);
+        expect(export, isNull);
+      });
+    });
+
     group('buildApkConfigOnly', () {
       test('includes build flags when provided', () async {
         const flutterOptions = FlutterAppOptions(

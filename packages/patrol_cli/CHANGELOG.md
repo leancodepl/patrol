@@ -1,12 +1,28 @@
 ## Unreleased
 
-- Fix `patrol develop --use-prebuilt-apks` failing with `flutter build bundle failed with code 64` on
-  projects with a flavor, by no longer passing `--flavor` to `flutter build bundle`, which defines no
-  such option. Only a checkout that had never generated the Dart plugin registrant was affected, which
-  is every fresh CI checkout. (#3297)
-- `patrol coverage pull` now reads coverage from runs with `clearPackageData:true` (one run per
-  test, written by `patrol` on Android 12+) and no longer refuses those BrowserStack builds. A
-  session that kept only the first test's run (older Android) still fails. (#3359)
+- When Chromium cannot be installed for web tests because the OS is newer than the Playwright
+  bundled with `patrol`, the error now says to update `patrol` and, on Ubuntu, which
+  `PLAYWRIGHT_HOST_PLATFORM_OVERRIDE` value works as a fallback. On an Ubuntu older than 20.04 it
+  says the OS is too old instead.
+- Add native screenshots on iOS, collected by `patrol test` from the `.xcresult` into
+  `<test-directory>/screenshots`. Requires Xcode 16 or newer. See the
+  [docs](https://patrol.leancode.co/cli-commands/test#on-ios). (#3271)
+- `patrol test-without-building` on Android now installs the `androidTestUtil` APKs (orchestrator,
+  test-services) from the last `patrol build android`, so tools that write through `TestStorage`,
+  such as allure-android, work on a fresh device. (#3427)
+- Fix Ctrl+C during a web `patrol test` being ignored until the web app finished building, after
+  which the run hung. It now stops the Flutter web server and exits at any phase of the run. (#3339)
+- Report a dead `flutter attach` or `flutter logs` in `patrol develop`. (#3234)
+
+## 4.10.0
+
+- Read coverage from runs with the test orchestrator's `clearPackageData:true` in
+  `patrol coverage pull`: it merges the per-test runs that `patrol` 4.12.0 or newer writes on
+  Android 12+, and no longer refuses those BrowserStack builds. A session that kept only the first
+  test's run (older Android) still fails. (#3359)
+- Fix `patrol develop --use-prebuilt-apks` failing with `flutter build bundle failed with code 64`
+  on projects with a flavor and a fresh checkout (as on CI): `--flavor` is no longer passed to
+  `flutter build bundle`, which has no such option. (#3297)
 
 ## 4.9.0
 

@@ -1,3 +1,8 @@
+## Unreleased
+
+- Waiting for the ADB server or a device's package and activity services gives up after 2 minutes
+  with an `AdbTimeout`. `Adb(readyTimeout: ...)` sets a different limit. (#3424)
+
 ## 0.6.1
 
 - Add `pull` and `remove` methods to `Adb`, so callers use one place for adb resolution and device handling instead of raw `adb` invocations. (#3222)

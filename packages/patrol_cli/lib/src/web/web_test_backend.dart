@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:meta/meta.dart';
 import 'package:package_config/package_config.dart';
+import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
@@ -63,6 +64,8 @@ class WebTestBackend {
       ..detail('Starting web test execution...')
       ..info('Building Flutter web app...');
 
+    _throwIfInterrupted();
+
     // Start Flutter web server
     final flutterProcess = await _startFlutterWebServer(
       options,
@@ -70,6 +73,8 @@ class WebTestBackend {
     );
 
     try {
+      _killOnDispose(flutterProcess);
+
       // Wait for server to be ready and get the URL
       final baseUrl = await _waitForWebServer(
         flutterProcess,
@@ -84,6 +89,9 @@ class WebTestBackend {
         hideTestSteps: hideTestSteps,
         clearTestSteps: clearTestSteps,
       );
+    } catch (_) {
+      _throwIfInterrupted();
+      rethrow;
     } finally {
       // Clean up Flutter process gracefully
       _logger.detail('Stopping Flutter web server...');
@@ -103,6 +111,23 @@ class WebTestBackend {
         await flutterProcess.exitCode;
       }
     }
+  }
+
+  /// [_disposeScope] is disposed mid-run only by SIGINT.
+  void _throwIfInterrupted() {
+    if (_disposeScope.disposed) {
+      throwToolInterrupted('web test run was interrupted');
+    }
+  }
+
+  /// Kills [process] when the run is interrupted, including while [process]
+  /// was starting.
+  void _killOnDispose(Process process) {
+    if (_disposeScope.disposed) {
+      process.kill();
+      _throwIfInterrupted();
+    }
+    process.disposedBy(_disposeScope);
   }
 
   Future<void> develop(
@@ -265,9 +290,10 @@ class WebTestBackend {
           }
         });
 
-    // Check if process exits unexpectedly
+    // Check if process exits unexpectedly. `flutter` can exit with code 0 on
+    // SIGINT.
     flutterProcess.exitCode.then((exitCode) {
-      if (!completer.isCompleted && exitCode != 0) {
+      if (!completer.isCompleted) {
         stdoutSubscription.cancel();
         stderrSubscription.cancel();
         completer.completeError(
@@ -424,6 +450,8 @@ class WebTestBackend {
     required bool hideTestSteps,
     required bool clearTestSteps,
   }) async {
+    _throwIfInterrupted();
+
     _logger.info('Running Playwright tests against: $baseUrl');
     final completer = Completer<void>();
 
@@ -445,20 +473,20 @@ class WebTestBackend {
         ..detail('Test results will be saved to: $testResultsDir')
         ..detail('Test report will be saved to: $testReportDir');
 
-      final playwrightProcess =
-          await _processManager.start(
-              ['npx', 'playwright', 'test', 'tests/test.spec.ts'],
-              workingDirectory: webRunnerPath,
-              environment: {
-                ...Platform.environment,
-                'BASE_URL': baseUrl,
-                'PATROL_TEST_RESULTS_DIR': testResultsDir,
-                'PATROL_TEST_REPORT_DIR': testReportDir,
-                ...options.toEnvironmentVariables(),
-              },
-              runInShell: true,
-            )
-            ..disposedBy(scope);
+      _throwIfInterrupted();
+      final playwrightProcess = await _processManager.start(
+        ['npx', 'playwright', 'test', 'tests/test.spec.ts'],
+        workingDirectory: webRunnerPath,
+        environment: {
+          ...Platform.environment,
+          'BASE_URL': baseUrl,
+          'PATROL_TEST_RESULTS_DIR': testResultsDir,
+          'PATROL_TEST_REPORT_DIR': testReportDir,
+          ...options.toEnvironmentVariables(),
+        },
+        runInShell: true,
+      );
+      _killOnDispose(playwrightProcess);
 
       final isShardedRun = (options.workers ?? 0) > 1;
       if (isShardedRun) {
@@ -654,6 +682,36 @@ class WebTestBackend {
   static String? extractWebServerUrl(String line) =>
       RegExp(r'https?://[^/\s]+:\d+').firstMatch(line)?.group(0);
 
+  /// Returns what to do when `npx playwright install chromium` failed because
+  /// the bundled Playwright has no Chromium build for this OS, or null when
+  /// [output] shows a different failure.
+  @visibleForTesting
+  static String? playwrightUnsupportedPlatformHint(String output) {
+    final platform = RegExp(
+      r'does not support chromium on (\S+)',
+    ).firstMatch(output)?.group(1);
+    if (platform == null) {
+      return null;
+    }
+
+    final ubuntu = RegExp(
+      r'^ubuntu(\d+)\.\d+-(x64|arm64)$',
+    ).firstMatch(platform);
+    final major = int.tryParse(ubuntu?.group(1) ?? '');
+    if (major != null && major < 20) {
+      return 'Playwright has no Chromium build for $platform because this '
+          'Ubuntu version is too old. Run web tests on Ubuntu 20.04 or newer.';
+    }
+
+    final override = ubuntu == null
+        ? ''
+        : ', or set PLAYWRIGHT_HOST_PLATFORM_OVERRIDE=ubuntu24.04-${ubuntu.group(2)} '
+              'to use a supported Chromium build';
+    return 'The Playwright version bundled with the patrol package cannot '
+        'install Chromium on $platform. Update the patrol package to the '
+        'latest version$override.';
+  }
+
   @visibleForTesting
   Future<bool> verifyServerReady(String url) async {
     try {
@@ -715,10 +773,14 @@ class WebTestBackend {
     );
 
     if (result.exitCode != 0) {
+      final hint = playwrightUnsupportedPlatformHint(
+        '${result.stdout}\n${result.stderr}',
+      );
       throw ProcessException(
         'npx',
         ['playwright', 'install', 'chromium'],
-        'Failed to install Playwright dependencies:\n'
+        '${hint == null ? '' : '$hint\n'}'
+            'Failed to install Playwright dependencies:\n'
             'STDOUT: ${result.stdout}\n'
             'STDERR: ${result.stderr}',
         result.exitCode,
