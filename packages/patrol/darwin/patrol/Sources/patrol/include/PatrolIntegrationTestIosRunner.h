@@ -389,7 +389,8 @@ static inline void PatrolWithoutQuiescenceWait(void (^block)(void)) {
     return [[ObjCRunDartTestResponse alloc] initWithResult:@"failure"                                               \
                                                    details:details                                                  \
                                             nextPhaseIndex:nil                                                      \
-                                        nextPhaseLaunchUrl:nil];                                                    \
+                                        nextPhaseLaunchUrl:nil                                                      \
+                                     nextPhaseKeepsProcess:NO];                                                     \
   }                                                                                                                 \
                                                                                                                     \
   /* Runs a Dart test and, for a phased test, kills and relaunches the app for each next phase.                     \
