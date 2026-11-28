@@ -356,8 +356,9 @@ the Inbox before 5.0.0 is released.
   Replace `--web-headless=true` or `--web-headless true` with `--web-headless`, and the `false`
   forms with `--no-web-headless`. Also fix scripts that pass a value after any flag
   (`--release true`), a test file without `-t`/`--target`, or arguments after `--`.
-- #3445, `patrol`: `Selector(instance: n)` now reaches iOS, so `tap`,
-  `doubleTap`, `enterText` and `waitUntilVisible` target the n-th match instead of the first, and
-  `waitUntilVisible` with `instance` fails on iOS and macOS when there are fewer matches. iOS counts
-  every matching element (a web heading and its text are 2 matches), so n can differ from Android.
-  Tests that passed `instance` for Android only: use `PlatformSelector` or drop `instance` on iOS.
+- #3445, `patrol`: `Selector(instance: n)` now reaches iOS, so `tap`, `doubleTap`, `enterText` and
+  `waitUntilVisible` target the n-th match instead of the first (on macOS, `$.platform.tap` too),
+  and `waitUntilVisible` with `instance` fails on iOS and macOS when there are fewer matches. iOS
+  counts every matching element (a web heading and its text are 2 matches), so n can differ from
+  Android. Tests that passed `instance` for Android only: use `PlatformSelector` or drop `instance`
+  on iOS.

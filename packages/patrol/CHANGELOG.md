@@ -25,9 +25,9 @@
   `$.pumpWidgetAndSettle()` return the number of pumped frames, and `$.pumpWidget()` takes named
   arguments. See `migration5.md` and the `patrol_finders` changelog. (#3448)
 - **Breaking:** `Selector.instance` now works on iOS: `tap`, `doubleTap`, `enterText` and
-  `waitUntilVisible` target the n-th match instead of always the first. On iOS and macOS,
-  `waitUntilVisible` with `instance` now fails when there are fewer matches, instead of passing.
-  (#3445)
+  `waitUntilVisible` target the n-th match instead of always the first. On macOS, `$.platform.tap`
+  does too. On iOS and macOS, `waitUntilVisible` with `instance` now fails when there are fewer
+  matches, instead of passing. (#3445)
 - Fix `doubleTap`, `enterText`, `waitUntilVisible`, `tapOnNotificationBySelector` and
   `getNativeViews` with a selector `instance` on Android failing with "instance() argument is not
   supported for BySelector". `tapOnNotificationBySelector` taps the n-th match, and `getNativeViews`
