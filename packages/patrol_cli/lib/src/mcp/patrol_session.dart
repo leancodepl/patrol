@@ -976,10 +976,11 @@ final class PatrolSession {
     return null;
   }
 
-  /// The device a run adds to its flags, or why there is none. Precedence: a
-  /// `--device` the develop args [pinned] > the call's [device] >
-  /// auto-selection.
-  Future<({String? device, String? refusal})> _pickDevice(
+  /// The device a run adds to its flags and its platform when known, or why
+  /// there is none. Precedence: a `--device` the develop args [pinned] > the
+  /// call's [device] > auto-selection.
+  Future<({String? device, TargetPlatform? platform, String? refusal})>
+  _pickDevice(
     String? device, {
     required List<String> pinned,
     required FlutterCommand? flutterCommand,
@@ -990,10 +991,14 @@ final class PatrolSession {
             'Ignored device "$device": the develop args already pin '
             '--device ${pinned.join(', ')}.';
       }
-      return (device: null, refusal: null);
+      return (device: null, platform: null, refusal: null);
     }
     if (device != null) {
-      return (device: device, refusal: null);
+      return (
+        device: device,
+        platform: Device.bundledForTest(device)?.targetPlatform,
+        refusal: null,
+      );
     }
     final List<Device> attached;
     try {
@@ -1001,12 +1006,17 @@ final class PatrolSession {
         flutterCommand: flutterCommand ?? const FlutterCommand('flutter'),
       );
     } catch (err) {
-      return (device: null, refusal: 'Failed to detect attached devices: $err');
+      return (
+        device: null,
+        platform: null,
+        refusal: 'Failed to detect attached devices: $err',
+      );
     }
     final selected = autoSelectDevice(attached);
     if (selected == null) {
       return (
         device: null,
+        platform: null,
         refusal:
             'No Android or iOS device detected. Start an emulator or '
             'simulator (or connect a device) and try again, or pass '
@@ -1018,7 +1028,11 @@ final class PatrolSession {
           'Auto-selected ${selected.name} (${selected.id}); '
           'pass "device" to run on a different one.';
     }
-    return (device: selected.id, refusal: null);
+    return (
+      device: selected.id,
+      platform: selected.targetPlatform,
+      refusal: null,
+    );
   }
 
   Future<void> _runDevelopSession(
@@ -1531,6 +1545,10 @@ final class PatrolSession {
   /// The last suite run's state, or null when this server has run none.
   Map<String, Object>? get suiteStatus => _suite?.toMap();
 
+  /// The platform of the device the last suite runs on, when it is known.
+  TargetPlatform? get suitePlatform => _suitePlatform;
+  TargetPlatform? _suitePlatform;
+
   /// Runs `patrol test` on [targets], or on the whole suite when they are
   /// empty, and waits up to [wait] for it to finish, or until [stopWaiting]
   /// completes.
@@ -1647,6 +1665,7 @@ final class PatrolSession {
     if (picked.refusal case final refusal?) {
       return (suite: null, refusal: refusal);
     }
+    _suitePlatform = picked.platform;
     final resultsDir = await io.Directory.systemTemp.createTemp(
       'patrol_mcp_suite_',
     );

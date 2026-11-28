@@ -203,8 +203,9 @@ project's dev dependency or a path. No paths, test names, errors or output are s
 
 A `run` ends as `passed`, `failed`, `session_error` (it failed before any test did), `refused`,
 `timed_out` or `ended` (the session ended without a result). A `test` ends as `passed`, `failed`,
-`cancelled`, `refused` or `timed_out`. Every other tool ends as `ok` or `error`, and a tool call
-that throws ends as `error`.
+`cancelled`, `stopping` (a `quit` was stopping it), `refused`, `timed_out` or `ended` (it returned
+no suite state). Every other tool ends as `ok` or `error`, and a tool call that throws ends as
+`error`.
 
 It follows the CLI's consent. The server never asks itself: nothing is sent until the CLI has run
 once in a terminal and shown its analytics notice, and `PATROL_ANALYTICS_ENABLED=false` turns it

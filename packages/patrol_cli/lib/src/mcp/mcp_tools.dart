@@ -247,7 +247,7 @@ class McpTools {
         tool: tool,
         outcome: outcome,
         duration: watch.elapsed,
-        platform: _session.device?.targetPlatform,
+        platform: _session.device?.targetPlatform ?? _session.suitePlatform,
         flutterCommand: () => _session.flutterCommand,
         workingDirectory: _session.projectRoot,
       ),

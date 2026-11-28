@@ -309,6 +309,23 @@ void main() {
       expect(await sent(), [('run', 'session_error')]);
     });
 
+    test(
+      'reports the platform of the device a suite runs on',
+      () async {
+        final tools = toolsWith(
+          FakeDevelop(),
+          suiteCommand: const ['sh', '-c', 'exit 0', 'patrol'],
+          analytics: analytics(),
+        );
+
+        await tools.test({'waitMinutes': 1}, extra());
+
+        expect(await sent(), [('test', 'passed')]);
+        expect(events.single['platform'], 'android');
+      },
+      skip: Platform.isWindows ? 'The suite is a POSIX shell script.' : null,
+    );
+
     test('reports a tool that throws as an error, and still throws', () async {
       final tools = toolsWith(FakeDevelop(), analytics: analytics());
 
