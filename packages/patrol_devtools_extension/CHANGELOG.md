@@ -1,5 +1,8 @@
 ## Unreleased
 
+- Regenerate API contracts for `PatrolAppLaunch.attach()` and per-engine app service ports:
+  `RunDartTestRequest.engineRestarted`, `RunDartTestResponse.nextPhaseKeepsProcess` and the
+  port reported by `markPatrolAppServiceReady`. (#3393)
 - Point a code comment at `NativeView`'s new location in `patrol`. (#3417)
 - Regenerate API contracts for phased tests: `RunDartTestRequest.phaseIndex`,
   `RunDartTestResponseResult.continuation`, and `RunDartTestResponse.nextPhaseIndex` /
