@@ -64,9 +64,6 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
   PatrolBinding(PlatformAutomator platform)
     : _serviceExtensions = DevtoolsServiceExtensions(platform),
       _developGeneration = _isDevelopMode ? claimDevelopGeneration() : 0 {
-    // TestWidgetsFlutterBinding's constructor body has already set `/` by now.
-    _showNativeDefaultRouteName();
-
     setUp(() {
       if (_isDevelopMode) {
         return;
@@ -298,19 +295,17 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
     _instance = this;
   }
 
-  /// flutter_test reports `/` as the default route name (in the constructor
-  /// and before every test), which suits widget tests on the host. On a device
-  /// the native side starts the engine with a route of its own, e.g. the link
-  /// a deep link launch opens, and the app under test reads it to pick its
-  /// first screen (`WidgetsApp` does so by default), so the binding shows the
-  /// real one.
-  @override
-  void reset() {
-    super.reset();
-    _showNativeDefaultRouteName();
-  }
-
-  void _showNativeDefaultRouteName() =>
+  /// Shows the app under test the default route name the native side started
+  /// the engine with, instead of the `/` flutter_test reports in its place.
+  ///
+  /// `patrolTest` calls it in a phase launched through a deep link: on
+  /// Android the engine then starts on the link's path, and `WidgetsApp` reads
+  /// it to pick its first screen. Everywhere else the stand-in stays, since on
+  /// web the native value is the page's current URL, which a hot restart in
+  /// `patrol develop` would carry over. flutter_test puts `/` back before the
+  /// next test.
+  @internal
+  void showNativeDefaultRouteName() =>
       platformDispatcher.clearDefaultRouteNameTestValue();
 
   @override

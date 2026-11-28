@@ -229,7 +229,12 @@ void patrolTest(
             );
           }
           phaseIndex = phasedTest.phaseIndexFor(requestedPhaseIndex);
-          callbackToRun = phasedTest.phaseAt(phaseIndex).callback;
+          final phase = phasedTest.phaseAt(phaseIndex);
+          callbackToRun = phase.callback;
+          if (phase.launch.url != null) {
+            // The native side opened this process through the phase's link.
+            patrolBinding.showNativeDefaultRouteName();
+          }
         }
 
         await runWithDeterministicCursor(

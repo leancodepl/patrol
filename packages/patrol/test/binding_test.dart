@@ -44,22 +44,28 @@ void main() {
   Matcher isNativeRoute() => isNot(same('/'));
 
   group('PatrolBinding', () {
-    test('reports the native default route name after construction', () {
+    // On web the native value is the page's URL, which a hot restart in
+    // patrol develop would carry over, so only deep-link phases show it.
+    test("keeps flutter_test's `/` stand-in by default", () {
+      expect(binding.platformDispatcher.defaultRouteName, same('/'));
+    });
+
+    test('shows the native default route name when a phase asks for it', () {
+      binding.showNativeDefaultRouteName();
+
       expect(binding.platformDispatcher.defaultRouteName, '/');
       expect(binding.platformDispatcher.defaultRouteName, isNativeRoute());
     });
 
-    test('reports the native default route name after reset()', () {
-      binding.platformDispatcher.defaultRouteNameTestValue = '/test-value';
-      binding.reset();
+    test('puts the stand-in back after reset()', () {
+      binding
+        ..showNativeDefaultRouteName()
+        ..reset();
 
-      expect(binding.platformDispatcher.defaultRouteName, '/');
-      expect(binding.platformDispatcher.defaultRouteName, isNativeRoute());
+      expect(binding.platformDispatcher.defaultRouteName, same('/'));
     });
 
     testWidgets('lets a test override the default route name', (tester) async {
-      expect(tester.platformDispatcher.defaultRouteName, isNativeRoute());
-
       tester.platformDispatcher.defaultRouteNameTestValue = '/details/42';
       expect(tester.platformDispatcher.defaultRouteName, '/details/42');
     });
