@@ -22,7 +22,7 @@
   such as allure-android, work on a fresh device. (#3427)
 - Fix Ctrl+C during `patrol develop -d chrome` startup waiting out the web server timeout (120 s by
   default). The session now stops Flutter, the dependency install and the Playwright driver,
-  together with the processes they spawned, at any point before it attaches.
+  together with the processes they spawned, at any point before it attaches. (#3453)
 
 ## 5.0.0-dev.1
 
