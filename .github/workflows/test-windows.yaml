@@ -72,16 +72,14 @@ jobs:
         run: flutter pub get
 
       - name: Run Explorer smoke test
+        id: smoke
         timeout-minutes: 15
         run: patrol test -d windows -t patrol_test/explorer_demo_test.dart --verbose
 
-      - name: Run Flutter + native dialog test
-        if: ${{ !cancelled() && steps.pub_get.outcome == 'success' }}
-        timeout-minutes: 15
-        run: patrol test -d windows -t patrol_test/demo_test.dart --verbose
-
-      - name: Capture screen on failure
-        if: failure()
+      - name: Capture screen after Explorer smoke test failure
+        if: ${{ failure() && steps.smoke.outcome == 'failure' }}
+        env:
+          SCREEN_FILE: screen-explorer.png
         working-directory: .
         run: |
           Add-Type -AssemblyName System.Windows.Forms, System.Drawing
@@ -89,12 +87,31 @@ jobs:
           $bitmap = New-Object System.Drawing.Bitmap $bounds.Width, $bounds.Height
           $graphics = [System.Drawing.Graphics]::FromImage($bitmap)
           $graphics.CopyFromScreen($bounds.Location, [System.Drawing.Point]::Empty, $bounds.Size)
-          $bitmap.Save("windows-screen.png")
+          $bitmap.Save($env:SCREEN_FILE)
 
-      - name: Upload screen capture
+      - name: Run Flutter + native dialog test
+        id: dialog
+        if: ${{ !cancelled() && steps.pub_get.outcome == 'success' }}
+        timeout-minutes: 15
+        run: patrol test -d windows -t patrol_test/demo_test.dart --verbose
+
+      - name: Capture screen after native dialog test failure
+        if: ${{ failure() && steps.dialog.outcome == 'failure' }}
+        env:
+          SCREEN_FILE: screen-dialog.png
+        working-directory: .
+        run: |
+          Add-Type -AssemblyName System.Windows.Forms, System.Drawing
+          $bounds = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
+          $bitmap = New-Object System.Drawing.Bitmap $bounds.Width, $bounds.Height
+          $graphics = [System.Drawing.Graphics]::FromImage($bitmap)
+          $graphics.CopyFromScreen($bounds.Location, [System.Drawing.Point]::Empty, $bounds.Size)
+          $bitmap.Save($env:SCREEN_FILE)
+
+      - name: Upload screen captures
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: Screen from ${{ matrix.os }}
-          path: windows-screen.png
+          name: Screens from ${{ matrix.os }}
+          path: screen-*.png
           if-no-files-found: ignore

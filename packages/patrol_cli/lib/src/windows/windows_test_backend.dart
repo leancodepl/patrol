@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io' as io;
 
 import 'package:dispose_scope/dispose_scope.dart' hide ProcessDisposed;
@@ -175,8 +176,8 @@ class WindowsTestBackend {
     ).firstMatch(cmake.readAsStringSync())?.group(1)?.trim();
   }
 
-  /// The CMake generator for the newest Visual Studio with C++ tools.
-  Future<String> _visualStudioGenerator(Progress task) async {
+  /// The newest Visual Studio with C++ tools and its CMake generator.
+  Future<(VisualStudioInstall, String)> _findVisualStudio(Progress task) async {
     const missing =
         'Visual Studio 2022 or 2026 with the "Desktop development with C++" '
         'workload is required to build patrol_windows_runner.';
@@ -186,31 +187,42 @@ class WindowsTestBackend {
       throwToolExit('$missing\n`$vswhere` does not exist.');
     }
 
-    final result = await _processManager.run([vswhere, ...vswhereArguments()]);
-    final version = (result.stdout as String).trim();
-    final generator = result.exitCode == 0 ? cmakeGeneratorFor(version) : null;
-    if (generator == null) {
+    final result = await _processManager.run([
+      vswhere,
+      ...vswhereArguments(),
+    ], stdoutEncoding: utf8);
+    final install = result.exitCode == 0
+        ? parseVswhereOutput(result.stdout as String)
+        : null;
+    final generator = install?.cmakeGenerator;
+    if (install == null || generator == null) {
       task.fail('Visual Studio not found');
       throwToolExit(
-        version.isEmpty
+        install == null
             ? missing
-            : '$missing\nFound Visual Studio $version, which is not supported.',
+            : '$missing\nFound Visual Studio ${install.version}, '
+                  'which is not supported.',
       );
     }
-    _logger.detail('Using CMake generator "$generator"');
-    return generator;
+    _logger.detail(
+      'Using Visual Studio ${install.version} at ${install.path} '
+      '(CMake generator "$generator")',
+    );
+    return (install, generator);
   }
 
   Future<String> _ensureRunnerBuilt(DisposeScope scope) async {
     final runnerDir = await _resolveRunnerDirectory();
     final buildDir = _fs.directory(p.join(runnerDir, 'build'));
     final task = _logger.task('Building patrol_windows_runner');
+    final (install, generator) = await _findVisualStudio(task);
+    final bundledCmake = install.bundledCmakePath;
+    final cmake = _fs.file(bundledCmake).existsSync() ? bundledCmake : 'cmake';
 
     Future<void> runCmake(List<String> args, {required String label}) async {
       var killed = false;
       final process = await _processManager.start(
         args,
-        runInShell: true,
         workingDirectory: runnerDir,
       );
       process.disposedByTree(scope, onKill: () => killed = true);
@@ -235,16 +247,17 @@ class WindowsTestBackend {
     final generated = buildDir.childFile('cmake_install.cmake');
     final needsConfigure = !cache.existsSync() || !generated.existsSync();
     if (needsConfigure) {
-      final generator = await _visualStudioGenerator(task);
       if (buildDir.existsSync()) {
         buildDir.deleteSync(recursive: true);
       }
       try {
         await runCmake(
           cmakeConfigureArguments(
+            cmake: cmake,
             sourceDir: runnerDir,
             buildDir: buildDir.path,
             generator: generator,
+            install: install,
           ),
           label: 'cmake configure',
         );
@@ -257,7 +270,7 @@ class WindowsTestBackend {
     }
 
     await runCmake([
-      'cmake',
+      cmake,
       '--build',
       buildDir.path,
       '--config',
