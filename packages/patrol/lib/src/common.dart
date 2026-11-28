@@ -145,9 +145,13 @@ void patrolTest(
   if (skip ?? false) {
     patrolLog.log(TestEntry(name: description, status: TestEntryStatus.skip));
   }
+  final skipInBody = skipsInBody(
+    skip: skip,
+    hotRestart: constants.hotRestartEnabled,
+  );
   testWidgets(
     description,
-    skip: skip,
+    skip: skipInBody ? null : skip,
     timeout: timeout,
     semanticsEnabled: semanticsEnabled,
     variant: variant,
@@ -159,6 +163,36 @@ void patrolTest(
         //
         // See https://github.com/leancodepl/patrol/issues/1474
       };
+
+      // In develop mode the exception gatherer is off, so exceptions the
+      // framework catches (e.g. from `onPressed`) are never reported. The full
+      // stack is dumped to the console by `PatrolBinding.reportExceptionNoticed`
+      // (forwarded by `patrol develop`); log a short failure entry here for the
+      // structured status, without ending the Hot Restart session.
+      void reportDevelopException() {
+        final caughtException = patrolBinding.takeException();
+        if (caughtException == null) {
+          return;
+        }
+        patrolLog.log(
+          TestEntry(
+            name: global_state.currentTestFullName,
+            status: TestEntryStatus.failure,
+            error: caughtException.toString(),
+          ),
+        );
+      }
+
+      if (skipInBody) {
+        if (global_state.isCurrentTestLastInGroup) {
+          await _finishDevelopRun(
+            widgetTester,
+            patrolLog,
+            reportDevelopException,
+          );
+        }
+        return;
+      }
 
       if (!constants.hotRestartEnabled) {
         // If Patrol's native automation feature is enabled, then this test will
@@ -209,25 +243,6 @@ void patrolTest(
         rethrow;
       }
 
-      // In develop mode the exception gatherer is off, so exceptions the
-      // framework catches (e.g. from `onPressed`) are never reported. The full
-      // stack is dumped to the console by `PatrolBinding.reportExceptionNoticed`
-      // (forwarded by `patrol develop`); log a short failure entry here for the
-      // structured status, without ending the Hot Restart session.
-      void reportDevelopException() {
-        final caughtException = patrolBinding.takeException();
-        if (caughtException == null) {
-          return;
-        }
-        patrolLog.log(
-          TestEntry(
-            name: global_state.currentTestFullName,
-            status: TestEntryStatus.failure,
-            error: caughtException.toString(),
-          ),
-        );
-      }
-
       if (constants.hotRestartEnabled) {
         // Pump once so exceptions from in-flight gesture callbacks are recorded
         // by the framework before we read them.
@@ -243,29 +258,48 @@ void patrolTest(
 
       if (constants.hotRestartEnabled &&
           global_state.isCurrentTestLastInGroup) {
-        // Patrol log that test is finished
-        // If test fails this code will not be executed
-        patrolLog
-          ..log(
-            LogEntry(
-              message:
-                  'All tests were executed. Press "r" to start again or "q" to quit',
-            ),
-          )
-          ..log(
-            ConfigEntry(config: const {ConfigEntry.developCompletedKey: true}),
-          );
-        // Wait indefinitely in develop mode after the last test. The app stays
-        // interactive here, so keep reporting exceptions (e.g. from manual taps
-        // while iterating) as they happen instead of losing them.
-        while (true) {
-          await widgetTester.pump();
-          reportDevelopException();
-          await Future<void>.delayed(const Duration(milliseconds: 10));
-        }
+        await _finishDevelopRun(
+          widgetTester,
+          patrolLog,
+          reportDevelopException,
+        );
       }
     },
   );
+}
+
+/// Whether a test registered with [skip] runs its body and skips from inside
+/// it.
+///
+/// In develop mode the last test of the group signals that the run is over,
+/// and a skipped test's body never runs, so a skipped test there runs a body
+/// that only reports that signal when it is last.
+@internal
+bool skipsInBody({required bool? skip, required bool hotRestart}) =>
+    hotRestart && (skip ?? false);
+
+/// Reports that every test of a develop run has run and keeps the app alive
+/// for Hot Restart, reporting exceptions from manual interactions.
+///
+/// A failing test does not get here.
+Future<Never> _finishDevelopRun(
+  WidgetTester widgetTester,
+  PatrolLogWriter patrolLog,
+  void Function() reportDevelopException,
+) async {
+  patrolLog
+    ..log(
+      LogEntry(
+        message:
+            'All tests were executed. Press "r" to start again or "q" to quit',
+      ),
+    )
+    ..log(ConfigEntry(config: const {ConfigEntry.developCompletedKey: true}));
+  while (true) {
+    await widgetTester.pump();
+    reportDevelopException();
+    await Future<void>.delayed(const Duration(milliseconds: 10));
+  }
 }
 
 /// Creates a DartGroupEntry by visiting the subgroups of [parentGroup].
