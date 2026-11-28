@@ -1,7 +1,17 @@
 import 'package:e2e_app/keys.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 
 import 'common.dart';
+
+// With animations turned off on the device (Android's transition animation
+// scale at 0, as on our emulator.wtf runs), Flutter runs every animation at 5%
+// of its duration, so it ends within the first 100 ms pump and each settle
+// returns 1. Keep animations at full length so the counts don't depend on it.
+void _keepAnimationsOn() {
+  debugSemanticsDisableAnimations = false;
+  addTearDown(() => debugSemanticsDisableAnimations = null);
+}
 
 // Fades in over 1 s, so settling it takes more than one 100 ms pump.
 class _FadeIn extends StatelessWidget {
@@ -29,6 +39,7 @@ void main() {
   patrol(
     'pumpAndSettle() returns the number of pumped frames',
     ($) async {
+      _keepAnimationsOn();
       await createApp($);
       // noSettle leaves the route transition for pumpAndSettle to count.
       await $(
@@ -48,6 +59,7 @@ void main() {
   patrol(
     'pumpWidgetAndSettle() returns the number of pumped frames',
     ($) async {
+      _keepAnimationsOn();
       final idleFrames = await $.pumpWidgetAndSettle(
         const MaterialApp(home: Text('static')),
       );
