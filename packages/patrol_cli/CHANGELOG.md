@@ -1,121 +1,51 @@
-## Unreleased
-
-- Experimental `patrol test` support for Windows desktop (build + out-of-process
-  automator sidecar). `patrol develop` on Windows is not supported yet. (#3183)
-- `patrol test -d windows` builds its runner with Visual Studio 2026 as well as 2022. (#3459)
-- `patrol develop` stops waiting for the app's uninstall after 30 s when a session ends without `q`,
-  for example when the device goes away. (#3370)
-- `patrol mcp` refuses a `run` that would hot restart the running session right away, with the
-  exit code and stderr of `flutter attach`, once attach has exited. (#3375)
-- When Flutter exits before serving a web `patrol test`, the error ends with the last 30 lines of
-  Flutter's stderr, compile errors included. (#3374)
-- Detect and support both Android test layouts: the self-instrumenting
-  `:patrolTest` module and the in-app `:app` androidTest source set. The generated
-  test bundle resolves the Android native-server host before
-  `PatrolBinding.ensureInitialized` (`resolveNativeServerHost` with `initialize`,
-  then `ensureLoaded` after the explorer). (#3280)
-- Fix the generated test bundle dropping the Dart entrypoint arguments passed by the native side of
-  the app: `main` now takes them and passes them to tests as `$.entrypointArgs`. Needs a `patrol`
-  release that includes this change. (#3366)
-- When Chromium cannot be installed for web tests because the OS is newer than the Playwright
-  bundled with `patrol`, the error now says to update `patrol` and, on Ubuntu, which
-  `PLAYWRIGHT_HOST_PLATFORM_OVERRIDE` value works as a fallback. On an Ubuntu older than 20.04 it
-  says the OS is too old instead.
-- Add native screenshots on iOS, collected by `patrol test` from the `.xcresult` into
-  `<test-directory>/screenshots`. Requires Xcode 16 or newer. See the
-  [docs](https://patrol.leancode.co/cli-commands/test#on-ios). (#3271)
-- `patrol test-without-building` on Android now installs the `androidTestUtil` APKs (orchestrator,
-  test-services) from the last `patrol build android`, so tools that write through `TestStorage`,
-  such as allure-android, work on a fresh device. (#3427)
-- Fix Ctrl+C during a web `patrol test` being ignored until the web app finished building, after
-  which the run hung. It now stops the Flutter web server and exits at any phase of the run. (#3339)
-- Report a dead `flutter attach` or `flutter logs` in `patrol develop`. (#3234)
-- Fix Ctrl+C during `patrol develop -d chrome` startup waiting out the web server timeout (120 s by
-  default). The session now stops Flutter, the dependency install and the Playwright driver,
-  together with the processes they spawned, at any point before it attaches. (#3453)
-- **BREAKING CHANGE**
-  - `--web-headless` no longer takes a value: `--web-headless=true` and `--web-headless false` fail.
-    Use `--web-headless` or `--no-web-headless`. Every command except `patrol mcp` now rejects
-    leftover positional arguments instead of ignoring them. (#3452)
-  - A `RunnerUITests.m` with the 4.7.0 `PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN`/`_END`
-    macros now fails in `xcodebuild` instead of with a Patrol hint. Replace them with the snippet
-    from `migration5.md`. (#3452)
-
 ## 5.0.0-dev.1
 
-- **Breaking:** Bump min Flutter SDK to 3.44.0 and Dart SDK to 3.12.0. Older Flutter versions keep
-  resolving patrol_cli 4.x. See `migration5.md`. (#3323)
-- Migrate to the `NativePlatform` API of `platform` 3.2.0 and drop the `<3.2.0` pin. `platform` 3.2.0
-  needs `meta` 1.18, which Flutter pins only from 3.44 on, hence the new minimum. (#3323)
-- `patrol develop -d chrome` now uses a real Flutter hot restart instead of relaunching the browser
-  and the Playwright driver on every `r`; one `flutter run` stays alive for the whole session, as on
-  mobile.
-- **Web develop requires Flutter 3.47.0 or newer**, and exits with an error below it. Older SDKs
-  report a successful Hot Restart and keep serving the previous test bundle, so your edits would
-  silently do nothing. Fixed by
-  [flutter/flutter#183838](https://github.com/flutter/flutter/pull/183838).
-- Make the Patrol DevTools extension usable in web develop mode: DevTools cannot discover extensions
-  for a web app, so with `--open-devtools` patrol serves its own instance against a project it
-  registers itself. Nothing extra is started without the flag.
-- Only accept `r` once the app is up, queueing one pressed earlier, as develop already does on
-  mobile. A restart during startup destroys the app view without completing it
-  ([flutter/flutter#182377](https://github.com/flutter/flutter/issues/182377)).
-- Stop reporting the run a hot restart tears down as a failure of yours. A genuine failure, once the
-  replacement run has started, is still shown.
-- Report hot restart outcomes in web develop mode, and resend an `r` that `flutter run` dropped
-  rather than refusing every later one.
-- Choose the Chrome debugging port up front with `--web-browser-debug-port` instead of scraping it
-  out of `flutter run --verbose`, which is now passed only when patrol itself is verbose.
-- Fix a web develop session crashing out, leaving the terminal in raw mode and the Playwright
-  driver orphaned, when `flutter run` died while the session was still starting up.
-- Fix `patrol develop` failing to revert the terminal's interactive mode when stdin is already
-  closed.
-- Add `patrol build web`, which compiles the test app into a self-contained directory (`app/` plus a
-  copy of the Playwright runner) that runs on machines with neither Flutter nor a resolved pub cache.
-  It refuses `--profile` and `--release` without `--force`: outside debug the semantics tree is gone
-  and the tests pass without touching the app.
-- `patrol test-without-building --input <dir>` runs that directory. Patrol serves the app itself,
-  with the MIME types and cross-origin headers `flutter run` sends, and accepts the `--web-*` options
-  that shape a run, so the same artifact can be sharded across machines.
-- Fix `patrol develop` leaving Gradle and logcat processes behind after quitting with `q`, and the
-  test running on the Android device after Ctrl+C. (#3249)
-- `patrol develop` no longer leaves `adb` port forwards behind on Android devices when the session ends. (#3367)
-- Add `patrol mcp` (experimental), an MCP server shipped with the CLI that lets AI agents run tests
-  in `patrol develop` sessions and read their results. It runs a test on Android, iOS or, when
-  asked, in Chrome, hot restarts it on the next `run`, runs the whole suite with `patrol test`
-  through its `test` tool, and takes screenshots and native trees. One server serves every project
-  it is asked about, git worktrees included. Its results report why a test failed, the session's log
-  file with the build's errors, a run that has gone quiet, a `patrol` version this CLI cannot drive
-  and a project that pins another `patrol_cli`. It replaces the `patrol_mcp` package, so its
-  dependencies no longer land in the app's pubspec (#3166). Run it as `patrol mcp` from a globally
-  activated CLI or as `dart run patrol_cli:main mcp` from a dev dependency, with develop flags after
-  `--`; `PATROL_FLAGS` is split as a shell would (#3026). See the
-  [docs](https://patrol.leancode.co/documentation/other/patrol-mcp), migrating off `patrol_mcp`
-  included. (#3368, #3371, #3372, #3374)
-- Report `patrol mcp` tool calls to the CLI's anonymous analytics, under the same consent and
-  `PATROL_ANALYTICS_ENABLED` switch: the tool, how it ended, how long it took, the device platform
-  and how the CLI is installed. No paths, test names, errors or output are sent. (#3373)
-- Look for a `patrol test`/`patrol develop` target in the project when the path names nothing from
-  the directory the command was run in. A relative target still belongs to that directory first,
-  which is how `-t ../patrol_test/app_test.dart` works from a subdirectory. (#3369)
-
 - **BREAKING CHANGE**
-  - Remove `--tags` from `patrol develop`. It was accepted but never applied, so a session ran
-    every test in the file. (#3382)
+  - Bump min Flutter SDK to 3.44.0 and Dart SDK to 3.12.0. Older Flutter versions keep resolving
+    patrol_cli 4.x. See `migration5.md`. (#3323)
   - Build-time test discovery is now the default for `patrol test` and `patrol build` on Android and
     iOS, so native test names change to `PatrolGeneratedTests_<file>/test_<name>`. Pass
     `--no-emit-test-manifest` or set `patrol.emit_test_manifest: false` to keep runtime discovery.
-    `patrol develop` keeps runtime discovery unless asked. See `migration5.md`.
-  - Tests under `integration_test/` fall back to runtime discovery with a warning, and an explicit
-    `--emit-test-manifest` there fails the build.
+    `patrol develop` keeps runtime discovery unless asked. Tests under `integration_test/` fall back
+    to runtime discovery with a warning, and an explicit `--emit-test-manifest` there fails the
+    build. See `migration5.md`. (#3395)
   - On iOS, a `RunnerUITests.m` without the `#include` of the generated tests keeps runtime
-    discovery with a warning that shows the lines to add (an explicit opt-in fails instead). The removed
-    `PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN`/`_END` macros are reported with the
-    replacement. Requires `patrol` 5.0.
+    discovery with a warning that shows the lines to add (an explicit opt-in fails instead).
+    Requires `patrol` 5.0. (#3395)
+  - A `RunnerUITests.m` with the 4.7.0 `PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN`/`_END`
+    macros fails in `xcodebuild`. Replace them with the snippet from `migration5.md`. (#3452)
   - With build-time discovery, runs in which tests didn't run fail instead of passing with
     `Total: 0`. A missing Android Patrol test class (`MainActivityTest.java`) stops the build, a run
     that executed fewer tests than discovered fails and lists them, and the app fails when it
     registers a test that discovery didn't find. Requires `patrol` 5.0. See `migration5.md`. (#3425)
+  - `--web-headless` no longer takes a value: `--web-headless=true` and `--web-headless false` fail.
+    Use `--web-headless` or `--no-web-headless`. Every command except `patrol mcp` now rejects
+    leftover positional arguments instead of ignoring them. (#3452)
+  - Remove `--tags` from `patrol develop`. It was accepted but never applied, so a session ran
+    every test in the file. (#3382)
+- Migrate to the `NativePlatform` API of `platform` 3.2.0 and drop the `<3.2.0` pin. `platform` 3.2.0
+  needs `meta` 1.18, which Flutter pins only from 3.44 on, hence the new minimum. (#3323)
+- Add `patrol mcp` (experimental), an MCP server shipped with the CLI that lets AI agents run tests
+  in `patrol develop` sessions and read their results. It runs a test on Android, iOS or, when
+  asked, in Chrome, hot restarts it on the next `run`, runs the whole suite with `patrol test`
+  through its `test` tool, and takes screenshots and native trees. One server serves every project
+  it is asked about, git worktrees included. It replaces the `patrol_mcp` package, so its
+  dependencies no longer land in the app's pubspec (#3166). Run it as `patrol mcp` from a globally
+  activated CLI or as `dart run patrol_cli:main mcp` from a dev dependency, with develop flags after
+  `--`; `PATROL_FLAGS` is split as a shell would (#3026). See the
+  [docs](https://patrol.leancode.co/documentation/other/patrol-mcp), migrating off `patrol_mcp`
+  included. (#3368, #3369, #3371, #3372, #3374)
+- `patrol mcp` results report why a test failed, the session's log file with the build's errors, a
+  run that has gone quiet, a `patrol` version this CLI cannot drive and a project that pins another
+  `patrol_cli`. A `run` that would hot restart a session whose `flutter attach` has exited is
+  refused right away, with attach's exit code and stderr. (#3372, #3375)
+- Report `patrol mcp` tool calls to the CLI's anonymous analytics, under the same consent and
+  `PATROL_ANALYTICS_ENABLED` switch: the tool, how it ended, how long it took, the device platform
+  and how the CLI is installed. No paths, test names, errors or output are sent. (#3373)
+- Experimental `patrol test` support for Windows desktop (build + out-of-process automator sidecar),
+  with Visual Studio 2022 or 2026. `patrol develop` on Windows is not supported yet. (#3183, #3459)
+- Detect and support both Android test layouts: the self-instrumenting `:patrolTest` module and the
+  in-app `:app` androidTest source set. (#3280)
 - Support build-time test discovery on macOS: `patrol build macos` and `patrol test -d macos` use it
   by default, and `patrol test-without-building --only` runs on macOS. Like on iOS, a
   `macos/RunnerUITests/RunnerUITests.m` without the `#include` of the generated tests falls back to
@@ -124,7 +54,63 @@
 - Web keeps runtime test discovery: `emit_test_manifest` is ignored there, and `--emit-test-manifest`
   with `patrol test -d chrome` or `patrol develop -d chrome` prints a warning. (#3432)
 - Show why build-time discovery failed (the failing part of the host `flutter test` output) without
-  `--verbose`.
+  `--verbose`. (#3395)
+- Add native screenshots on iOS, collected by `patrol test` from the `.xcresult` into
+  `<test-directory>/screenshots`. Requires Xcode 16 or newer. See the
+  [docs](https://patrol.leancode.co/cli-commands/test#on-ios). (#3271)
+- `patrol develop -d chrome` now uses a real Flutter hot restart instead of relaunching the browser
+  and the Playwright driver on every `r`; one `flutter run` stays alive for the whole session, as on
+  mobile. (#3040)
+- **Web develop requires Flutter 3.47.0 or newer**, and exits with an error below it. Older SDKs
+  report a successful Hot Restart and keep serving the previous test bundle, so your edits would
+  silently do nothing. Fixed by
+  [flutter/flutter#183838](https://github.com/flutter/flutter/pull/183838). (#3040)
+- Make the Patrol DevTools extension usable in web develop mode: with `--open-devtools`, patrol
+  serves its own DevTools instance, since DevTools cannot discover extensions for a web app.
+  Nothing extra is started without the flag. (#3040)
+- In web develop mode, only accept `r` once the app is up, queueing one pressed earlier, as develop
+  already does on mobile. Hot restart outcomes are reported, an `r` that `flutter run` dropped is
+  resent, and the run a hot restart tears down is no longer reported as a failure. (#3040)
+- Choose the Chrome debugging port up front with `--web-browser-debug-port` instead of scraping it
+  out of `flutter run --verbose`, which is now passed only when patrol itself is verbose. (#3040)
+- Add `patrol build web`, which compiles the test app into a self-contained directory (`app/` plus a
+  copy of the Playwright runner) that runs on machines with neither Flutter nor a resolved pub cache.
+  It refuses `--profile` and `--release` without `--force`: outside debug the semantics tree is gone
+  and the tests pass without touching the app. (#3040)
+- `patrol test-without-building --input <dir>` runs that directory. Patrol serves the app itself,
+  with the MIME types and cross-origin headers `flutter run` sends, and accepts the `--web-*` options
+  that shape a run, so the same artifact can be sharded across machines. (#3040)
+- `patrol test-without-building` on Android now installs the `androidTestUtil` APKs (orchestrator,
+  test-services) from the last `patrol build android`, so tools that write through `TestStorage`,
+  such as allure-android, work on a fresh device. (#3427)
+- Look for a `patrol test`/`patrol develop` target in the project when the path names nothing from
+  the directory the command was run in. A relative target still belongs to that directory first,
+  which is how `-t ../patrol_test/app_test.dart` works from a subdirectory. (#3369)
+- When Chromium cannot be installed for web tests because the OS is newer than the Playwright
+  bundled with `patrol`, the error now says to update `patrol` and, on Ubuntu, which
+  `PLAYWRIGHT_HOST_PLATFORM_OVERRIDE` value works as a fallback. On an Ubuntu older than 20.04 it
+  says the OS is too old instead. (#3401)
+- When Flutter exits before serving a web `patrol test`, the error ends with the last 30 lines of
+  Flutter's stderr, compile errors included. (#3374)
+- Report a dead `flutter attach` or `flutter logs` in `patrol develop`. (#3234)
+- `patrol develop` stops waiting for the app's uninstall after 30 s when a session ends without `q`,
+  for example when the device goes away. (#3370)
+- Fix the generated test bundle dropping the Dart entrypoint arguments passed by the native side of
+  the app: `main` now takes them and passes them to tests as `$.entrypointArgs`. Needs `patrol` 5.0.
+  (#3366)
+- Fix `patrol develop` leaving Gradle and logcat processes behind after quitting with `q`, and the
+  test running on the Android device after Ctrl+C. (#3249)
+- `patrol develop` no longer leaves `adb` port forwards behind on Android devices when the session
+  ends. (#3367)
+- Fix Ctrl+C during a web `patrol test` being ignored until the web app finished building, after
+  which the run hung. It now stops the Flutter web server and exits at any phase of the run. (#3339)
+- Fix Ctrl+C during `patrol develop -d chrome` startup waiting out the web server timeout (120 s by
+  default). The session now stops Flutter, the dependency install and the Playwright driver,
+  together with the processes they spawned, at any point before it attaches. (#3453)
+- Fix a web develop session crashing out, leaving the terminal in raw mode and the Playwright
+  driver orphaned, when `flutter run` died while the session was still starting up. (#3040)
+- Fix `patrol develop` failing to revert the terminal's interactive mode when stdin is already
+  closed. (#3040)
 
 ## 4.10.0
 
