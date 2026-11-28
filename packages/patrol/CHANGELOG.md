@@ -38,9 +38,10 @@
   still does not receive that URL in a Patrol process; use a native initial-link
   plugin (for example `app_links`) there. (#3282)
 - Add `phases()` so a Patrol test can continue after the app is killed and
-  relaunched (normal start or a deep link). Requires the self-instrumenting
-  Android `:patrolTest` layout; unsupported in `patrol develop`, on macOS, and
-  with `--coverage` when there is more than one phase.
+  relaunched (normal start or a deep link). Runs on iOS and on Android with the
+  self-instrumenting `:patrolTest` layout; on macOS, web, Windows and the in-app
+  Android layout, and with `--coverage`, a test with more than one phase fails
+  before its first phase runs. Unsupported in `patrol develop`.
   See [Phased tests](https://patrol.leancode.co/documentation/phased-tests).
   (#3282)
 - Add the optional self-instrumenting Android `:patrolTest` layout, which runs

@@ -134,13 +134,13 @@ Dart runs.
 <Warning>
   **Android** phased tests need the self-instrumenting [`:patrolTest`] layout.
   The older in-app `androidTest` runner lives inside the app it would kill, so
-  Patrol throws if a test asks to continue.
+  there a test with more than one phase fails before its first phase runs.
 </Warning>
 
-- **Android and iOS only.** macOS fails if a test returns a continuation.
+- **Android and iOS only.** On macOS, Windows and web a test with more than one
+  phase fails before its first phase runs.
 - **`patrol test` / `patrol build`, not `patrol develop`.** Hot Restart cannot
   survive killing the app. Phased tests throw in develop mode.
-- **Web is not supported.**
 - **`--coverage` (VM) with more than one phase is not supported.** Each phase
   is a new process; coverage collection stops after the suite test count.
 - A phased list must contain **at least one** phase. One phase is valid; it

@@ -49,6 +49,29 @@ void main() {
         throwsArgumentError,
       );
     });
+
+    // Runners that can relaunch the app ask for phase 0; the others send no
+    // phase, and a test that needs a relaunch fails before its first phase.
+    test('fails a multi-phase test when the runner sends no phase', () {
+      final definition = patrolPhasesOf(
+        phases([
+          PatrolPhase((_) => Future.value()),
+          PatrolPhase((_) => Future.value()),
+        ]),
+      )!;
+
+      expect(() => definition.phaseIndexFor(null), throwsUnsupportedError);
+      expect(definition.phaseIndexFor(0), 0);
+      expect(definition.phaseIndexFor(1), 1);
+    });
+
+    test('runs a single phase on any runner', () {
+      final definition = patrolPhasesOf(
+        phases([PatrolPhase((_) => Future.value())]),
+      )!;
+
+      expect(definition.phaseIndexFor(null), 0);
+    });
   });
 
   test('continuation response survives JSON serialization', () {

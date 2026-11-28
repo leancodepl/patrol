@@ -57,6 +57,24 @@ final class PatrolPhases {
     return phases[index];
   }
 
+  /// Returns the index of the phase to run for a native request that asked
+  /// for [requestedPhaseIndex].
+  ///
+  /// Runners that can kill and relaunch the app ask for phase `0` explicitly.
+  /// The others (macOS, web, Windows and the in-app Android layout) send no
+  /// index, so a test with more than one phase fails here, before its first
+  /// phase runs, instead of after it.
+  int phaseIndexFor(int? requestedPhaseIndex) {
+    if (requestedPhaseIndex == null && phases.length > 1) {
+      throw UnsupportedError(
+        'This test has ${phases.length} phases, but this native test runner '
+        "can't kill and relaunch the app. Phased tests run on Android with the "
+        ':patrolTest layout and on iOS.',
+      );
+    }
+    return requestedPhaseIndex ?? 0;
+  }
+
   /// Describes how to restart the app for the phase after [phaseIndex].
   PatrolPhaseContinuation? continuationAfter(int phaseIndex) {
     phaseAt(phaseIndex);

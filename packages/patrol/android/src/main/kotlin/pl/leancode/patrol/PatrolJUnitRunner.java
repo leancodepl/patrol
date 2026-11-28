@@ -709,7 +709,11 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
 
         try {
             Logger.INSTANCE.i(TAG + "Requested execution");
-            RunDartTestResponse response = patrolAppServiceClient.runDartTest(name);
+            // Asking for phase 0 tells the app that this runner can relaunch it for
+            // the next phases. The in-app layout can't, so it asks for no phase.
+            RunDartTestResponse response = isSelfInstrumenting()
+                    ? patrolAppServiceClient.runDartTest(name, 0L)
+                    : patrolAppServiceClient.runDartTest(name);
 
             while (response.getResult() == Contracts.RunDartTestResponseResult.continuation) {
                 if (!isSelfInstrumenting()) {

@@ -208,7 +208,7 @@ void patrolTest(
         }
         final request =
             await patrolBinding.patrolAppService.testExecutionRequested;
-        phaseIndex = request.phaseIndex ?? 0;
+        phaseIndex = phasedTest.phaseIndexFor(request.phaseIndex);
         callbackToRun = phasedTest.phaseAt(phaseIndex).callback;
       }
 

@@ -391,7 +391,7 @@ static inline void PatrolWithoutQuiescenceWait(void (^block)(void)) {
                                                     forTestCase : (XCTestCase *)testCase {                          \
     __block ObjCRunDartTestResponse *response = NULL;                                                               \
     __block NSError *error = nil;                                                                                   \
-    NSNumber *phaseIndex = nil;                                                                                     \
+    NSNumber *phaseIndex = @0;                                                                                      \
     while (true) {                                                                                                  \
       response = NULL;                                                                                              \
       error = nil;                                                                                                  \
