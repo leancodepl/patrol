@@ -434,8 +434,9 @@ class DevelopService {
       TargetPlatform.iOS => () => _iosTestBackend.build(iosOpts),
       TargetPlatform.macOS => () => _macosTestBackend.build(macosOpts),
       TargetPlatform.web => () => _webTestBackend.buildForDevelop(webOpts),
-      TargetPlatform.windows =>
-        () => throwToolExit('Windows is not supported with develop'),
+      TargetPlatform.windows => () => throwToolExit(
+        'Windows is not supported with develop',
+      ),
     };
 
     try {

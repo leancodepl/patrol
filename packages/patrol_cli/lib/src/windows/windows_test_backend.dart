@@ -45,10 +45,7 @@ class WindowsTestBackend {
         runInShell: true,
         workingDirectory: _rootDirectory.path,
       );
-      process.disposedByTree(
-        scope,
-        onKill: () => flutterBuildKilled = true,
-      );
+      process.disposedByTree(scope, onKill: () => flutterBuildKilled = true);
       process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
 
@@ -81,18 +78,15 @@ class WindowsTestBackend {
       // Launch the EXE directly and kill its process tree on dispose so the
       // Flutter app the runner spawned does not outlive Ctrl+C.
       final process =
-          await _processManager.start(
-              [
-                runnerPath,
-                '--app',
-                appPath,
-                '--test-port',
-                options.testServerPort.toString(),
-                '--app-port',
-                options.appServerPort.toString(),
-              ],
-              workingDirectory: _rootDirectory.path,
-            )
+          await _processManager.start([
+              runnerPath,
+              '--app',
+              appPath,
+              '--test-port',
+              options.testServerPort.toString(),
+              '--app-port',
+              options.appServerPort.toString(),
+            ], workingDirectory: _rootDirectory.path)
             ..disposedByTree(scope);
 
       process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
@@ -115,9 +109,7 @@ class WindowsTestBackend {
         .childDirectory('build')
         .childDirectory('windows');
 
-    final hostArch = io.Platform.version.contains('arm64')
-        ? 'arm64'
-        : 'x64';
+    final hostArch = io.Platform.version.contains('arm64') ? 'arm64' : 'x64';
     final otherArch = hostArch == 'arm64' ? 'x64' : 'arm64';
 
     // Prefer the host architecture so a stale cross-arch build is not picked.
@@ -251,9 +243,7 @@ class WindowsTestBackend {
 
     final exeCandidates = <File>[
       buildDir.childDirectory('bin').childFile('patrol_windows_runner.exe'),
-      buildDir
-          .childDirectory('Release')
-          .childFile('patrol_windows_runner.exe'),
+      buildDir.childDirectory('Release').childFile('patrol_windows_runner.exe'),
       buildDir
           .childDirectory('bin')
           .childDirectory('Release')

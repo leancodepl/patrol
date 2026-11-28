@@ -192,7 +192,7 @@ void AutomatorServer::Start() {
   // One worker: physical input / UIA must not interleave across requests.
   server_->new_task_queue = [] { return new httplib::ThreadPool(1); };
   // Default also sets SO_REUSEADDR, which Winsock rejects before EXCLUSIVEADDRUSE.
-  server_->set_socket_options([](httplib::socket_t sock) {
+  server_->set_socket_options([](socket_t sock) {
     int opt = 1;
     setsockopt(sock, SOL_SOCKET, SO_EXCLUSIVEADDRUSE,
                reinterpret_cast<const char*>(&opt), sizeof(opt));
