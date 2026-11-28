@@ -9,6 +9,7 @@ import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart' show BuildMode;
+import 'package:patrol_cli/src/windows/visual_studio.dart';
 import 'package:patrol_cli/src/windows/windows_app_options.dart';
 import 'package:process/process.dart';
 
@@ -174,6 +175,32 @@ class WindowsTestBackend {
     ).firstMatch(cmake.readAsStringSync())?.group(1)?.trim();
   }
 
+  /// The CMake generator for the newest Visual Studio with C++ tools.
+  Future<String> _visualStudioGenerator(Progress task) async {
+    const missing =
+        'Visual Studio 2022 or 2026 with the "Desktop development with C++" '
+        'workload is required to build patrol_windows_runner.';
+    final vswhere = vswherePath(io.Platform.environment);
+    if (!_fs.file(vswhere).existsSync()) {
+      task.fail('Visual Studio not found');
+      throwToolExit('$missing\n`$vswhere` does not exist.');
+    }
+
+    final result = await _processManager.run([vswhere, ...vswhereArguments()]);
+    final version = (result.stdout as String).trim();
+    final generator = result.exitCode == 0 ? cmakeGeneratorFor(version) : null;
+    if (generator == null) {
+      task.fail('Visual Studio not found');
+      throwToolExit(
+        version.isEmpty
+            ? missing
+            : '$missing\nFound Visual Studio $version, which is not supported.',
+      );
+    }
+    _logger.detail('Using CMake generator "$generator"');
+    return generator;
+  }
+
   Future<String> _ensureRunnerBuilt(DisposeScope scope) async {
     final runnerDir = await _resolveRunnerDirectory();
     final buildDir = _fs.directory(p.join(runnerDir, 'build'));
@@ -208,20 +235,19 @@ class WindowsTestBackend {
     final generated = buildDir.childFile('cmake_install.cmake');
     final needsConfigure = !cache.existsSync() || !generated.existsSync();
     if (needsConfigure) {
+      final generator = await _visualStudioGenerator(task);
       if (buildDir.existsSync()) {
         buildDir.deleteSync(recursive: true);
       }
       try {
-        await runCmake([
-          'cmake',
-          '-S',
-          runnerDir,
-          '-B',
-          buildDir.path,
-          // No -G: CMake picks the newest Visual Studio (2022 or 2026).
-          '-A',
-          'x64',
-        ], label: 'cmake configure');
+        await runCmake(
+          cmakeConfigureArguments(
+            sourceDir: runnerDir,
+            buildDir: buildDir.path,
+            generator: generator,
+          ),
+          label: 'cmake configure',
+        );
       } catch (_) {
         if (buildDir.existsSync()) {
           buildDir.deleteSync(recursive: true);

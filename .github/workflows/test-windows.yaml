@@ -1,9 +1,6 @@
 name: test windows
 
 on:
-  workflow_dispatch:
-  schedule:
-    - cron: '0 0 * * *'
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
     paths:
@@ -71,12 +68,16 @@ jobs:
         run: dotnet build dev/windows_poc/fixture -c Release
 
       - name: Get dependencies
+        id: pub_get
         run: flutter pub get
 
       - name: Run Explorer smoke test
+        timeout-minutes: 15
         run: patrol test -d windows -t patrol_test/explorer_demo_test.dart --verbose
 
       - name: Run Flutter + native dialog test
+        if: ${{ !cancelled() && steps.pub_get.outcome == 'success' }}
+        timeout-minutes: 15
         run: patrol test -d windows -t patrol_test/demo_test.dart --verbose
 
       - name: Capture screen on failure
