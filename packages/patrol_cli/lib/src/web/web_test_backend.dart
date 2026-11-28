@@ -29,11 +29,13 @@ const _kRestartOutcomeWindow = Duration(seconds: 5);
 /// Strips the `[  +12 ms]` prefix `flutter run --verbose` adds to each line.
 final _flutterLogPrefix = RegExp(r'^\[[\s\d+ms]*\]\s?');
 
-const _developKeyCommands =
-    'Patrol develop key commands:\n'
-    'r Hot restart\n'
-    'h Print this help message\n'
-    'q Quit (terminate the process and application on the device)';
+String _developKeyCommands({required bool canSwitchTests}) => [
+  'Patrol develop key commands:',
+  'r Hot restart',
+  if (canSwitchTests) 't Switch test file',
+  'h Print this help message',
+  'q Quit (terminate the process and application on the device)',
+].join('\n');
 
 class WebTestBackend {
   WebTestBackend({
@@ -78,6 +80,40 @@ class WebTestBackend {
   bool _restartInFlight = false;
 
   DateTime? _restartRequestedAt;
+
+  /// How the restart in flight is reported, and what `flutter run` printed to
+  /// stderr since it was requested: the compiler's diagnostics.
+  void Function()? _onRestartCompleted;
+  void Function(String compilerOutput)? _onRestartFailed;
+  StringBuffer? _restartErrors;
+
+  void _settleRestart({required bool completed}) {
+    final onCompleted = _onRestartCompleted;
+    final onFailed = _onRestartFailed;
+    final errors = _restartErrors?.toString().trim() ?? '';
+    _onRestartCompleted = null;
+    _onRestartFailed = null;
+    _restartErrors = null;
+    if (completed) {
+      onCompleted?.call();
+    } else {
+      onFailed?.call(errors);
+    }
+  }
+
+  /// Hot restarts the resident `flutter run` into [target], as `r` does.
+  /// [onCompleted] fires once it restarted; [onFailed] instead, with the
+  /// compiler output, when it was rejected.
+  Future<void> hotRestart(
+    String target, {
+    void Function()? onCompleted,
+    void Function(String compilerOutput)? onFailed,
+  }) {
+    _onRestartCompleted = onCompleted;
+    _onRestartFailed = onFailed;
+    _restartErrors = StringBuffer();
+    return _requestHotRestart(target);
+  }
 
   @visibleForTesting
   final restartTeardown = RestartTeardownWindow();
@@ -255,17 +291,27 @@ class WebTestBackend {
       _quitting = true;
     });
 
+    final testFileChooser = TestFileChooser(_logger);
     final stdinSubscription = stdin.listen((event) async {
       if (event.isEmpty) {
+        return;
+      }
+      if (testFileChooser.isChoosing) {
+        await testFileChooser.onKeys(event);
         return;
       }
       final char = String.fromCharCode(event.first);
       _logger.detail('Flutter stdin: $char');
 
-      if (char == 'r' || char == 'R') {
+      final testSwitcher = flutterTool.testSwitcher;
+      if ((char == 't' || char == 'T') && testSwitcher != null) {
+        testFileChooser.offer(testSwitcher);
+      } else if (char == 'r' || char == 'R') {
         await _requestHotRestart(options.flutter.target);
       } else if (char == 'h' || char == 'H') {
-        _logger.success(_developKeyCommands);
+        _logger.success(
+          _developKeyCommands(canSwitchTests: testSwitcher != null),
+        );
       } else if (char == 'q' || char == 'Q') {
         _quitting = true;
         final modes = previousStdinModes;
@@ -405,7 +451,10 @@ class WebTestBackend {
     if (!_hotRestartReady.isCompleted) {
       _hotRestartReady.complete();
     }
-    _logger.success('Hot Restart: attached to the app\n$_developKeyCommands');
+    _logger.success(
+      'Hot Restart: attached to the app\n'
+      '${_developKeyCommands(canSwitchTests: _flutterTool?.testSwitcher != null)}',
+    );
 
     final pending = _pendingHotRestartTarget;
     if (pending != null) {
@@ -490,7 +539,10 @@ class WebTestBackend {
     process.stderr
         .transform(const SystemEncoding().decoder)
         .transform(const LineSplitter())
-        .listen((line) => _logger.detail('Flutter stderr: $line'))
+        .listen((line) {
+          _restartErrors?.writeln(line);
+          _logger.detail('Flutter stderr: $line');
+        })
         .disposedBy(_disposeScope);
 
     process.exitCode.then((exitCode) {
@@ -555,6 +607,7 @@ class WebTestBackend {
     if (line.startsWith('Restarted application in')) {
       _restartInFlight = false;
       restartTeardown.restartCompleted();
+      _settleRestart(completed: true);
       _logger.success(line);
       return;
     }
@@ -563,6 +616,7 @@ class WebTestBackend {
         line.contains('Failed to recompile application.')) {
       _restartInFlight = false;
       restartTeardown.close();
+      _settleRestart(completed: false);
       _logger.err('Hot restart failed. Fix the errors above and press "r".');
       return;
     }

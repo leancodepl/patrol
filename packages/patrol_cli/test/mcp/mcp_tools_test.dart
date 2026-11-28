@@ -419,7 +419,7 @@ void main() {
     }, extra());
 
     expect(second.isError, isTrue);
-    expect(text(second), contains('already running'));
+    expect(text(second), contains('did not become ready for hot restart'));
     await tools.quit();
   });
 

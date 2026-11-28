@@ -36,7 +36,38 @@ class FakeDevelop {
       _runs.add(finished);
       return finished.future;
     });
+    registerFallbackValue(Duration.zero);
+    registerFallbackValue(<String, String>{});
+    when(
+      () => service.restartInto(
+        any(),
+        dartDefines: any(named: 'dartDefines'),
+        timeout: any(named: 'timeout'),
+      ),
+    ).thenAnswer((invocation) {
+      final target = invocation.positionalArguments.first as String;
+      restartTargets.add(target);
+      restartDefines.add(
+        invocation.namedArguments[#dartDefines] as Map<String, String>,
+      );
+      return restartInto(target);
+    });
+    when(() => service.changesDartDefines(any())).thenAnswer(
+      (invocation) =>
+          (invocation.positionalArguments.first as Map<String, String>)
+              .isNotEmpty,
+    );
   }
+
+  /// The dart-defines each switch was asked to set.
+  final restartDefines = <Map<String, String>>[];
+
+  /// What a hot restart into another test file answers: null once the app
+  /// runs it, otherwise why it does not.
+  Future<String?> Function(String target) restartInto = (_) async => null;
+
+  /// The test files each switch was asked to restart into.
+  final restartTargets = <String>[];
 
   final service = MockDevelopService();
 

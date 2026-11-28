@@ -33,7 +33,12 @@ const _instructions =
     'Behavior notes:\n'
     '- run waits for test completion.\n'
     '- If no session is running, run starts a new session.\n'
-    '- If a session is already running, run triggers a restart for the requested test.\n'
+    '- If a session is already running, run hot-restarts it into the requested '
+    'test, another test file of the same project included, without a rebuild. '
+    'The app keeps the state the previous test left; pass reset: true for a '
+    'fresh install with clean app data.\n'
+    '- A test file that does not compile leaves the session running the '
+    'previous test, and run returns the compiler output.\n'
     '- run auto-selects a device; to target a specific one, call devices and pass its id as run\'s "device".\n'
     '- status is optional and mainly useful for debugging session state and recent output.\n'
     '- native-tree is intended for native interactions and cross-app/native context inspection.\n'
@@ -226,8 +231,9 @@ class McpCommand extends PatrolCommand {
       ..registerTool(
         'run',
         description:
-            'Run patrol tests (starts new session or restarts if already '
-            'running) and wait for completion',
+            'Run a patrol test file and wait for completion. Starts a new '
+            'session, or hot-restarts a running one into the file without a '
+            'rebuild.',
         inputSchema: const ToolInputSchema(
           properties: {
             'testFile': JsonString(
@@ -240,6 +246,25 @@ class McpCommand extends PatrolCommand {
             ),
             'timeoutMinutes': JsonNumber(
               description: 'Optional timeout in minutes (default: 5)',
+            ),
+            'reset': JsonBoolean(
+              description:
+                  'Optional. When true, quits a running session and starts a '
+                  'new one, which reinstalls the app with clean data unless '
+                  'the server runs with --no-uninstall. Without it, a running '
+                  'session hot-restarts into testFile and the app keeps its '
+                  'state.',
+            ),
+            'dartDefines': JsonObject(
+              additionalProperties: JsonString(),
+              description:
+                  'Optional --dart-define values for this run, e.g. '
+                  '{"API_URL":"https://staging.example.com"}, on top of the '
+                  "session's own. On a running session other than web, a "
+                  'changed value reattaches to the app in seconds, without a '
+                  'rebuild, and stays for later runs. On web a changed value '
+                  'takes reset, and so do removing one and defines read by '
+                  'native code.',
             ),
             'projectRoot': JsonString(
               description:

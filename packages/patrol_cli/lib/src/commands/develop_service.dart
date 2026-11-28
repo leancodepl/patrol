@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:meta/meta.dart';
+import 'package:path/path.dart' as p;
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/android/android_test_layout.dart';
@@ -124,6 +125,36 @@ class DevelopService {
 
   Device? _device;
 
+  /// What [restartInto] needs from the running session; set by [run] once it
+  /// generated the bundle.
+  ({String testDirectory, String testFileSuffix})? _bundleTarget;
+
+  /// The dart-defines the running `flutter attach` compiles with; set by [run].
+  Map<String, String> _attachDartDefines = const {};
+
+  /// The dart-defines of [_attachDartDefines] that patrol sets itself; set by
+  /// [run].
+  Set<String> _internalDartDefineKeys = const {};
+
+  /// The entrypoint the session compiles; set by [run].
+  String _entrypointPath = '';
+
+  /// Whether [dartDefines] would change what the session compiles with, which
+  /// takes a new `flutter attach` instead of a plain hot restart.
+  bool changesDartDefines(Map<String, String> dartDefines) => dartDefines
+      .entries
+      .any((define) => _attachDartDefines[define.key] != define.value);
+
+  /// While false, log entries are not passed to [onLogEntry]: they belong to
+  /// the program a hot restart is replacing.
+  var _acceptLogEntries = true;
+
+  void _onBackendLogEntry(Entry entry) {
+    if (_acceptLogEntries) {
+      onLogEntry?.call(entry);
+    }
+  }
+
   /// The device discovered during the last [run] call.
   Device? get device => _device;
 
@@ -174,6 +205,127 @@ class DevelopService {
     ]);
   }
 
+  /// Hot-restarts the running session into the test file [target] resolves
+  /// to. The native app does not depend on the test file, so no build runs.
+  ///
+  /// [dartDefines] are set on top of the session's own. A value that changes
+  /// what the session compiles with replaces its `flutter attach`, which keeps
+  /// them for later restarts too; defines read by native code still need a
+  /// new build.
+  ///
+  /// Returns null once the app runs the new test. Otherwise returns why it
+  /// does not, such as the compiler output of a rejected restart; the
+  /// session then keeps running the previous test, and the bundle is restored
+  /// so a later restart reruns it.
+  Future<String?> restartInto(
+    String target, {
+    Map<String, String> dartDefines = const {},
+    Duration timeout = const Duration(minutes: 2),
+  }) async {
+    final bundleTarget = _bundleTarget;
+    if (bundleTarget == null) {
+      return 'This develop session runs a bundle it did not generate '
+          '(--no-generate-bundle), so it cannot switch test files. Quit and '
+          'start a session for the other file.';
+    }
+    final isWeb = _device?.targetPlatform == TargetPlatform.web;
+
+    final patrolOwned = dartDefines.keys.where(
+      _internalDartDefineKeys.contains,
+    );
+    if (patrolOwned.isNotEmpty) {
+      return 'patrol sets ${patrolOwned.join(', ')} itself; leave '
+          '${patrolOwned.length == 1 ? 'it' : 'them'} out of dartDefines.';
+    }
+    final reattach = changesDartDefines(dartDefines);
+    if (reattach && isWeb) {
+      return 'Changing dart-defines in a running session is not supported on '
+          'web yet. Run again with reset: true to start a session with them.';
+    }
+    final newDartDefines = {..._attachDartDefines, ...dartDefines};
+
+    final String testFile;
+    try {
+      testFile = _testFinderFactory
+          .create(bundleTarget.testDirectory)
+          .findTest(target, bundleTarget.testFileSuffix);
+    } on ToolExit catch (err) {
+      return err.message;
+    }
+
+    final bundle = _testBundler.getBundledTestFile(bundleTarget.testDirectory);
+    final previousBundle = bundle.existsSync()
+        ? bundle.readAsStringSync()
+        : null;
+    _testBundler.createDevelopTestBundle(bundleTarget.testDirectory, testFile);
+
+    final outcome = Completer<String?>();
+    void onCompleted() {
+      if (!outcome.isCompleted) {
+        outcome.complete(null);
+      }
+    }
+
+    void onFailed(String compilerOutput) {
+      if (!outcome.isCompleted) {
+        outcome.complete(
+          compilerOutput.isEmpty
+              ? '${isWeb ? 'flutter run' : 'flutter attach'} rejected the hot '
+                    'restart.'
+              : compilerOutput,
+        );
+      }
+    }
+
+    _acceptLogEntries = false;
+    final previousDartDefines = _attachDartDefines;
+    if (reattach) {
+      _attachDartDefines = newDartDefines;
+      unawaited(
+        _flutterTool
+            .reattach(
+              dartDefines: newDartDefines,
+              onCompleted: onCompleted,
+              onFailed: onFailed,
+            )
+            .catchError((Object err) {
+              if (!outcome.isCompleted) {
+                outcome.complete('Could not attach with the new defines: $err');
+              }
+            }),
+      );
+    } else if (isWeb) {
+      unawaited(
+        _webTestBackend.hotRestart(
+          _entrypointPath,
+          onCompleted: onCompleted,
+          onFailed: onFailed,
+        ),
+      );
+    } else {
+      _flutterTool.hotRestart(onCompleted: onCompleted, onFailed: onFailed);
+    }
+
+    String? failure;
+    try {
+      failure = await outcome.future.timeout(timeout);
+    } on TimeoutException {
+      failure =
+          'The hot restart into $target did not finish within '
+          '${timeout.inSeconds}s.';
+    } finally {
+      _acceptLogEntries = true;
+    }
+
+    if (failure != null) {
+      _attachDartDefines = previousDartDefines;
+      if (previousBundle != null) {
+        bundle.writeAsStringSync(previousBundle);
+      }
+    }
+    return failure;
+  }
+
   /// Runs the full develop flow: discover device, read config, bundle test,
   /// build, execute, and attach for hot restart.
   Future<void> run(DevelopOptions options) async {
@@ -188,8 +340,13 @@ class DevelopService {
       throwToolExit('Cannot use release build mode with develop');
     }
 
+    _bundleTarget = null;
     if (options.generateBundle) {
       _testBundler.createDevelopTestBundle(testDirectory, target);
+      _bundleTarget = (
+        testDirectory: testDirectory,
+        testFileSuffix: config.testFileSuffix,
+      );
     }
 
     final androidFlavor = options.flavor ?? config.android.flavor;
@@ -242,6 +399,17 @@ class DevelopService {
     // because the proxy entrypoint in integration_test/ causes broken
     // relative imports under the web compiler.
     final isWeb = device.targetPlatform == TargetPlatform.web;
+    _flutterTool.testSwitcher = _bundleTarget == null
+        ? null
+        : TestSwitcher(
+            listTests: () => [
+              for (final testFile in testFinder.findAllTests(
+                testFileSuffix: config.testFileSuffix,
+              ))
+                p.relative(testFile),
+            ],
+            switchTo: restartInto,
+          );
     final File entrypoint;
     if (isWeb) {
       entrypoint = _testBundler.getBundledTestFile(testDirectory);
@@ -249,6 +417,7 @@ class DevelopService {
       _testBundler.ensureEntrypoint(testDirectory);
       entrypoint = _testBundler.getEntrypointFile(testDirectory);
     }
+    _entrypointPath = entrypoint.path;
     final signalSubscriptions = _registerProxyCleanupOnSignals(testDirectory);
     Future<void> cleanupProxy() async {
       _testBundler.deleteEntrypointProxy(testDirectory);
@@ -328,6 +497,8 @@ class DevelopService {
       dartDefines,
       _dartDefinesReader,
     );
+    _attachDartDefines = mergedDartDefines;
+    _internalDartDefineKeys = internalDartDefines.keys.toSet();
 
     final flavor = switch (device.targetPlatform) {
       TargetPlatform.android => androidFlavor,
@@ -571,8 +742,10 @@ class DevelopService {
     // `flutter attach` reports the restart into the requested target as
     // COMPLETED. Logcat delivery is asynchronous, so opening the gate when the
     // restart is merely requested could still let a buffered entry of the
-    // placeholder through.
-    var prebuiltTargetActive = prebuiltApksDir == null;
+    // placeholder through. [restartInto] closes the same gate for the test it
+    // replaces.
+    _acceptLogEntries = prebuiltApksDir == null;
+    final gatedOnLogEntry = onLogEntry == null ? null : _onBackendLogEntry;
 
     switch (device.targetPlatform) {
       case TargetPlatform.android:
@@ -586,7 +759,7 @@ class DevelopService {
                 clearTestSteps: clearTestSteps,
                 onLogEntry: onLogEntry,
                 videoConfig: videoConfig,
-                acceptLogEntries: () => prebuiltTargetActive,
+                acceptLogEntries: () => _acceptLogEntries,
               )
             : () => _androidTestBackend.execute(
                 android,
@@ -596,7 +769,7 @@ class DevelopService {
                 hideTestSteps: hideTestSteps,
                 flavor: flutterOpts.flavor,
                 clearTestSteps: clearTestSteps,
-                onLogEntry: onLogEntry,
+                onLogEntry: gatedOnLogEntry,
                 videoConfig: videoConfig,
               );
         final package = android.packageName;
@@ -625,7 +798,7 @@ class DevelopService {
           showFlutterLogs: flutterLogs.showFlutterLogs,
           hideTestSteps: hideTestSteps,
           clearTestSteps: clearTestSteps,
-          onLogEntry: onLogEntry,
+          onLogEntry: gatedOnLogEntry,
           onVmServiceUrl: vmServiceUrlCompleter == null
               ? null
               : (url) {
@@ -652,7 +825,7 @@ class DevelopService {
           hideTestSteps: hideTestSteps,
           clearTestSteps: clearTestSteps,
           stdin: _stdin,
-          onLogEntry: onLogEntry,
+          onLogEntry: gatedOnLogEntry,
           openDevtools: openDevtools,
         );
       case TargetPlatform.windows:
@@ -775,12 +948,12 @@ class DevelopService {
             'in at build time; hot restarting with the requested target...',
           );
           _flutterTool.hotRestart(
-            onCompleted: () => prebuiltTargetActive = true,
+            onCompleted: () => _acceptLogEntries = true,
             // The placeholder is gone once a restart was attempted, so open
             // the gate anyway; otherwise a compile error in the target would
             // keep every later entry (after the user's fix + `r`) hidden.
-            onFailed: () {
-              prebuiltTargetActive = true;
+            onFailed: (_) {
+              _acceptLogEntries = true;
               _logger.warn(
                 'Hot restart into the requested target failed. Fix the '
                 'error above and press r.',

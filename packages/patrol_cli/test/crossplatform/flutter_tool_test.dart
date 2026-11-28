@@ -215,6 +215,189 @@ void main() {
       },
     );
 
+    test('reattach replaces flutter attach with one that has the new '
+        'dart-defines, then hot restarts through it', () async {
+      var exits = 0;
+      final keys = StreamController<List<int>>();
+      final tool = FlutterTool(
+        logger: MockLogger(),
+        parentDisposeScope: DisposeScope(),
+        processManager: processManager,
+        platform: platform,
+        stdin: keys.stream,
+        onExit: () async => exits++,
+      );
+
+      final events = <String>[];
+      final firstExit = Completer<int>();
+      final first = MockProcess();
+      final firstStdout = StreamController<List<int>>();
+      // No real process has this PID, so killing its tree reaches nothing else.
+      when(() => first.pid).thenReturn(999999999);
+      when(() => first.stdout).thenAnswer((_) => firstStdout.stream);
+      when(() => first.stderr).thenAnswer((_) => const Stream.empty());
+      when(() => first.exitCode).thenAnswer((_) => firstExit.future);
+      when(first.kill).thenAnswer((_) {
+        events.add('kill first');
+        firstExit.complete(-15);
+        return true;
+      });
+
+      final second = MockProcess();
+      final secondStdin = _MockIOSink();
+      final secondStdout = StreamController<List<int>>();
+      when(() => second.stdout).thenAnswer((_) => secondStdout.stream);
+      when(() => second.stderr).thenAnswer((_) => const Stream.empty());
+      when(() => second.stdin).thenReturn(secondStdin);
+      when(() => secondStdin.add(any())).thenReturn(null);
+      when(() => second.exitCode).thenAnswer((_) => Completer<int>().future);
+
+      final started = <List<String>>[];
+      when(
+        () => processManager.start(
+          any(),
+          workingDirectory: any(named: 'workingDirectory'),
+        ),
+      ).thenAnswer((invocation) async {
+        final command = [
+          for (final part
+              in invocation.positionalArguments.first as List<Object>)
+            '$part',
+        ];
+        started.add(command);
+        events.add('start ${started.length}');
+        return started.length == 1 ? first : second;
+      });
+
+      final attach = tool.attach(
+        flutterCommand: flutterCommand,
+        deviceId: 'testDeviceId',
+        target: 'target',
+        appId: 'appId',
+        dartDefines: {'API_URL': 'one'},
+        openBrowser: false,
+      );
+      firstStdout.add(utf8.encode('Flutter run key commands.\n'));
+      await attach;
+
+      var completed = false;
+      final reattached = tool.reattach(
+        dartDefines: {'API_URL': 'two'},
+        onCompleted: () => completed = true,
+      );
+      await pumpEventQueue();
+      secondStdout.add(utf8.encode('Flutter run key commands.\n'));
+      await reattached;
+      secondStdout.add(utf8.encode('Restarted application in 969ms.\n'));
+      await pumpEventQueue();
+
+      expect(events, ['start 1', 'kill first', 'start 2']);
+      expect(
+        started.last,
+        containsAllInOrder(['--dart-define', 'API_URL=two']),
+      );
+      verify(() => secondStdin.add('R'.codeUnits)).called(1);
+      expect(completed, isTrue);
+      expect(exits, 0, reason: 'replacing flutter attach is not a quit');
+
+      // The replaced process's exit is reported once its stderr drains.
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      expect(tool.attachFailure, isNull);
+      tool.hotRestart();
+      verify(() => secondStdin.add('R'.codeUnits)).called(1);
+      await firstStdout.close();
+      await secondStdout.close();
+      await keys.close();
+    });
+
+    group('t', () {
+      late StreamController<List<int>> keys;
+      late StreamController<List<int>> processStdout;
+      late FlutterTool tool;
+      late List<String> switchedTo;
+
+      setUp(() async {
+        keys = StreamController<List<int>>();
+        processStdout = StreamController<List<int>>();
+        switchedTo = [];
+        tool =
+            FlutterTool(
+                logger: MockLogger(),
+                parentDisposeScope: DisposeScope(),
+                processManager: processManager,
+                platform: platform,
+                stdin: keys.stream,
+                onExit: () async {},
+              )
+              ..testSwitcher = TestSwitcher(
+                listTests: () => [
+                  'patrol_test/a_test.dart',
+                  'patrol_test/b_test.dart',
+                ],
+                switchTo: (testFile) async {
+                  switchedTo.add(testFile);
+                  return null;
+                },
+              );
+        final process = MockProcess();
+        when(() => process.stdout).thenAnswer((_) => processStdout.stream);
+        when(
+          () => process.stderr,
+        ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
+        when(() => process.exitCode).thenAnswer((_) => Completer<int>().future);
+        when(
+          () => processManager.start(any()),
+        ).thenAnswer((_) async => process);
+
+        final attach = tool.attach(
+          flutterCommand: flutterCommand,
+          deviceId: 'testDeviceId',
+          target: 'target',
+          appId: 'appId',
+          dartDefines: {},
+          openBrowser: false,
+        );
+        processStdout.add(utf8.encode('Flutter run key commands.\n'));
+        await attach;
+      });
+
+      tearDown(() async {
+        await processStdout.close();
+        await keys.close();
+      });
+
+      test('switches to the test file whose number is typed', () async {
+        keys
+          ..add('t'.codeUnits)
+          ..add('2'.codeUnits)
+          ..add('\r'.codeUnits);
+        await pumpEventQueue();
+
+        expect(switchedTo, ['patrol_test/b_test.dart']);
+      });
+
+      test('is cancelled by any key other than a digit or Enter', () async {
+        keys
+          ..add('t'.codeUnits)
+          ..add('2'.codeUnits)
+          ..add('x'.codeUnits)
+          ..add('\r'.codeUnits);
+        await pumpEventQueue();
+
+        expect(switchedTo, isEmpty);
+      });
+
+      test('ignores a number no test file has', () async {
+        keys
+          ..add('t'.codeUnits)
+          ..add('9'.codeUnits)
+          ..add('\r'.codeUnits);
+        await pumpEventQueue();
+
+        expect(switchedTo, isEmpty);
+      });
+    });
+
     test('a second q while quitting does not clean up again', () async {
       final keys = StreamController<List<int>>();
       var exits = 0;
@@ -272,10 +455,9 @@ void main() {
         when(() => process.exitCode).thenAnswer((_) => Completer<int>().future);
         final processStdin = _MockIOSink();
         final processStdout = StreamController<List<int>>();
+        final processStderr = StreamController<List<int>>();
         when(() => process.stdout).thenAnswer((_) => processStdout.stream);
-        when(
-          () => process.stderr,
-        ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
+        when(() => process.stderr).thenAnswer((_) => processStderr.stream);
         when(() => process.stdin).thenReturn(processStdin);
         when(() => processStdin.add(any())).thenReturn(null);
         when(() => process.exitCode).thenAnswer((_) => Completer<int>().future);
@@ -293,19 +475,30 @@ void main() {
         );
         processStdout.add(utf8.encode('Flutter run key commands.\n'));
         await attach;
+        processStderr.add(utf8.encode('an error from before the restart\n'));
+        await Future<void>.delayed(const Duration(milliseconds: 10));
 
         var completed = false;
-        var failed = false;
+        String? failedWith;
         flutterTool.hotRestart(
           onCompleted: () => completed = true,
-          onFailed: () => failed = true,
+          onFailed: (compilerOutput) => failedWith = compilerOutput,
         );
 
+        processStderr.add(
+          utf8.encode(
+            "patrol_test/b_test.dart:3:1: Error: Expected ';' after this.\n",
+          ),
+        );
+        await Future<void>.delayed(const Duration(milliseconds: 10));
         processStdout.add(
           utf8.encode('Try again after fixing the above error(s).\n'),
         );
         await Future<void>.delayed(const Duration(milliseconds: 10));
-        expect(failed, isTrue);
+        expect(
+          failedWith,
+          "patrol_test/b_test.dart:3:1: Error: Expected ';' after this.",
+        );
         expect(completed, isFalse);
 
         // A later successful restart must not fire the stale callback again.
@@ -313,8 +506,55 @@ void main() {
         await Future<void>.delayed(const Duration(milliseconds: 10));
         expect(completed, isFalse);
         await processStdout.close();
+        await processStderr.close();
       },
     );
+    test('hotRestart onFailed fires for a restart reported as done before it '
+        'is rejected', () async {
+      final process = MockProcess();
+      final processStdin = _MockIOSink();
+      final processStdout = StreamController<List<int>>();
+      final processStderr = StreamController<List<int>>();
+      when(() => process.stdout).thenAnswer((_) => processStdout.stream);
+      when(() => process.stderr).thenAnswer((_) => processStderr.stream);
+      when(() => process.stdin).thenReturn(processStdin);
+      when(() => processStdin.add(any())).thenReturn(null);
+      when(() => process.exitCode).thenAnswer((_) => Completer<int>().future);
+      when(() => processManager.start(any())).thenAnswer((_) async => process);
+
+      final attach = flutterTool.attach(
+        flutterCommand: flutterCommand,
+        deviceId: 'testDeviceId',
+        target: 'target',
+        appId: 'appId',
+        dartDefines: {},
+        openBrowser: false,
+      );
+      processStdout.add(utf8.encode('Flutter run key commands.\n'));
+      await attach;
+
+      var completed = false;
+      String? failedWith;
+      flutterTool.hotRestart(
+        onCompleted: () => completed = true,
+        onFailed: (compilerOutput) => failedWith = compilerOutput,
+      );
+      processStderr.add(utf8.encode("b_test.dart:5:22: Error: Expected ';'\n"));
+      await Future<void>.delayed(const Duration(milliseconds: 10));
+      processStdout.add(
+        utf8.encode(
+          'Restarted application in 812ms.\n'
+          'Try again after fixing the above error(s).\n',
+        ),
+      );
+      await Future<void>.delayed(const Duration(milliseconds: 10));
+
+      expect(completed, isFalse);
+      expect(failedWith, "b_test.dart:5:22: Error: Expected ';'");
+      await processStdout.close();
+      await processStderr.close();
+    });
+
     test('attach passes deviceId correctly', () async {
       stubProcess();
 

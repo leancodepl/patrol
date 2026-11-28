@@ -450,6 +450,48 @@ void main() {
       },
     );
   });
+
+  group('hotRestart', () {
+    late WebTestBackend backend;
+
+    setUp(() {
+      backend = WebTestBackend(
+        processManager: MockProcessManager(),
+        parentDisposeScope: DisposeScope(),
+        logger: MockLogger(),
+      );
+    });
+
+    test('reports a restart flutter run completed', () async {
+      var completed = false;
+      String? failedWith;
+      await backend.hotRestart(
+        'patrol_test/test_bundle.dart',
+        onCompleted: () => completed = true,
+        onFailed: (output) => failedWith = output,
+      );
+
+      backend.onFlutterLine('Restarted application in 812ms.');
+
+      expect(completed, isTrue);
+      expect(failedWith, isNull);
+    });
+
+    test('reports a restart flutter run rejected', () async {
+      var completed = false;
+      String? failedWith;
+      await backend.hotRestart(
+        'patrol_test/test_bundle.dart',
+        onCompleted: () => completed = true,
+        onFailed: (output) => failedWith = output,
+      );
+
+      backend.onFlutterLine('Try again after fixing the above error(s).');
+
+      expect(failedWith, isNotNull);
+      expect(completed, isFalse);
+    });
+  });
 }
 
 MockProcess _killableProcess(Completer<int> exitCode, {String? stdout}) {

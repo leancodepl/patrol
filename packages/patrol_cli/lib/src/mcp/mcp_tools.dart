@@ -188,11 +188,19 @@ class RunArgs {
   RunArgs.fromJson(Map<String, dynamic> json)
     : testFile = json['testFile'] as String,
       timeout = _parseWait(json['timeoutMinutes'] as num?),
+      reset = json['reset'] == true,
+      dartDefines = {
+        if (json['dartDefines'] case final Map<String, dynamic> defines)
+          for (final MapEntry(:key, :value) in defines.entries)
+            if (value != null) key: '$value',
+      },
       device = (json['device'] as String?)?.trim().nullIfEmpty,
       projectRoot = (json['projectRoot'] as String?)?.trim().nullIfEmpty;
 
   final String testFile;
   final Duration timeout;
+  final bool reset;
+  final Map<String, String> dartDefines;
   final String? device;
   final String? projectRoot;
 }
@@ -463,6 +471,8 @@ class McpTools {
       final result = await _session.startAndWait(
         runArgs.testFile,
         timeout: runArgs.timeout,
+        reset: runArgs.reset,
+        dartDefines: runArgs.dartDefines,
         device: runArgs.device,
         projectRoot: runArgs.projectRoot,
       );

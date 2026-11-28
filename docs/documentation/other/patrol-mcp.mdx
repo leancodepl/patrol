@@ -6,15 +6,16 @@ description: AI-powered test automation with the patrol mcp server
 ## Overview
 
 `patrol mcp` is an MCP ([Model Context Protocol](https://modelcontextprotocol.io)) server that lets
-AI agents run and manage Patrol tests in Flutter projects. It wraps `patrol develop`, so a test runs
-once and every later run is a hot restart on the same app.
+AI agents run and manage Patrol tests in Flutter projects. It wraps `patrol develop`, so the app is
+built once and every later run, of the same test file or another one, is a hot restart on the same
+app.
 
 It ships with [`patrol_cli`](https://pub.dev/packages/patrol_cli) — there is no separate package to
 install, and the agent's tools always match the CLI that runs the tests.
 
 An agent gets:
 
-- `run` — runs a test file and waits for it to finish, hot-restarting an already loaded one.
+- `run` — runs a test file and waits for it to finish, hot-restarting a running session into it.
 - `test` — runs the whole suite, or chosen test files, with `patrol test`.
 - `devices` — lists attached Android and iOS devices and browsers to pass as `run`'s `device`.
 - `status` — the session's state and its recent output, and the last suite's result.
@@ -157,6 +158,27 @@ To migrate, drop `patrol_mcp` from your `pubspec.yaml` and point your editor's M
 
 Patrol also ships [agent skills](/documentation/other/agent-skills) that complement this server: the
 MCP gives the agent the tools, while a skill teaches it how to use them to write tests well.
+
+## Running another test file
+
+A `run` on a running session hot-restarts it into the requested file, whichever file that is, so
+only the first `run` builds and installs the app. The native app does not depend on the test file,
+which is why only Dart changes reach a running session: test files and the app's `lib/`. A change
+that needs a native build (a new plugin, `android/` or `ios/`, a `--dart-define` read by native code)
+needs a new session.
+
+`dartDefines` on `run` sets `--dart-define` values on top of the session's own, e.g.
+`{"testFile": "patrol_test/login_test.dart", "dartDefines": {"API_URL": "https://staging.example.com"}}`.
+On a running Android, iOS or macOS session a changed value starts a new `flutter attach` with it,
+which takes about 10 seconds, and the value stays for later runs. On web a changed value takes
+`reset: true`, and so does removing a value.
+
+The app keeps the state the previous test left: its screens, its stored data and the permissions it
+was granted. Pass `reset: true` to quit the session and start a new one, which reinstalls the app
+with clean data unless the server runs with `-- --no-uninstall`.
+
+A file that does not compile is not run: the session keeps running the previous test, and `run`
+returns the compiler output as its `warning`. Fix the file and call `run` again.
 
 ## When a test fails
 

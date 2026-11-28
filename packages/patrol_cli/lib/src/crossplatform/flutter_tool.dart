@@ -24,6 +24,7 @@ class FlutterTool {
     this.onQuit,
     required this._onExit,
     @visibleForTesting this._adbTimeout = const Duration(seconds: 5),
+    @visibleForTesting this._restartRejectionGrace = const Duration(seconds: 2),
   }) : _disposeScope = DisposeScope() {
     _disposeScope.disposedBy(parentDisposeScope);
   }
@@ -45,17 +46,56 @@ class FlutterTool {
 
   final Duration _adbTimeout;
 
+  /// How long a restart that printed compiler errors waits for `flutter
+  /// attach` to report it rejected. Its full restart prints 'Restarted
+  /// application' whether or not the program compiled, and the rejection only
+  /// after that.
+  final Duration _restartRejectionGrace;
+  Timer? _restartSettleTimer;
+
+  /// Lets `t` switch the test file the session runs; the key does nothing
+  /// while this is null.
+  TestSwitcher? testSwitcher;
+
+  late final _testFileChooser = TestFileChooser(_logger);
+
+  String get _keyCommands => [
+    'Patrol develop key commands:',
+    'r Hot restart',
+    if (testSwitcher != null) 't Switch test file',
+    'h Print this help message',
+    'q Quit (terminate the process and application on the device)',
+  ].join('\n');
+
   var _hotRestartActive = false;
   var _logsActive = false;
   var _logsSkipped = false;
   var _devtoolsUrl = '';
   io.Process? _attachProcess;
+
+  /// Completes once the running `flutter attach` has connected to the app.
+  Completer<void>? _attachConnected;
+  var _listeningToKeys = false;
+  var _quitting = false;
+
+  /// How the running `flutter attach` was started, for [reattach].
+  ({
+    FlutterCommand flutterCommand,
+    String deviceId,
+    String target,
+    String? debugUrl,
+    String? appId,
+    bool removeAdbForwards,
+    Future<void> Function()? onQuit,
+  })?
+  _lastAttach;
   var _pendingHotRestart = false;
   int? _attachExitCode;
   String? _attachFailure;
   final _attachFailed = Completer<String>();
   void Function()? _onRestartCompleted;
-  void Function()? _onRestartFailed;
+  void Function(String compilerOutput)? _onRestartFailed;
+  StringBuffer? _restartErrors;
 
   /// Sends a Hot Restart to the attached app - the same as pressing `r`.
   ///
@@ -66,16 +106,24 @@ class FlutterTool {
   /// [onCompleted] fires once `flutter attach` reports the restart as
   /// completed ('Restarted application ...'), not when it is requested.
   /// Callers use it to tell output of the old and the new program apart.
-  /// [onFailed] fires instead when the restart is rejected (compile error);
-  /// for a request that is sent, exactly one of the two fires, at most once.
-  void hotRestart({void Function()? onCompleted, void Function()? onFailed}) {
+  /// [onFailed] fires instead when the restart is rejected (compile error),
+  /// with what `flutter attach` printed to stderr since the request: the
+  /// compiler's diagnostics. Exactly one of the two fires, at most once; after
+  /// compiler errors, a completed restart is reported up to
+  /// [_restartRejectionGrace] late.
+  void hotRestart({
+    void Function()? onCompleted,
+    void Function(String compilerOutput)? onFailed,
+  }) {
     // Repeats the stderr tail: a restart comes long after the exit scrolled by.
     if (_attachFailure case final failure?) {
       _logger.warn(failure);
       return;
     }
+    _restartSettleTimer?.cancel();
     _onRestartCompleted = onCompleted;
     _onRestartFailed = onFailed;
+    _restartErrors = StringBuffer();
     final process = _attachProcess;
     if (process == null || !_hotRestartActive) {
       _logger.warn(
@@ -88,10 +136,32 @@ class FlutterTool {
     process.stdin.add('R'.codeUnits);
   }
 
-  void _settleRestart(void Function()? callback) {
+  void _onRestartedApplication() {
+    if (_restartErrors?.isEmpty ?? true) {
+      _settleRestart(completed: true);
+      return;
+    }
+    _restartSettleTimer?.cancel();
+    _restartSettleTimer = Timer(
+      _restartRejectionGrace,
+      () => _settleRestart(completed: true),
+    );
+  }
+
+  void _settleRestart({required bool completed}) {
+    _restartSettleTimer?.cancel();
+    _restartSettleTimer = null;
+    final onCompleted = _onRestartCompleted;
+    final onFailed = _onRestartFailed;
+    final errors = _restartErrors?.toString().trim() ?? '';
     _onRestartCompleted = null;
     _onRestartFailed = null;
-    callback?.call();
+    _restartErrors = null;
+    if (completed) {
+      onCompleted?.call();
+    } else {
+      onFailed?.call(errors);
+    }
   }
 
   final _hotRestartReady = Completer<void>();
@@ -273,6 +343,52 @@ class FlutterTool {
     }
   }
 
+  /// Replaces the running `flutter attach` with one that compiles the program
+  /// with [dartDefines], and hot restarts through it as [hotRestart] does. The
+  /// app keeps running: a terminated `flutter attach` only detaches from it.
+  ///
+  /// The old process has to be gone before the new one starts, because on its
+  /// way out it deletes the app's DevFS on the device, which the new one uses.
+  Future<void> reattach({
+    required Map<String, String> dartDefines,
+    void Function()? onCompleted,
+    void Function(String compilerOutput)? onFailed,
+  }) async {
+    final last = _lastAttach;
+    final old = _attachProcess;
+    if (last == null || old == null) {
+      throw StateError('Not attached to the app');
+    }
+
+    _hotRestartActive = false;
+    // Its exit handler treats an exit of anything but [_attachProcess] as
+    // expected.
+    _attachProcess = null;
+    await old.killTree();
+    await old.exitCode.timeout(
+      _reattachExitTimeout,
+      onTimeout: () {
+        old.kill(io.ProcessSignal.sigkill);
+        return -1;
+      },
+    );
+
+    hotRestart(onCompleted: onCompleted, onFailed: onFailed);
+    await attach(
+      flutterCommand: last.flutterCommand,
+      deviceId: last.deviceId,
+      target: last.target,
+      debugUrl: last.debugUrl,
+      appId: last.appId,
+      dartDefines: dartDefines,
+      openBrowser: false,
+      removeAdbForwards: last.removeAdbForwards,
+      onQuit: last.onQuit,
+    );
+  }
+
+  static const _reattachExitTimeout = Duration(seconds: 10);
+
   /// Attaches to the running app. Returns a [Future] that completes when the
   /// connection is ready.
   ///
@@ -291,6 +407,15 @@ class FlutterTool {
     bool removeAdbForwards = false,
     Future<void> Function()? onQuit,
   }) async {
+    _lastAttach = (
+      flutterCommand: flutterCommand,
+      deviceId: deviceId,
+      target: target,
+      debugUrl: debugUrl,
+      appId: appId,
+      removeAdbForwards: removeAdbForwards,
+      onQuit: onQuit,
+    );
     await _disposeScope.run((scope) async {
       // `flutter attach` forwards the VM service port for itself and removes
       // the forward only on its own exit, which a killed tool never reaches.
@@ -327,7 +452,7 @@ class FlutterTool {
             ..disposedByTree(scope);
       _attachProcess = process;
 
-      final completer = Completer<void>();
+      final completer = _attachConnected = Completer<void>();
       scope.addDispose(() {
         if (!completer.isCompleted) {
           _logger.detail('Killed before attached to the app');
@@ -335,92 +460,38 @@ class FlutterTool {
         completer.maybeComplete();
       });
 
-      var quitting = false;
-      _reportExit(process, scope, 'flutter attach', (code, reason) {
-        if (scope.disposed || quitting) {
-          return;
-        }
-        _hotRestartActive = false;
-        _attachExitCode = code;
-        final failure = 'Hot Restart is not available: $reason';
-        _attachFailure = failure;
-        _attachFailed.maybeComplete(failure);
-        _logger.err(_attachUnavailable(code));
-        completer.maybeComplete();
-      });
+      _reportExit(
+        process,
+        scope,
+        'flutter attach',
+        (code, reason) {
+          if (scope.disposed ||
+              _quitting ||
+              !identical(process, _attachProcess)) {
+            return;
+          }
+          _hotRestartActive = false;
+          _attachExitCode = code;
+          final failure = 'Hot Restart is not available: $reason';
+          _attachFailure = failure;
+          _attachFailed.maybeComplete(failure);
+          _logger.err(_attachUnavailable(code));
+          completer.maybeComplete();
+        },
+        onStderrLine: (line) => _restartErrors?.writeln(line),
+      );
 
-      _stdin
-          .listen((event) async {
-            final char = String.fromCharCode(event.first);
-            if (char == 'r' || char == 'R') {
-              if (!_hotRestartActive) {
-                if (_attachFailure case final failure?) {
-                  _logger.warn(failure);
-                  return;
-                }
-                _logger.warn(
-                  'Hot Restart: not attached to the app yet, will restart once '
-                  'attached',
-                );
-                _pendingHotRestart = true;
-                return;
-              }
-
-              _logger.success(
-                'Hot Restart for entrypoint ${basename(target)}...',
-              );
-              process.stdin.add('R'.codeUnits);
-            } else if (char == 'h' || char == 'H') {
-              final helpText = StringBuffer(
-                'Patrol develop key commands:\n'
-                'r Hot restart\n'
-                'h Print this help message\n'
-                'q Quit (terminate the process and application on the device)',
-              );
-
-              if (_devtoolsUrl.isNotEmpty) {
-                helpText.writeln('\nDevTools: $_devtoolsUrl');
-              } else {
-                helpText.writeln('\nDevTools: not available yet');
-              }
-
-              _logger.success(helpText.toString());
-            } else if (char == 'q' || char == 'Q') {
-              if (quitting) {
-                return;
-              }
-              quitting = true;
-              _logger.success('Quitting process...');
-              completer.maybeComplete();
-
-              // Call the uninstall function if provided
-              if (onQuit != null) {
-                try {
-                  await onQuit();
-                } catch (err) {
-                  _logger.err('Failed to clean up app: $err');
-                }
-              }
-
-              try {
-                await _onExit();
-              } catch (err) {
-                _logger.err('Failed during exit: $err');
-              }
-            }
-          })
-          .disposedBy(scope);
+      if (!_listeningToKeys) {
+        _listeningToKeys = true;
+        _listenToKeys(scope, target: target, onQuit: onQuit);
+      }
 
       _logger.detail('Hot Restart: waiting for attach to the app...');
       process
           .listenStdOut((line) {
             if (line == 'Flutter run key commands.' && !completer.isCompleted) {
               _logger.success(
-                'Hot Restart: attached to the app\n'
-                'Patrol develop key commands:\n'
-                'r Hot restart\n'
-                'h Print this help message\n'
-                'q Quit (terminate the process and application on the device)',
+                'Hot Restart: attached to the app\n$_keyCommands',
               );
               _hotRestartActive = true;
               if (forwardsBefore case final before?) {
@@ -444,11 +515,11 @@ class FlutterTool {
             }
 
             if (line.startsWith('Restarted application')) {
-              _settleRestart(_onRestartCompleted);
+              _onRestartedApplication();
             }
 
             if (line.startsWith('Try again after fixing the above error')) {
-              _settleRestart(_onRestartFailed);
+              _settleRestart(completed: false);
             }
 
             if (line.startsWith('The Flutter DevTools debugger and profiler')) {
@@ -468,6 +539,81 @@ class FlutterTool {
 
       await completer.future;
     });
+  }
+
+  /// Handles the session's keys. Listens once, for every `flutter attach` the
+  /// session runs: stdin takes a single listener.
+  void _listenToKeys(
+    DisposeScope scope, {
+    required String target,
+    required Future<void> Function()? onQuit,
+  }) {
+    _stdin
+        .listen((event) async {
+          if (_testFileChooser.isChoosing) {
+            await _testFileChooser.onKeys(event);
+            return;
+          }
+
+          final char = String.fromCharCode(event.first);
+          if ((char == 't' || char == 'T') && testSwitcher != null) {
+            _testFileChooser.offer(testSwitcher!);
+          } else if (char == 'r' || char == 'R') {
+            if (!_hotRestartActive) {
+              if (_attachFailure case final failure?) {
+                _logger.warn(failure);
+                return;
+              }
+              _logger.warn(
+                'Hot Restart: not attached to the app yet, will restart once '
+                'attached',
+              );
+              _pendingHotRestart = true;
+              return;
+            }
+
+            _logger.success(
+              'Hot Restart for entrypoint ${basename(target)}...',
+            );
+            _attachProcess?.stdin.add('R'.codeUnits);
+          } else if (char == 'h' || char == 'H') {
+            final helpText = StringBuffer(_keyCommands);
+
+            if (_devtoolsUrl.isNotEmpty) {
+              helpText.writeln('\nDevTools: $_devtoolsUrl');
+            } else {
+              helpText.writeln('\nDevTools: not available yet');
+            }
+
+            _logger.success(helpText.toString());
+          } else if (char == 'q' || char == 'Q') {
+            if (_quitting) {
+              return;
+            }
+            _quitting = true;
+            _logger.success('Quitting process...');
+            if (_attachConnected case final connected?
+                when !connected.isCompleted) {
+              connected.complete();
+            }
+
+            // Call the uninstall function if provided
+            if (onQuit != null) {
+              try {
+                await onQuit();
+              } catch (err) {
+                _logger.err('Failed to clean up app: $err');
+              }
+            }
+
+            try {
+              await _onExit();
+            } catch (err) {
+              _logger.err('Failed during exit: $err');
+            }
+          }
+        })
+        .disposedBy(scope);
   }
 
   /// Connects to app's logs. Returns a [Future] that completes when the logs
@@ -569,8 +715,9 @@ class FlutterTool {
     io.Process process,
     DisposeScope scope,
     String command,
-    void Function(int code, String reason) onExit,
-  ) {
+    void Function(int code, String reason) onExit, {
+    void Function(String line)? onStderrLine,
+  }) {
     final stderrLines = <String>[];
     final drained = Completer<void>();
 
@@ -580,6 +727,7 @@ class FlutterTool {
             // This is a warning that we can ignore
             return;
           }
+          onStderrLine?.call(line);
           stderrLines.add(line);
           if (stderrLines.length > _maxStderrLines) {
             stderrLines.removeAt(0);
@@ -691,6 +839,89 @@ String getObservationUrl(String line) {
     );
   }
   return line.substring(startIndex);
+}
+
+/// What `t` in a develop session needs to switch the test file it runs.
+class TestSwitcher {
+  const TestSwitcher({required this.listTests, required this.switchTo});
+
+  /// The test files to offer, as the user names them.
+  final List<String> Function() listTests;
+
+  /// Hot-restarts the session into the test file. Returns null once it runs
+  /// it, otherwise why it does not.
+  final Future<String?> Function(String testFile) switchTo;
+}
+
+/// The `t` key of a develop session: offers the test files, then switches to
+/// the one whose number the user types before Enter. Any other key cancels.
+class TestFileChooser {
+  TestFileChooser(this._logger);
+
+  final Logger _logger;
+  List<String>? _offered;
+  TestSwitcher? _switcher;
+  var _typed = '';
+
+  /// Whether keys go to the choice instead of the session.
+  bool get isChoosing => _offered != null;
+
+  void offer(TestSwitcher switcher) {
+    final offered = switcher.listTests();
+    if (offered.isEmpty) {
+      _logger.warn('No test files to switch to.');
+      return;
+    }
+    _offered = offered;
+    _switcher = switcher;
+    _typed = '';
+    _logger.info(
+      [
+        'Type the number of the test file to run, then Enter:',
+        for (final (i, file) in offered.indexed) '${i + 1} $file',
+      ].join('\n'),
+    );
+  }
+
+  /// Handles keys typed while choosing, and returns once a chosen switch has
+  /// ended.
+  Future<void> onKeys(List<int> keys) async {
+    for (final char in String.fromCharCodes(keys).split('')) {
+      if (!isChoosing) {
+        return;
+      }
+      await _onKey(char);
+    }
+  }
+
+  Future<void> _onKey(String char) async {
+    if (RegExp('[0-9]').hasMatch(char)) {
+      _typed += char;
+      return;
+    }
+    final offered = _offered!;
+    final switcher = _switcher!;
+    final index = int.tryParse(_typed);
+    _offered = null;
+    _switcher = null;
+    _typed = '';
+    if ((char != '\r' && char != '\n') || index == null) {
+      _logger.info('Test switch cancelled.');
+      return;
+    }
+    if (index < 1 || index > offered.length) {
+      _logger.warn('No test file numbered $index.');
+      return;
+    }
+    final testFile = offered[index - 1];
+    _logger.success('Hot Restart into $testFile...');
+    final failure = await switcher.switchTo(testFile);
+    if (failure != null) {
+      _logger.warn(
+        'Still running the previous test file: ${failure.split('\n').first}',
+      );
+    }
+  }
 }
 
 class StdinModes {
