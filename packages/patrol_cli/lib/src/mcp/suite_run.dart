@@ -190,7 +190,10 @@ final class SuiteRun {
     final process = await processManager.start(
       command,
       workingDirectory: projectRoot,
-      environment: {Analytics.enabledEnvName: 'false'},
+      environment: {
+        Analytics.enabledEnvName: 'false',
+        Analytics.skipFirstRunEnvName: 'true',
+      },
     );
     final run = SuiteRun._(
       process: process,

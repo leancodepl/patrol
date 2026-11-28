@@ -381,4 +381,42 @@ packages:
       });
     });
   });
+
+  test(
+    'a run with the first run skipped leaves the analytics choice unsaved',
+    () async {
+      final analytics = _FreshAnalytics();
+      final logger = MockLogger();
+      when(() => logger.info(any())).thenReturn(null);
+      final pubUpdater = MockPubUpdater();
+      when(
+        () => pubUpdater.getLatestVersion(any()),
+      ).thenAnswer((_) async => constants.version);
+
+      await PatrolCommandRunner(
+        platform: TestNativePlatform(
+          environment: {'PATROL_SKIP_FIRST_RUN': 'true'},
+        ),
+        processManager: FakeProcessManager(),
+        pubUpdater: pubUpdater,
+        fs: MemoryFileSystem.test(),
+        analytics: analytics,
+        logger: logger,
+        isCI: false,
+      ).run(['--version']);
+
+      expect(analytics.savedEnabled, isNull);
+      verifyNever(() => logger.info(any(that: contains('Ready for action'))));
+    },
+  );
+}
+
+class _FreshAnalytics extends MockAnalytics {
+  bool? savedEnabled;
+
+  @override
+  bool get firstRun => savedEnabled == null;
+
+  @override
+  set enabled(bool value) => savedEnabled = value;
 }

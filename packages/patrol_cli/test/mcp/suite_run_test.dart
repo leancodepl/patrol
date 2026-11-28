@@ -172,7 +172,10 @@ void main() {
     );
     await run.done;
 
-    expect(processManager.environment, {'PATROL_ANALYTICS_ENABLED': 'false'});
+    expect(processManager.environment, {
+      'PATROL_ANALYTICS_ENABLED': 'false',
+      'PATROL_SKIP_FIRST_RUN': 'true',
+    });
     expect(processManager.includeParentEnvironment, isTrue);
   });
 

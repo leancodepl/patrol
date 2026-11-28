@@ -510,7 +510,9 @@ To install a specific version of Patrol CLI, run:
   void printUsage() => _logger.info(usage);
 
   void _handleFirstRun() {
-    if (_analytics.firstRun && !_isCI) {
+    if (_analytics.firstRun &&
+        !_isCI &&
+        _platform.environment[Analytics.skipFirstRunEnvName] != 'true') {
       _handleAnalytics();
       _runDoctor();
     }
