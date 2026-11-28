@@ -1,31 +1,34 @@
-//
-//  WebSocket.swift
-//  Telegraph
-//
-//  Created by Yvo van Beek on 2/23/17.
-//  Copyright © 2017 Building42. All rights reserved.
-//
+#if PATROL_ENABLED
+  //
+  //  WebSocket.swift
+  //  Telegraph
+  //
+  //  Created by Yvo van Beek on 2/23/17.
+  //  Copyright © 2017 Building42. All rights reserved.
+  //
 
-import Foundation
+  import Foundation
 
-public protocol WebSocket: AnyObject {
-  var localEndpoint: Endpoint? { get }
-  var remoteEndpoint: Endpoint? { get }
+  public protocol WebSocket: AnyObject {
+    var localEndpoint: Endpoint? { get }
+    var remoteEndpoint: Endpoint? { get }
 
-  func close(immediately: Bool)
-  func send(data: Data)
-  func send(text: String)
-  func send(message: WebSocketMessage)
-}
-
-// MARK: Default implementation
-
-extension WebSocket {
-  public func send(data: Data) {
-    send(message: WebSocketMessage(data: data))
+    func close(immediately: Bool)
+    func send(data: Data)
+    func send(text: String)
+    func send(message: WebSocketMessage)
   }
 
-  public func send(text: String) {
-    send(message: WebSocketMessage(text: text))
+  // MARK: Default implementation
+
+  extension WebSocket {
+    public func send(data: Data) {
+      send(message: WebSocketMessage(data: data))
+    }
+
+    public func send(text: String) {
+      send(message: WebSocketMessage(text: text))
+    }
   }
-}
+
+#endif

@@ -1,54 +1,58 @@
-//
-//  Certificate.swift
-//  Telegraph
-//
-//  Created by Yvo van Beek on 1/26/17.
-//  Copyright © 2017 Building42. All rights reserved.
-//
+#if PATROL_ENABLED
+  //
+  //  Certificate.swift
+  //  Telegraph
+  //
+  //  Created by Yvo van Beek on 1/26/17.
+  //  Copyright © 2017 Building42. All rights reserved.
+  //
 
-import Foundation
-import Security
+  import Foundation
+  import Security
 
-open class Certificate: RawRepresentable {
-  public let rawValue: SecCertificate
+  open class Certificate: RawRepresentable {
+    public let rawValue: SecCertificate
 
-  public required init(rawValue: SecCertificate) {
-    self.rawValue = rawValue
-  }
-
-  public convenience init?(derData: Data) {
-    guard let rawValue = SecCertificateCreateWithData(kCFAllocatorDefault, derData as CFData) else {
-      return nil
+    public required init(rawValue: SecCertificate) {
+      self.rawValue = rawValue
     }
-    self.init(rawValue: rawValue)
+
+    public convenience init?(derData: Data) {
+      guard let rawValue = SecCertificateCreateWithData(kCFAllocatorDefault, derData as CFData)
+      else {
+        return nil
+      }
+      self.init(rawValue: rawValue)
+    }
+
+    public convenience init?(derURL: URL) {
+      guard let data = try? Data(contentsOf: derURL) else { return nil }
+      self.init(derData: data)
+    }
   }
 
-  public convenience init?(derURL: URL) {
-    guard let data = try? Data(contentsOf: derURL) else { return nil }
-    self.init(derData: data)
-  }
-}
+  // MARK: Certificate information
 
-// MARK: Certificate information
-
-extension Certificate {
-  public var commonName: String? {
-    return SecCertificateCopySubjectSummary(rawValue) as String?
-  }
-}
-
-// MARK: Keychain helpers
-
-extension Certificate {
-  public convenience init(fromKeychain label: String) throws {
-    self.init(rawValue: try KeychainManager.shared.find(kSecClassCertificate, label: label))
+  extension Certificate {
+    public var commonName: String? {
+      return SecCertificateCopySubjectSummary(rawValue) as String?
+    }
   }
 
-  public func addToKeychain(label: String) throws {
-    try KeychainManager.shared.add(value: rawValue, label: label)
+  // MARK: Keychain helpers
+
+  extension Certificate {
+    public convenience init(fromKeychain label: String) throws {
+      self.init(rawValue: try KeychainManager.shared.find(kSecClassCertificate, label: label))
+    }
+
+    public func addToKeychain(label: String) throws {
+      try KeychainManager.shared.add(value: rawValue, label: label)
+    }
+
+    public static func removeFromKeychain(label: String) throws {
+      try KeychainManager.shared.remove(kSecClassCertificate, label: label)
+    }
   }
 
-  public static func removeFromKeychain(label: String) throws {
-    try KeychainManager.shared.remove(kSecClassCertificate, label: label)
-  }
-}
+#endif

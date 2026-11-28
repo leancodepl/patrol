@@ -1,64 +1,57 @@
-import Foundation
+#if PATROL_ENABLED
+  import Foundation
 
-#if canImport(Darwin)
-  import Darwin
-#endif
-
-@objc(PatrolServer) public class PatrolServer: NSObject {
-  private static let envPortKey = "PATROL_TEST_PORT"
-
-  private static let defaultPort = 8081
-
-  private static let maxPortBindAttempts = 50
-
-  #if PATROL_ENABLED
-    private let automator: Automator
-    private let server: Server
+  #if canImport(Darwin)
+    import Darwin
   #endif
 
-  @objc
-  public var appReady = false
+  @objc(PatrolServer) public class PatrolServer: NSObject {
+    private static let envPortKey = "PATROL_TEST_PORT"
 
-  /// Port the native automation server bound to after [start].
-  @objc public private(set) var boundTestPort: Int = defaultPort
+    private static let defaultPort = 8081
 
-  /// Port the app under test should use for [PatrolAppService].
-  @objc public private(set) var boundAppPort: Int = defaultPort + 1
+    private static let maxPortBindAttempts = 50
 
-  private var preferredPort: Int = {
-    guard let portStr = ProcessInfo.processInfo.environment[envPortKey] else {
-      Logger.shared.i("\(envPortKey) is null, falling back to default (\(defaultPort))")
-      return defaultPort
-    }
+    private let automator: Automator
+    private let server: Server
 
-    guard let portInt = Int(portStr) else {
-      Logger.shared.i(
-        "\(envPortKey) with value \(portStr) is not valid, falling back to default (\(defaultPort))"
-      )
-      return defaultPort
-    }
+    @objc
+    public var appReady = false
 
-    return portInt
-  }()
+    /// Port the native automation server bound to after [start].
+    @objc public private(set) var boundTestPort: Int = defaultPort
 
-  @objc public override init() {
-    Logger.shared.i("PatrolServer constructor called")
+    /// Port the app under test should use for [PatrolAppService].
+    @objc public private(set) var boundAppPort: Int = defaultPort + 1
 
-    #if PATROL_ENABLED
-      Logger.shared.i("PATROL_ENABLED flag is defined")
+    private var preferredPort: Int = {
+      guard let portStr = ProcessInfo.processInfo.environment[envPortKey] else {
+        Logger.shared.i("\(envPortKey) is null, falling back to default (\(defaultPort))")
+        return defaultPort
+      }
+
+      guard let portInt = Int(portStr) else {
+        Logger.shared.i(
+          "\(envPortKey) with value \(portStr) is not valid, falling back to default (\(defaultPort))"
+        )
+        return defaultPort
+      }
+
+      return portInt
+    }()
+
+    @objc public override init() {
+      Logger.shared.i("PatrolServer constructor called")
+
       self.server = Server()
       #if os(iOS)
         self.automator = IOSAutomator()
       #elseif os(macOS)
         self.automator = MacOSAutomator()
       #endif
-    #else
-      Logger.shared.i("Fatal error: PATROL_ENABLED flag is not defined")
-    #endif
-  }
+    }
 
-  @objc public func start() throws {
-    #if PATROL_ENABLED
+    @objc public func start() throws {
       Logger.shared.i("Starting server...")
 
       #if os(macOS)
@@ -126,40 +119,41 @@ import Foundation
               "Failed to bind PatrolServer after \(Self.maxPortBindAttempts) attempts"
           ]
         )
-    #endif
-  }
-
-  private static func isPortAvailable(_ port: Int) -> Bool {
-    let socketFD = socket(AF_INET, SOCK_STREAM, 0)
-    if socketFD < 0 {
-      return false
-    }
-    defer { close(socketFD) }
-
-    var reuse: Int32 = 1
-    setsockopt(
-      socketFD,
-      SOL_SOCKET,
-      SO_REUSEADDR,
-      &reuse,
-      socklen_t(MemoryLayout<Int32>.size)
-    )
-
-    guard let uint16Port = UInt16(exactly: port) else {
-      return false
     }
 
-    var addr = sockaddr_in()
-    addr.sin_len = UInt8(MemoryLayout<sockaddr_in>.size)
-    addr.sin_family = sa_family_t(AF_INET)
-    addr.sin_port = in_port_t(uint16Port).bigEndian
-    addr.sin_addr.s_addr = in_addr_t(INADDR_ANY.bigEndian)
-
-    let bindResult = withUnsafePointer(to: &addr) {
-      $0.withMemoryRebound(to: sockaddr.self, capacity: 1) {
-        Darwin.bind(socketFD, $0, socklen_t(MemoryLayout<sockaddr_in>.size))
+    private static func isPortAvailable(_ port: Int) -> Bool {
+      let socketFD = socket(AF_INET, SOCK_STREAM, 0)
+      if socketFD < 0 {
+        return false
       }
+      defer { close(socketFD) }
+
+      var reuse: Int32 = 1
+      setsockopt(
+        socketFD,
+        SOL_SOCKET,
+        SO_REUSEADDR,
+        &reuse,
+        socklen_t(MemoryLayout<Int32>.size)
+      )
+
+      guard let uint16Port = UInt16(exactly: port) else {
+        return false
+      }
+
+      var addr = sockaddr_in()
+      addr.sin_len = UInt8(MemoryLayout<sockaddr_in>.size)
+      addr.sin_family = sa_family_t(AF_INET)
+      addr.sin_port = in_port_t(uint16Port).bigEndian
+      addr.sin_addr.s_addr = in_addr_t(INADDR_ANY.bigEndian)
+
+      let bindResult = withUnsafePointer(to: &addr) {
+        $0.withMemoryRebound(to: sockaddr.self, capacity: 1) {
+          Darwin.bind(socketFD, $0, socklen_t(MemoryLayout<sockaddr_in>.size))
+        }
+      }
+      return bindResult == 0
     }
-    return bindResult == 0
   }
-}
+
+#endif

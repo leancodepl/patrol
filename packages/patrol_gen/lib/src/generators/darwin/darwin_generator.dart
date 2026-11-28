@@ -28,6 +28,19 @@ class DarwinGenerator {
       }
     }
 
-    return result;
+    // PatrolImpl must compile to nothing without PATROL_ENABLED, so that
+    // normal (e.g. release) app builds don't ship the test server.
+    return result.map(_guardWithPatrolEnabled).toList();
+  }
+
+  OutputFile _guardWithPatrolEnabled(OutputFile file) {
+    // swift-format only honours swift-format-ignore-file in the comments
+    // before the first token, which is now `#if`, so repeat it above the guard.
+    return OutputFile(
+      filename: file.filename,
+      content:
+          '// swift-format-ignore-file\n'
+          '#if PATROL_ENABLED\n${file.content}\n#endif\n',
+    );
   }
 }

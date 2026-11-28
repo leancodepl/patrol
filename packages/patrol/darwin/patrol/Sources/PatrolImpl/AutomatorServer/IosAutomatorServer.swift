@@ -1,3 +1,5 @@
+// swift-format-ignore-file
+#if PATROL_ENABLED
 ///
 //  swift-format-ignore-file
 //
@@ -256,3 +258,5 @@ extension IosAutomatorServer {
     }
 }
 
+
+#endif

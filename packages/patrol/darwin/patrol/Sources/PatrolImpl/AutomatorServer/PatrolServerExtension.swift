@@ -1,3 +1,7 @@
+// Unlike the rest of PatrolImpl, this file is compiled without PATROL_ENABLED
+// too: extension packages (e.g. patrol_axe) are Flutter plugins, so they're
+// also built into normal (e.g. release) app builds and need this API to exist.
+// Without the flag, registration is a no-op and discovery finds nothing.
 import Foundation
 
 /// Registers POST handlers on the Patrol automation server.
@@ -35,51 +39,57 @@ public class PatrolServerExtensions: NSObject {
   /// Registers an extension class for [discover].
   @objc(registerExtensionClass:)
   public static func registerExtensionClass(_ cls: AnyClass) {
-    let className = NSStringFromClass(cls)
-    lock.lock()
-    defer { lock.unlock() }
-    guard !registeredExtensionClassNames.contains(className) else {
-      Logger.shared.i("Patrol extension class already registered: \(className)")
-      return
-    }
-    registeredExtensionClassNames.add(className)
-    Logger.shared.i("Registered Patrol extension class: \(className)")
+    #if PATROL_ENABLED
+      let className = NSStringFromClass(cls)
+      lock.lock()
+      defer { lock.unlock() }
+      guard !registeredExtensionClassNames.contains(className) else {
+        Logger.shared.i("Patrol extension class already registered: \(className)")
+        return
+      }
+      registeredExtensionClassNames.add(className)
+      Logger.shared.i("Registered Patrol extension class: \(className)")
+    #endif
   }
 
   /// Instantiates extensions registered via [registerExtensionClass].
   @objc public static func discover() -> [PatrolServerExtension] {
-    lock.lock()
-    let classNames = registeredExtensionClassNames.compactMap { $0 as? String }
-    lock.unlock()
+    #if PATROL_ENABLED
+      lock.lock()
+      let classNames = registeredExtensionClassNames.compactMap { $0 as? String }
+      lock.unlock()
 
-    Logger.shared.i(
-      "Discovering Patrol extensions from registry (\(classNames.count) class name(s))"
-    )
+      Logger.shared.i(
+        "Discovering Patrol extensions from registry (\(classNames.count) class name(s))"
+      )
 
-    var result: [PatrolServerExtension] = []
-    for className in classNames {
-      guard let cls = NSClassFromString(className) else {
-        Logger.shared.i("Skipping extension class (NSClassFromString failed): \(className)")
-        continue
+      var result: [PatrolServerExtension] = []
+      for className in classNames {
+        guard let cls = NSClassFromString(className) else {
+          Logger.shared.i("Skipping extension class (NSClassFromString failed): \(className)")
+          continue
+        }
+
+        guard let objectType = cls as? NSObject.Type else {
+          Logger.shared.i("Skipping extension class (not NSObject.Type): \(className)")
+          continue
+        }
+
+        let instance = objectType.init()
+        guard let ext = instance as? PatrolServerExtension else {
+          Logger.shared.i("Skipping extension class (instance cast failed): \(className)")
+          continue
+        }
+
+        Logger.shared.i("Discovered Patrol extension: \(ext.name) (\(className))")
+        result.append(ext)
       }
 
-      guard let objectType = cls as? NSObject.Type else {
-        Logger.shared.i("Skipping extension class (not NSObject.Type): \(className)")
-        continue
-      }
-
-      let instance = objectType.init()
-      guard let ext = instance as? PatrolServerExtension else {
-        Logger.shared.i("Skipping extension class (instance cast failed): \(className)")
-        continue
-      }
-
-      Logger.shared.i("Discovered Patrol extension: \(ext.name) (\(className))")
-      result.append(ext)
-    }
-
-    Logger.shared.i("Patrol extension discovery complete, found \(result.count) extension(s)")
-    return result
+      Logger.shared.i("Patrol extension discovery complete, found \(result.count) extension(s)")
+      return result
+    #else
+      return []
+    #endif
   }
 }
 

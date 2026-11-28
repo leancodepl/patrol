@@ -1,13 +1,16 @@
-//
-//  HTTPErrorHandler.swift
-//  Telegraph
-//
-//  Created by Yvo van Beek on 2/4/17.
-//  Copyright © 2017 Building42. All rights reserved.
-//
+#if PATROL_ENABLED
+  //
+  //  HTTPErrorHandler.swift
+  //  Telegraph
+  //
+  //  Created by Yvo van Beek on 2/4/17.
+  //  Copyright © 2017 Building42. All rights reserved.
+  //
 
-import Foundation
+  import Foundation
 
-public protocol HTTPErrorHandler {
-  func respond(to error: Error) -> HTTPResponse?
-}
+  public protocol HTTPErrorHandler {
+    func respond(to error: Error) -> HTTPResponse?
+  }
+
+#endif

@@ -1,3 +1,5 @@
+// swift-format-ignore-file
+#if PATROL_ENABLED
 ///
 //  swift-format-ignore-file
 //
@@ -545,3 +547,5 @@ public struct IOSPickMultipleImagesFromGalleryRequest: Codable {
   public var appId: String
 }
 
+
+#endif

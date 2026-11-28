@@ -1,131 +1,134 @@
-import Foundation
+#if PATROL_ENABLED
+  import Foundation
 
-/// Simplified objective-c RunDartTestResponse model that we use in PatrolIntegrationTestRunner.h
-@objc(ObjCRunDartTestResponse) public class ObjCRunDartTestResponse: NSObject {
-  @objc public dynamic let passed: Bool
-  @objc public dynamic let skipped: Bool
-  @objc public dynamic let details: String?
+  /// Simplified objective-c RunDartTestResponse model that we use in PatrolIntegrationTestRunner.h
+  @objc(ObjCRunDartTestResponse) public class ObjCRunDartTestResponse: NSObject {
+    @objc public dynamic let passed: Bool
+    @objc public dynamic let skipped: Bool
+    @objc public dynamic let details: String?
 
-  @objc public init(passed: Bool, skipped: Bool, details: String?) {
-    self.passed = passed
-    self.skipped = skipped
-    self.details = details
-  }
-}
-
-/// Provides access to Patrol's test services running inside the app under test.
-///
-/// The client must do its work off the main thread. Otherwise, a deadlock will quickly appear.
-/// That's because the main thread is used by methods in ``Automator``, which perform
-/// various UI actions such as tapping, entering text, etc., and they must be called on the main thread.
-@objc(ObjCPatrolAppServiceClient) public class ObjCPatrolAppServiceClient: NSObject {
-  private static let envPortKey = "PATROL_APP_PORT"
-  private static let defaultPort = 8082
-
-  private let port: Int
-
-  private let client: PatrolAppServiceClient
-
-  private static func portFromEnvironment() -> Int {
-    guard let portStr = ProcessInfo.processInfo.environment[envPortKey] else {
-      Logger.shared.i("\(envPortKey) is null, falling back to default (\(defaultPort))")
-      return defaultPort
+    @objc public init(passed: Bool, skipped: Bool, details: String?) {
+      self.passed = passed
+      self.skipped = skipped
+      self.details = details
     }
-
-    guard let portInt = Int(portStr) else {
-      Logger.shared.i(
-        "\(envPortKey) with value \(portStr) is not valid, falling back to default (\(defaultPort))"
-      )
-      return defaultPort
-    }
-
-    return portInt
   }
 
-  @objc public init(port: Int) {
-    self.port = port
+  /// Provides access to Patrol's test services running inside the app under test.
+  ///
+  /// The client must do its work off the main thread. Otherwise, a deadlock will quickly appear.
+  /// That's because the main thread is used by methods in ``Automator``, which perform
+  /// various UI actions such as tapping, entering text, etc., and they must be called on the main thread.
+  @objc(ObjCPatrolAppServiceClient) public class ObjCPatrolAppServiceClient: NSObject {
+    private static let envPortKey = "PATROL_APP_PORT"
+    private static let defaultPort = 8082
 
-    // https://github.com/leancodepl/patrol/issues/1683
-    let timeout = TimeInterval(2 * 60 * 60)
+    private let port: Int
 
-    client = PatrolAppServiceClient(port: port, address: "localhost", timeout: timeout)
-    super.init()
-    NSLog("PatrolAppServiceClient: created, port: \(port)")
-  }
+    private let client: PatrolAppServiceClient
 
-  @objc public convenience override init() {
-    self.init(port: Self.portFromEnvironment())
-  }
-
-  @objc public func listDartTests(completion: @escaping ([[String: Any]]?, Error?) -> Void) {
-    NSLog("PatrolAppServiceClient.listDartTests()")
-
-    client.listDartTests { result in
-      switch result {
-      case .success(let result):
-        NSLog("PatrolAppServiceClient.listDartTests(): succeeded")
-        let output = result.group.listTestsFlat(parentGroupName: "").map {
-          ["name": $0.name, "skip": $0.skip]
-        }
-        completion(output, nil)
-      case .failure(let error):
-        NSLog("PatrolAppServiceClient.listDartTests(): failed with error: \(error)")
-        completion(nil, error)
+    private static func portFromEnvironment() -> Int {
+      guard let portStr = ProcessInfo.processInfo.environment[envPortKey] else {
+        Logger.shared.i("\(envPortKey) is null, falling back to default (\(defaultPort))")
+        return defaultPort
       }
-    }
-  }
 
-  @objc public func runDartTest(
-    name: String, completion: @escaping (ObjCRunDartTestResponse?, Error?) -> Void
-  ) {
-    NSLog("PatrolAppServiceClient.runDartTest(\(name))")
-
-    let request = RunDartTestRequest(name: name)
-    client.runDartTest(request: request) { result in
-      switch result {
-      case .success(let result):
-        let testResponse = ObjCRunDartTestResponse(
-          passed: result.result == .success,
-          skipped: result.result == .skipped,
-          details: result.details
+      guard let portInt = Int(portStr) else {
+        Logger.shared.i(
+          "\(envPortKey) with value \(portStr) is not valid, falling back to default (\(defaultPort))"
         )
-        completion(testResponse, nil)
-      case .failure(let error):
-        completion(nil, error)
+        return defaultPort
+      }
+
+      return portInt
+    }
+
+    @objc public init(port: Int) {
+      self.port = port
+
+      // https://github.com/leancodepl/patrol/issues/1683
+      let timeout = TimeInterval(2 * 60 * 60)
+
+      client = PatrolAppServiceClient(port: port, address: "localhost", timeout: timeout)
+      super.init()
+      NSLog("PatrolAppServiceClient: created, port: \(port)")
+    }
+
+    @objc public convenience override init() {
+      self.init(port: Self.portFromEnvironment())
+    }
+
+    @objc public func listDartTests(completion: @escaping ([[String: Any]]?, Error?) -> Void) {
+      NSLog("PatrolAppServiceClient.listDartTests()")
+
+      client.listDartTests { result in
+        switch result {
+        case .success(let result):
+          NSLog("PatrolAppServiceClient.listDartTests(): succeeded")
+          let output = result.group.listTestsFlat(parentGroupName: "").map {
+            ["name": $0.name, "skip": $0.skip]
+          }
+          completion(output, nil)
+        case .failure(let error):
+          NSLog("PatrolAppServiceClient.listDartTests(): failed with error: \(error)")
+          completion(nil, error)
+        }
       }
     }
-  }
-}
 
-extension DartGroupEntry {
+    @objc public func runDartTest(
+      name: String, completion: @escaping (ObjCRunDartTestResponse?, Error?) -> Void
+    ) {
+      NSLog("PatrolAppServiceClient.runDartTest(\(name))")
 
-  func listTestsFlat(parentGroupName: String) -> [DartGroupEntry] {
-    var tests = [DartGroupEntry]()
-
-    for test in self.entries {
-      var test = test
-
-      if test.type == GroupEntryType.test {
-        if parentGroupName.isEmpty {
-          // This case is invalid, because every test will have at least
-          // 1 named group - its filename.
-
-          fatalError("Invariant violated: test \(test.name) has no named parent group")
-        }
-
-        test.name = "\(parentGroupName) \(test.name)"
-        tests.append(test)
-      } else if test.type == GroupEntryType.group {
-        if parentGroupName.isEmpty {
-          tests.append(contentsOf: test.listTestsFlat(parentGroupName: test.name))
-        } else {
-          tests.append(
-            contentsOf: test.listTestsFlat(parentGroupName: "\(parentGroupName) \(test.name)")
+      let request = RunDartTestRequest(name: name)
+      client.runDartTest(request: request) { result in
+        switch result {
+        case .success(let result):
+          let testResponse = ObjCRunDartTestResponse(
+            passed: result.result == .success,
+            skipped: result.result == .skipped,
+            details: result.details
           )
+          completion(testResponse, nil)
+        case .failure(let error):
+          completion(nil, error)
         }
       }
     }
-
-    return tests
   }
-}
+
+  extension DartGroupEntry {
+
+    func listTestsFlat(parentGroupName: String) -> [DartGroupEntry] {
+      var tests = [DartGroupEntry]()
+
+      for test in self.entries {
+        var test = test
+
+        if test.type == GroupEntryType.test {
+          if parentGroupName.isEmpty {
+            // This case is invalid, because every test will have at least
+            // 1 named group - its filename.
+
+            fatalError("Invariant violated: test \(test.name) has no named parent group")
+          }
+
+          test.name = "\(parentGroupName) \(test.name)"
+          tests.append(test)
+        } else if test.type == GroupEntryType.group {
+          if parentGroupName.isEmpty {
+            tests.append(contentsOf: test.listTestsFlat(parentGroupName: test.name))
+          } else {
+            tests.append(
+              contentsOf: test.listTestsFlat(parentGroupName: "\(parentGroupName) \(test.name)")
+            )
+          }
+        }
+      }
+
+      return tests
+    }
+  }
+
+#endif
