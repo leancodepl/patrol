@@ -137,9 +137,15 @@ class AndroidAppOptions {
     );
   }
 
-  List<String> toGradleAssembleTestInvocation({required bool isWindows}) {
+  /// When [testUtilExport] is set, the same Gradle run also copies the
+  /// `androidTestUtil` APKs (orchestrator, test-services) into its `outputDir`
+  /// using the init script at its `initScript` path.
+  List<String> toGradleAssembleTestInvocation({
+    required bool isWindows,
+    ({String initScript, String outputDir})? testUtilExport,
+  }) {
     final selfInstrumenting = testLayout == AndroidTestLayout.selfInstrumenting;
-    return _toGradleInvocation(
+    final cmd = _toGradleInvocation(
       isWindows: isWindows,
       projectPath: selfInstrumenting ? ':patrolTest' : ':app',
       task: selfInstrumenting
@@ -147,7 +153,22 @@ class AndroidAppOptions {
           : 'assemble$_effectiveFlavor${_buildMode}AndroidTest',
       noUninstallAfterTests: !uninstall,
     );
+    if (testUtilExport != null) {
+      cmd.addAll([
+        ':app:$exportAndroidTestUtilTask',
+        '--init-script',
+        testUtilExport.initScript,
+        '-P$androidTestUtilDirProperty=${testUtilExport.outputDir}',
+      ]);
+    }
+    return cmd;
   }
+
+  /// Gradle task registered by the test-util export init script.
+  static const exportAndroidTestUtilTask = 'patrolExportAndroidTestUtil';
+
+  /// Gradle property holding the directory the test-util APKs are copied to.
+  static const androidTestUtilDirProperty = 'patrol-test-util-dir';
 
   List<String> toGradleConnectedTestInvocation({
     required bool isWindows,
@@ -441,6 +462,7 @@ class MacOSAppOptions {
     required this.configuration,
     required this.appServerPort,
     required this.testServerPort,
+    this.emitTestManifest = false,
   });
 
   final FlutterAppOptions flutter;
@@ -449,6 +471,11 @@ class MacOSAppOptions {
   final String configuration;
   final int appServerPort;
   final int testServerPort;
+
+  /// Whether to discover Dart tests at build time (host `flutter test`) and
+  /// generate static XCTest methods, so each Dart test becomes a real,
+  /// individually-selectable native test.
+  final bool emitTestManifest;
 
   String get description {
     return 'app with entrypoint ${basename(flutter.target)} for macos';
@@ -508,15 +535,28 @@ class MacOSAppOptions {
 
   /// Translates these options into a proper `xcodebuild test-without-building`
   /// invocation.
+  ///
+  /// [onlyTesting] and [staticRunner] restrict the run the same way as in
+  /// [IOSAppOptions.testWithoutBuildingInvocation].
   List<String> testWithoutBuildingInvocation(
     Device device, {
     required String xcTestRunPath,
     required String resultBundlePath,
+    List<String> onlyTesting = const [],
+    bool staticRunner = false,
   }) {
     final cmd = [
       ...['xcodebuild', 'test-without-building'],
       ...['-xctestrun', xcTestRunPath],
-      ...['-only-testing', 'RunnerUITests/RunnerUITests'],
+      if (onlyTesting.isNotEmpty)
+        for (final selector in onlyTesting) ...[
+          '-only-testing',
+          'RunnerUITests/$selector',
+        ]
+      else if (!staticRunner) ...[
+        '-only-testing',
+        'RunnerUITests/RunnerUITests',
+      ],
       ...['-destination', 'platform=macOS'],
       ...['-resultBundlePath', resultBundlePath],
       '-verbose',

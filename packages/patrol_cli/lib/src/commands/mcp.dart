@@ -102,6 +102,9 @@ class McpCommand extends PatrolCommand {
   String get name => commandName;
 
   @override
+  bool get takesArguments => true;
+
+  @override
   String get description =>
       '(Experimental) Run an MCP server so AI agents can run and control '
       'patrol develop sessions. Flags for the develop session go after `--`, '
