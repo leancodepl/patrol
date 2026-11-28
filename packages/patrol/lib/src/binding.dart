@@ -104,10 +104,9 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
           );
         }
 
-        final nameOfRequestedTest =
-            await patrolAppService.testExecutionRequested;
+        final requestedTest = await patrolAppService.testExecutionRequested;
 
-        if (nameOfRequestedTest == _currentDartTest) {
+        if (requestedTest.name == _currentDartTest) {
           if (const bool.fromEnvironment('COVERAGE_ENABLED')) {
             postEvent('waitForCoverageCollection', {
               'mainIsolateId': Service.getIsolateId(Isolate.current),
@@ -220,6 +219,39 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
       _entrypointArgs = List.unmodifiable(value);
   List<String> _entrypointArgs = const [];
 
+  /// The phase the native side asked this process to run: `0` for the first
+  /// process of a test, `1` after the first relaunch, and so on. Tests without
+  /// phases always run in phase `0`.
+  ///
+  /// It's `null` until the native side asks for a test. `patrolSetUp`,
+  /// `patrolTearDown` and the test body run after that; a plain `setUp` can
+  /// run before it.
+  int? get currentPhaseIndex {
+    if (_isDevelopMode) {
+      // patrol develop runs every test in one process and never relaunches.
+      return 0;
+    }
+    final request = patrolAppService.currentRequest;
+    return request == null ? null : request.phaseIndex ?? 0;
+  }
+
+  /// Whether Patrol will kill the app and relaunch it for the next phase of a
+  /// phased test.
+  ///
+  /// Becomes `true` once a phase that isn't the last one passes, and stays
+  /// `true` until the app is killed. It's `false` while the current test is
+  /// failing, for example after a framework error during the phase or a
+  /// `tearDown` that threw: the test then ends without a relaunch. Check it in
+  /// `patrolTearDown` before clearing state, so the next phase still finds
+  /// that state. (A plain `tearDown` also runs for the other tests of the run
+  /// in every phase's process, so it can't protect that state.)
+  bool get willRelaunchApp =>
+      !_isDevelopMode &&
+      patrolAppService.willRelaunchApp &&
+      // Last, so it's read only inside a test: a continuation exists only
+      // there.
+      global_state.isCurrentTestPassing;
+
   /// The singleton instance of this object.
   ///
   /// Provides access to the features exposed by this class. The binding must be
@@ -268,6 +300,19 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
     super.initInstances();
     _instance = this;
   }
+
+  /// Shows the app under test the default route name the native side started
+  /// the engine with, instead of the `/` flutter_test reports in its place.
+  ///
+  /// `patrolTest` calls it in a phase launched through a deep link: on
+  /// Android the engine then starts on the link's path, and `WidgetsApp` reads
+  /// it to pick its first screen. Everywhere else the stand-in stays, since on
+  /// web the native value is the page's current URL, which a hot restart in
+  /// `patrol develop` would carry over. flutter_test puts `/` back before the
+  /// next test.
+  @internal
+  void showNativeDefaultRouteName() =>
+      platformDispatcher.clearDefaultRouteNameTestValue();
 
   @override
   void initServiceExtensions() {

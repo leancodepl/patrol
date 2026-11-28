@@ -9,6 +9,7 @@ import 'package:patrol/src/binding.dart';
 import 'package:patrol/src/develop_generation.dart';
 import 'package:patrol/src/develop_view_assertion.dart';
 import 'package:patrol/src/global_state.dart' as global_state;
+import 'package:patrol/src/phases.dart';
 import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:patrol/src/platform/platform_automator.dart';
 import 'package:patrol_finders/patrol_finders.dart' as finders;
@@ -117,6 +118,8 @@ void patrolTest(
       LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
   bool deterministicCursor = true,
 }) {
+  final phasedTest = patrolPhasesOf(callback);
+
   if (constants.testDiscoveryEnabled) {
     // Build-time discovery (host `flutter test`): only register the test so it
     // shows up in the group tree. Do NOT initialize PatrolBinding (Live binding,
@@ -182,23 +185,66 @@ void patrolTest(
       // The binding claimed this generation when the program started.
       final generation = patrolBinding.developGeneration;
 
-      patrolLog.log(
-        TestEntry(
-          name: global_state.currentTestFullName,
-          status: TestEntryStatus.start,
-        ),
-      );
       final patrolTester = PatrolIntegrationTester(
         tester: widgetTester,
         config: config,
         platformAutomator: platformAutomator,
         entrypointArgs: patrolBinding.entrypointArgs,
       );
+      // The phase the native side asked for. It stays null in develop mode,
+      // where nothing asks, and on runners that can't relaunch the app.
+      int? requestedPhaseIndex;
+      if (phasedTest != null && !constants.hotRestartEnabled) {
+        final request =
+            await patrolBinding.patrolAppService.testExecutionRequested;
+        requestedPhaseIndex = request.phaseIndex;
+      }
+
+      // Later phases continue the test the first process started, so only the
+      // first one logs the start. It's logged before anything below can reject
+      // the test, so that a rejection is reported like any other failure.
+      if ((requestedPhaseIndex ?? 0) == 0) {
+        patrolLog.log(
+          TestEntry(
+            name: global_state.currentTestFullName,
+            status: TestEntryStatus.start,
+          ),
+        );
+      }
+
       try {
+        var callbackToRun = callback;
+        var phaseIndex = 0;
+        if (phasedTest != null) {
+          if (constants.hotRestartEnabled) {
+            throw UnsupportedError(
+              'Phased Patrol tests are not supported in develop mode',
+            );
+          }
+          if (const bool.fromEnvironment('COVERAGE_ENABLED') &&
+              phasedTest.phases.length > 1) {
+            throw UnsupportedError(
+              'Phased Patrol tests with more than one phase are not supported '
+              'with --coverage',
+            );
+          }
+          phaseIndex = phasedTest.phaseIndexFor(requestedPhaseIndex);
+          final phase = phasedTest.phaseAt(phaseIndex);
+          callbackToRun = phase.callback;
+          if (phase.launch.url != null) {
+            // The native side opened this process through the phase's link.
+            patrolBinding.showNativeDefaultRouteName();
+          }
+        }
+
         await runWithDeterministicCursor(
           enabled: deterministicCursor,
-          body: () => callback(patrolTester),
+          body: () => callbackToRun(patrolTester),
         );
+        final continuation = phasedTest?.continuationAfter(phaseIndex);
+        if (continuation != null) {
+          patrolBinding.patrolAppService.setContinuation(continuation);
+        }
       } catch (err, st) {
         // Capture the failing screen before teardown pumps the next frame.
         if (constants.screenshotOnFailureEnabled) {
