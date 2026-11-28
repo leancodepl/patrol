@@ -71,6 +71,11 @@ class WebDevtoolsServer {
   /// Starts [command] and kills it with its descendants once [_disposeScope]
   /// is disposed, also when that happened while it was starting.
   Future<Process> _start(List<String> command) async {
+    if (_disposeScope.disposed) {
+      throw StateError(
+        'The session ended before `${command.join(' ')}` started',
+      );
+    }
     final process = await _processManager.start(command);
     if (_disposeScope.disposed) {
       await process.killTree();
@@ -79,6 +84,16 @@ class WebDevtoolsServer {
       );
     }
     return process..disposedByTree(_disposeScope);
+  }
+
+  /// Fails [completer] once [_disposeScope] is disposed, so a wait on what a
+  /// killed process would have printed ends with the session.
+  void _failOnDispose<T>(Completer<T> completer) {
+    _disposeScope.addDispose(() {
+      if (!completer.isCompleted) {
+        completer.completeError(StateError('The session ended'));
+      }
+    });
   }
 
   Future<_ToolingDaemon?> _startToolingDaemon(FlutterCommand dart) async {
@@ -92,6 +107,7 @@ class WebDevtoolsServer {
     ]);
 
     final details = Completer<_ToolingDaemon>();
+    _failOnDispose(details);
 
     process
         .listenStdOut((line) {
@@ -192,6 +208,7 @@ class WebDevtoolsServer {
     ]);
 
     final url = Completer<String>();
+    _failOnDispose(url);
 
     process
         .listenStdOut((line) {

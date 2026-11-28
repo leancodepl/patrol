@@ -697,7 +697,7 @@ class DevelopService {
             failPendingVmServiceUrl();
           },
           onError: (Object err, StackTrace st) {
-            if (quit == null) {
+            if (quit == null && err is! ToolInterrupted) {
               reportTestsCompleted(
                 TestCompletionResult(success: false, error: err),
               );
@@ -784,6 +784,8 @@ class DevelopService {
 
       try {
         await future;
+      } on ToolInterrupted {
+        rethrow;
       } catch (err) {
         if (quit == null) {
           reportTestsCompleted(
@@ -798,6 +800,8 @@ class DevelopService {
       }
       reportTestsCompleted(const TestCompletionResult(success: true));
     } on ToolExit {
+      rethrow;
+    } on ToolInterrupted {
       rethrow;
     } catch (err, st) {
       _logger

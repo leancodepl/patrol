@@ -376,6 +376,9 @@ class WebTestBackend {
         );
 
     if (base == null) {
+      if (_disposeScope.disposed) {
+        return;
+      }
       _logger.warn(
         'Could not serve the Patrol DevTools extension. Open DevTools from your '
         'IDE instead -- on web the extension is only discoverable when the '

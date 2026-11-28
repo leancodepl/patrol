@@ -792,6 +792,58 @@ void main() {
       ]);
     });
 
+    test('passes an interrupt on without the failure message or a test '
+        'result', () async {
+      when(
+        () => androidTestBackend.execute(
+          any(),
+          any(),
+          interruptible: any(named: 'interruptible'),
+          showFlutterLogs: any(named: 'showFlutterLogs'),
+          hideTestSteps: any(named: 'hideTestSteps'),
+          flavor: any(named: 'flavor'),
+          clearTestSteps: any(named: 'clearTestSteps'),
+          onLogEntry: any(named: 'onLogEntry'),
+          videoConfig: any(named: 'videoConfig'),
+        ),
+      ).thenAnswer((_) async => throwToolInterrupted('the run'));
+      when(
+        () => flutterTool.attachForHotRestart(
+          flutterCommand: any(named: 'flutterCommand'),
+          deviceId: any(named: 'deviceId'),
+          target: any(named: 'target'),
+          appId: any(named: 'appId'),
+          dartDefines: any(named: 'dartDefines'),
+          openDevtools: any(named: 'openDevtools'),
+          attachUsingUrl: any(named: 'attachUsingUrl'),
+          forwardFlutterLogs: any(named: 'forwardFlutterLogs'),
+          removeAdbForwards: any(named: 'removeAdbForwards'),
+          onQuit: any(named: 'onQuit'),
+        ),
+      ).thenAnswer((_) async {});
+      _lastResult = null;
+
+      await expectLater(
+        buildService().run(
+          const DevelopOptions(
+            target: 'onboarding_test.dart',
+            flutterCommand: FlutterCommand('flutter'),
+            buildMode: BuildMode.debug,
+            testServerPort: 8081,
+            appServerPort: 8080,
+            generateBundle: false,
+            uninstall: false,
+            checkCompatibility: false,
+            packageName: 'com.example.app',
+          ),
+        ),
+        throwsA(isA<ToolInterrupted>()),
+      );
+
+      verifyNever(() => logger.err(any(that: contains('please report it'))));
+      expect(_lastResult, isNull);
+    });
+
     test('ends normally when the build fails because of a quit', () async {
       final backend = Completer<void>();
       when(
