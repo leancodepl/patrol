@@ -11,6 +11,7 @@ import 'package:patrol/patrol.dart';
 import 'package:patrol/src/bs_coverage.dart';
 import 'package:patrol/src/devtools_service_extensions/devtools_service_extensions.dart';
 import 'package:patrol/src/global_state.dart' as global_state;
+import 'package:patrol_log/patrol_log.dart';
 
 import 'constants.dart' as constants;
 
@@ -73,6 +74,21 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
       _currentDartTest = global_state.currentTestFullName;
     });
 
+    if (_isDevelopMode) {
+      // The last test that runs reports the end of a develop run and keeps the
+      // app alive for Hot Restart. With every test skipped, this does both.
+      tearDownAll(() async {
+        if (global_state.anyTestRuns) {
+          return;
+        }
+        logDevelopRunEnd(PatrolLogWriter());
+        while (true) {
+          global_state.heartbeat();
+          await Future<void>.delayed(const Duration(seconds: 1));
+        }
+      });
+    }
+
     tearDown(() async {
       // _wrapTestBodyWithExceptionGatherer() intentionally leaves its
       // FlutterError.onError override installed past the end of the test
@@ -88,6 +104,7 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
       // we're done reading _testResults, right before returning.
       try {
         if (_isDevelopMode) {
+          _reportUnreportedDevelopFailure();
           // Sending results ends the test, which we don't want for Hot Restart
           return;
         }
@@ -201,6 +218,25 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
   void Function() _stopGatheringExceptions = () {};
 
   final DevtoolsServiceExtensions _serviceExtensions;
+
+  /// Logs the failure of a test whose body did not log it, such as one whose
+  /// `setUp` threw: `patrol mcp` ends a develop run on a failure entry.
+  void _reportUnreportedDevelopFailure() {
+    if (global_state.isInternalTestExplorer(
+          global_state.currentTestIndividualName,
+        ) ||
+        !global_state.isCurrentTestFailureUnreported) {
+      return;
+    }
+    PatrolLogWriter().log(
+      TestEntry(
+        name: global_state.currentTestFullName,
+        status: TestEntryStatus.failure,
+        error: global_state.currentTestErrors.join('\n'),
+      ),
+    );
+    global_state.markCurrentTestFailureReported();
+  }
 
   /// Temporary workaround for DevTools extension changing this value and not
   /// resetting it.

@@ -1,5 +1,8 @@
 ## Unreleased
 
+- Fix `patrol develop` never reporting the end of a run, so `patrol mcp` waited for it until the timeout,
+  when the file ends with skipped tests or a skipped group, or skips every test. The last test that
+  runs reports the end, and a test whose `setUp` throws is reported as failed. (#3460)
 - Fix web test discovery failing with `page.goto: Timeout 30000ms exceeded` when a debug web build
   takes longer than 30 s to load, for example on a small CI runner. The setup navigation now waits
   up to 300 s, like the runner's other waits for the app. (#3389)

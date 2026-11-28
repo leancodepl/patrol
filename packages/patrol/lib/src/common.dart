@@ -205,6 +205,7 @@ void patrolTest(
               status: TestEntryStatus.failure,
             ),
           );
+          global_state.markCurrentTestFailureReported();
         }
         rethrow;
       }
@@ -226,6 +227,7 @@ void patrolTest(
             error: caughtException.toString(),
           ),
         );
+        global_state.markCurrentTestFailureReported();
       }
 
       if (constants.hotRestartEnabled) {
@@ -243,18 +245,8 @@ void patrolTest(
 
       if (constants.hotRestartEnabled &&
           global_state.isCurrentTestLastInGroup) {
-        // Patrol log that test is finished
-        // If test fails this code will not be executed
-        patrolLog
-          ..log(
-            LogEntry(
-              message:
-                  'All tests were executed. Press "r" to start again or "q" to quit',
-            ),
-          )
-          ..log(
-            ConfigEntry(config: const {ConfigEntry.developCompletedKey: true}),
-          );
+        // A failing test does not get here.
+        logDevelopRunEnd(patrolLog);
         // Wait indefinitely in develop mode after the last test. The app stays
         // interactive here, so keep reporting exceptions (e.g. from manual taps
         // while iterating) as they happen instead of losing them.
@@ -266,6 +258,20 @@ void patrolTest(
       }
     },
   );
+}
+
+/// Logs that every test of a develop run has run, which `patrol develop` and
+/// `patrol mcp` wait for.
+@internal
+void logDevelopRunEnd(PatrolLogWriter patrolLog) {
+  patrolLog
+    ..log(
+      LogEntry(
+        message:
+            'All tests were executed. Press "r" to start again or "q" to quit',
+      ),
+    )
+    ..log(ConfigEntry(config: const {ConfigEntry.developCompletedKey: true}));
 }
 
 /// Creates a DartGroupEntry by visiting the subgroups of [parentGroup].
