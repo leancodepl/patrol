@@ -14,7 +14,7 @@
   which the run hung. It now stops the Flutter web server and exits at any phase of the run. (#3339)
 - Ctrl+C during an iOS, macOS or web build or test run now exits with code 130 instead of 1, and
   `patrol test` no longer follows it with a request to report a bug. On Android, the uninstall
-  after `patrol test` gives up after 30 seconds when the device no longer answers.
+  after `patrol test` gives up after 30 seconds when the device no longer answers. (#3454)
 
 ## 4.10.0
 
