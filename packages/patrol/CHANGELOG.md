@@ -17,6 +17,9 @@
   seconds, or time out with `SettlePolicy.settle`, while a text field is focused on iOS (or a
   `CupertinoTextField` on any platform). To keep the blinking cursor, pass
   `deterministicCursor: false`. See `migration5.md`. (#3439)
+- **Breaking:** Bump `patrol_finders` to `^4.0.0-dev.1`: `$.pumpAndSettle()` and
+  `$.pumpWidgetAndSettle()` return the number of pumped frames, and `$.pumpWidget()` takes named
+  arguments. See `migration5.md` and the `patrol_finders` changelog. (#3448)
 - Add the optional self-instrumenting Android `:patrolTest` layout, which runs
   JUnit outside the app process. The in-app `androidTest` layout remains
   supported. Needs a matching `patrol_cli` release: an older CLI still runs the
@@ -40,9 +43,6 @@
 - Add native screenshots on iOS: `screenshot_on_failure: true` and `$.takeNativeScreenshot('tag')`
   now work on simulators and physical devices. See the
   [docs](https://patrol.leancode.co/cli-commands/test#on-ios). (#3271)
-- **Breaking:** Bump `patrol_finders` to `^4.0.0-dev.1`: `$.pumpAndSettle()` and
-  `$.pumpWidgetAndSettle()` return the number of pumped frames, and `$.pumpWidget()` takes named
-  arguments. See the `patrol_finders` changelog. (#3448)
 
 ## 5.0.0-dev.1
 
