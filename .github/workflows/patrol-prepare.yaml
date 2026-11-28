@@ -3,6 +3,7 @@ name: patrol prepare
 on:
   workflow_dispatch:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'packages/patrol/**'
 
@@ -130,6 +131,7 @@ jobs:
         run: flutter build apk --debug --flavor dev
 
   prepare-darwin:
+    if: github.event.pull_request.draft != true
     runs-on: ${{ matrix.os }}
     name: darwin on ${{ matrix.os }}
 

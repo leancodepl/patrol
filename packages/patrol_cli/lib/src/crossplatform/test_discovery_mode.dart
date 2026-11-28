@@ -3,12 +3,12 @@ import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/devices.dart';
 
 /// Decides whether a build for [targetPlatform] uses build-time test discovery:
-/// only Android and iOS have it, so any other platform gets `false`. Then the
+/// only Android, iOS and macOS have it, so web gets `false`. Then the
 /// `--[no-]emit-test-manifest` [flag] wins, then `patrol.emit_test_manifest`
 /// from pubspec.yaml ([pubspecValue]), then [defaultValue].
 ///
 /// When the project isn't set up for it (tests under `integration_test/`, or
-/// [setupProblem], such as an iOS runner without the generated tests), the
+/// [setupProblem], such as an iOS or macOS runner without the generated tests), the
 /// default falls back to runtime discovery with a warning, and an explicit
 /// opt-in fails. A discovery run that fails, e.g. on a test file that throws on
 /// the host, fails the build either way.
@@ -21,8 +21,7 @@ bool resolveEmitTestManifest({
   bool defaultValue = true,
   String? setupProblem,
 }) {
-  if (targetPlatform != TargetPlatform.android &&
-      targetPlatform != TargetPlatform.iOS) {
+  if (targetPlatform == TargetPlatform.web) {
     return false;
   }
 
@@ -54,6 +53,22 @@ bool resolveEmitTestManifest({
     'warning.',
   );
   return false;
+}
+
+/// Warns that an explicit `--emit-test-manifest` [flag] does nothing on web,
+/// which always discovers tests in the browser.
+void warnIfEmitTestManifestOnWeb({
+  required TargetPlatform targetPlatform,
+  required bool? flag,
+  required Logger logger,
+}) {
+  if (targetPlatform != TargetPlatform.web || !(flag ?? false)) {
+    return;
+  }
+  logger.warn(
+    'Build-time test discovery is not supported on web, ignoring '
+    '--emit-test-manifest. Tests are discovered in the browser instead.',
+  );
 }
 
 /// Whether [testDirectory] is `integration_test` or a directory inside it.

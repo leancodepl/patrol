@@ -22,9 +22,9 @@ void main() {
   final macos = _device('macos', TargetPlatform.macOS, emulator: false);
 
   group('supportedDevices', () {
-    test('keeps Android and iOS, drops web and macOS', () {
+    test('keeps Android, iOS and web, drops macOS', () {
       final result = supportedDevices([androidEmu, iosSim, web, macos]);
-      expect(result, [androidEmu, iosSim]);
+      expect(result, [androidEmu, iosSim, web]);
     });
 
     test('empty in, empty out', () {

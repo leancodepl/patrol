@@ -16,7 +16,7 @@ Update `patrol` and `patrol_cli` together: Patrol 5.0 is `patrol` 5.x with
 | `patrol` | 5.x | |
 | `patrol_cli` | 5.x | |
 | `patrol_mcp` | discontinued | replaced by the `patrol mcp` command of `patrol_cli`, see below |
-| `patrol_finders` | 4.x | `pumpAndSettle()` returns `Future<int>`, see below |
+| `patrol_finders` | 4.x | `pumpAndSettle()` returns `Future<int>` and other API changes, see below |
 | `patrol_log` | 0.10.x, no change so far | |
 
 To try a prerelease, pin it explicitly, since pub doesn't pick prereleases on
@@ -129,13 +129,36 @@ instead of `Future<void>`: the number of frames it pumped, the same value
 - **A mock that stubs `pumpAndSettle()`:** answer with an `int`, e.g.
   `thenAnswer((_) async => 1)`; `thenAnswer((_) async {})` no longer compiles.
 
+## `pumpWidget()` takes named arguments, `pumpWidgetAndSettle()` returns frames
+
+**Packages:** `patrol_finders`, `patrol`
+
+`PatrolTester.pumpWidget()` takes `duration` and `phase` as named parameters
+instead of positional ones, and both `pumpWidget()` and `pumpWidgetAndSettle()`
+take `wrapWithView`, like `WidgetTester.pumpWidget()`.
+`pumpWidgetAndSettle()` returns `Future<int>`, the number of frames pumped while
+settling. Tests that only find, tap and pump with one argument compile
+unchanged.
+
+**What to do:**
+
+- **`$.pumpWidget(app, duration)` or `$.pumpWidget(app, duration, phase)`:**
+  name the arguments: `$.pumpWidget(app, duration: duration, phase: phase)`.
+- **A subclass or implementation of `PatrolTester` that overrides
+  `pumpWidget()` or `pumpWidgetAndSettle()`:** take `duration` and `phase` as
+  named parameters, add `bool wrapWithView = true`, and return `Future<int>`
+  from `pumpWidgetAndSettle()`, e.g. the value of `super.pumpWidgetAndSettle()`.
+- **A mock that stubs them:** match `duration` and `phase` by name, e.g.
+  `mock.pumpWidget(any(), duration: any(named: 'duration'))`, and answer
+  `pumpWidgetAndSettle()` with an `int`, e.g. `thenAnswer((_) async => 1)`.
+
 ## Build-time test discovery is the default
 
 **Packages:** `patrol`, `patrol_cli`
 
-`patrol test` and `patrol build` on Android and iOS now discover your tests on
-your computer before the build and generate one native test class per Dart test
-file. Before 5.0 this was opt-in (`emit_test_manifest: true`). Runtime
+`patrol test` and `patrol build` on Android, iOS and macOS now discover your
+tests on your computer before the build and generate one native test class per
+Dart test file. Before 5.0 this was opt-in (`emit_test_manifest: true`). Runtime
 discovery is still there as an opt-out, and `patrol develop` keeps using it
 unless you turn build-time discovery on.
 
@@ -143,7 +166,7 @@ What changes for you:
 
 | | Before | 5.0 |
 |---|---|---|
-| iOS native test name | `RunnerUITests/<dart test name>` | `PatrolGeneratedTests_<file>/test_<name>` |
+| iOS and macOS native test name | `RunnerUITests/<dart test name>` | `PatrolGeneratedTests_<file>/test_<name>` |
 | Android native test name | `MainActivityTest#runDartTest[<dart test name>]` | `PatrolGeneratedTests_<file>#test_<name>` |
 | Tests in `integration_test/` | Runtime discovery | Runtime discovery, with a warning on every build |
 | Registration that depends on `Platform` | Works | The run fails (see [Runs in which tests didn't run fail](#runs-in-which-tests-didnt-run-fail)) |
@@ -171,9 +194,11 @@ What changes for you:
    A test file that throws while it loads (for example
    `throw UnsupportedError('Unsupported platform')` in `main()`) fails the
    build, and the error is shown.
-3. **iOS: include the generated tests in `RunnerUITests.m`.** Add three lines
-   after the runner macro in `ios/RunnerUITests/RunnerUITests.m`. The file then
-   looks like this and works with both discovery modes:
+3. **iOS and macOS: include the generated tests in `RunnerUITests.m`.** Add
+   three lines after the runner macro in `ios/RunnerUITests/RunnerUITests.m`
+   (and in `macos/RunnerUITests/RunnerUITests.m`, after
+   `PATROL_INTEGRATION_TEST_MACOS_RUNNER`). The iOS file then looks like this
+   and works with both discovery modes:
 
    ```objc
    @import XCTest;
@@ -186,7 +211,7 @@ What changes for you:
    #endif
    ```
 
-   Patrol doesn't edit the file. Until the lines are there, iOS builds use
+   Patrol doesn't edit the file. Until the lines are there, iOS and macOS builds use
    runtime discovery and print a warning with them (a build with
    `--emit-test-manifest` or `emit_test_manifest: true` stops instead). A runner
    set up for the 4.x opt-in
@@ -232,7 +257,9 @@ runs that used to pass while running fewer tests now fail:
 | A test registered only on the device (`Platform.isAndroid` around `patrolTest`) | Never runs, passes | Every test fails with the list of missing tests |
 
 Runtime discovery doesn't run these checks, including the fallback for tests
-in `integration_test/` or an iOS `RunnerUITests.m` without the `#include`.
+in `integration_test/` or an iOS or macOS `RunnerUITests.m` without the
+`#include`. On macOS a run counts the tests `xcodebuild` reports, because the
+CLI doesn't read the app's logs there.
 
 **What to do:**
 
@@ -284,6 +311,19 @@ return as soon as the app settles.
 - **To keep the blinking cursor:** pass `deterministicCursor: false` to
   `patrolTest`.
 
+## Web stays on runtime test discovery
+
+**Packages:** `patrol_cli`
+
+Build-time discovery doesn't run on web: it compiles tests for the Dart VM on
+your computer, which can't compile web-only imports (`package:web`,
+`dart:ui_web`). Web keeps discovering tests in the browser, which already gives
+Playwright the full list before the run, so `--web-shard` works as before.
+
+**What to do:** nothing. `emit_test_manifest` in `pubspec.yaml` is ignored on
+web, and `--emit-test-manifest` with `patrol test -d chrome` or
+`patrol develop -d chrome` only prints a warning.
+
 ## Inbox
 
 Short notes on changes that don't have a section yet, one line each: the PR or
@@ -306,6 +346,16 @@ the Inbox before 5.0.0 is released.
   needs flutter/flutter#183838; every other platform and `patrol test` on web keep the 3.44 floor.
   Upgrade Flutter, or point patrol at a newer SDK with `--flutter-command`, to keep using
   `patrol develop -d chrome`.
+- #3183, `patrol` / `patrol_cli`: experimental Windows support (`patrol test -d windows`). Needs the
+  MSVC Desktop C++ workload (same as Flutter Windows) so the CLI can build the C++ automator sidecar.
+  `PlatformAction.safe()` now requires a `windows:` callback, and exhaustive switches over
+  `PatrolTargetPlatform` / CLI `TargetPlatform` need a Windows case — update call sites even if you
+  do not run on Windows yet.
+- #3452, `patrol_cli`: `--web-headless` no longer takes a value (deprecated since 4.6.0), and
+  commands other than `patrol mcp` reject leftover positional arguments instead of ignoring them.
+  Replace `--web-headless=true` or `--web-headless true` with `--web-headless`, and the `false`
+  forms with `--no-web-headless`. Also fix scripts that pass a value after any flag
+  (`--release true`), a test file without `-t`/`--target`, or arguments after `--`.
 - #3445, `patrol`: `Selector(instance: n)` now reaches iOS, so `tap`,
   `doubleTap`, `enterText` and `waitUntilVisible` target the n-th match instead of the first, and
   `waitUntilVisible` with `instance` fails on iOS and macOS when there are fewer matches. iOS counts

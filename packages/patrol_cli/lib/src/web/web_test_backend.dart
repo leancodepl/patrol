@@ -7,12 +7,14 @@ import 'package:dispose_scope/dispose_scope.dart' hide ProcessDisposed;
 import 'package:meta/meta.dart';
 import 'package:package_config/package_config.dart';
 import 'package:path/path.dart' show basename;
+import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/coverage/bind_unused_port.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
 import 'package:patrol_cli/src/devices.dart';
+import 'package:patrol_cli/src/web/chrome_pages.dart';
 import 'package:patrol_cli/src/web/restart_teardown_window.dart';
 import 'package:patrol_cli/src/web/web_devtools_server.dart';
 import 'package:patrol_log/patrol_log.dart';
@@ -49,6 +51,11 @@ class WebTestBackend {
   String? get debuggerPort => _debuggerPort;
   String? _debuggerPort;
 
+  /// The DevTools Protocol id of the tab the app runs in. Tests can open more
+  /// tabs, so screenshots look for this one.
+  String? get appPageId => _appPageId;
+  String? _appPageId;
+
   /// The resident `flutter run`; hot restart goes through its stdin.
   Process? _flutterProcess;
 
@@ -57,6 +64,12 @@ class WebTestBackend {
   /// True once the app is up and Playwright is attached; a restart before that
   /// kills the session (flutter/flutter#182377).
   bool _hotRestartActive = false;
+
+  final _hotRestartReady = Completer<void>();
+
+  /// Completes once the session first accepts a hot restart: the app is
+  /// served, its debug service is live and the Playwright driver is up.
+  Future<void> get hotRestartReady => _hotRestartReady.future;
 
   /// An "r" pressed before the session was attached, replayed once it is.
   String? _pendingHotRestartTarget;
@@ -141,12 +154,18 @@ class WebTestBackend {
       ..detail('Starting web test execution...')
       ..info('Building Flutter web app...');
 
+    _throwIfInterrupted();
     final flutterProcess = await _startFlutterWebServer(
       options,
       develop: false,
     );
 
     try {
+      if (_disposeScope.disposed) {
+        await _killLateStart(flutterProcess);
+      }
+      flutterProcess.disposedByTree(_disposeScope);
+
       final baseUrl = await _waitForWebServer(
         flutterProcess,
         serverTimeout: options.serverTimeout,
@@ -159,10 +178,13 @@ class WebTestBackend {
         hideTestSteps: hideTestSteps,
         clearTestSteps: clearTestSteps,
       );
+    } catch (_) {
+      _throwIfInterrupted();
+      rethrow;
     } finally {
       _logger.detail('Stopping Flutter web server...');
 
-      flutterProcess.kill();
+      await flutterProcess.killTree();
 
       try {
         await flutterProcess.exitCode.timeout(const Duration(seconds: 5));
@@ -175,6 +197,23 @@ class WebTestBackend {
       }
     }
   }
+
+  /// Throws when [_disposeScope] is disposed, which happens mid-run only on an
+  /// interrupt.
+  void _throwIfInterrupted() {
+    if (_disposeScope.disposed) {
+      throwToolInterrupted(_interruptedDetails);
+    }
+  }
+
+  /// Kills [process], which finished starting after an interrupt, together
+  /// with its descendants, and reports the interrupt.
+  Future<Never> _killLateStart(Process process) async {
+    await process.killTree();
+    throwToolInterrupted(_interruptedDetails);
+  }
+
+  static const _interruptedDetails = 'the web run was interrupted';
 
   /// Runs a develop session on web, where "r" hot restarts the resident
   /// `flutter run`. Requires Flutter 3.47 (flutter/flutter#183838).
@@ -190,6 +229,7 @@ class WebTestBackend {
     bool openDevtools = false,
   }) async {
     _logger.detail('Starting web develop execution...');
+    _throwIfInterrupted();
 
     _flutterTool = flutterTool;
     _openDevtools = openDevtools;
@@ -202,13 +242,7 @@ class WebTestBackend {
     // Chosen up front so MCP screenshots can use it before Chrome launches.
     final debuggerPort = await bindUnusedPort<int>((port) => port);
     _debuggerPort = '$debuggerPort';
-
-    final flutterProcess = await _startFlutterWebServer(
-      options,
-      develop: true,
-      browserDebugPort: debuggerPort,
-    );
-    _flutterProcess = flutterProcess;
+    _appPageId = null;
 
     final exited = Completer<void>();
     // Without this, a crash during startup is unhandled and skips `finally`.
@@ -239,12 +273,20 @@ class WebTestBackend {
         }
         _logger.success('Quitting process...');
         await _killInstall();
-        _playwrightDevelopProcess?.kill();
+        await _playwrightDevelopProcess?.killTree();
         await _stopFlutterProcess();
       }
     });
 
     try {
+      final flutterProcess = await _startFlutterWebServer(
+        options,
+        develop: true,
+        browserDebugPort: debuggerPort,
+      );
+      _flutterProcess = flutterProcess;
+      await _killTreeOnDispose(flutterProcess);
+
       await _watchFlutterRun(flutterProcess, exited);
 
       try {
@@ -254,11 +296,13 @@ class WebTestBackend {
           serverTimeout: options.serverTimeout,
         );
       } on Object {
+        _throwIfInterrupted();
         if (_quitting) {
           return;
         }
         rethrow;
       }
+      _throwIfInterrupted();
       if (_quitting) {
         return;
       }
@@ -271,6 +315,7 @@ class WebTestBackend {
         clearTestSteps: clearTestSteps,
         onLogEntry: onLogEntry,
       );
+      _throwIfInterrupted();
       if (_quitting) {
         return;
       }
@@ -283,17 +328,32 @@ class WebTestBackend {
 
       // Lives as long as `flutter run`; ended by quit or its exit handler.
       await exited.future;
+    } on Object {
+      _throwIfInterrupted();
+      rethrow;
     } finally {
       await stdinSubscription.cancel();
       await sigintSubscription.cancel();
       _quitting = true;
-      _playwrightDevelopProcess?.kill();
+      await _playwrightDevelopProcess?.killTree();
       await _stopFlutterProcess();
       final modes = previousStdinModes;
       if (modes != null) {
         flutterTool.revertInteractiveMode(modes);
       }
     }
+  }
+
+  /// Kills [process] and its descendants once [_disposeScope] is disposed,
+  /// also when that happened while [process] was starting.
+  Future<void> _killTreeOnDispose(Process process) async {
+    if (_disposeScope.disposed) {
+      _quitting = true;
+      await _killLateStart(process);
+    }
+    // Marked as a quit before the kill, so the exit handlers do not report it
+    // as a crash.
+    process.disposedByTree(_disposeScope, onKill: () => _quitting = true);
   }
 
   /// Serves DevTools with the Patrol extension, which the one `flutter run`
@@ -316,6 +376,9 @@ class WebTestBackend {
         );
 
     if (base == null) {
+      if (_disposeScope.disposed) {
+        return;
+      }
       _logger.warn(
         'Could not serve the Patrol DevTools extension. Open DevTools from your '
         'IDE instead -- on web the extension is only discoverable when the '
@@ -337,6 +400,9 @@ class WebTestBackend {
       return;
     }
     _hotRestartActive = true;
+    if (!_hotRestartReady.isCompleted) {
+      _hotRestartReady.complete();
+    }
     _logger.success('Hot Restart: attached to the app\n$_developKeyCommands');
 
     final pending = _pendingHotRestartTarget;
@@ -632,8 +698,9 @@ class WebTestBackend {
           }
         });
 
+    // `flutter` can exit with code 0 on SIGINT.
     flutterProcess.exitCode.then((exitCode) {
-      if (!completer.isCompleted && exitCode != 0) {
+      if (!completer.isCompleted) {
         stdoutSubscription.cancel();
         stderrSubscription.cancel();
         completer.completeError(
@@ -690,6 +757,7 @@ class WebTestBackend {
     final endpoint = Uri.parse('http://127.0.0.1:$debuggerPort/json/version');
 
     while (!await _httpOk(endpoint)) {
+      _throwIfInterrupted();
       final exitCode = _flutterExitCode;
       if (exitCode != null) {
         throw StateError(
@@ -723,6 +791,28 @@ class WebTestBackend {
         ),
       );
     }
+
+    // The app's tab is the only one until a test opens another.
+    _appPageId = await _firstPageId(debuggerPort);
+  }
+
+  Future<String?> _firstPageId(int debuggerPort) async {
+    const step = Duration(seconds: 2);
+    final client = HttpClient()..connectionTimeout = step;
+    try {
+      final request = await client.getUrl(
+        Uri.parse('http://127.0.0.1:$debuggerPort/json'),
+      );
+      final response = await request.close().timeout(step);
+      final body = await response.transform(utf8.decoder).join().timeout(step);
+      return pickChromePage(jsonDecode(body) as List<Object?>)?['id']
+          as String?;
+    } on Object catch (err) {
+      _logger.detail('Could not read the app tab from Chrome: $err');
+      return null;
+    } finally {
+      client.close(force: true);
+    }
   }
 
   Future<void> _runPlaywrightTests(
@@ -733,6 +823,8 @@ class WebTestBackend {
     required bool clearTestSteps,
     String? runnerPath,
   }) async {
+    _throwIfInterrupted();
+
     _logger.info('Running Playwright tests against: $baseUrl');
     final completer = Completer<void>();
 
@@ -751,20 +843,23 @@ class WebTestBackend {
         ..detail('Test results will be saved to: $testResultsDir')
         ..detail('Test report will be saved to: $testReportDir');
 
-      final playwrightProcess =
-          await _processManager.start(
-              ['npx', 'playwright', 'test', 'tests/test.spec.ts'],
-              workingDirectory: webRunnerPath,
-              environment: {
-                ...Platform.environment,
-                'BASE_URL': baseUrl,
-                'PATROL_TEST_RESULTS_DIR': testResultsDir,
-                'PATROL_TEST_REPORT_DIR': testReportDir,
-                ...options.toEnvironmentVariables(),
-              },
-              runInShell: true,
-            )
-            ..disposedByTree(scope);
+      _throwIfInterrupted();
+      final playwrightProcess = await _processManager.start(
+        ['npx', 'playwright', 'test', 'tests/test.spec.ts'],
+        workingDirectory: webRunnerPath,
+        environment: {
+          ...Platform.environment,
+          'BASE_URL': baseUrl,
+          'PATROL_TEST_RESULTS_DIR': testResultsDir,
+          'PATROL_TEST_REPORT_DIR': testReportDir,
+          ...options.toEnvironmentVariables(),
+        },
+        runInShell: true,
+      );
+      if (scope.disposed || _disposeScope.disposed) {
+        await _killLateStart(playwrightProcess);
+      }
+      playwrightProcess.disposedByTree(scope);
 
       final isShardedRun = (options.workers ?? 0) > 1;
       if (isShardedRun) {
@@ -853,6 +948,7 @@ class WebTestBackend {
       ..detail('Test results will be saved to: $testResultsDir')
       ..detail('Test report will be saved to: $testReportDir');
 
+    _throwIfInterrupted();
     // The driver survives hot restarts and idles for the whole session.
     final playwrightProcess = await _processManager.start(
       ['npx', 'ts-node', 'tests/develop.ts'],
@@ -868,6 +964,7 @@ class WebTestBackend {
       runInShell: true,
     );
     _playwrightDevelopProcess = playwrightProcess;
+    await _killTreeOnDispose(playwrightProcess);
 
     PatrolLogReader(
         listenStdOut: playwrightProcess.listenStdOut,
@@ -1094,15 +1191,17 @@ class WebTestBackend {
     );
     _installProcess = process;
 
-    // Drain both pipes so a full buffer can't stall the process.
-    final stdoutFuture = process.stdout
-        .transform(const SystemEncoding().decoder)
-        .join();
-    final stderrFuture = process.stderr
-        .transform(const SystemEncoding().decoder)
-        .join();
-
     try {
+      await _killTreeOnDispose(process);
+
+      // Drain both pipes so a full buffer can't stall the process.
+      final stdoutFuture = process.stdout
+          .transform(const SystemEncoding().decoder)
+          .join();
+      final stderrFuture = process.stderr
+          .transform(const SystemEncoding().decoder)
+          .join();
+
       return ProcessResult(
         process.pid,
         await process.exitCode,

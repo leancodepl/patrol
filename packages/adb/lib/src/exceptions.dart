@@ -63,3 +63,13 @@ class AdbDeleteFailedInternalError extends AdbException {
   @override
   String toString() => 'AdbDeleteFailedInternalError: $message';
 }
+
+/// Indicates that the ADB server or a device service did not become ready in
+/// time.
+class AdbTimeout extends AdbException {
+  /// Creates a new [AdbTimeout].
+  const AdbTimeout({required super.message});
+
+  @override
+  String toString() => 'AdbTimeout: $message';
+}

@@ -5,7 +5,7 @@ on:
   # Not `pull_request_target`: this workflow needs no secrets, and that trigger
   # checked out the base branch, so every run tested master instead of the PR.
   pull_request:
-    types: [opened, synchronize]
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'packages/patrol/**'
       - 'packages/patrol_finders/**'
@@ -17,6 +17,8 @@ on:
       - 'dev/cli_tests/**'
       - 'schema.dart'
       - 'gen_from_schema'
+      - 'dev/cli_tests/**'
+      - '.github/workflows/test-patrol-develop.yaml'
       - '!**.md'
       - '!**.mdx'
 
@@ -71,11 +73,14 @@ jobs:
           target: google_apis_playstore
           arch: x86_64
           ram-size: 3072M
+          # 37.4.2: on 37.3.10 with Flutter 3.44 the emulator dies mid-test.
+          emulator-build: '16982698'
           disk-size: 6G
           emulator-options: -no-snapshot-save -no-window -noaudio -no-boot-anim
           script: cd dev/cli_tests && dart pub get && dart patrol_develop_test.dart
 
   test-macos:
+    if: github.event.pull_request.draft != true
     name: Test `patrol develop` on macOS
     # macos-15 is on macOS 15.7, where simulator mDNS is broken and
     # `flutter attach` cannot discover the app. See flutter#166333.
