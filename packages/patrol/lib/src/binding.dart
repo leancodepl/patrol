@@ -239,12 +239,18 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
   /// phased test.
   ///
   /// Becomes `true` once a phase that isn't the last one passes, and stays
-  /// `true` until the app is killed. Check it in `patrolTearDown` before
-  /// clearing state, so the next phase still finds that state. (A plain
-  /// `tearDown` also runs for the other tests of the file in every phase's
-  /// process, so it can't protect that state.)
+  /// `true` until the app is killed. It's `false` while the current test is
+  /// failing, for example after a framework error during the phase or a
+  /// `tearDown` that threw: the test then ends without a relaunch. Check it in
+  /// `patrolTearDown` before clearing state, so the next phase still finds
+  /// that state. (A plain `tearDown` also runs for the other tests of the run
+  /// in every phase's process, so it can't protect that state.)
   bool get willRelaunchApp =>
-      !_isDevelopMode && patrolAppService.willRelaunchApp;
+      !_isDevelopMode &&
+      patrolAppService.willRelaunchApp &&
+      // Last, so it's read only inside a test: a continuation exists only
+      // there.
+      global_state.isCurrentTestPassing;
 
   /// The singleton instance of this object.
   ///
