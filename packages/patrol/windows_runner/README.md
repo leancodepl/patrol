@@ -17,8 +17,7 @@ desktop UI Automation (UIA3). Speaks the HTTP/JSON contract in
 build:
 
 ```powershell
-cmake -S packages/patrol/windows_runner -B packages/patrol/windows_runner/build `
-  -G "Visual Studio 17 2022" -A x64
+cmake -S packages/patrol/windows_runner -B packages/patrol/windows_runner/build -A x64
 cmake --build packages/patrol/windows_runner/build --config Release
 # → packages/patrol/windows_runner/build/bin/patrol_windows_runner.exe
 ```

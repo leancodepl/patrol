@@ -203,10 +203,10 @@ class WindowsTestBackend {
     }
 
     // Configure when there is no usable cache. A failed configure can still
-    // leave CMakeCache.txt behind, so also require a generated VS solution.
+    // leave CMakeCache.txt behind, so also require a finished generate step.
     final cache = buildDir.childFile('CMakeCache.txt');
-    final solution = buildDir.childFile('patrol_windows_runner.sln');
-    final needsConfigure = !cache.existsSync() || !solution.existsSync();
+    final generated = buildDir.childFile('cmake_install.cmake');
+    final needsConfigure = !cache.existsSync() || !generated.existsSync();
     if (needsConfigure) {
       if (buildDir.existsSync()) {
         buildDir.deleteSync(recursive: true);
@@ -218,8 +218,7 @@ class WindowsTestBackend {
           runnerDir,
           '-B',
           buildDir.path,
-          '-G',
-          'Visual Studio 17 2022',
+          // No -G: CMake picks the newest Visual Studio (2022 or 2026).
           '-A',
           'x64',
         ], label: 'cmake configure');
