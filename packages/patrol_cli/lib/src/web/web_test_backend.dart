@@ -229,6 +229,7 @@ class WebTestBackend {
     bool openDevtools = false,
   }) async {
     _logger.detail('Starting web develop execution...');
+    _throwIfInterrupted();
 
     _flutterTool = flutterTool;
     _openDevtools = openDevtools;
@@ -242,13 +243,6 @@ class WebTestBackend {
     final debuggerPort = await bindUnusedPort<int>((port) => port);
     _debuggerPort = '$debuggerPort';
     _appPageId = null;
-
-    final flutterProcess = await _startFlutterWebServer(
-      options,
-      develop: true,
-      browserDebugPort: debuggerPort,
-    );
-    _flutterProcess = flutterProcess;
 
     final exited = Completer<void>();
     // Without this, a crash during startup is unhandled and skips `finally`.
@@ -279,12 +273,20 @@ class WebTestBackend {
         }
         _logger.success('Quitting process...');
         await _killInstall();
-        _playwrightDevelopProcess?.kill();
+        await _playwrightDevelopProcess?.killTree();
         await _stopFlutterProcess();
       }
     });
 
     try {
+      final flutterProcess = await _startFlutterWebServer(
+        options,
+        develop: true,
+        browserDebugPort: debuggerPort,
+      );
+      _flutterProcess = flutterProcess;
+      await _killTreeOnDispose(flutterProcess);
+
       await _watchFlutterRun(flutterProcess, exited);
 
       try {
@@ -294,11 +296,13 @@ class WebTestBackend {
           serverTimeout: options.serverTimeout,
         );
       } on Object {
+        _throwIfInterrupted();
         if (_quitting) {
           return;
         }
         rethrow;
       }
+      _throwIfInterrupted();
       if (_quitting) {
         return;
       }
@@ -311,6 +315,7 @@ class WebTestBackend {
         clearTestSteps: clearTestSteps,
         onLogEntry: onLogEntry,
       );
+      _throwIfInterrupted();
       if (_quitting) {
         return;
       }
@@ -323,17 +328,32 @@ class WebTestBackend {
 
       // Lives as long as `flutter run`; ended by quit or its exit handler.
       await exited.future;
+    } on Object {
+      _throwIfInterrupted();
+      rethrow;
     } finally {
       await stdinSubscription.cancel();
       await sigintSubscription.cancel();
       _quitting = true;
-      _playwrightDevelopProcess?.kill();
+      await _playwrightDevelopProcess?.killTree();
       await _stopFlutterProcess();
       final modes = previousStdinModes;
       if (modes != null) {
         flutterTool.revertInteractiveMode(modes);
       }
     }
+  }
+
+  /// Kills [process] and its descendants once [_disposeScope] is disposed,
+  /// also when that happened while [process] was starting.
+  Future<void> _killTreeOnDispose(Process process) async {
+    if (_disposeScope.disposed) {
+      _quitting = true;
+      await _killLateStart(process);
+    }
+    // Marked as a quit before the kill, so the exit handlers do not report it
+    // as a crash.
+    process.disposedByTree(_disposeScope, onKill: () => _quitting = true);
   }
 
   /// Serves DevTools with the Patrol extension, which the one `flutter run`
@@ -356,6 +376,9 @@ class WebTestBackend {
         );
 
     if (base == null) {
+      if (_disposeScope.disposed) {
+        return;
+      }
       _logger.warn(
         'Could not serve the Patrol DevTools extension. Open DevTools from your '
         'IDE instead -- on web the extension is only discoverable when the '
@@ -734,6 +757,7 @@ class WebTestBackend {
     final endpoint = Uri.parse('http://127.0.0.1:$debuggerPort/json/version');
 
     while (!await _httpOk(endpoint)) {
+      _throwIfInterrupted();
       final exitCode = _flutterExitCode;
       if (exitCode != null) {
         throw StateError(
@@ -924,6 +948,7 @@ class WebTestBackend {
       ..detail('Test results will be saved to: $testResultsDir')
       ..detail('Test report will be saved to: $testReportDir');
 
+    _throwIfInterrupted();
     // The driver survives hot restarts and idles for the whole session.
     final playwrightProcess = await _processManager.start(
       ['npx', 'ts-node', 'tests/develop.ts'],
@@ -939,6 +964,7 @@ class WebTestBackend {
       runInShell: true,
     );
     _playwrightDevelopProcess = playwrightProcess;
+    await _killTreeOnDispose(playwrightProcess);
 
     PatrolLogReader(
         listenStdOut: playwrightProcess.listenStdOut,
@@ -1165,15 +1191,17 @@ class WebTestBackend {
     );
     _installProcess = process;
 
-    // Drain both pipes so a full buffer can't stall the process.
-    final stdoutFuture = process.stdout
-        .transform(const SystemEncoding().decoder)
-        .join();
-    final stderrFuture = process.stderr
-        .transform(const SystemEncoding().decoder)
-        .join();
-
     try {
+      await _killTreeOnDispose(process);
+
+      // Drain both pipes so a full buffer can't stall the process.
+      final stdoutFuture = process.stdout
+          .transform(const SystemEncoding().decoder)
+          .join();
+      final stderrFuture = process.stderr
+          .transform(const SystemEncoding().decoder)
+          .join();
+
       return ProcessResult(
         process.pid,
         await process.exitCode,

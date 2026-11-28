@@ -25,6 +25,9 @@
 - Fix Ctrl+C during a web `patrol test` being ignored until the web app finished building, after
   which the run hung. It now stops the Flutter web server and exits at any phase of the run. (#3339)
 - Report a dead `flutter attach` or `flutter logs` in `patrol develop`. (#3234)
+- Fix Ctrl+C during `patrol develop -d chrome` startup waiting out the web server timeout (120 s by
+  default). The session now stops Flutter, the dependency install and the Playwright driver,
+  together with the processes they spawned, at any point before it attaches. (#3453)
 - **BREAKING CHANGE**
   - `--web-headless` no longer takes a value: `--web-headless=true` and `--web-headless false` fail.
     Use `--web-headless` or `--no-web-headless`. Every command except `patrol mcp` now rejects
