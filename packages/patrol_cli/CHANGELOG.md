@@ -27,10 +27,10 @@
 - Report a dead `flutter attach` or `flutter logs` in `patrol develop`. (#3234)
 - **BREAKING CHANGE**
   - `--web-headless` no longer takes a value: `--web-headless=true` and `--web-headless false` fail.
-    Use `--web-headless` or `--no-web-headless`.
+    Use `--web-headless` or `--no-web-headless`. (#3452)
   - A `RunnerUITests.m` with the 4.7.0 `PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN`/`_END`
     macros now fails in `xcodebuild` instead of with a Patrol hint. Replace them with the snippet
-    from `migration5.md`.
+    from `migration5.md`. (#3452)
 
 ## 5.0.0-dev.1
 

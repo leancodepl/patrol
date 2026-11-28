@@ -351,9 +351,9 @@ the Inbox before 5.0.0 is released.
   `PlatformAction.safe()` now requires a `windows:` callback, and exhaustive switches over
   `PatrolTargetPlatform` / CLI `TargetPlatform` need a Windows case — update call sites even if you
   do not run on Windows yet.
-- `claude/pat-377-scope-391ef3`, `patrol_cli`: `--web-headless` no longer takes a value
+- #3452, `patrol_cli`: `--web-headless` no longer takes a value
   (deprecated since 4.6.0). Replace `--web-headless=true` with `--web-headless` and
   `--web-headless=false` with `--no-web-headless` in CI scripts.
-- `claude/pat-377-scope-391ef3`, `patrol_cli`: a `RunnerUITests.m` with the 4.7.0
+- #3452, `patrol_cli`: a `RunnerUITests.m` with the 4.7.0
   `PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN`/`_END` macros fails in `xcodebuild`, with no
   Patrol hint. Replace them with the runner snippet from the build-time discovery section.
