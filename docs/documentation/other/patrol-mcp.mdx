@@ -160,9 +160,10 @@ MCP gives the agent the tools, while a skill teaches it how to use them to write
 ## When a test fails
 
 A failed `run` carries `error`: the first failing test's name and the error lines patrol reported
-for it. `output` holds the session's recent log for everything else, including
-what the build writes to stderr. `logFile` names the file holding the whole log; follow it with
-`tail -F` to watch a run as it goes.
+for it. A `finishedFailed` run without `error` failed before any test did: the build, the app or
+the session itself, and `warning` and `output` say why. `output` holds the session's recent log,
+including what the build writes to stderr. `logFile` names the file holding the whole log; follow
+it with `tail -F` to watch a run as it goes.
 
 ## A run that goes quiet
 
@@ -172,6 +173,25 @@ the last test it saw. Until the app comes up, while it may still be building, in
 launching, nothing counts as quiet. Once the quiet passes three minutes the result also carries a
 `stallNote` naming it, and a `run` that reaches its timeout says how long the quiet lasted. `quit`
 stops such a run; the next `run` starts a fresh session.
+
+## Analytics
+
+`patrol mcp` reports each tool call to the same anonymous usage analytics as the CLI: the tool, how
+the call ended, how long it took, the device platform, and whether the CLI is a global install, a
+project's dev dependency or a path. No paths, test names, errors or output are sent.
+
+A `run` ends as `passed`, `failed`, `session_error` (it failed before any test did), `refused`,
+`timed_out` or `ended` (the session ended without a result). Every other tool ends as `ok` or
+`error`, and a tool call that throws ends as `error`.
+
+It follows the CLI's consent. The server never asks itself: nothing is sent until the CLI has run
+once in a terminal and shown its analytics notice, and `PATROL_ANALYTICS_ENABLED=false` turns it
+off. A client started from the dock or a launcher doesn't read your shell profile, so set the
+variable in the server's config:
+
+```json
+"env": { "PATROL_ANALYTICS_ENABLED": "false" }
+```
 
 ## Troubleshooting
 

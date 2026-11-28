@@ -3,11 +3,13 @@ import 'dart:io' as io;
 
 import 'package:mcp_dart/mcp_dart.dart' hide Logger;
 import 'package:meta/meta.dart';
+import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/base/command_line.dart';
 import 'package:patrol_cli/src/base/constants.dart' as constants;
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/devices.dart';
+import 'package:patrol_cli/src/mcp/mcp_analytics.dart';
 import 'package:patrol_cli/src/mcp/mcp_tools.dart';
 import 'package:patrol_cli/src/mcp/patrol_session.dart';
 import 'package:patrol_cli/src/mcp/project_resolver.dart';
@@ -48,6 +50,7 @@ class McpCommand extends PatrolCommand {
   McpCommand({
     required this._deviceFinder,
     required this._processManager,
+    required this._analytics,
     required this._logger,
   }) : _protocolStdout = io.stdout {
     argParser
@@ -81,6 +84,7 @@ class McpCommand extends PatrolCommand {
 
   final DeviceFinder _deviceFinder;
   final ProcessManager _processManager;
+  final Analytics _analytics;
   final Logger _logger;
 
   /// The real stdout, captured at construction — that is, before [run] installs
@@ -190,6 +194,21 @@ class McpCommand extends PatrolCommand {
       session: session,
       deviceFinder: _deviceFinder,
       processManager: _processManager,
+      analytics: McpAnalytics(
+        // A failed send logs nothing: the session's output would take the
+        // line as word from the run and reset its quiet clock.
+        send: (version, name, {eventData = const {}}) => _analytics.sendCommand(
+          version,
+          name,
+          eventData: eventData,
+          logger: Logger(level: Level.quiet),
+        ),
+        consented: () => _analytics.willSend,
+        cliSource: session.cliOrigin.source,
+        // The runner's process manager logs each command in verbose mode, and
+        // the session's output would take that line as word from the run.
+        processManager: const LocalProcessManager(),
+      ),
     );
     return McpServer(
         const Implementation(name: 'patrol_mcp', version: constants.version),
