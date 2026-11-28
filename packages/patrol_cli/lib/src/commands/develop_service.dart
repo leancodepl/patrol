@@ -68,12 +68,14 @@ class TestCompletionResult {
 ///
 /// xcodebuild launches the app, so discovery is unreliable on the iOS
 /// simulator; physical iOS devices keep discovery. macOS always uses the URL,
-/// Android and web use discovery.
+/// Android, web, and Windows use discovery.
 @visibleForTesting
 bool shouldAttachUsingUrl(Device device) => switch (device.targetPlatform) {
   TargetPlatform.macOS => true,
   TargetPlatform.iOS => !device.real,
-  TargetPlatform.android || TargetPlatform.web => false,
+  TargetPlatform.android ||
+  TargetPlatform.web ||
+  TargetPlatform.windows => false,
 };
 
 /// Orchestrates a patrol develop session.
@@ -216,6 +218,12 @@ class DevelopService {
     // https://github.com/leancodepl/patrol/issues/1974
     if (device.targetPlatform == TargetPlatform.macOS) {
       throwToolExit('macOS is not supported with develop');
+    }
+
+    // Reject before writing the develop entrypoint proxy, so a failed run does
+    // not leave integration_test/patrol_test_bundle.dart behind.
+    if (device.targetPlatform == TargetPlatform.windows) {
+      throwToolExit('Windows is not supported with develop');
     }
 
     if (device.targetPlatform == TargetPlatform.web) {
@@ -440,6 +448,9 @@ class DevelopService {
       TargetPlatform.iOS => () => _iosTestBackend.build(iosOpts),
       TargetPlatform.macOS => () => _macosTestBackend.build(macosOpts),
       TargetPlatform.web => () => _webTestBackend.buildForDevelop(webOpts),
+      TargetPlatform.windows => () => throwToolExit(
+        'Windows is not supported with develop',
+      ),
     };
 
     try {
@@ -479,6 +490,7 @@ class DevelopService {
         }
       case TargetPlatform.macOS:
       case TargetPlatform.web:
+      case TargetPlatform.windows:
     }
 
     try {
@@ -635,6 +647,8 @@ class DevelopService {
           onLogEntry: onLogEntry,
           openDevtools: openDevtools,
         );
+      case TargetPlatform.windows:
+        throwToolExit('Windows is not supported with develop');
     }
 
     // Set once the user quits. Stopping the instrumentation ends the build,
@@ -728,9 +742,9 @@ class DevelopService {
           await attached;
         } else {
           // No Gradle ran before this point, so nothing has verified that the
-          // instrumentation actually came up. If the backend settles before
-          // attach connects (instrumentation not found, app crash on launch),
-          // fail instead of waiting forever for an attach that can't succeed.
+          // instrumentation came up. `attached` completes once attach connects
+          // or exits without attaching; fail if the backend settles first or
+          // attach is dead, instead of waiting for a session that can't start.
           final backendExitedFirst = await Future.any<bool>([
             attached.then((_) => false),
             future.then((_) => true, onError: (Object _) => true),
@@ -739,6 +753,13 @@ class DevelopService {
             throwToolExit(
               'The instrumentation exited before `flutter attach` could '
               'connect - the app never came up. See the logs above.',
+            );
+          }
+          if (_flutterTool.attachExitCode case final code?) {
+            throwToolExit(
+              '`flutter attach` exited with code $code, so the session ends: '
+              'with --use-prebuilt-apks the requested target starts only '
+              'through a hot restart, which needs `flutter attach`.',
             );
           }
           _logger.info(
@@ -776,6 +797,8 @@ class DevelopService {
         return;
       }
       reportTestsCompleted(const TestCompletionResult(success: true));
+    } on ToolExit {
+      rethrow;
     } catch (err, st) {
       _logger
         ..err('$err')

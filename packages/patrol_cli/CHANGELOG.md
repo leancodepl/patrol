@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Experimental `patrol test` support for Windows desktop (build + out-of-process
+  automator sidecar). `patrol develop` on Windows is not supported yet. (#3183)
 - `patrol develop` stops waiting for the app's uninstall after 30 s when a session ends without `q`,
   for example when the device goes away. (#3370)
 - Detect and support both Android test layouts: the self-instrumenting
@@ -20,6 +22,9 @@
 - `patrol test-without-building` on Android now installs the `androidTestUtil` APKs (orchestrator,
   test-services) from the last `patrol build android`, so tools that write through `TestStorage`,
   such as allure-android, work on a fresh device. (#3427)
+- Fix Ctrl+C during a web `patrol test` being ignored until the web app finished building, after
+  which the run hung. It now stops the Flutter web server and exits at any phase of the run. (#3339)
+- Report a dead `flutter attach` or `flutter logs` in `patrol develop`. (#3234)
 - Fix Ctrl+C during `patrol develop -d chrome` startup waiting out the web server timeout (120 s by
   default). The session now stops Flutter, the dependency install and the Playwright driver,
   together with the processes they spawned, at any point before it attaches. (#3453)

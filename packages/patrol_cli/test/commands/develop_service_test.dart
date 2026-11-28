@@ -580,6 +580,38 @@ void main() {
         },
       );
 
+      test("fails with attach's exit code when attach dies first", () async {
+        const stderrLine = 'Could not find an option named "--flavor".';
+        when(() => flutterTool.attachExitCode).thenReturn(64);
+        when(() => flutterTool.attachFailure).thenReturn(
+          'Hot Restart is not available: `flutter attach` exited with code '
+          '64:\n\t$stderrLine',
+        );
+        attachCompleter.complete();
+
+        await expectLater(
+          buildService().run(prebuiltOptions),
+          throwsA(
+            isA<ToolExit>().having(
+              (e) => e.message,
+              'message',
+              allOf(
+                contains('exited with code 64'),
+                contains('requested target'),
+                isNot(contains(stderrLine)),
+              ),
+            ),
+          ),
+        );
+        verifyNever(() => logger.err(any(that: contains('please report it'))));
+        verifyNever(
+          () => flutterTool.hotRestart(
+            onCompleted: any(named: 'onCompleted'),
+            onFailed: any(named: 'onFailed'),
+          ),
+        );
+      });
+
       test('is rejected on non-Android devices', () async {
         const iosDevice = Device(
           name: 'iPhone',
@@ -1251,6 +1283,13 @@ void main() {
     test('is false on web', () {
       expect(
         shouldAttachUsingUrl(device(TargetPlatform.web, real: false)),
+        isFalse,
+      );
+    });
+
+    test('is false on Windows', () {
+      expect(
+        shouldAttachUsingUrl(device(TargetPlatform.windows, real: false)),
         isFalse,
       );
     });

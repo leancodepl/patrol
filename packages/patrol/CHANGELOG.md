@@ -1,5 +1,9 @@
 ## Unreleased
 
+- Experimental Windows support via `$.platform.windows` (out-of-process
+  automator sidecar): find/tap/`enterText`/`pressKey`, `WindowsSelector` with
+  optional `WindowsScope` (defaults to the app under test), and `WindowsKey`
+  helpers. (#3183)
 - **Breaking:** Remove the native API deprecated in 4.0: `$.native`, `$.native2`, `NativeAutomator`,
   `NativeAutomator2`, `NativeAutomatorConfig`, `NativeSelector`, `GetNativeViewsResult` and the
   `nativeAutomatorConfig` parameter of `patrolTest`. Use `$.platform`. `dart fix --apply` rewrites
