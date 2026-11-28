@@ -28,6 +28,10 @@ abstract class PatrolCommand extends Command<int> {
   /// Seconds to wait after the individual test case finishes executing.
   final defaultWait = 0;
 
+  /// Rejects stray positional args, e.g. the `false` in `--web-headless false`.
+  @override
+  bool get takesArguments => false;
+
   var _usesBuildOption = false;
 
   final _defaultTestServerPort = defaultTestServerPort;
