@@ -112,9 +112,8 @@ class FlutterTool {
   static String _attachUnavailable(int code) =>
       'Hot Restart is not available: ${_exitSummary('flutter attach', code)}';
 
-  /// Completes with the reason once `flutter attach` has exited without
-  /// attaching: its exit code and what it wrote to stderr. Hot restart is
-  /// unavailable from then on.
+  /// Completes with [attachFailure] once `flutter attach` has exited without
+  /// attaching.
   Future<String> get attachFailed => _attachFailed.future;
 
   /// Forwards logs and hot restarts the app when "r" is pressed.
