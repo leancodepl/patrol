@@ -17,9 +17,14 @@ final class PatrolPhase {
 
   /// How the app should be launched before this phase.
   ///
-  /// This is ignored for the first phase, which starts normally.
+  /// The first phase must use [PatrolAppLaunch.normal]: the native runner
+  /// starts that process before Dart runs.
   final PatrolAppLaunch launch;
 }
+
+const _noSchemeMessage = 'A deep link needs a scheme, e.g. myapp://settings';
+
+bool _hasScheme(String url) => Uri.tryParse(url)?.hasScheme ?? false;
 
 /// How Patrol launches the app before a phase.
 final class PatrolAppLaunch {
@@ -28,14 +33,10 @@ final class PatrolAppLaunch {
 
   /// Launches the app through [url].
   ///
-  /// [url] must include a scheme (for example `myapp://settings`). Plain paths
-  /// like `/settings` are rejected.
+  /// [url] must have a scheme, for example `myapp://settings`. A route like
+  /// `/settings` isn't a link the platform can open.
   PatrolAppLaunch.deepLink(String this.url)
-    : assert(url != ''),
-      assert(
-        url.contains('://'),
-        'Deep link URL must include a scheme, e.g. myapp://path',
-      );
+    : assert(_hasScheme(url), _noSchemeMessage);
 
   /// The deep link URL, or `null` for a normal launch.
   final String? url;
@@ -125,6 +126,13 @@ PatrolPhaseCallback phases(List<PatrolPhase> phases) {
       'launch on the first phase is ignored by the native runner; '
       'put PatrolAppLaunch.deepLink on phase 2 or later',
     );
+  }
+  // The constructor only asserts this, so check it in release builds too.
+  for (final phase in phases) {
+    final url = phase.launch.url;
+    if (url != null && !_hasScheme(url)) {
+      throw ArgumentError.value(url, 'launch', _noSchemeMessage);
+    }
   }
   Future<void> callback(PatrolIntegrationTester $) {
     throw UnsupportedError(

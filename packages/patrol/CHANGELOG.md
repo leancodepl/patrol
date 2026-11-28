@@ -42,7 +42,8 @@
   relaunched (normal start or a deep link). Runs on iOS and on Android with the
   self-instrumenting `:patrolTest` layout; on macOS, web, Windows and the in-app
   Android layout, and with `--coverage`, a test with more than one phase fails
-  before its first phase runs. Unsupported in `patrol develop`.
+  before its first phase runs. Unsupported in `patrol develop`. A phase
+  launched through a deep link needs iOS 16.4 or newer.
   See [Phased tests](https://patrol.leancode.co/documentation/phased-tests).
   (#3282)
 - Add the optional self-instrumenting Android `:patrolTest` layout, which runs

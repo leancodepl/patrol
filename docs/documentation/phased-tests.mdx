@@ -125,9 +125,9 @@ Dart runs.
   Flutter's built-in deep linking / `WidgetsApp` can open the matching screen.
 - **iOS:** Flutter's built-in deep linking does **not** receive the URL in a
   Patrol process (the first frame belongs to `flutter_test`). Read the initial
-  link with a native plugin such as [`app_links`] instead. Below iOS 16.4 the
-  runner launches normally and then opens the URL, so it is a warm link, not a
-  cold start.
+  link with a native plugin such as [`app_links`] instead. A phase launched
+  through a deep link needs iOS 16.4 or newer: below that, XCTest can't open a
+  URL in the app, and the test fails before the app is killed.
 
 ## Requirements and limits
 

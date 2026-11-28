@@ -349,9 +349,10 @@ static inline void PatrolWithoutQuiescenceWait(void (^block)(void)) {
   }                                                                                                                 \
                                                                                                                     \
   +(void)launchPatrolAppWithServer : (PatrolServer *)server {                                                       \
-    [self launchPatrolAppWithServer:server launchURL:nil];                                                          \
+    [self launchPatrolAppWithServer:server url:nil];                                                                \
   }                                                                                                                 \
-  +(void)launchPatrolAppWithServer : (PatrolServer *)server launchURL : (NSString *)launchURL {                     \
+  /* Opens the app through url when it's set. Callers check it with patrolCanOpenDeepLinks first. */                \
+  +(void)launchPatrolAppWithServer : (PatrolServer *)server url : (NSURL *)url {                                    \
     server.appReady = NO;                                                                                           \
     XCUIApplication *app = [[XCUIApplication alloc] init];                                                          \
     NSMutableDictionary<NSString *, NSString *> *environment =                                                      \
@@ -360,22 +361,20 @@ static inline void PatrolWithoutQuiescenceWait(void (^block)(void)) {
     environment[@"PATROL_APP_SERVER_PORT"] = [NSString stringWithFormat:@"%ld", (long)server.boundAppPort];         \
     environment[@"PATROL_HOST_SERVER_PORT"] = NSProcessInfo.processInfo.environment[@"PATROL_HOST_PORT"];           \
     app.launchEnvironment = environment;                                                                            \
-    if (launchURL == nil) {                                                                                         \
+    if (url == nil) {                                                                                               \
       [app launch];                                                                                                 \
-    } else {                                                                                                        \
-      NSURL *url = [NSURL URLWithString:launchURL];                                                                 \
-      XCTAssertNotNil(url, @"Invalid phase launch URL: %@", launchURL);                                             \
-      if (url == nil) {                                                                                             \
-        return;                                                                                                     \
-      }                                                                                                             \
-      /* iOS 16.4+: openURL; older iOS launches then openURL for deep links. */                                     \
-      if (@available(iOS 16.4, *)) {                                                                                \
-        [app openURL:url];                                                                                          \
-      } else {                                                                                                      \
-        [app launch];                                                                                               \
-        [[XCUIDevice sharedDevice].system openURL:url];                                                             \
-      }                                                                                                             \
+    } else if (@available(iOS 16.4, *)) {                                                                           \
+      [app openURL:url];                                                                                            \
     }                                                                                                               \
+  }                                                                                                                 \
+  /* XCUIApplication can open a URL in the app from iOS 16.4. On older iOS the system-wide                          \
+     XCUISystem openURL: fails with "Device does not have the capability to open the default                        \
+     app from a url". */                                                                                            \
+  +(BOOL)patrolCanOpenDeepLinks {                                                                                   \
+    if (@available(iOS 16.4, *)) {                                                                                  \
+      return YES;                                                                                                   \
+    }                                                                                                               \
+    return NO;                                                                                                      \
   }                                                                                                                 \
   +(BOOL)waitForPatrolAppReadyWithServer : (PatrolServer *)server timeout : (NSTimeInterval)timeout {               \
     NSDate *deadline = [NSDate dateWithTimeIntervalSinceNow:timeout];                                               \
@@ -427,10 +426,22 @@ static inline void PatrolWithoutQuiescenceWait(void (^block)(void)) {
       if (phaseIndex == nil) {                                                                                      \
         return [self patrolFailureResponse:@"A phased Patrol test returned continuation without a next phase"];     \
       }                                                                                                             \
+      /* Check the link before the app is killed, so a bad one fails the test at once. */                           \
       NSString *launchURL = response.nextPhaseLaunchUrl;                                                            \
+      NSURL *url = nil;                                                                                             \
+      if (launchURL != nil) {                                                                                       \
+        url = [NSURL URLWithString:launchURL];                                                                      \
+        if (url == nil) {                                                                                           \
+          NSString *details = [NSString stringWithFormat:@"Invalid deep link for the next phase: %@", launchURL];   \
+          return [self patrolFailureResponse:details];                                                              \
+        }                                                                                                           \
+        if (![self patrolCanOpenDeepLinks]) {                                                                       \
+          return [self patrolFailureResponse:@"A phase launched through a deep link needs iOS 16.4 or newer"];      \
+        }                                                                                                           \
+      }                                                                                                             \
       XCUIApplication *app = [[XCUIApplication alloc] init];                                                        \
       [app terminate];                                                                                              \
-      [self launchPatrolAppWithServer:_patrolServer launchURL:launchURL];                                           \
+      [self launchPatrolAppWithServer:_patrolServer url:url];                                                       \
       if (![self waitForPatrolAppReadyWithServer:_patrolServer timeout:180.0]) {                                    \
         if (PATROL_SCREENSHOT_ON_FAILURE) {                                                                         \
           [PatrolScreenshotBuffer attachCurrentScreenNamed:@"patrol_failure" to:testCase];                          \

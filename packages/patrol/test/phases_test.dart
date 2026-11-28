@@ -50,6 +50,19 @@ void main() {
       );
     });
 
+    test('takes deep links with a scheme, with or without a host', () {
+      expect(
+        PatrolAppLaunch.deepLink('patrol://check/somepath?query=10').url,
+        'patrol://check/somepath?query=10',
+      );
+      expect(PatrolAppLaunch.deepLink('myapp:settings').url, 'myapp:settings');
+    });
+
+    test('rejects a deep link without a scheme', () {
+      expect(() => PatrolAppLaunch.deepLink('/settings'), throwsAssertionError);
+      expect(() => PatrolAppLaunch.deepLink(''), throwsAssertionError);
+    });
+
     // Runners that can relaunch the app ask for phase 0; the others send no
     // phase, and a test that needs a relaunch fails before its first phase.
     test('fails a multi-phase test when the runner sends no phase', () {
