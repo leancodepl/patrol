@@ -1,4 +1,4 @@
-## Unreleased
+## 0.6.2
 
 - Waiting for the ADB server or a device's package and activity services gives up after 2 minutes
   with an `AdbTimeout`. `Adb(readyTimeout: ...)` sets a different limit. (#3424)
