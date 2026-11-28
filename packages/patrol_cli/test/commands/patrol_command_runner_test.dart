@@ -244,6 +244,18 @@ packages:
       ).called(1);
     });
 
+    test('rejects a value passed to --web-headless', () async {
+      final result = await commandRunner.run([
+        'test',
+        '--web-headless',
+        'false',
+      ]);
+      expect(result, equals(1));
+      verify(
+        () => logger.err('Command "test" does not take any arguments.'),
+      ).called(1);
+    });
+
     test('prints usage when no command is passed', () async {
       final result = await commandRunner.run([]);
       expect(result, equals(0));
