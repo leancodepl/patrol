@@ -11,6 +11,7 @@ import 'package:patrol/patrol.dart';
 import 'package:patrol/src/bs_coverage.dart';
 import 'package:patrol/src/devtools_service_extensions/devtools_service_extensions.dart';
 import 'package:patrol/src/global_state.dart' as global_state;
+import 'package:patrol_log/patrol_log.dart';
 
 import 'constants.dart' as constants;
 
@@ -72,6 +73,21 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
 
       _currentDartTest = global_state.currentTestFullName;
     });
+
+    if (_isDevelopMode) {
+      // The last test that runs reports the end of a develop run and keeps the
+      // app alive for Hot Restart. With every test skipped, this does both.
+      tearDownAll(() async {
+        if (global_state.anyTestRuns) {
+          return;
+        }
+        logDevelopRunEnd(PatrolLogWriter());
+        while (true) {
+          global_state.heartbeat();
+          await Future<void>.delayed(const Duration(seconds: 1));
+        }
+      });
+    }
 
     tearDown(() async {
       // _wrapTestBodyWithExceptionGatherer() intentionally leaves its

@@ -35,31 +35,75 @@ void main() {
 }
 ''';
 
-/// A passing test followed by a skipped one, which is then the last test of
-/// the file.
-const exampleTestWithSkippedLastContents = r'''
+/// A passing test named [name], which the skip stages put next to their
+/// skipped tests. Two tests of one file need two names, since the last test is
+/// found by name.
+String _passingTest([
+  String name = 'This test is used to `test patrol develop`',
+]) =>
+    '''
+  patrol(
+    '$name',
+    (\$) async {
+      await createApp(\$);
+
+      await \$(FloatingActionButton).tap();
+      expect(\$(#counterText).text, '1');
+    },
+  );
+''';
+
+/// Printed by a `setUp` that only skipped tests have, so it must not appear.
+const skippedSetUpMarker = 'SKIPPED_TEST_SETUP_RAN';
+
+String _testFile(String body) =>
+    '''
 import 'package:flutter/material.dart';
 
 import 'common.dart';
 
 void main() {
-  patrol(
-    'This test is used to `test patrol develop`',
-    ($) async {
-      await createApp($);
-
-      await $(FloatingActionButton).tap();
-      expect($(#counterText).text, '1');
-    },
-  );
-
-  patrol(
-    'This skipped test is the last one in the file',
-    ($) async {},
-    skip: true,
-  );
-}
+$body}
 ''';
+
+/// Files whose skipped tests must still let the run report its end, in the
+/// order the test hot restarts into them.
+final skipStages = <({String name, String contents})>[
+  (
+    name: 'a skipped last test',
+    contents: _testFile('''
+${_passingTest()}
+  patrol('This skipped test is the last one in the file', (\$) async {},
+      skip: true);
+'''),
+  ),
+  (
+    name: 'a skipped test in the middle',
+    contents: _testFile('''
+${_passingTest()}
+  group('skipped tests', () {
+    setUp(() => print('$skippedSetUpMarker'));
+    patrol('This skipped test is in the middle', (\$) async {}, skip: true);
+  });
+${_passingTest('This test runs after the skipped one')}'''),
+  ),
+  (
+    name: 'a skipped group at the end',
+    contents: _testFile('''
+${_passingTest()}
+  group('skipped group', () {
+    setUp(() => print('$skippedSetUpMarker'));
+    patrol('This test is in a skipped group', (\$) async {});
+  }, skip: true);
+'''),
+  ),
+  (
+    name: 'only skipped tests',
+    contents: _testFile(r'''
+  patrol('This test is skipped', ($) async {}, skip: true);
+'''),
+  ),
+];
 
 const allTestsExecuted =
     'All tests were executed. Press "r" to start again or "q" to quit';
@@ -72,7 +116,8 @@ void main(List<String> args) async {
 
   var isFirstTestPassed = false;
   var isReloaded = false;
-  int? skippedLastOutputStart;
+  var skipStage = -1;
+  var skipStageOutputStart = 0;
   Timer? inactivityTimer;
   final output = StringBuffer();
 
@@ -126,24 +171,36 @@ void main(List<String> args) async {
         isReloaded &&
         stringOutput.contains('When the exception was thrown');
 
-    if (isRestartedTestFailed && skippedLastOutputStart == null) {
-      print(
-        'exampleTestWithFailingContents was successfully restarted as example_test and it has failed as expected',
-      );
-      exampleTestFile.writeAsStringSync(exampleTestWithSkippedLastContents);
-      skippedLastOutputStart = stringOutput.length;
+    void startSkipStage(int stage) {
+      skipStage = stage;
+      skipStageOutputStart = stringOutput.length;
+      exampleTestFile.writeAsStringSync(skipStages[stage].contents);
       process.stdin.add('R'.codeUnits);
     }
 
-    final start = skippedLastOutputStart;
-    if (start != null &&
-        stringOutput.substring(start).contains(allTestsExecuted)) {
+    if (isRestartedTestFailed && skipStage == -1) {
       print(
-        'exampleTestWithSkippedLastContents reported the end of the run with its last test skipped',
+        'exampleTestWithFailingContents was successfully restarted as example_test and it has failed as expected',
       );
-      print('Exiting with exit code 0');
-      // TODO: kill `patrol develop` process and its children
-      io.exit(0);
+      startSkipStage(0);
+    } else if (skipStage >= 0) {
+      final stageOutput = stringOutput.substring(skipStageOutputStart);
+      if (stageOutput.contains(skippedSetUpMarker)) {
+        print(
+          'A skipped test ran its setUp with ${skipStages[skipStage].name}',
+        );
+        print('Exiting with exit code 1');
+        io.exit(1);
+      }
+      if (stageOutput.contains(allTestsExecuted)) {
+        print('The run reported its end with ${skipStages[skipStage].name}');
+        if (skipStage == skipStages.length - 1) {
+          print('Exiting with exit code 0');
+          // TODO: kill `patrol develop` process and its children
+          io.exit(0);
+        }
+        startSkipStage(skipStage + 1);
+      }
     }
 
     inactivityTimer?.cancel();
@@ -155,7 +212,7 @@ void main(List<String> args) async {
         );
         print('isFirstTestPassed: $isFirstTestPassed');
         print('isReloaded: $isReloaded');
-        print('skippedLastOutputStart: $skippedLastOutputStart');
+        print('skipStage: $skipStage');
         print('Running file:');
         print(exampleTestFile.readAsStringSync());
         print('End of the running file');

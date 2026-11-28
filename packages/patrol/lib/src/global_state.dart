@@ -67,6 +67,25 @@ bool get isCurrentTestPassing {
   return Invoker.current!.liveTest.state.result.isPassing;
 }
 
+/// Whether [entry] runs: a test that is not skipped, or a group with such a
+/// test. The test explorer does not count.
+///
+/// The end of a develop run is reported by the last entry that runs, because a
+/// skipped test's body never runs.
+bool isRunnable(GroupEntry entry) =>
+    !isInternalTestExplorerEntry(entry) &&
+    !entry.metadata.skip &&
+    (entry is! Group || entry.entries.any(isRunnable));
+
+/// Whether any test of the current suite runs.
+bool get anyTestRuns {
+  final groups = Invoker.current!.liveTest.groups;
+  return groups.isNotEmpty && isRunnable(groups.first);
+}
+
+/// Resets the timeout of the current test, setUpAll or tearDownAll.
+void heartbeat() => Invoker.current!.heartbeat();
+
 /// Returns whether the current test is the last test in its immediate group.
 bool get isCurrentTestLastInGroup {
   final currentTest = Invoker.current!.liveTest;
@@ -110,56 +129,25 @@ bool _isLastInHierarchy(LiveTest currentTest) {
 
 /// Checks if the current test is the last test in the given group
 bool _isLastTestInGroup(LiveTest currentTest, Group group) {
-  final allEntriesInGroup = <String>[];
-
-  // Get ALL entries (both tests and groups) in the group
-  for (final entry in group.entries) {
-    if (!isInternalTestExplorerEntry(entry)) {
-      final individualEntryName = deduplicateGroupEntryName(
-        group.name,
-        entry.name,
-      );
-      allEntriesInGroup.add(individualEntryName);
-    }
-  }
-
-  if (allEntriesInGroup.isEmpty) {
-    return false;
-  }
-
-  final currentTestName = currentTest.individualName;
-  final lastEntryName = allEntriesInGroup.last;
-
+  final lastEntryName = lastRunnableEntryName(group);
   // The current test is last only if it's the very last entry (not just last test)
-  return currentTestName == lastEntryName;
+  return lastEntryName != null && currentTest.individualName == lastEntryName;
 }
 
 /// Checks if the given entry (group or test) is the last entry in the parent group
 bool _isLastEntryInGroup(Group entry, Group parentGroup) {
-  final entriesInGroup = <String>[];
+  final lastEntryName = lastRunnableEntryName(parentGroup);
+  return lastEntryName != null &&
+      deduplicateGroupEntryName(parentGroup.name, entry.name) == lastEntryName;
+}
 
-  // Get all entries (both tests and groups) in the parent group
-  for (final parentEntry in parentGroup.entries) {
-    if (!isInternalTestExplorerEntry(parentEntry)) {
-      final relativeName = deduplicateGroupEntryName(
-        parentGroup.name,
-        parentEntry.name,
-      );
-      entriesInGroup.add(relativeName);
+/// The name of the last entry of [group] that runs, relative to [group], or
+/// null when none of them runs.
+String? lastRunnableEntryName(Group group) {
+  for (final entry in group.entries.reversed) {
+    if (isRunnable(entry)) {
+      return deduplicateGroupEntryName(group.name, entry.name);
     }
   }
-
-  if (entriesInGroup.isEmpty) {
-    return false;
-  }
-
-  // Get the relative name of our entry
-  final entryRelativeName = deduplicateGroupEntryName(
-    parentGroup.name,
-    entry.name,
-  );
-
-  final lastEntryName = entriesInGroup.last;
-
-  return entryRelativeName == lastEntryName;
+  return null;
 }
