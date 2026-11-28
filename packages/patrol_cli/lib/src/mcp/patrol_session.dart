@@ -1249,8 +1249,8 @@ final class PatrolSession {
           'ready for hot restart within ${limit.inSeconds}s, so no restart was '
           'sent. Quit and run again.';
     } on ToolExit catch (err) {
-      return 'The session is running "$_currentTestFile" but cannot hot '
-          'restart it. ${err.message}\nQuit and run again.';
+      return 'The session is running "$_currentTestFile". ${err.message}\n'
+          'Fix the cause above, then quit and run again.';
     }
   }
 
