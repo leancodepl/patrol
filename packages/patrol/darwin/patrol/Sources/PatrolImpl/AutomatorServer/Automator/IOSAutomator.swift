@@ -192,7 +192,7 @@
         }
 
         self.clearAndEnterText(
-          data: data, element: element, dismissKeyboard: dismissKeyboard, dx: dx, dy: dy)
+          data: data, element: element, in: app, dismissKeyboard: dismissKeyboard, dx: dx, dy: dy)
       }
 
       // Prevent keyboard dismissal from happening too fast
@@ -233,7 +233,7 @@
         }
 
         self.clearAndEnterText(
-          data: data, element: element, dismissKeyboard: dismissKeyboard, dx: dx, dy: dy)
+          data: data, element: element, in: app, dismissKeyboard: dismissKeyboard, dx: dx, dy: dy)
       }
 
       // Prevent keyboard dismissal from happening too fast
@@ -948,7 +948,8 @@
 
     // MARK: Private stuff
     private func clearAndEnterText(
-      data: String, element: XCUIElement, dismissKeyboard: Bool, dx: CGFloat, dy: CGFloat
+      data: String, element: XCUIElement, in app: XCUIApplication, dismissKeyboard: Bool,
+      dx: CGFloat, dy: CGFloat
     ) {
       let currentValue = element.value as? String
       var delete: String = ""
@@ -963,9 +964,16 @@
       element.typeText(delete + data + (dismissKeyboard ? "\n" : ""))
 
       guard dismissKeyboard else { return }
-      // Multi-line fields insert the newline instead of dismissing the keyboard (#2081).
-      if element.exists, let value = element.value as? String, value.hasSuffix("\n") {
-        element.typeText(XCUIKeyboardKey.delete.rawValue)
+      // Multi-line fields insert the newline instead of dismissing the keyboard, and keep the
+      // focus (#2081). Find the field by its focus rather than through `element`, whose query
+      // runs again and may no longer match once the field's value or placeholder changed.
+      // Comparing with the typed text leaves alone a field that Return moved the focus to.
+      let focusedField = app.descendants(matching: .any)
+        .matching(NSPredicate(format: "hasKeyboardFocus == true")).firstMatch
+      if focusedField.exists, let value = focusedField.value as? String,
+        value.hasSuffix(data + "\n")
+      {
+        focusedField.typeText(XCUIKeyboardKey.delete.rawValue)
       }
     }
 
