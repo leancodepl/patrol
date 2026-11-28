@@ -4,6 +4,12 @@
   bundled with `patrol`, the error now says to update `patrol` and, on Ubuntu, which
   `PLAYWRIGHT_HOST_PLATFORM_OVERRIDE` value works as a fallback. On an Ubuntu older than 20.04 it
   says the OS is too old instead.
+- Add native screenshots on iOS, collected by `patrol test` from the `.xcresult` into
+  `<test-directory>/screenshots`. Requires Xcode 16 or newer. See the
+  [docs](https://patrol.leancode.co/cli-commands/test#on-ios). (#3271)
+- `patrol test-without-building` on Android now installs the `androidTestUtil` APKs (orchestrator,
+  test-services) from the last `patrol build android`, so tools that write through `TestStorage`,
+  such as allure-android, work on a fresh device. (#3427)
 - Fix Ctrl+C during a web `patrol test` being ignored until the web app finished building, after
   which the run hung. It now stops the Flutter web server and exits at any phase of the run. (#3339)
 
