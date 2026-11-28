@@ -53,14 +53,15 @@ class FlutterTool {
   var _pendingHotRestart = false;
   int? _attachExitCode;
   String? _attachFailure;
+  final _attachFailed = Completer<String>();
   void Function()? _onRestartCompleted;
   void Function()? _onRestartFailed;
 
   /// Sends a Hot Restart to the attached app - the same as pressing `r`.
   ///
   /// If `flutter attach` hasn't connected yet the request is queued and sent
-  /// as soon as it does. Once `flutter attach` has exited without attaching,
-  /// the request is refused with a warning and neither callback fires.
+  /// as soon as it does. Once `flutter attach` has exited outside a quit, the
+  /// request is refused with a warning and neither callback fires.
   ///
   /// [onCompleted] fires once `flutter attach` reports the restart as
   /// completed ('Restarted application ...'), not when it is requested.
@@ -101,15 +102,19 @@ class FlutterTool {
   /// on the restart waits for this before claiming it was sent.
   Future<void> get hotRestartReady => _hotRestartReady.future;
 
-  /// Why `flutter attach` exited without attaching, once it has: its exit
-  /// code and what it wrote to stderr. Hot restart is unavailable from then on.
+  /// Why `flutter attach` exited outside a quit, once it has: its exit code and
+  /// what it wrote to stderr. Hot restart is unavailable from then on.
   String? get attachFailure => _attachFailure;
 
-  /// The exit code of `flutter attach` once it has exited without attaching.
+  /// The exit code of `flutter attach` once it has exited outside a quit.
   int? get attachExitCode => _attachExitCode;
 
   static String _attachUnavailable(int code) =>
       'Hot Restart is not available: ${_exitSummary('flutter attach', code)}';
+
+  /// Completes with [attachFailure] once `flutter attach` has exited outside a
+  /// quit.
+  Future<String> get attachFailed => _attachFailed.future;
 
   /// Forwards logs and hot restarts the app when "r" is pressed.
   Future<void> attachForHotRestart({
@@ -330,17 +335,20 @@ class FlutterTool {
         completer.maybeComplete();
       });
 
+      var quitting = false;
       _reportExit(process, scope, 'flutter attach', (code, reason) {
-        if (completer.isCompleted) {
+        if (scope.disposed || quitting) {
           return;
         }
+        _hotRestartActive = false;
         _attachExitCode = code;
-        _attachFailure = 'Hot Restart is not available: $reason';
+        final failure = 'Hot Restart is not available: $reason';
+        _attachFailure = failure;
+        _attachFailed.maybeComplete(failure);
         _logger.err(_attachUnavailable(code));
         completer.maybeComplete();
       });
 
-      var quitting = false;
       _stdin
           .listen((event) async {
             final char = String.fromCharCode(event.first);

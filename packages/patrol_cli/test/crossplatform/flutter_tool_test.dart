@@ -522,7 +522,40 @@ void main() {
       expect(reason, contains('Could not find an option named "--flavor".'));
     });
 
-    test('attachFailure stays null when attach exits once attached', () async {
+    test(
+      'an exit after attaching records why and refuses a hot restart',
+      () async {
+        final exited = Completer<int>();
+        stubProcess(
+          stdout: ['Flutter run key commands.'],
+          exitCode: exited.future,
+        );
+
+        await flutterTool.attach(
+          flutterCommand: flutterCommand,
+          deviceId: 'testDeviceId',
+          target: 'target',
+          appId: 'appId',
+          dartDefines: {},
+          openBrowser: false,
+        );
+        exited.complete(1);
+
+        final reason = await flutterTool.attachFailed.timeout(
+          const Duration(seconds: 1),
+        );
+        expect(reason, contains('exited with code 1'));
+        expect(flutterTool.attachFailure, reason);
+
+        var restarted = false;
+        flutterTool.hotRestart(onCompleted: () => restarted = true);
+
+        verify(() => logger.warn(reason)).called(1);
+        expect(restarted, isFalse);
+      },
+    );
+
+    test('an exit after q records no failure', () async {
       final exited = Completer<int>();
       stubProcess(
         stdout: ['Flutter run key commands.'],
@@ -537,10 +570,67 @@ void main() {
         dartDefines: {},
         openBrowser: false,
       );
+      stdin.add('q'.codeUnits);
+      await pumpEventQueue();
       exited.complete(0);
 
-      await Future<void>.delayed(const Duration(milliseconds: 1200));
+      var failed = false;
+      unawaited(flutterTool.attachFailed.then((_) => failed = true));
+      await Future<void>.delayed(const Duration(milliseconds: 200));
+      expect(failed, isFalse);
       expect(flutterTool.attachFailure, isNull);
+    });
+
+    test('an exit while the session is disposed records no failure', () async {
+      final exited = Completer<int>();
+      final process = stubProcess(
+        stdout: ['Flutter run key commands.'],
+        exitCode: exited.future,
+      );
+      when(process.kill).thenAnswer((_) {
+        if (!exited.isCompleted) {
+          exited.complete(-15);
+        }
+        return true;
+      });
+
+      await flutterTool.attach(
+        flutterCommand: flutterCommand,
+        deviceId: 'testDeviceId',
+        target: 'target',
+        appId: 'appId',
+        dartDefines: {},
+        openBrowser: false,
+      );
+      await disposeScope.dispose();
+
+      var failed = false;
+      unawaited(flutterTool.attachFailed.then((_) => failed = true));
+      await Future<void>.delayed(const Duration(milliseconds: 200));
+      expect(failed, isFalse);
+      expect(flutterTool.attachFailure, isNull);
+    });
+
+    test('attachFailed carries why attach exited before attaching', () async {
+      stubProcess(
+        stderr: ['Could not find an option named "--flavor".'],
+        exitCode: Future.value(64),
+      );
+
+      await flutterTool.attach(
+        flutterCommand: flutterCommand,
+        deviceId: 'testDeviceId',
+        target: 'target',
+        appId: 'appId',
+        dartDefines: {},
+        openBrowser: false,
+      );
+
+      final reason = await flutterTool.attachFailed.timeout(
+        const Duration(seconds: 1),
+      );
+      expect(reason, contains('exited with code 64'));
+      expect(reason, contains('Could not find an option named "--flavor".'));
     });
 
     test('logs returns and reports why when the process exits', () async {

@@ -1004,6 +1004,32 @@ packages:
     expect(fake.stdinChars, isNot(contains('R')));
   });
 
+  test('refuses a hot restart at once, with why attach died', () async {
+    // Created before anything awaits it, as the service's own failure is.
+    final attachDied = Future<void>.error(
+      const ToolExit(
+        'Hot Restart is not available: `flutter attach` exited with code '
+        '64:\n\tCould not find an option named "--flavor".',
+      ),
+    )..ignore();
+    final fake = FakeDevelop(hotRestartReady: attachDied);
+    final session = sessionWith(fake, readyTimeout: const Duration(minutes: 1));
+    await startSession(session, 'app_test.dart');
+
+    final watch = Stopwatch()..start();
+    final result = await session.startAndWait(
+      'app_test.dart',
+      timeout: const Duration(minutes: 1),
+    );
+
+    expect(result.started, isFalse);
+    expect(result.status.warning, contains('exited with code 64'));
+    expect(result.status.warning, contains('--flavor'));
+    expect(watch.elapsed, lessThan(const Duration(seconds: 5)));
+    expect(fake.stdinChars, isNot(contains('R')));
+    await session.quit();
+  });
+
   test('sends the hot restart once attach is ready', () async {
     final fake = FakeDevelop(hotRestartReady: Future<void>.value());
     final session = sessionWith(fake);
@@ -1289,6 +1315,8 @@ packages:
     expect(result.status.testState, TestState.finishedFailed);
     expect(result.status.warning, 'Cannot use release mode.');
     expect(result.status.output, contains('Cannot use release mode.'));
+    // The log is written into the project, which tearDown deletes.
+    await session.awaitTeardown();
   });
 
   /// Runs [body] with stderr captured by [session], as `patrol mcp` does.
@@ -1315,6 +1343,7 @@ packages:
       'ERROR: Exception: gradle exploded'.allMatches(result.status.output),
       hasLength(1),
     );
+    await session.awaitTeardown();
   });
 
   test('dispose waits for a session whose app died to tear down', () async {

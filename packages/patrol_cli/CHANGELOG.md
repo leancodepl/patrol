@@ -4,6 +4,8 @@
   automator sidecar). `patrol develop` on Windows is not supported yet. (#3183)
 - `patrol develop` stops waiting for the app's uninstall after 30 s when a session ends without `q`,
   for example when the device goes away. (#3370)
+- `patrol mcp` refuses a `run` that would hot restart the running session right away, with the
+  exit code and stderr of `flutter attach`, once attach has exited. (#3375)
 - Detect and support both Android test layouts: the self-instrumenting
   `:patrolTest` module and the in-app `:app` androidTest source set. The generated
   test bundle resolves the Android native-server host before
