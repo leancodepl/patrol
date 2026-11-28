@@ -405,6 +405,9 @@ void main() {
 
     test('hotRestartReady fails with why flutter attach exited', () async {
       when(
+        () => webTestBackend.hotRestartReady,
+      ).thenAnswer((_) => Completer<void>().future);
+      when(
         () => flutterTool.hotRestartReady,
       ).thenAnswer((_) => Completer<void>().future);
       when(() => flutterTool.attachFailed).thenAnswer(
@@ -426,6 +429,9 @@ void main() {
     });
 
     test('hotRestartReady completes once flutter attach is ready', () async {
+      when(
+        () => webTestBackend.hotRestartReady,
+      ).thenAnswer((_) => Completer<void>().future);
       when(() => flutterTool.hotRestartReady).thenAnswer((_) async {});
       when(
         () => flutterTool.attachFailed,
@@ -748,6 +754,9 @@ void main() {
         when(
           () => flutterTool.hotRestartReady,
         ).thenAnswer((_) => Completer<void>().future);
+        when(
+          () => flutterTool.attachFailed,
+        ).thenAnswer((_) => Completer<String>().future);
 
         final ready = buildService().hotRestartReady;
         webReady.complete();
