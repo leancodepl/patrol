@@ -761,7 +761,8 @@ void main() {
     void stubAttachProcess() {
       attachStdout = StreamController<List<int>>();
       final process = MockProcess();
-      when(() => process.pid).thenReturn(424242);
+      // No real process has this PID, so killing its tree reaches nothing else.
+      when(() => process.pid).thenReturn(999999999);
       when(process.kill).thenReturn(true);
       when(() => process.stdout).thenAnswer((_) => attachStdout.stream);
       when(

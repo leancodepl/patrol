@@ -184,7 +184,7 @@ class WebTestBackend {
     } finally {
       _logger.detail('Stopping Flutter web server...');
 
-      flutterProcess.kill();
+      await flutterProcess.killTree();
 
       try {
         await flutterProcess.exitCode.timeout(const Duration(seconds: 5));
@@ -675,6 +675,7 @@ class WebTestBackend {
           }
         });
 
+    // `flutter` can exit with code 0 on SIGINT.
     flutterProcess.exitCode.then((exitCode) {
       if (!completer.isCompleted) {
         stdoutSubscription.cancel();
