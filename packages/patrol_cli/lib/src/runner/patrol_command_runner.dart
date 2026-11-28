@@ -298,6 +298,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       McpCommand(
         deviceFinder: deviceFinder,
         processManager: _processManager,
+        analytics: _analytics,
         logger: _logger,
       ),
     );
@@ -400,7 +401,7 @@ To install a specific version of Patrol CLI, run:
         _handleFirstRun();
       }
 
-      final topLevelResults = parse(_normalizeArgs(args));
+      final topLevelResults = parse(args);
       verbose = topLevelResults['verbose'] == true;
 
       if (verbose) {
@@ -449,47 +450,6 @@ To install a specific version of Patrol CLI, run:
     }
 
     return exitCode;
-  }
-
-  /// Rewrites the deprecated `--web-headless=<value>` and
-  /// `--web-headless <value>` forms to the `--web-headless`/`--no-web-headless`
-  /// flag syntax, warning about the deprecation.
-  List<String> _normalizeArgs(Iterable<String> args) {
-    final list = args.toList();
-    final result = <String>[];
-
-    for (var i = 0; i < list.length; i++) {
-      final arg = list[i];
-
-      // Everything after `--` is positional, not options.
-      if (arg == '--') {
-        result.addAll(list.sublist(i));
-        break;
-      }
-
-      bool? headless;
-      if (arg == '--web-headless' && i + 1 < list.length) {
-        headless = bool.tryParse(list[i + 1]);
-        if (headless != null) {
-          i++;
-        }
-      } else if (arg.startsWith('--web-headless=')) {
-        headless = bool.tryParse(arg.substring('--web-headless='.length));
-      }
-
-      if (headless == null) {
-        result.add(arg);
-        continue;
-      }
-
-      _logger.warn(
-        'Passing a value to --web-headless is deprecated. '
-        'Use --web-headless or --no-web-headless instead.',
-      );
-      result.add(headless ? '--web-headless' : '--no-web-headless');
-    }
-
-    return result;
   }
 
   @override
@@ -552,10 +512,6 @@ To install a specific version of Patrol CLI, run:
   @visibleForTesting
   bool testWantsUpdateCheck(String? commandName) =>
       _wantsUpdateCheck(commandName);
-
-  /// For testing purposes only
-  @visibleForTesting
-  List<String> testNormalizeArgs(Iterable<String> args) => _normalizeArgs(args);
 
   /// For testing purposes only
   @visibleForTesting

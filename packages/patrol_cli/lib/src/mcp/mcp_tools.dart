@@ -6,6 +6,7 @@ import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/mcp/device_selection.dart';
 import 'package:patrol_cli/src/mcp/flutter_command_resolver.dart';
+import 'package:patrol_cli/src/mcp/mcp_analytics.dart';
 import 'package:patrol_cli/src/mcp/native_tree_service.dart';
 import 'package:patrol_cli/src/mcp/patrol_session.dart';
 import 'package:patrol_cli/src/mcp/project_resolver.dart';
@@ -38,9 +39,6 @@ const sessionStatusSchema = JsonObject(
     'currentTestFile': JsonString(),
     'warning': JsonString(),
     'deviceSelectionNote': JsonString(),
-    'error': JsonString(
-      description: 'The failure details the test reported, when it failed.',
-    ),
     'deviceName': JsonString(),
     'deviceId': JsonString(),
     'devicePlatform': JsonString(),
@@ -62,6 +60,31 @@ const sessionStatusSchema = JsonObject(
       description:
           'Present when --show-terminal could not open a Terminal window for '
           'the session log, with the reason.',
+    ),
+    'error': JsonString(
+      description:
+          'Why the first failing test failed: its name and the error lines '
+          'patrol reported for it. Absent unless a test failed.',
+    ),
+    'cli': JsonObject(
+      description:
+          'The patrol_cli serving this server, and where it comes from.',
+      properties: {
+        'version': JsonString(),
+        'source': JsonString(enumValues: ['global', 'project', 'path']),
+        'projectRoot': JsonString(),
+      },
+    ),
+    'cliPinWarning': JsonString(
+      description:
+          'Present when the project pins a patrol_cli other than the one '
+          'serving it; runs use the serving one. Report it when results '
+          'differ from what the project sees elsewhere.',
+    ),
+    'logFile': JsonString(
+      description:
+          'The file holding the whole log of the session, build output '
+          'included. Follow it with tail -F to show a run live.',
     ),
     'output': JsonString(),
     'summary': JsonString(),
@@ -95,13 +118,63 @@ class McpTools {
     required this._session,
     required this._deviceFinder,
     required this._processManager,
+    this._analytics,
   });
 
   final PatrolSession _session;
   final DeviceFinder _deviceFinder;
   final ProcessManager _processManager;
+  final McpAnalytics? _analytics;
 
   Future<CallToolResult> run(
+    Map<String, dynamic> args,
+    RequestHandlerExtra extra,
+  ) => _tracked('run', () => _runTool(args, extra));
+
+  Future<CallToolResult> devices() => _tracked('devices', _devicesTool);
+
+  Future<CallToolResult> quit() => _tracked('quit', _quitTool);
+
+  Future<CallToolResult> status() => _tracked('status', _statusTool);
+
+  Future<CallToolResult> screenshot() =>
+      _tracked('screenshot', _screenshotTool);
+
+  Future<CallToolResult> nativeTree() =>
+      _tracked('native-tree', _nativeTreeTool);
+
+  /// Runs a tool and reports how it ended, without waiting for the report.
+  Future<CallToolResult> _tracked(
+    String tool,
+    Future<CallToolResult> Function() body,
+  ) async {
+    final analytics = _analytics;
+    if (analytics == null) {
+      return body();
+    }
+    final watch = Stopwatch()..start();
+    void report(String outcome) => unawaited(
+      analytics.toolCalled(
+        tool: tool,
+        outcome: outcome,
+        duration: watch.elapsed,
+        platform: _session.device?.targetPlatform,
+        flutterCommand: () => _session.flutterCommand,
+        workingDirectory: _session.projectRoot,
+      ),
+    );
+    final CallToolResult result;
+    try {
+      result = await body();
+    } on Object {
+      report('error');
+      rethrow;
+    }
+    report(McpAnalytics.outcomeOf(tool, result));
+    return result;
+  }
+
+  Future<CallToolResult> _runTool(
     Map<String, dynamic> args,
     RequestHandlerExtra extra,
   ) => withProject(
@@ -110,10 +183,10 @@ class McpTools {
     requestedRoot: (args['projectRoot'] as String?)?.trim().nullIfEmpty,
   );
 
-  Future<CallToolResult> devices() =>
+  Future<CallToolResult> _devicesTool() =>
       withProject(_devices, projectRequired: false);
 
-  Future<CallToolResult> quit() =>
+  Future<CallToolResult> _quitTool() =>
       withProject(projectRequired: false, () async {
         if (!_session.isRunning) {
           return const CallToolResult(
@@ -132,12 +205,12 @@ class McpTools {
         );
       });
 
-  Future<CallToolResult> status() => withProject(
+  Future<CallToolResult> _statusTool() => withProject(
     () async => statusResult(_session.getStatus()),
     projectRequired: false,
   );
 
-  Future<CallToolResult> screenshot() => withProject(
+  Future<CallToolResult> _screenshotTool() => withProject(
     () => ScreenshotService.handleScreenshotRequest(
       _session.device,
       webDebuggerPort: _session.webDebuggerPort,
@@ -147,7 +220,7 @@ class McpTools {
     projectRequired: false,
   );
 
-  Future<CallToolResult> nativeTree() =>
+  Future<CallToolResult> _nativeTreeTool() =>
       withProject(projectRequired: false, () async {
         if (_session.device?.targetPlatform == TargetPlatform.web) {
           return const CallToolResult(

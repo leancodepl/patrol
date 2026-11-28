@@ -58,19 +58,13 @@ class Analytics {
     FlutterVersion flutterVersion,
     String name, {
     Map<String, Object?> eventData = const {},
+    Logger? logger,
   }) async {
-    final uuid = _config?.clientId;
-    if (uuid == null) {
+    final config = _config;
+    if (config == null || !_sends(config)) {
       return false;
     }
-
-    /// If the environment variable `PATROL_ANALYTICS_ENABLED` is set,
-    /// use it to determine if the command should be sent.
-    /// If not set, use the value from the config file.
-    final enabled = _envAnalyticsEnabled ?? _config?.enabled ?? true;
-    if (!enabled) {
-      return false;
-    }
+    final uuid = config.clientId;
 
     try {
       await _httpClient.post(
@@ -87,7 +81,7 @@ class Analytics {
       );
       return true;
     } on Exception catch (e) {
-      _logger
+      (logger ?? _logger)
         ..info('Failed to post analytics')
         ..detail(e.toString());
       return false;
@@ -95,6 +89,15 @@ class Analytics {
   }
 
   bool get firstRun => _config == null;
+
+  /// Whether [sendCommand] would send an event now.
+  bool get willSend {
+    final config = _config;
+    return config != null && _sends(config);
+  }
+
+  /// `PATROL_ANALYTICS_ENABLED`, when set, wins over the config file.
+  bool _sends(AnalyticsConfig config) => _envAnalyticsEnabled ?? config.enabled;
 
   set enabled(bool newValue) {
     _config = AnalyticsConfig(clientId: const Uuid().v4(), enabled: newValue);

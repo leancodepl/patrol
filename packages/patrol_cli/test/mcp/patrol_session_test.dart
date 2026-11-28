@@ -9,6 +9,8 @@ import 'package:patrol_cli/src/commands/develop_options.dart';
 import 'package:patrol_cli/src/commands/develop_service.dart';
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
 import 'package:patrol_cli/src/devices.dart';
+import 'package:patrol_cli/src/mcp/cli_origin.dart';
+import 'package:patrol_cli/src/mcp/flutter_command_resolver.dart';
 import 'package:patrol_cli/src/mcp/mcp_tools.dart';
 import 'package:patrol_cli/src/mcp/patrol_session.dart';
 import 'package:patrol_cli/src/mcp/project_resolver.dart';
@@ -48,8 +50,13 @@ void main() {
     ProcessManager? processManager,
     NativePlatform? platform,
     Logger? logger,
+    CliOrigin cliOrigin = const CliOrigin(
+      version: '4.9.0',
+      source: CliSource.global,
+    ),
   }) {
     final session = PatrolSession(
+      cliOrigin: cliOrigin,
       now: now,
       showTerminal: showTerminal,
       processManager: processManager ?? const LocalProcessManager(),
@@ -612,6 +619,309 @@ packages:
     );
   });
 
+  test('names the Flutter command its run started with', () async {
+    final session = sessionWith(
+      FakeDevelop(),
+      developArgs: const ['--flutter-command', 'my-flutter --verbose'],
+    );
+    await session.ensureProjectResolved();
+    final resolved = FlutterCommandResolver()
+        .resolve(projectRoot: projectRoot.path)
+        .command;
+    expect(
+      session.flutterCommand.executable,
+      resolved?.executable ?? 'flutter',
+    );
+
+    await startSession(session, 'app_test.dart');
+
+    expect(session.flutterCommand.executable, 'my-flutter');
+    expect(session.flutterCommand.arguments, ['--verbose']);
+    await session.dispose();
+  });
+
+  test('names the log file in the status once a run has started', () async {
+    final session = sessionWith(FakeDevelop());
+    expect(session.getStatus().toMap(), isNot(contains('logFile')));
+
+    await startSession(session, 'app_test.dart');
+
+    expect(
+      session.getStatus().toMap()['logFile'],
+      '${projectRoot.path}/patrol.log',
+    );
+    await session.dispose();
+  });
+
+  test('captures what is written to stderr, as a failed build does', () async {
+    final session = sessionWith(FakeDevelop());
+    await startSession(session, 'app_test.dart');
+
+    session.capturingStderr.writeln(
+      'Error: unable to find directory entry in pubspec.yaml: assets/.env',
+    );
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+
+    expect(
+      session.getStatus().output,
+      contains('unable to find directory entry in pubspec.yaml: assets/.env'),
+    );
+    await session.dispose();
+    expect(
+      File('${projectRoot.path}/patrol.log').readAsStringSync(),
+      contains('assets/.env'),
+    );
+  });
+
+  group('error', () {
+    Future<({PatrolStatus status, bool started})> runOnce(
+      PatrolSession session,
+    ) => session.startAndWait(
+      'app_test.dart',
+      device: 'test-device',
+      timeout: const Duration(seconds: 5),
+    );
+
+    test('carries the failing test and the lines logged before it', () async {
+      final fake = FakeDevelop();
+      final session = sessionWith(fake);
+      final run = runOnce(session);
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+
+      fake.reportTestFailed(
+        'logs in',
+        details:
+            'Expected: true\n'
+            '  Actual: <false>\n'
+            '#0 main (login_test.dart:12)',
+      );
+
+      final result = await run;
+      expect(result.status.testState, TestState.finishedFailed);
+      expect(
+        result.status.error,
+        'Test "logs in" failed.\n'
+        'Expected: true\n'
+        '  Actual: <false>\n'
+        '#0 main (login_test.dart:12)',
+      );
+      expect(result.status.toMap()['error'], result.status.error);
+      await session.dispose();
+    });
+
+    test('carries the error a failure entry names', () async {
+      final fake = FakeDevelop();
+      final session = sessionWith(fake);
+      final run = runOnce(session);
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+
+      fake.onLogEntry?.call(
+        TestEntry(
+          name: 'taps',
+          status: TestEntryStatus.failure,
+          error: 'Bad state: tapped twice',
+        ),
+      );
+
+      final result = await run;
+      expect(
+        result.status.error,
+        'Test "taps" failed.\n'
+        'Bad state: tapped twice',
+      );
+      await session.dispose();
+    });
+
+    test('holds only the first failing test of a file', () async {
+      final fake = FakeDevelop();
+      final session = sessionWith(fake);
+      final run = runOnce(session);
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+
+      fake
+        ..reportTestFailed('A', details: 'Expected: <1>\n  Actual: <2>')
+        ..reportTestFailed('B', details: 'Expected: <3>\n  Actual: <4>')
+        ..onLogEntry?.call(
+          TestEntry(name: 'C', status: TestEntryStatus.success),
+        )
+        ..reportTestsPassed();
+
+      final result = await run;
+      expect(result.status.testState, TestState.finishedFailed);
+      expect(
+        result.status.error,
+        'Test "A" failed.\n'
+        'Expected: <1>\n'
+        '  Actual: <2>',
+      );
+      expect(session.getStatus().error, result.status.error);
+      await session.dispose();
+    });
+
+    test('is absent when the run passes', () async {
+      final fake = FakeDevelop();
+      final session = sessionWith(fake);
+      final run = runOnce(session);
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+
+      fake.reportTestsPassed();
+
+      final result = await run;
+      expect(result.status.error, isNull);
+      expect(result.status.toMap(), isNot(contains('error')));
+      await session.dispose();
+    });
+
+    test(
+      'a hot restart clears it, and the old failure does not end the new run',
+      () async {
+        final fake = FakeDevelop(hotRestartReady: Future<void>.value());
+        final session = sessionWith(fake);
+        await startSession(session, 'app_test.dart');
+        fake.reportTestFailed('logs in', details: 'Expected: true');
+
+        final restarted = session.startAndWait(
+          'app_test.dart',
+          timeout: const Duration(seconds: 5),
+        );
+        var answered = false;
+        unawaited(restarted.then((_) => answered = true));
+        await Future<void>.delayed(const Duration(milliseconds: 250));
+        expect(
+          answered,
+          isFalse,
+          reason: 'the old failure answered the restart',
+        );
+        expect(session.getStatus().error, isNull);
+
+        fake.reportTestsPassed();
+        final result = await restarted;
+        expect(result.status.testState, TestState.finishedPassed);
+        expect(result.status.error, isNull);
+        await session.dispose();
+      },
+    );
+  });
+
+  group('the serving patrol_cli', () {
+    void pinCli(String version) =>
+        File('${projectRoot.path}/pubspec.lock').writeAsStringSync('''
+packages:
+  patrol_cli:
+    dependency: "direct dev"
+    source: hosted
+    version: "$version"
+''');
+
+    test('every status names it', () async {
+      final session = sessionWith(FakeDevelop());
+      await session.ensureProjectResolved();
+
+      expect(session.getStatus().toMap()['cli'], {
+        'version': '4.9.0',
+        'source': 'global',
+      });
+    });
+
+    test(
+      'a project pinning another version gets a warning with the fix',
+      () async {
+        pinCli('4.8.0');
+        final session = sessionWith(FakeDevelop());
+        await session.ensureProjectResolved();
+
+        final warning = session.getStatus().cliPinWarning;
+        expect(
+          warning,
+          allOf(
+            contains('pins patrol_cli 4.8.0'),
+            contains('global patrol_cli 4.9.0'),
+            contains("your editor's MCP config"),
+            contains('"args": ["run", "patrol_cli:main", "mcp"]'),
+            contains('patrol-mcp#cli-as-a-project-dev-dependency'),
+            isNot(contains('.mcp.json')),
+          ),
+        );
+      },
+    );
+
+    test('a project pinning the same version gets none', () async {
+      pinCli('4.9.0');
+      final session = sessionWith(FakeDevelop());
+      await session.ensureProjectResolved();
+
+      expect(session.getStatus().cliPinWarning, isNull);
+    });
+
+    test('goes away once the lockfile pins the serving version', () async {
+      pinCli('4.8.0');
+      final session = sessionWith(FakeDevelop());
+      await session.ensureProjectResolved();
+      expect(session.getStatus().cliPinWarning, isNotNull);
+
+      pinCli('4.9.0');
+
+      expect(session.getStatus().cliPinWarning, isNull);
+    });
+
+    test('its own project gets none', () async {
+      pinCli('4.8.0');
+      final session = sessionWith(
+        FakeDevelop(),
+        cliOrigin: CliOrigin(
+          version: '4.9.0',
+          source: CliSource.project,
+          projectRoot: projectRoot.path,
+        ),
+      );
+      await session.ensureProjectResolved();
+
+      expect(session.getStatus().cliPinWarning, isNull);
+    });
+
+    test("a dev dependency refuses another project's run", () async {
+      final fake = FakeDevelop();
+      final session = sessionWith(
+        fake,
+        cliOrigin: const CliOrigin(
+          version: '4.9.0',
+          source: CliSource.project,
+          projectRoot: '/elsewhere/app',
+        ),
+      );
+
+      final result = await session.startAndWait(
+        'app_test.dart',
+        device: 'test-device',
+        projectRoot: projectRoot.path,
+      );
+
+      expect(result.started, isFalse);
+      expect(
+        result.status.warning,
+        allOf(
+          contains('dev dependencies of /elsewhere/app'),
+          contains(projectRoot.path),
+        ),
+      );
+      expect(fake.events, isEmpty);
+    });
+
+    test('a dev dependency runs a project below its own root', () async {
+      final session = sessionWith(
+        FakeDevelop(),
+        cliOrigin: CliOrigin(
+          version: '4.9.0',
+          source: CliSource.project,
+          projectRoot: projectRoot.parent.path,
+        ),
+      );
+
+      await startSession(session, 'app_test.dart');
+      await session.dispose();
+    });
+  });
+
   test('quit with nothing running answers instead of throwing', () async {
     final session = sessionWith(FakeDevelop());
 
@@ -798,26 +1108,6 @@ packages:
     await session.dispose();
   });
 
-  test('reports the failure details the test logged', () async {
-    final fake = FakeDevelop();
-    final session = sessionWith(fake);
-    await startSession(session, 'app_test.dart');
-
-    fake.onLogEntry?.call(ErrorEntry(message: 'Expected: true'));
-    fake.onLogEntry?.call(
-      TestEntry(
-        name: 'app_test',
-        status: TestEntryStatus.failure,
-        error: 'Actual: false',
-      ),
-    );
-
-    final status = session.getStatus();
-    expect(status.testState, TestState.finishedFailed);
-    expect(status.error, 'Expected: true\nActual: false');
-    await session.dispose();
-  });
-
   test('a status without a project still fits the schema', () {
     expect(sessionStatusSchema.required, isNot(contains('projectRoot')));
   });
@@ -840,6 +1130,9 @@ packages:
       lastTestEntry: 't',
       stallNote: 's',
       terminalWarning: 'tw',
+      cli: CliOrigin(version: '5.0.0', source: CliSource.global),
+      cliPinWarning: 'c',
+      logFile: 'l',
     );
 
     expect(
@@ -998,18 +1291,30 @@ packages:
     expect(result.status.output, contains('Cannot use release mode.'));
   });
 
-  test('any other develop failure lands in the output', () async {
-    final fake = FakeDevelop(runError: Exception('gradle exploded'));
-    final session = sessionWith(fake);
+  /// Runs [body] with stderr captured by [session], as `patrol mcp` does.
+  Future<T> capturingStderrOf<T>(
+    PatrolSession session,
+    Future<T> Function() body,
+  ) => IOOverrides.runZoned(body, stderr: () => session.capturingStderr);
 
-    final result = await session.startAndWait(
-      'app_test.dart',
-      device: 'test-device',
-      timeout: const Duration(seconds: 5),
+  test('any other develop failure is logged to the output once', () async {
+    final fake = FakeDevelop(runError: Exception('gradle exploded'));
+    final session = sessionWith(fake, logger: Logger());
+
+    final result = await capturingStderrOf(
+      session,
+      () => session.startAndWait(
+        'app_test.dart',
+        device: 'test-device',
+        timeout: const Duration(seconds: 5),
+      ),
     );
 
     expect(result.status.testState, TestState.finishedFailed);
-    expect(result.status.output, contains('ERROR: Exception: gradle exploded'));
+    expect(
+      'ERROR: Exception: gradle exploded'.allMatches(result.status.output),
+      hasLength(1),
+    );
   });
 
   test('dispose waits for a session whose app died to tear down', () async {
@@ -1034,22 +1339,24 @@ packages:
 
   test('a backend that exits mid-run is reported as a failure', () async {
     final fake = FakeDevelop();
-    final session = sessionWith(fake);
-    final run = session.startAndWait(
-      'app_test.dart',
-      device: 'test-device',
-      timeout: const Duration(seconds: 5),
-    );
-    await Future<void>.delayed(const Duration(milliseconds: 50));
+    final session = sessionWith(fake, logger: Logger());
+    final result = await capturingStderrOf(session, () async {
+      final run = session.startAndWait(
+        'app_test.dart',
+        device: 'test-device',
+        timeout: const Duration(seconds: 5),
+      );
+      await Future<void>.delayed(const Duration(milliseconds: 50));
 
-    fake.onTestsCompleted?.call(
-      const TestCompletionResult(success: false, error: 'app crashed'),
-    );
+      fake.onTestsCompleted?.call(
+        const TestCompletionResult(success: false, error: 'app crashed'),
+      );
+      return run;
+    });
 
-    final result = await run;
     expect(result.status.testState, TestState.finishedFailed);
     expect(result.status.warning, contains('stopped without the test'));
-    expect(result.status.output, contains('ERROR: app crashed'));
+    expect('ERROR: app crashed'.allMatches(result.status.output), hasLength(1));
     // The app is gone, so the session ends with it and the next run starts cold.
     expect(session.isRunning, isFalse);
     await session.awaitTeardown();

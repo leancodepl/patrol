@@ -57,6 +57,11 @@ One server serves every project you open.
 }
 ```
 
+A server launched this way runs the project's pinned CLI, so it runs tests only in that project and
+the projects below it. Every `run` and `status` result names the CLI serving it in `cli`. A
+globally activated server serving a project that pins another `patrol_cli` adds `cliPinWarning`,
+which carries this block's `command` and `args` for the project's own config.
+
 Editors differ only in where that block goes:
 
 | Editor | Config file | Notes |
@@ -152,6 +157,14 @@ To migrate, drop `patrol_mcp` from your `pubspec.yaml` and point your editor's M
 Patrol also ships [agent skills](/documentation/other/agent-skills) that complement this server: the
 MCP gives the agent the tools, while a skill teaches it how to use them to write tests well.
 
+## When a test fails
+
+A failed `run` carries `error`: the first failing test's name and the error lines patrol reported
+for it. A `finishedFailed` run without `error` failed before any test did: the build, the app or
+the session itself, and `warning` and `output` say why. `output` holds the session's recent log,
+including what the build writes to stderr. `logFile` names the file holding the whole log; follow
+it with `tail -F` to watch a run as it goes.
+
 ## A run that goes quiet
 
 Once the app is up and while a run is in progress, `run` and `status` results carry
@@ -161,6 +174,25 @@ launching, nothing counts as quiet. Once the quiet passes three minutes the resu
 `stallNote` naming it, and a `run` that reaches its timeout says how long the quiet lasted. `quit`
 stops such a run; the next `run` starts a fresh session.
 
+## Analytics
+
+`patrol mcp` reports each tool call to the same anonymous usage analytics as the CLI: the tool, how
+the call ended, how long it took, the device platform, and whether the CLI is a global install, a
+project's dev dependency or a path. No paths, test names, errors or output are sent.
+
+A `run` ends as `passed`, `failed`, `session_error` (it failed before any test did), `refused`,
+`timed_out` or `ended` (the session ended without a result). Every other tool ends as `ok` or
+`error`, and a tool call that throws ends as `error`.
+
+It follows the CLI's consent. The server never asks itself: nothing is sent until the CLI has run
+once in a terminal and shown its analytics notice, and `PATROL_ANALYTICS_ENABLED=false` turns it
+off. A client started from the dock or a launcher doesn't read your shell profile, so set the
+variable in the server's config:
+
+```json
+"env": { "PATROL_ANALYTICS_ENABLED": "false" }
+```
+
 ## Troubleshooting
 
 - Open your editor at the project root, or pass `--project-root`. When no signal leads to a project,
@@ -169,3 +201,6 @@ stops such a run; the next `run` starts a fresh session.
 - Confirm the MCP server is enabled in your editor's settings.
 - The chosen Flutter command, and everything else the session logs, goes to the server's stderr —
   your editor's MCP log.
+- After a Dart or Flutter upgrade, run `patrol --version` once. The first start of a globally
+  activated CLI on a new SDK prints pub's resolution output to stdout, which some editors refuse in
+  place of the server's first message.

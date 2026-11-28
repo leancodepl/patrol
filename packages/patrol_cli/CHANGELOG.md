@@ -28,6 +28,13 @@
 - Fix Ctrl+C during `patrol develop -d chrome` startup waiting out the web server timeout (120 s by
   default). The session now stops Flutter, the dependency install and the Playwright driver,
   together with the processes they spawned, at any point before it attaches. (#3453)
+- **BREAKING CHANGE**
+  - `--web-headless` no longer takes a value: `--web-headless=true` and `--web-headless false` fail.
+    Use `--web-headless` or `--no-web-headless`. Every command except `patrol mcp` now rejects
+    leftover positional arguments instead of ignoring them. (#3452)
+  - A `RunnerUITests.m` with the 4.7.0 `PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN`/`_END`
+    macros now fails in `xcodebuild` instead of with a Patrol hint. Replace them with the snippet
+    from `migration5.md`. (#3452)
 
 ## 5.0.0-dev.1
 
@@ -71,13 +78,17 @@
 - Add `patrol mcp` (experimental), an MCP server shipped with the CLI that lets AI agents run tests
   in `patrol develop` sessions and read their results. It runs a test on Android, iOS or, when
   asked, in Chrome, hot restarts it on the next `run`, and takes screenshots and native trees. One
-  server serves every project it is asked about, git worktrees included. Its results report a run
-  that has gone quiet and a `patrol` version this CLI cannot drive. It replaces the `patrol_mcp`
-  package, so its dependencies no longer land in the app's pubspec (#3166). Run it as `patrol mcp`
-  from a globally activated CLI or as `dart run patrol_cli:main mcp` from a dev dependency, with
-  develop flags after `--`; `PATROL_FLAGS` is split as a shell would (#3026). See the
-  [docs](https://patrol.leancode.co/documentation/other/patrol-mcp), migrating off `patrol_mcp`
-  included. (#3368, #3371)
+  server serves every project it is asked about, git worktrees included. Its results report why a
+  test failed, the session's log file with the build's errors, a run that has gone quiet, a
+  `patrol` version this CLI cannot drive and a project that pins another `patrol_cli`. It replaces
+  the `patrol_mcp` package, so its dependencies no longer land in the app's pubspec (#3166). Run it
+  as `patrol mcp` from a globally activated CLI or as `dart run patrol_cli:main mcp` from a dev
+  dependency, with develop flags after `--`; `PATROL_FLAGS` is split as a shell would (#3026). See
+  the [docs](https://patrol.leancode.co/documentation/other/patrol-mcp), migrating off
+  `patrol_mcp` included. (#3368, #3371, #3372)
+- Report `patrol mcp` tool calls to the CLI's anonymous analytics, under the same consent and
+  `PATROL_ANALYTICS_ENABLED` switch: the tool, how it ended, how long it took, the device platform
+  and how the CLI is installed. No paths, test names, errors or output are sent. (#3373)
 - Look for a `patrol test`/`patrol develop` target in the project when the path names nothing from
   the directory the command was run in. A relative target still belongs to that directory first,
   which is how `-t ../patrol_test/app_test.dart` works from a subdirectory. (#3369)
