@@ -35,6 +35,35 @@ void main() {
 }
 ''';
 
+/// A passing test followed by a skipped one, which is then the last test of
+/// the file.
+const exampleTestWithSkippedLastContents = r'''
+import 'package:flutter/material.dart';
+
+import 'common.dart';
+
+void main() {
+  patrol(
+    'This test is used to `test patrol develop`',
+    ($) async {
+      await createApp($);
+
+      await $(FloatingActionButton).tap();
+      expect($(#counterText).text, '1');
+    },
+  );
+
+  patrol(
+    'This skipped test is the last one in the file',
+    ($) async {},
+    skip: true,
+  );
+}
+''';
+
+const allTestsExecuted =
+    'All tests were executed. Press "r" to start again or "q" to quit';
+
 void main(List<String> args) async {
   _verifyWorkingDirectory();
 
@@ -43,6 +72,7 @@ void main(List<String> args) async {
 
   var isFirstTestPassed = false;
   var isReloaded = false;
+  int? skippedLastOutputStart;
   Timer? inactivityTimer;
   final output = StringBuffer();
 
@@ -76,10 +106,7 @@ void main(List<String> args) async {
     output.write(data);
     final stringOutput = output.toString();
 
-    if (isFirstTestPassed == false &&
-        stringOutput.contains(
-          'All tests were executed. Press "r" to start again or "q" to quit',
-        )) {
+    if (isFirstTestPassed == false && stringOutput.contains(allTestsExecuted)) {
       isFirstTestPassed = true;
     }
 
@@ -99,9 +126,20 @@ void main(List<String> args) async {
         isReloaded &&
         stringOutput.contains('When the exception was thrown');
 
-    if (isRestartedTestFailed) {
+    if (isRestartedTestFailed && skippedLastOutputStart == null) {
       print(
         'exampleTestWithFailingContents was successfully restarted as example_test and it has failed as expected',
+      );
+      exampleTestFile.writeAsStringSync(exampleTestWithSkippedLastContents);
+      skippedLastOutputStart = stringOutput.length;
+      process.stdin.add('R'.codeUnits);
+    }
+
+    final start = skippedLastOutputStart;
+    if (start != null &&
+        stringOutput.substring(start).contains(allTestsExecuted)) {
+      print(
+        'exampleTestWithSkippedLastContents reported the end of the run with its last test skipped',
       );
       print('Exiting with exit code 0');
       // TODO: kill `patrol develop` process and its children
@@ -117,6 +155,7 @@ void main(List<String> args) async {
         );
         print('isFirstTestPassed: $isFirstTestPassed');
         print('isReloaded: $isReloaded');
+        print('skippedLastOutputStart: $skippedLastOutputStart');
         print('Running file:');
         print(exampleTestFile.readAsStringSync());
         print('End of the running file');

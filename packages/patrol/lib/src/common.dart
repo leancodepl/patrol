@@ -268,12 +268,11 @@ void patrolTest(
   );
 }
 
-/// Whether a test registered with [skip] runs its body and skips from inside
-/// it.
+/// Whether a test registered with [skip] keeps a body that runs.
 ///
-/// In develop mode the last test of the group signals that the run is over,
-/// and a skipped test's body never runs, so a skipped test there runs a body
-/// that only reports that signal when it is last.
+/// In develop mode the last test of the group reports that the run is over, so
+/// a skipped test there is registered with an empty body that reports it when
+/// the test is last.
 @internal
 bool skipsInBody({required bool? skip, required bool hotRestart}) =>
     hotRestart && (skip ?? false);
