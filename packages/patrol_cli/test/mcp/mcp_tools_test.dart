@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:mcp_dart/mcp_dart.dart' hide Logger;
@@ -10,10 +11,14 @@ import 'package:patrol_cli/src/mcp/mcp_analytics.dart';
 import 'package:patrol_cli/src/mcp/mcp_tools.dart';
 import 'package:patrol_cli/src/mcp/patrol_session.dart';
 import 'package:patrol_cli/src/mcp/project_resolver.dart';
+import 'package:patrol_cli/src/mcp/suite_run.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
+import 'package:patrol_log/patrol_log.dart';
+import 'package:process/process.dart';
 import 'package:test/test.dart';
 
 import '../src/mocks.dart';
+import '../src/processes.dart';
 import 'fake_develop.dart';
 
 void main() {
@@ -55,9 +60,12 @@ void main() {
     AttachedDevicesReader? listAttachedDevices,
     McpAnalytics? analytics,
     List<String> developArgs = const [],
+    List<String> suiteCommand = const ['false'],
   }) {
     final session = PatrolSession(
       developArgs: developArgs,
+      suiteCommand: suiteCommand,
+      suiteStopGrace: const Duration(seconds: 5),
       listAttachedDevices:
           listAttachedDevices ??
           ({required flutterCommand}) async => const [device],
@@ -167,6 +175,48 @@ void main() {
     );
   });
 
+  test('the suite schema names every field a suite status can carry', () async {
+    final results = File('${projectRoot.path}/results.jsonl');
+    void report(Entry entry) => results.writeAsStringSync(
+      '${jsonEncode(entry.toJson())}\n',
+      mode: FileMode.append,
+    );
+    for (var i = 0; i < 11; i++) {
+      report(TestEntry(name: 't$i', status: TestEntryStatus.start));
+      report(
+        TestEntry(name: 't$i', status: TestEntryStatus.failure, error: 'e'),
+      );
+    }
+    report(TestEntry(name: 'current', status: TestEntryStatus.start));
+
+    Future<SuiteRun> start(String resultsFile, Future<int> exitCode) =>
+        SuiteRun.start(
+          processManager: _ExitingProcessManager(exitCode),
+          command: const ['patrol', 'test'],
+          projectRoot: projectRoot.path,
+          resultsFile: resultsFile,
+          targets: const ['a_test.dart'],
+          droppedFlags: const ['--open-devtools'],
+          deviceSelectionNote: 'note',
+          onOutput: (_) {},
+        );
+    final running = await start(results.path, Completer<int>().future);
+    final brokenBuild = await start(
+      '${projectRoot.path}/none.jsonl',
+      Future.value(1),
+    );
+    await brokenBuild.done;
+
+    final keys = {...running.toMap().keys, ...brokenBuild.toMap().keys};
+    expect(keys, containsAll(['currentTest', 'failuresNotListed', 'warning']));
+    expect(suiteStatusSchema.properties!.keys, containsAll(keys));
+    expect(
+      (suiteStatusSchema.properties![SuiteRun.stateKey]! as JsonString)
+          .enumValues,
+      SuiteState.values.map((state) => state.name),
+    );
+  });
+
   group('analytics', () {
     late MockProcessManager processManager;
     late List<Map<String, Object?>> events;
@@ -258,6 +308,43 @@ void main() {
 
       expect(await sent(), [('run', 'session_error')]);
     });
+
+    test(
+      'reports the platform of the device a suite runs on',
+      () async {
+        final tools = toolsWith(
+          FakeDevelop(),
+          suiteCommand: const ['sh', '-c', 'exit 0', 'patrol'],
+          analytics: analytics(),
+        );
+
+        await tools.test({'waitMinutes': 1}, extra());
+
+        expect(await sent(), [('test', 'passed')]);
+        expect(events.single['platform'], 'android');
+      },
+      skip: Platform.isWindows ? 'The suite is a POSIX shell script.' : null,
+    );
+
+    test(
+      'reports no suite platform for tools other than the suite',
+      () async {
+        expected = 2;
+        final tools = toolsWith(
+          FakeDevelop(),
+          suiteCommand: const ['sh', '-c', 'exit 0', 'patrol'],
+          analytics: analytics(),
+        );
+
+        await tools.test({'waitMinutes': 1}, extra());
+        await tools.devices();
+
+        expect(await sent(), [('test', 'passed'), ('devices', 'ok')]);
+        expect(events.first['platform'], 'android');
+        expect(events.last['platform'], 'none');
+      },
+      skip: Platform.isWindows ? 'The suite is a POSIX shell script.' : null,
+    );
 
     test('reports a tool that throws as an error, and still throws', () async {
       final tools = toolsWith(FakeDevelop(), analytics: analytics());
@@ -354,4 +441,176 @@ void main() {
     expect(text(result), contains('cancelled'));
     expect(fake.events, isEmpty, reason: 'nothing should have been built');
   });
+
+  group('test', () {
+    List<String> suite(String script) => ['sh', '-c', script, 'patrol'];
+
+    test('runs the suite and reports it with its project', () async {
+      final result = await toolsWith(
+        FakeDevelop(),
+        suiteCommand: suite('exit 0'),
+      ).test({'waitMinutes': 1}, extra());
+
+      expect(result.isError, isNot(true));
+      expect(result.structuredContent!['suiteState'], 'passed');
+      expect(result.structuredContent!['projectRoot'], projectRoot.path);
+    });
+
+    test('is an error while a develop session runs', () async {
+      final tools = toolsWith(FakeDevelop(), suiteCommand: suite('exit 0'));
+      await tools.run({
+        'testFile': 'app_test.dart',
+        'timeoutMinutes': 0.001,
+      }, extra());
+
+      final result = await tools.test(const {}, extra());
+
+      expect(result.isError, isTrue);
+      expect(text(result), contains('Quit it before running a suite'));
+      await tools.quit();
+    });
+
+    test('status waits for a running suite when asked', () async {
+      final tools = toolsWith(FakeDevelop(), suiteCommand: suite('sleep 0.3'));
+      final started = await tools.test({'waitMinutes': 0.0001}, extra());
+      expect(started.structuredContent!['suiteState'], 'running');
+
+      final status = await tools.status({'waitMinutes': 1});
+
+      final suiteStatus =
+          status.structuredContent!['suite']! as Map<String, Object?>;
+      expect(suiteStatus['suiteState'], 'passed');
+    });
+
+    test('quit stops a running suite', () async {
+      final tools = toolsWith(
+        FakeDevelop(),
+        suiteCommand: suite('trap "exit 130" INT; sleep 30 & wait'),
+      );
+      await tools.test({'waitMinutes': 0.0001}, extra());
+
+      final quit = await tools.quit();
+      final status = await tools.status();
+
+      expect(text(quit), 'Stopped the suite.');
+      expect(
+        (status.structuredContent!['suite']! as Map)['suiteState'],
+        'cancelled',
+      );
+    });
+
+    test('status headlines a suite that started after a failed run', () async {
+      final fake = FakeDevelop();
+      final tools = toolsWith(fake, suiteCommand: suite('exit 0'));
+      final run = tools.run({'testFile': 'app_test.dart'}, extra());
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      fake.reportTestFailed('app_test taps', details: 'Bad state: tapped');
+      await run;
+      await tools.quit();
+
+      await tools.test({'waitMinutes': 1}, extra());
+      final status = (await tools.status()).structuredContent!;
+
+      expect(status['summary'], SuiteState.passed.summary);
+      expect(status['testState'], 'idle');
+      expect(status.containsKey('error'), isFalse);
+    });
+
+    test('test and status name the log the suite writes to', () async {
+      final tools = toolsWith(FakeDevelop(), suiteCommand: suite('exit 0'));
+
+      final result = await tools.test({'waitMinutes': 1}, extra());
+      final status = await tools.status();
+
+      expect(result.structuredContent!['logFile'], isA<String>());
+      expect(
+        (status.structuredContent!['suite']! as Map)['logFile'],
+        result.structuredContent!['logFile'],
+      );
+    });
+
+    test('quit after patrol test exited reports the finished suite', () async {
+      final tools = toolsWith(
+        FakeDevelop(),
+        // The background sleep keeps the pipes open past the exit.
+        suiteCommand: suite('(sleep 2) & exit 0'),
+      );
+      await tools.test({'waitMinutes': 0.0001}, extra());
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+
+      final quit = await tools.quit();
+
+      expect(
+        text(quit),
+        'The suite had already finished: ${SuiteState.passed.summary}',
+      );
+      final status = await tools.status();
+      expect(
+        (status.structuredContent!['suite']! as Map)['suiteState'],
+        'passed',
+      );
+    });
+
+    test('a suite the client stops waiting for keeps running', () async {
+      final ready = File('${projectRoot.path}/ready');
+      final go = File('${projectRoot.path}/go');
+      final tools = toolsWith(
+        FakeDevelop(),
+        suiteCommand: suite(
+          ': > "${ready.path}"; while [ ! -e "${go.path}" ]; do sleep 0.05; done',
+        ),
+      );
+      final abort = BasicAbortController();
+
+      final call = tools.test({'waitMinutes': 1}, extra(abort));
+      await waitUntil(ready.existsSync, 'the suite to start');
+      abort.abort();
+      final result = await call.timeout(const Duration(seconds: 10));
+
+      expect(result.structuredContent!['suiteState'], 'running');
+      go.createSync();
+      final status = await tools.status({'waitMinutes': 1});
+      expect(
+        (status.structuredContent!['suite']! as Map)['suiteState'],
+        'passed',
+      );
+    });
+  }, skip: Platform.isWindows ? 'The suites are POSIX shell scripts.' : null);
+}
+
+final class _ExitingProcessManager extends Fake implements ProcessManager {
+  _ExitingProcessManager(this._exitCode);
+
+  final Future<int> _exitCode;
+
+  @override
+  Future<Process> start(
+    List<Object> command, {
+    String? workingDirectory,
+    Map<String, String>? environment,
+    bool includeParentEnvironment = true,
+    bool runInShell = false,
+    ProcessStartMode mode = ProcessStartMode.normal,
+  }) async => _FakeProcess(_exitCode);
+}
+
+final class _FakeProcess extends Fake implements Process {
+  _FakeProcess(this.exitCode);
+
+  @override
+  final Future<int> exitCode;
+
+  @override
+  Stream<List<int>> get stdout => const Stream.empty();
+
+  @override
+  Stream<List<int>> get stderr => const Stream.empty();
+
+  @override
+  IOSink get stdin => _ClosedSink();
+}
+
+final class _ClosedSink extends Fake implements IOSink {
+  @override
+  Future<void> close() async {}
 }

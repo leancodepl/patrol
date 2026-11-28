@@ -51,6 +51,14 @@ class Analytics {
 
   final Logger _logger;
 
+  /// The environment variable that turns analytics on or off, over the config
+  /// file.
+  static const enabledEnvName = 'PATROL_ANALYTICS_ENABLED';
+
+  /// Set on a CLI run nobody watches, so its first run leaves the analytics
+  /// notice and the saved choice to the user's own first run.
+  static const skipFirstRunEnvName = 'PATROL_SKIP_FIRST_RUN';
+
   /// Sends an event to Google Analytics that command [name] run.
   ///
   /// Returns true if the event was sent, false otherwise.

@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io' show File, FileMode;
 
 import 'package:glob/glob.dart';
 import 'package:patrol_cli/src/analytics/analytics.dart';
@@ -25,6 +27,7 @@ import 'package:patrol_cli/src/test_finder.dart';
 import 'package:patrol_cli/src/web/web_test_backend.dart';
 import 'package:patrol_cli/src/windows/windows_app_options.dart';
 import 'package:patrol_cli/src/windows/windows_test_backend.dart';
+import 'package:patrol_log/patrol_log.dart';
 
 class TestCommand extends PatrolCommand {
   TestCommand({
@@ -71,7 +74,19 @@ class TestCommand extends PatrolCommand {
     usesEmitTestManifestOption();
 
     usesWeb();
+
+    argParser.addOption(
+      resultsFileOption,
+      hide: true,
+      help:
+          'Appends every test and error entry of the run to this file, one '
+          'JSON object per line, as the run reports it.',
+      valueHelp: 'path',
+    );
   }
+
+  /// The option a `patrol mcp` suite run reads its results through.
+  static const resultsFileOption = 'results-file';
 
   final DeviceFinder _deviceFinder;
   final TestFinderFactory _testFinderFactory;
@@ -585,6 +600,21 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       bitRate: int.tryParse(stringArg('video-bit-rate') ?? ''),
     );
 
+    final results = switch (stringArg(resultsFileOption)) {
+      final path? => File(path).openSync(mode: FileMode.append),
+      null => null,
+    };
+    // An entry can still arrive from a log reader after the run returns.
+    var resultsClosed = false;
+    void Function(Entry)? onLogEntry;
+    if (results != null) {
+      onLogEntry = (entry) {
+        if (!resultsClosed && (entry is TestEntry || entry is ErrorEntry)) {
+          results.writeStringSync('${jsonEncode(entry.toJson())}\n');
+        }
+      };
+    }
+
     switch (device.targetPlatform) {
       case TargetPlatform.android:
         action = () => _androidTestBackend.execute(
@@ -594,6 +624,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
           hideTestSteps: hideTestSteps,
           flavor: flutterOpts.flavor,
           clearTestSteps: clearTestSteps,
+          onLogEntry: onLogEntry,
           videoConfig: videoConfig,
           pullScreenshots: true,
           screenshotsOutputDir: screenshotsOutputDir,
@@ -610,6 +641,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
           showFlutterLogs: showFlutterLogs,
           hideTestSteps: hideTestSteps,
           clearTestSteps: clearTestSteps,
+          onLogEntry: onLogEntry,
           videoConfig: videoConfig,
           screenshotsOutputDir: screenshotsOutputDir,
         );
@@ -628,6 +660,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
           showFlutterLogs: showFlutterLogs,
           hideTestSteps: hideTestSteps,
           clearTestSteps: clearTestSteps,
+          onLogEntry: onLogEntry,
         );
       case TargetPlatform.windows:
         action = () => _windowsTestBackend.execute(windows, device);
@@ -643,6 +676,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
         ..err(defaultFailureMessage);
       allPassed = false;
     } finally {
+      resultsClosed = true;
+      results?.closeSync();
       try {
         await finalizer?.call();
       } catch (err) {

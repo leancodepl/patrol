@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:mcp_dart/mcp_dart.dart';
+import 'package:patrol_cli/src/base/extensions/completer.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/mcp/device_selection.dart';
@@ -11,10 +12,14 @@ import 'package:patrol_cli/src/mcp/native_tree_service.dart';
 import 'package:patrol_cli/src/mcp/patrol_session.dart';
 import 'package:patrol_cli/src/mcp/project_resolver.dart';
 import 'package:patrol_cli/src/mcp/screenshot_service.dart';
+import 'package:patrol_cli/src/mcp/suite_run.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:process/process.dart';
 
 const _defaultTimeoutMinutes = 5.0;
+
+/// The argument of `test` and `status` that says how long to wait for a suite.
+const waitMinutesArg = 'waitMinutes';
 
 /// Output schema for `run` and `status` -- a serialized [PatrolStatus].
 /// Keys mirror `PatrolStatus.toMap`.
@@ -88,15 +93,101 @@ const sessionStatusSchema = JsonObject(
     ),
     'output': JsonString(),
     'summary': JsonString(),
+    'suite': suiteStatusSchema,
   },
   required: ['isDevelopRunning', 'testState', 'output', 'summary'],
+);
+
+/// Output schema for `test`, and the `suite` of `status` -- a serialized
+/// `SuiteRun`. Keys mirror `SuiteRun.toMap`.
+const suiteStatusSchema = JsonObject(
+  description:
+      'The last suite run of this server. Present once a suite has started.',
+  properties: {
+    SuiteRun.stateKey: JsonString(
+      enumValues: ['running', 'stopping', 'passed', 'failed', 'cancelled'],
+    ),
+    'summary': JsonString(),
+    'targets': JsonArray(items: JsonString()),
+    'passed': JsonInteger(),
+    'failed': JsonInteger(),
+    'skipped': JsonInteger(),
+    'currentTest': JsonString(
+      description: 'The test running now, absent between tests.',
+    ),
+    'elapsedSeconds': JsonInteger(),
+    'failures': JsonArray(
+      description:
+          'The first failed tests, each with its error and the error lines '
+          'patrol reported after it.',
+      items: JsonObject(
+        properties: {'name': JsonString(), 'error': JsonString()},
+        required: ['name'],
+      ),
+    ),
+    'failuresNotListed': JsonInteger(
+      description: 'How many more tests failed than failures lists.',
+    ),
+    'warning': JsonString(
+      description:
+          'Present when the run failed without a test failing: the build, '
+          'the install or the toolchain broke. output shows where.',
+    ),
+    'output': JsonString(
+      description: 'The last lines the run printed. Absent unless warning is.',
+    ),
+    'droppedFlags': JsonString(),
+    'deviceSelectionNote': JsonString(),
+    'logFile': JsonString(
+      description:
+          'The file holding the whole log of the session the suite writes '
+          'to. Follow it with tail -F to show the run live.',
+    ),
+    'projectRoot': JsonString(),
+  },
+  required: [
+    SuiteRun.stateKey,
+    'summary',
+    'passed',
+    'failed',
+    'skipped',
+    'elapsedSeconds',
+  ],
+);
+
+/// The arguments of a `test` call.
+class SuiteArgs {
+  SuiteArgs.fromJson(Map<String, dynamic> json)
+    : targets = [
+        for (final target in json['targets'] as List? ?? const [])
+          if (target is String && target.trim().isNotEmpty) target.trim(),
+      ],
+      tags = (json['tags'] as String?)?.trim().nullIfEmpty,
+      excludeTags = (json['excludeTags'] as String?)?.trim().nullIfEmpty,
+      wait = _parseWait(json[waitMinutesArg] as num?),
+      device = (json['device'] as String?)?.trim().nullIfEmpty,
+      projectRoot = (json['projectRoot'] as String?)?.trim().nullIfEmpty;
+
+  final List<String> targets;
+  final String? tags;
+  final String? excludeTags;
+  final Duration wait;
+  final String? device;
+  final String? projectRoot;
+}
+
+/// How long `test` or `status` waits, [_defaultTimeoutMinutes] when the call
+/// does not say.
+Duration _parseWait(num? minutes) => Duration(
+  milliseconds: ((minutes?.toDouble() ?? _defaultTimeoutMinutes) * 60 * 1000)
+      .round(),
 );
 
 /// The arguments of a `run` call.
 class RunArgs {
   RunArgs.fromJson(Map<String, dynamic> json)
     : testFile = json['testFile'] as String,
-      timeout = _parseTimeout(json['timeoutMinutes'] as num?),
+      timeout = _parseWait(json['timeoutMinutes'] as num?),
       device = (json['device'] as String?)?.trim().nullIfEmpty,
       projectRoot = (json['projectRoot'] as String?)?.trim().nullIfEmpty;
 
@@ -104,11 +195,6 @@ class RunArgs {
   final Duration timeout;
   final String? device;
   final String? projectRoot;
-
-  static Duration _parseTimeout(num? timeoutMinutes) {
-    final minutes = timeoutMinutes?.toDouble() ?? _defaultTimeoutMinutes;
-    return Duration(milliseconds: (minutes * 60 * 1000).round());
-  }
 }
 
 /// What each MCP tool does once called. Separate from the server wiring so a
@@ -135,13 +221,25 @@ class McpTools {
 
   Future<CallToolResult> quit() => _tracked('quit', _quitTool);
 
-  Future<CallToolResult> status() => _tracked('status', _statusTool);
+  Future<CallToolResult> test(
+    Map<String, dynamic> args,
+    RequestHandlerExtra extra,
+  ) => _tracked('test', () => _testTool(args, extra));
+
+  /// Reports the session. With `waitMinutes`, first waits up to that long for
+  /// a running suite to finish.
+  Future<CallToolResult> status([Map<String, dynamic> args = const {}]) =>
+      _tracked('status', () => _statusTool(args));
 
   Future<CallToolResult> screenshot() =>
       _tracked('screenshot', _screenshotTool);
 
   Future<CallToolResult> nativeTree() =>
       _tracked('native-tree', _nativeTreeTool);
+
+  /// The tools whose events report the suite's platform when no develop
+  /// session has a device.
+  static const _suiteTools = {'test', 'status', 'quit'};
 
   /// Runs a tool and reports how it ended, without waiting for the report.
   Future<CallToolResult> _tracked(
@@ -158,7 +256,11 @@ class McpTools {
         tool: tool,
         outcome: outcome,
         duration: watch.elapsed,
-        platform: _session.device?.targetPlatform,
+        platform:
+            _session.device?.targetPlatform ??
+            (_suiteTools.contains(tool) && _session.suiteIsNewer
+                ? _session.suitePlatform
+                : null),
         flutterCommand: () => _session.flutterCommand,
         workingDirectory: _session.projectRoot,
       ),
@@ -188,13 +290,13 @@ class McpTools {
 
   Future<CallToolResult> _quitTool() =>
       withProject(projectRequired: false, () async {
-        if (!_session.isRunning) {
+        if (!_session.isRunning && !_session.isSuiteRunning) {
           return const CallToolResult(
             content: [
               TextContent(
                 text:
-                    'No active patrol session to quit. '
-                    'Start one with the run tool first.',
+                    'No active patrol session or suite to quit. '
+                    'Start one with the run or test tool first.',
               ),
             ],
             isError: true,
@@ -205,10 +307,61 @@ class McpTools {
         );
       });
 
-  Future<CallToolResult> _statusTool() => withProject(
-    () async => statusResult(_session.getStatus()),
-    projectRequired: false,
-  );
+  Future<CallToolResult> _statusTool(Map<String, dynamic> args) =>
+      withProject(projectRequired: false, () async {
+        if (args[waitMinutesArg] case final num minutes) {
+          await _session.waitForSuite(_parseWait(minutes));
+        }
+        return statusResult(_session.getStatus());
+      });
+
+  Future<CallToolResult> _testTool(
+    Map<String, dynamic> args,
+    RequestHandlerExtra extra,
+  ) {
+    final suiteArgs = SuiteArgs.fromJson(args);
+    return withProject(
+      () => _test(suiteArgs, extra),
+      testFile: suiteArgs.targets.firstOrNull,
+      requestedRoot: suiteArgs.projectRoot,
+    );
+  }
+
+  Future<CallToolResult> _test(
+    SuiteArgs args,
+    RequestHandlerExtra extra,
+  ) async {
+    // A client that gives up on the call can still read the result with
+    // status, so the suite keeps running.
+    final cancelled = Completer<void>();
+    final abortSub = extra.signal.onAbort.listen(
+      (_) => cancelled.maybeComplete(),
+    );
+    try {
+      final started = await _session.startSuite(
+        targets: args.targets,
+        tags: args.tags,
+        excludeTags: args.excludeTags,
+        device: args.device,
+        projectRoot: args.projectRoot,
+        wait: args.wait,
+        stopWaiting: cancelled.future,
+      );
+      if (started.refusal case final refusal?) {
+        return CallToolResult(
+          content: [TextContent(text: refusal)],
+          isError: true,
+        );
+      }
+      final map = {...started.status!, 'projectRoot': ?_session.projectRoot};
+      return CallToolResult(
+        content: [TextContent(text: jsonEncode(map))],
+        structuredContent: map,
+      );
+    } finally {
+      await abortSub.cancel();
+    }
+  }
 
   Future<CallToolResult> _screenshotTool() => withProject(
     () => ScreenshotService.handleScreenshotRequest(
@@ -356,7 +509,12 @@ class McpTools {
   }
 
   CallToolResult statusResult(PatrolStatus status, {bool isError = false}) {
-    final map = status.toMap();
+    final suite = _session.suiteStatus;
+    final map = {
+      ...status.toMap(),
+      if (suite != null && _session.suiteIsNewer) 'summary': suite['summary']!,
+      'suite': ?suite,
+    };
     return CallToolResult(
       content: [TextContent(text: jsonEncode(map))],
       structuredContent: map,
