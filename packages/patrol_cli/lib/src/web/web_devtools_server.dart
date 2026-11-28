@@ -68,17 +68,28 @@ class WebDevtoolsServer {
     }
   }
 
+  /// Starts [command] and kills it with its descendants once [_disposeScope]
+  /// is disposed, also when that happened while it was starting.
+  Future<Process> _start(List<String> command) async {
+    final process = await _processManager.start(command);
+    if (_disposeScope.disposed) {
+      await process.killTree();
+      throw StateError(
+        'The session ended while `${command.join(' ')}` started',
+      );
+    }
+    return process..disposedByTree(_disposeScope);
+  }
+
   Future<_ToolingDaemon?> _startToolingDaemon(FlutterCommand dart) async {
     _logger.detail('Starting the Dart Tooling Daemon...');
 
-    final process =
-        await _processManager.start([
-            dart.executable,
-            ...dart.arguments,
-            'tooling-daemon',
-            '--machine',
-          ])
-          ..disposedByTree(_disposeScope);
+    final process = await _start([
+      dart.executable,
+      ...dart.arguments,
+      'tooling-daemon',
+      '--machine',
+    ]);
 
     final details = Completer<_ToolingDaemon>();
 
@@ -171,16 +182,14 @@ class WebDevtoolsServer {
 
     _logger.detail('Starting the DevTools server on port $port...');
 
-    final process =
-        await _processManager.start([
-            dart.executable,
-            ...dart.arguments,
-            'devtools',
-            '--dtd-uri=$daemonUri',
-            '--no-launch-browser',
-            '--port=$port',
-          ])
-          ..disposedByTree(_disposeScope);
+    final process = await _start([
+      dart.executable,
+      ...dart.arguments,
+      'devtools',
+      '--dtd-uri=$daemonUri',
+      '--no-launch-browser',
+      '--port=$port',
+    ]);
 
     final url = Completer<String>();
 

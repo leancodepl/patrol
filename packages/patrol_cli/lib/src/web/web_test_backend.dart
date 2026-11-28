@@ -247,7 +247,7 @@ class WebTestBackend {
         }
         _logger.success('Quitting process...');
         await _killInstall();
-        _playwrightDevelopProcess?.kill();
+        await _playwrightDevelopProcess?.killTree();
         await _stopFlutterProcess();
       }
     });
@@ -309,7 +309,7 @@ class WebTestBackend {
       await stdinSubscription.cancel();
       await sigintSubscription.cancel();
       _quitting = true;
-      _playwrightDevelopProcess?.kill();
+      await _playwrightDevelopProcess?.killTree();
       await _stopFlutterProcess();
       final modes = previousStdinModes;
       if (modes != null) {

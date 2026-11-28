@@ -147,6 +147,7 @@ void main() {
 
       await expectLater(session, throwsA(isA<ToolInterrupted>()));
       verify(() => flutterProcess.kill(any())).called(greaterThan(0));
+      verifyNever(() => flutterProcess.kill(ProcessSignal.sigkill));
     });
 
     test(
@@ -166,6 +167,7 @@ void main() {
 
         await interrupted;
         verify(() => flutterProcess.kill(any())).called(greaterThan(0));
+        verifyNever(() => flutterProcess.kill(ProcessSignal.sigkill));
       },
       timeout: const Timeout(Duration(seconds: 30)),
     );
@@ -189,6 +191,7 @@ void main() {
         await interrupted;
         verify(() => installProcess.kill(any())).called(greaterThan(0));
         verify(() => flutterProcess.kill(any())).called(greaterThan(0));
+        verifyNever(() => flutterProcess.kill(ProcessSignal.sigkill));
         verifyNever(startDriver);
       },
       timeout: const Timeout(Duration(seconds: 30)),
@@ -212,7 +215,9 @@ void main() {
 
         await expectLater(session, throwsA(isA<ToolInterrupted>()));
         verify(() => driverProcess.kill(any())).called(greaterThan(0));
+        verify(() => driverProcess.pid);
         verify(() => flutterProcess.kill(any())).called(greaterThan(0));
+        verifyNever(() => flutterProcess.kill(ProcessSignal.sigkill));
       },
       timeout: const Timeout(Duration(seconds: 30)),
     );
@@ -232,7 +237,9 @@ void main() {
 
       await expectLater(session, completes);
       verify(() => driverProcess.kill(any())).called(greaterThan(0));
+      verify(() => driverProcess.pid);
       verify(() => flutterProcess.kill(any())).called(greaterThan(0));
+      verifyNever(() => flutterProcess.kill(ProcessSignal.sigkill));
       verifyNever(() => logger.err(any()));
     }, timeout: const Timeout(Duration(seconds: 30)));
   });
