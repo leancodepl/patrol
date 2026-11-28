@@ -1254,6 +1254,13 @@ void main() {
         isFalse,
       );
     });
+
+    test('is false on Windows', () {
+      expect(
+        shouldAttachUsingUrl(device(TargetPlatform.windows, real: false)),
+        isFalse,
+      );
+    });
   });
 }
 

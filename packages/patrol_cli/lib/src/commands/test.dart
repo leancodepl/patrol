@@ -23,6 +23,8 @@ import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
 import 'package:patrol_cli/src/web/web_test_backend.dart';
+import 'package:patrol_cli/src/windows/windows_app_options.dart';
+import 'package:patrol_cli/src/windows/windows_test_backend.dart';
 
 class TestCommand extends PatrolCommand {
   TestCommand({
@@ -36,6 +38,7 @@ class TestCommand extends PatrolCommand {
     required this._iosTestBackend,
     required MacOSTestBackend macOSTestBackend,
     required this._webTestBackend,
+    required this._windowsTestBackend,
     required this._coverageTool,
     required this._webCoverageTool,
     required this._analytics,
@@ -80,6 +83,7 @@ class TestCommand extends PatrolCommand {
   final IOSTestBackend _iosTestBackend;
   final MacOSTestBackend _macosTestBackend;
   final WebTestBackend _webTestBackend;
+  final WindowsTestBackend _windowsTestBackend;
   final CoverageTool _coverageTool;
   final WebCoverageTool _webCoverageTool;
 
@@ -250,6 +254,16 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       return 1;
     }
 
+    // Windows launches the exe directly; the VM collector never attaches.
+    if (coverageMode == CoverageMode.vm &&
+        device.targetPlatform == TargetPlatform.windows) {
+      _logger.err(
+        'VM coverage is not supported on Windows yet. '
+        'Please remove the --coverage flag.',
+      );
+      return 1;
+    }
+
     final coverageWorkspace = boolArg('coverage-workspace');
     final ignoreGlobs = stringsArg('coverage-ignore').map(Glob.new).toSet();
     final coveragePackagesRegExps = stringsArg('coverage-package');
@@ -284,6 +298,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
         'PATROL_TEST_SERVER_PORT': super.testServerPort.toString(),
         'PATROL_APP_SERVER_PORT': super.appServerPort.toString(),
       },
+      if (device.targetPlatform == TargetPlatform.windows)
+        'PATROL_HOST': '127.0.0.1',
       'COVERAGE_ENABLED': (coverageMode == CoverageMode.vm).toString(),
     }.withNullsRemoved();
 
@@ -412,9 +428,22 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       coverageDir: webCoverageDataDir,
     );
 
+    final windowsOpts = WindowsAppOptions(
+      flutter: flutterOpts,
+      appServerPort: super.appServerPort,
+      testServerPort: super.testServerPort,
+    );
+
     // No need to build web app for testing. It's done in the execute method.
     if (device.targetPlatform != TargetPlatform.web) {
-      await _build(androidOpts, iosOpts, macosOpts, webOpts, device);
+      await _build(
+        androidOpts,
+        iosOpts,
+        macosOpts,
+        webOpts,
+        windowsOpts,
+        device,
+      );
     }
 
     await _preExecute(androidOpts, iosOpts, macosOpts, device, uninstall);
@@ -439,6 +468,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       iosOpts,
       macosOpts,
       webOpts,
+      windowsOpts,
       uninstall: uninstall,
       device: device,
       showFlutterLogs: boolArg('show-flutter-logs'),
@@ -492,7 +522,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
         }
       case TargetPlatform.macOS:
       case TargetPlatform.web:
-      // No uninstall needed for macOS and web
+      case TargetPlatform.windows:
+      // No uninstall needed for macOS, web, and windows
     }
 
     try {
@@ -507,6 +538,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     IOSAppOptions iosOpts,
     MacOSAppOptions macosOpts,
     WebAppOptions webOpts,
+    WindowsAppOptions windowsOpts,
     Device device,
   ) async {
     final buildAction = switch (device.targetPlatform) {
@@ -514,6 +546,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       TargetPlatform.macOS => () => _macosTestBackend.build(macosOpts),
       TargetPlatform.iOS => () => _iosTestBackend.build(iosOpts),
       TargetPlatform.web => () => _webTestBackend.build(webOpts),
+      TargetPlatform.windows => () => _windowsTestBackend.build(windowsOpts),
     };
 
     try {
@@ -532,7 +565,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     AndroidAppOptions android,
     IOSAppOptions ios,
     MacOSAppOptions macos,
-    WebAppOptions web, {
+    WebAppOptions web,
+    WindowsAppOptions windows, {
     required bool uninstall,
     required Device device,
     required bool showFlutterLogs,
@@ -595,6 +629,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
           hideTestSteps: hideTestSteps,
           clearTestSteps: clearTestSteps,
         );
+      case TargetPlatform.windows:
+        action = () => _windowsTestBackend.execute(windows, device);
     }
 
     var allPassed = true;

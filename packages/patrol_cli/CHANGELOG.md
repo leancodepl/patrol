@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Experimental `patrol test` support for Windows desktop (build + out-of-process
+  automator sidecar). `patrol develop` on Windows is not supported yet. (#3183)
 - `patrol develop` stops waiting for the app's uninstall after 30 s when a session ends without `q`,
   for example when the device goes away. (#3370)
 - Detect and support both Android test layouts: the self-instrumenting
