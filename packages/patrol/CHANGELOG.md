@@ -40,6 +40,9 @@
 - Add `$.entrypointArgs` with the Dart entrypoint arguments the native side of the app passes to
   the test bundle (`dartEntrypointArgs` on Android, `entrypointArgs` on iOS and macOS). Needs a
   `patrol_cli` release that includes this change. (#3366)
+- Fix web test discovery failing with `page.goto: Timeout 30000ms exceeded` when a debug web build
+  takes longer than 30 s to load, for example on a small CI runner. The setup navigation now waits
+  up to 300 s, like the runner's other waits for the app. (#3389)
 - Agent skills: `patrol-write-test` now covers the state a restart of a running session keeps,
   what a failed run leaves behind, assertions that cannot fail, steps a test does not need, and
   `settlePolicy` on screens with never-ending animations.
