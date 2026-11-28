@@ -795,6 +795,7 @@ final class PatrolSession {
         device: device,
         projectRoot: projectRoot,
         timeout: timeout,
+        dartDefines: dartDefines,
       );
     }
 

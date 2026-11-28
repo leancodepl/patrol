@@ -169,9 +169,9 @@ needs a new session.
 
 `dartDefines` on `run` sets `--dart-define` values on top of the session's own, e.g.
 `{"testFile": "patrol_test/login_test.dart", "dartDefines": {"API_URL": "https://staging.example.com"}}`.
-On a running session a changed value starts a new `flutter attach` with it, which takes about 10
-seconds instead of a rebuild, and the value stays for later runs. Removing a value takes
-`reset: true`.
+On a running Android, iOS or macOS session a changed value starts a new `flutter attach` with it,
+which takes about 10 seconds, and the value stays for later runs. On web a changed value takes
+`reset: true`, and so does removing a value.
 
 The app keeps the state the previous test left: its screens, its stored data and the permissions it
 was granted. Pass `reset: true` to quit the session and start a new one, which reinstalls the app

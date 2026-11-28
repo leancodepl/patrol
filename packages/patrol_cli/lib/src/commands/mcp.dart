@@ -260,10 +260,11 @@ class McpCommand extends PatrolCommand {
               description:
                   'Optional --dart-define values for this run, e.g. '
                   '{"API_URL":"https://staging.example.com"}, on top of the '
-                  "session's own. On a running session, a changed value "
-                  'reattaches to the app in seconds, without a rebuild, and '
-                  'stays for later runs; removing one takes reset. Defines '
-                  'read by native code need reset too.',
+                  "session's own. On a running session other than web, a "
+                  'changed value reattaches to the app in seconds, without a '
+                  'rebuild, and stays for later runs. On web a changed value '
+                  'takes reset, and so do removing one and defines read by '
+                  'native code.',
             ),
             'projectRoot': JsonString(
               description:

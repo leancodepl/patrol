@@ -129,13 +129,15 @@ class DevelopService {
   /// generated the bundle.
   ({String testDirectory, String testFileSuffix})? _bundleTarget;
 
-  /// The dart-defines the running `flutter attach` compiles with, and which of
-  /// them patrol sets itself; set by [run].
+  /// The dart-defines the running `flutter attach` compiles with; set by [run].
   Map<String, String> _attachDartDefines = const {};
+
+  /// The dart-defines of [_attachDartDefines] that patrol sets itself; set by
+  /// [run].
+  Set<String> _internalDartDefineKeys = const {};
 
   /// The entrypoint the session compiles; set by [run].
   String _entrypointPath = '';
-  Set<String> _internalDartDefineKeys = const {};
 
   /// Whether [dartDefines] would change what the session compiles with, which
   /// takes a new `flutter attach` instead of a plain hot restart.
@@ -223,7 +225,8 @@ class DevelopService {
     final bundleTarget = _bundleTarget;
     if (bundleTarget == null) {
       return 'This develop session runs a bundle it did not generate '
-          '(--no-generate-bundle), so it cannot switch test files.';
+          '(--no-generate-bundle), so it cannot switch test files. Quit and '
+          'start a session for the other file.';
     }
     final isWeb = _device?.targetPlatform == TargetPlatform.web;
 
@@ -237,7 +240,7 @@ class DevelopService {
     final reattach = changesDartDefines(dartDefines);
     if (reattach && isWeb) {
       return 'Changing dart-defines in a running session is not supported on '
-          'web yet.';
+          'web yet. Run again with reset: true to start a session with them.';
     }
     final newDartDefines = {..._attachDartDefines, ...dartDefines};
 
@@ -267,13 +270,15 @@ class DevelopService {
       if (!outcome.isCompleted) {
         outcome.complete(
           compilerOutput.isEmpty
-              ? 'flutter attach rejected the hot restart.'
+              ? '${isWeb ? 'flutter run' : 'flutter attach'} rejected the hot '
+                    'restart.'
               : compilerOutput,
         );
       }
     }
 
     _acceptLogEntries = false;
+    final previousDartDefines = _attachDartDefines;
     if (reattach) {
       _attachDartDefines = newDartDefines;
       unawaited(
@@ -312,8 +317,11 @@ class DevelopService {
       _acceptLogEntries = true;
     }
 
-    if (failure != null && previousBundle != null) {
-      bundle.writeAsStringSync(previousBundle);
+    if (failure != null) {
+      _attachDartDefines = previousDartDefines;
+      if (previousBundle != null) {
+        bundle.writeAsStringSync(previousBundle);
+      }
     }
     return failure;
   }

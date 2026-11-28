@@ -232,7 +232,8 @@ void main() {
       final firstExit = Completer<int>();
       final first = MockProcess();
       final firstStdout = StreamController<List<int>>();
-      when(() => first.pid).thenReturn(999999);
+      // No real process has this PID, so killing its tree reaches nothing else.
+      when(() => first.pid).thenReturn(999999999);
       when(() => first.stdout).thenAnswer((_) => firstStdout.stream);
       when(() => first.stderr).thenAnswer((_) => const Stream.empty());
       when(() => first.exitCode).thenAnswer((_) => firstExit.future);
@@ -298,6 +299,12 @@ void main() {
       verify(() => secondStdin.add('R'.codeUnits)).called(1);
       expect(completed, isTrue);
       expect(exits, 0, reason: 'replacing flutter attach is not a quit');
+
+      // The replaced process's exit is reported once its stderr drains.
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      expect(tool.attachFailure, isNull);
+      tool.hotRestart();
+      verify(() => secondStdin.add('R'.codeUnits)).called(1);
       await firstStdout.close();
       await secondStdout.close();
       await keys.close();

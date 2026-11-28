@@ -361,6 +361,9 @@ class FlutterTool {
     }
 
     _hotRestartActive = false;
+    // Its exit handler treats an exit of anything but [_attachProcess] as
+    // expected.
+    _attachProcess = null;
     await old.killTree();
     await old.exitCode.timeout(
       _reattachExitTimeout,
@@ -462,7 +465,9 @@ class FlutterTool {
         scope,
         'flutter attach',
         (code, reason) {
-          if (scope.disposed || _quitting) {
+          if (scope.disposed ||
+              _quitting ||
+              !identical(process, _attachProcess)) {
             return;
           }
           _hotRestartActive = false;
