@@ -73,6 +73,18 @@ void main() {
       );
     });
 
+    test('rejects attach on the first phase', () {
+      expect(
+        () => phases([
+          PatrolPhase(
+            (_) => Future.value(),
+            launch: const PatrolAppLaunch.attach(),
+          ),
+        ]),
+        throwsArgumentError,
+      );
+    });
+
     test('takes deep links with a scheme, with or without a host', () {
       expect(
         PatrolAppLaunch.deepLink('patrol://check/somepath?query=10').url,
@@ -100,6 +112,25 @@ void main() {
       expect(definition.phaseIndexFor(0), 0);
       expect(definition.phaseIndexFor(1), 1);
     });
+
+    // Attach phases need the runner to ask for the next phase, which only the
+    // runners that send phase 0 do.
+    test(
+      'fails a test with an attach phase when the runner sends no phase',
+      () {
+        final definition = patrolPhasesOf(
+          phases([
+            PatrolPhase((_) => Future.value()),
+            PatrolPhase(
+              (_) => Future.value(),
+              launch: const PatrolAppLaunch.attach(),
+            ),
+          ]),
+        )!;
+
+        expect(() => definition.phaseIndexFor(null), throwsUnsupportedError);
+      },
+    );
 
     test('runs a single phase on any runner', () {
       final definition = patrolPhasesOf(
