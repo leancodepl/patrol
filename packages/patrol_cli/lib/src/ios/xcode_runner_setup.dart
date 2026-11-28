@@ -167,7 +167,7 @@ class XcodeRunnerSetup {
   }
 
   RegExp get _removedStaticBaseMacro =>
-      RegExp('\\b${runnerMacro}_STATIC_BASE\\(');
+      RegExp('^[ \\t]*${runnerMacro}_STATIC_BASE\\(', multiLine: true);
 
   RegExp get _removedStaticMacro =>
       RegExp('^[ \\t]*${runnerMacro}_STATIC_BEGIN\\b', multiLine: true);

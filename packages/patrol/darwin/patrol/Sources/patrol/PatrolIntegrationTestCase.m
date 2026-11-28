@@ -92,6 +92,11 @@ static inline void PatrolWithoutQuiescenceWait(void (^block)(void)) {
 }
 #endif
 
+@interface PatrolIntegrationTestCase ()
+/// Test names selected with `-only-testing` in runtime discovery mode.
+@property(class, strong, nonatomic, readonly) NSArray<NSString *> *selectedTestNames;
+@end
+
 @implementation PatrolIntegrationTestCase
 
 + (BOOL)patrolFullIsolation {

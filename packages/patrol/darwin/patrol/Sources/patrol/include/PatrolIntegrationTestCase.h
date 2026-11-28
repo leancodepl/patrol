@@ -30,9 +30,6 @@ NS_ASSUME_NONNULL_BEGIN
 /// `PATROL_SCREENSHOT_ON_FAILURE` build flag.
 @property(class, nonatomic, readonly) BOOL patrolScreenshotOnFailure;
 
-/// Test names selected with `-only-testing` in runtime discovery mode.
-@property(class, strong, nonatomic, readonly) NSArray<NSString *> *selectedTestNames;
-
 /// Runs one Dart test in the app and reports its result as this XCTest's result.
 - (void)patrolExecuteDartTest:(NSString *)dartTestName skip:(BOOL)skip;
 

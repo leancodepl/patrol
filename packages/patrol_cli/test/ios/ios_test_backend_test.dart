@@ -414,6 +414,17 @@ void main() {
         expect(inc().lastModifiedSync(), modified);
       });
 
+      test('ignores the removed STATIC_BASE macro in a comment', () async {
+        runner()
+          ..createSync(recursive: true)
+          ..writeAsStringSync(
+            '// was PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE(X)\n'
+            '$currentRunner',
+          );
+
+        await buildPastSetup(emitTestManifest: false);
+      });
+
       test('ignores the removed STATIC_BEGIN macro in a comment', () async {
         runner()
           ..createSync(recursive: true)
