@@ -440,6 +440,33 @@ void main() {
       await expectLater(buildService().hotRestartReady, completes);
     });
 
+    test('hotRestartReady fails at once when flutter attach died after '
+        'attaching', () async {
+      when(
+        () => webTestBackend.hotRestartReady,
+      ).thenAnswer((_) => Completer<void>().future);
+      when(
+        () => flutterTool.hotRestartReady,
+      ).thenAnswer((_) => Future<void>.value());
+      when(() => flutterTool.attachFailure).thenReturn(
+        'Hot Restart is not available: `flutter attach` exited with code 1',
+      );
+      when(
+        () => flutterTool.attachFailed,
+      ).thenAnswer((_) => Completer<String>().future);
+
+      await expectLater(
+        buildService().hotRestartReady,
+        throwsA(
+          isA<ToolExit>().having(
+            (e) => e.message,
+            'message',
+            contains('exited with code 1'),
+          ),
+        ),
+      );
+    });
+
     group('with prebuilt APKs', () {
       const prebuiltOptions = DevelopOptions(
         target: 'onboarding_test.dart',
