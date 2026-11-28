@@ -7,6 +7,7 @@ import 'package:args/args.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/local.dart';
 import 'package:path/path.dart' as p;
+import 'package:patrol_cli/src/base/constants.dart' as constants;
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/commands/develop_options.dart';
@@ -14,6 +15,7 @@ import 'package:patrol_cli/src/commands/develop_service.dart';
 import 'package:patrol_cli/src/commands/develop_session_factory.dart';
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
 import 'package:patrol_cli/src/devices.dart';
+import 'package:patrol_cli/src/mcp/cli_origin.dart';
 import 'package:patrol_cli/src/mcp/project_resolver.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
@@ -172,13 +174,16 @@ class PatrolStatus {
     this.currentTestFile,
     this.warning,
     this.deviceSelectionNote,
-    this.error,
     this.deviceName,
     this.deviceId,
     this.devicePlatform,
     this.quietFor,
     this.lastTestEntry,
     this.stallNote,
+    this.error,
+    this.cli,
+    this.cliPinWarning,
+    this.logFile,
     this.terminalWarning,
   });
 
@@ -197,8 +202,6 @@ class PatrolStatus {
   final String? warning;
   final String? deviceSelectionNote;
 
-  /// The failure details the test reported, when it failed.
-  final String? error;
   final String? deviceName;
   final String? deviceId;
   final String? devicePlatform;
@@ -212,7 +215,20 @@ class PatrolStatus {
   /// Set when the quiet has lasted long enough to be worth reporting.
   final String? stallNote;
 
-  /// Why the Terminal window following the session log did not open.
+  /// Why the first failing test failed: its name and the error lines patrol
+  /// reported for it.
+  final String? error;
+
+  /// The `patrol_cli` serving this server.
+  final CliOrigin? cli;
+
+  /// Set when the project pins a `patrol_cli` other than the one serving it.
+  final String? cliPinWarning;
+
+  /// The file the session writes its whole output to while it runs.
+  final String? logFile;
+
+  /// Why the Terminal window following [logFile] did not open.
   final String? terminalWarning;
 
   String get summary => testState.summary;
@@ -225,13 +241,16 @@ class PatrolStatus {
     'currentTestFile': ?currentTestFile,
     'warning': ?warning,
     'deviceSelectionNote': ?deviceSelectionNote,
-    'error': ?error,
     'deviceName': ?deviceName,
     'deviceId': ?deviceId,
     'devicePlatform': ?devicePlatform,
     'quietForSeconds': ?quietFor?.inSeconds,
     'lastTestEntry': ?lastTestEntry,
     'stallNote': ?stallNote,
+    'error': ?error,
+    'cli': ?cli?.toMap(),
+    'cliPinWarning': ?cliPinWarning,
+    'logFile': ?logFile,
     'terminalWarning': ?terminalWarning,
     'output': output,
     'summary': summary,
@@ -282,9 +301,13 @@ final class PatrolSession {
     // Above the develop service's 30 s bound on the uninstall, so a slow but
     // healthy uninstall finishes inside it.
     this._teardownTimeout = const Duration(seconds: 45),
+    CliOrigin? cliOrigin,
     DateTime Function()? now,
   }) : _platform = platform ?? NativePlatform.current!,
        _now = now ?? DateTime.now,
+       cliOrigin =
+           cliOrigin ??
+           CliOrigin.fromScript(io.Platform.script, version: constants.version),
        _enterProjectDirectory =
            enterProjectDirectory ?? ((root) => io.Directory.current = root),
        _diagnosticSink = diagnosticSink ?? io.stderr,
@@ -299,6 +322,9 @@ final class PatrolSession {
 
   /// The log a Terminal window already follows.
   String? _terminalLogPath;
+
+  /// The log the last run wrote to.
+  String? _logPath;
   String? _terminalWarning;
 
   /// The test file as the resolved project sees it, which is not the path the
@@ -371,6 +397,16 @@ final class PatrolSession {
     required String? requestedRoot,
   }) async {
     if (!_isRunning) {
+      if (cliOrigin.source == CliSource.project) {
+        final requested = await _resolveProjectRoot(
+          testFile: testFile,
+          requestedRoot: requestedRoot,
+          remember: false,
+        );
+        if (!_servesFromProject(requested.root)) {
+          return _foreignProjectRefusal(requested.root);
+        }
+      }
       await _resolveAndEnter(testFile: testFile, requestedRoot: requestedRoot);
       return null;
     }
@@ -435,6 +471,13 @@ final class PatrolSession {
     _pushOutput,
   );
 
+  /// Install as `stderr` for the whole MCP command. A failed build reports its
+  /// cause only there.
+  late final io.Stdout capturingStderr = _CapturingStdout(
+    _diagnosticSink,
+    _pushOutput,
+  );
+
   static const _maxOutputLines = 200;
 
   /// How long a hot restart waits for `flutter attach` to become ready. Long
@@ -461,7 +504,6 @@ final class PatrolSession {
   static const _cancelled = 'The run was cancelled before it started.';
   String? _currentTestFile;
   final _outputs = <String>[];
-  final _errorDetails = <String>[];
 
   static const _notUpYet =
       'The app has not come up yet (it may still be building, installing or '
@@ -544,6 +586,59 @@ final class PatrolSession {
       ).getPatrolVersion(),
     );
   }
+
+  /// The `patrol_cli` serving this server.
+  final CliOrigin cliOrigin;
+
+  /// Set when the resolved project's lockfile pins a `patrol_cli` other than
+  /// the one serving it. Runs use the serving one.
+  String? get _cliPinWarning {
+    final root = _projectRoot;
+    if (root == null || _servesFromProject(root)) {
+      return null;
+    }
+    final pinned = PubspecReader(
+      projectRoot: const LocalFileSystem().directory(root),
+    ).getLockedVersion('patrol_cli');
+    if (pinned == null || pinned == cliOrigin.version) {
+      return null;
+    }
+    return 'This project pins patrol_cli $pinned, but this server is '
+        '${cliOrigin.source.name} patrol_cli ${cliOrigin.version}, so runs '
+        'use ${cliOrigin.version}. To run the pinned one, point the patrol '
+        "server in your editor's MCP config for this project at "
+        '"command": "dart", "args": ["run", "patrol_cli:main", "mcp"]. Where '
+        'each editor keeps that config: '
+        'https://patrol.leancode.co/documentation/other/patrol-mcp#cli-as-a-project-dev-dependency';
+  }
+
+  /// Whether [root] is the project whose dev dependency serves this server, or
+  /// lies below it in the same workspace.
+  bool _servesFromProject(String root) {
+    final own = cliOrigin.projectRoot;
+    if (cliOrigin.source != CliSource.project || own == null) {
+      return false;
+    }
+    return _sameDirectory(root, own) ||
+        p.isWithin(_canonical(own), _canonical(root));
+  }
+
+  String _canonical(String path) {
+    try {
+      return io.Directory(path).resolveSymbolicLinksSync();
+    } on io.FileSystemException {
+      return p.canonicalize(path);
+    }
+  }
+
+  /// A server launched from one project's dev dependency runs that project's
+  /// pinned CLI, so it refuses another project.
+  String _foreignProjectRefusal(String root) =>
+      'This server is patrol_cli ${cliOrigin.version} from the dev '
+      'dependencies of ${cliOrigin.projectRoot}, so it runs tests only there. '
+      'For $root, use a globally activated server (`patrol mcp`), or give that '
+      "project its own `dart run patrol_cli:main mcp` in your editor's MCP "
+      'config.';
 
   /// Makes the native automator reachable on `localhost:[testServerPort]`.
   ///
@@ -841,7 +936,7 @@ final class PatrolSession {
     _quitRequested = false;
     _finishWarning = null;
     _outputs.clear();
-    _errorDetails.clear();
+    _clearFailure();
     _lastHeardAt = _now();
     _appUp = false;
     _lastTestEntryAt = null;
@@ -901,8 +996,9 @@ final class PatrolSession {
               _finishWarning = err.message;
               _pushOutput(err.message);
             } else {
-              _logger.warn('Develop session error: $err\n$st');
-              _pushOutput('ERROR: $err');
+              _logger
+                ..err('ERROR: $err')
+                ..detail('$st');
             }
             if (_testState == TestState.running) {
               _testState = TestState.finishedFailed;
@@ -924,6 +1020,32 @@ final class PatrolSession {
 
   /// How long a caller waits for a session to finish tearing down.
   final Duration _teardownTimeout;
+
+  static const _maxErrorLines = 60;
+
+  final _errorLines = <String>[];
+  String? _failedTest;
+
+  void _clearFailure() {
+    _failedTest = null;
+    _errorLines.clear();
+  }
+
+  void _addErrorLine(String line) {
+    if (_errorLines.length < _maxErrorLines) {
+      _errorLines.add(line);
+    }
+  }
+
+  String? get _error {
+    if (_failedTest == null && _errorLines.isEmpty) {
+      return null;
+    }
+    return [
+      if (_failedTest case final test?) 'Test "$test" failed.',
+      ..._errorLines,
+    ].join('\n');
+  }
 
   /// Stops an active develop session and waits for its child processes to be
   /// torn down. Safe to call when idle or repeatedly.
@@ -1042,17 +1164,20 @@ final class PatrolSession {
       _lastTestEntry = entry.name;
       _lastTestEntryAt = _lastHeardAt;
     }
-
+    // patrol logs a failing test's details before its failure entry, and the
+    // run ends on that entry, so later lines belong to other tests.
     if (entry is ErrorEntry) {
-      _errorDetails.add(entry.message);
+      if (_testState == TestState.running) {
+        _addErrorLine(entry.message);
+      }
       return;
     }
-
     if (entry is TestEntry &&
         entry.status == TestEntryStatus.failure &&
         _testState == TestState.running) {
+      _failedTest = entry.name;
       if (entry.error case final error?) {
-        _errorDetails.add(error);
+        _addErrorLine(error);
       }
       _testState = TestState.finishedFailed;
       _completeFinish();
@@ -1082,8 +1207,7 @@ final class PatrolSession {
     // so it isn't swallowed by the generic warning below.
     final error = result.error;
     if (error != null) {
-      _pushOutput('ERROR: $error');
-      _logger.err('Backend exit error: $error');
+      _logger.err('ERROR: $error');
     }
     _finishWarning =
         'The app stopped without the test reporting completion, so there is no '
@@ -1153,7 +1277,7 @@ final class PatrolSession {
         return 'Quit command sent to patrol session';
       case SessionCommand.hotRestart:
         _outputs.clear();
-        _errorDetails.clear();
+        _clearFailure();
         _lastHeardAt = _now();
         _lastTestEntry = null;
         _lastTestEntryAt = null;
@@ -1218,13 +1342,16 @@ final class PatrolSession {
       currentTestFile: _currentTestFile,
       warning: overrideWarning ?? _finishWarning ?? _projectProblem,
       deviceSelectionNote: _deviceSelectionNote,
-      error: _errorDetails.isNotEmpty ? _errorDetails.join('\n') : null,
       deviceName: dev?.name,
       deviceId: dev?.id,
       devicePlatform: dev?.targetPlatform.name,
       quietFor: quiet,
       lastTestEntry: _lastTestEntry,
       stallNote: _stallNote(quiet),
+      error: _error,
+      cli: cliOrigin,
+      cliPinWarning: _cliPinWarning,
+      logFile: _logPath,
       terminalWarning: _terminalWarning,
     );
   }
@@ -1305,7 +1432,7 @@ final class PatrolSession {
   /// Automatically start log streaming and optionally launch terminal
   Future<void> _startLogStreamingAndTerminal() async {
     try {
-      final logPath = await _logStreaming.startLogging(
+      final logPath = _logPath = await _logStreaming.startLogging(
         flutterProjectPath,
         logFile: logFile,
       );
