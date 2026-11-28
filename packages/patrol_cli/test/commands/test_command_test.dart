@@ -240,6 +240,20 @@ void main() {
         verifyNever(() => logger.err(any(that: contains('please report it'))));
       });
 
+      test('rethrows an interrupt during the build with no bug report '
+          'message', () async {
+        when(
+          () => iosTestBackend.build(any()),
+        ).thenThrow(const ToolInterrupted('xcodebuild'));
+
+        await expectLater(
+          runTest(iosSimulator, ['--bundle-id', 'com.example.app']),
+          throwsInterrupted,
+        );
+
+        verifyNever(() => logger.err(any(that: contains('please report it'))));
+      });
+
       test('still uninstalls the app after the run', () async {
         when(iosUninstall).thenAnswer((_) async {});
         when(iosExecute).thenThrow(const ToolInterrupted('xcodebuild'));
@@ -274,7 +288,11 @@ void main() {
         when(webExecute).thenThrow(const ToolInterrupted('web test run'));
 
         await expectLater(
-          runTest(androidDevice, ['--device', 'chrome', '--coverage']),
+          runTest(Device.bundledForTest('chrome')!, [
+            '--device',
+            'chrome',
+            '--coverage',
+          ]),
           throwsInterrupted,
         );
 

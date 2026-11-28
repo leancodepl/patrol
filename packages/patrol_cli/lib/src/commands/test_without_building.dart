@@ -2,11 +2,13 @@ import 'dart:async';
 
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
+import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
+import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:patrol_cli/src/test_bundler.dart';
 
@@ -31,13 +33,16 @@ class TestWithoutBuildingCommand extends PatrolCommand {
     required IOSTestBackend iosTestBackend,
     required Analytics analytics,
     required Logger logger,
+    FlutterVersion Function(FlutterCommand) readFlutterVersion =
+        FlutterVersion.fromCLI,
   }) : _deviceFinder = deviceFinder,
        _testBundler = testBundler,
        _pubspecReader = pubspecReader,
        _androidTestBackend = androidTestBackend,
        _iosTestBackend = iosTestBackend,
        _analytics = analytics,
-       _logger = logger {
+       _logger = logger,
+       _readFlutterVersion = readFlutterVersion {
     // Only options that affect *running* prebuilt artifacts: which device, which
     // artifacts (build mode + flavor), which tests, and how results are shown.
     usesDeviceOption();
@@ -73,6 +78,7 @@ class TestWithoutBuildingCommand extends PatrolCommand {
 
   final Analytics _analytics;
   final Logger _logger;
+  final FlutterVersion Function(FlutterCommand) _readFlutterVersion;
 
   @override
   String get name => 'test-without-building';
@@ -85,7 +91,7 @@ class TestWithoutBuildingCommand extends PatrolCommand {
   Future<int> run() async {
     unawaited(
       _analytics.sendCommand(
-        FlutterVersion.fromCLI(flutterCommand),
+        _readFlutterVersion(flutterCommand),
         'test_without_building',
       ),
     );
@@ -177,6 +183,8 @@ class TestWithoutBuildingCommand extends PatrolCommand {
         case TargetPlatform.web:
           return 1; // unreachable, guarded above
       }
+    } on ToolInterrupted {
+      rethrow;
     } catch (err, st) {
       _logger
         ..err('$err')

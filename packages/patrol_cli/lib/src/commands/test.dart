@@ -519,6 +519,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
 
     try {
       await buildAction();
+    } on ToolInterrupted {
+      rethrow;
     } catch (err, st) {
       _logger
         ..err('$err')
@@ -585,10 +587,12 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
         );
         final bundleId = ios.bundleId;
         if (bundleId != null && uninstall) {
-          finalizer = () => _iosTestBackend.uninstall(
-            appId: bundleId,
-            flavor: ios.flutter.flavor,
-            device: device,
+          finalizer = () => _boundedUninstall(
+            () => _iosTestBackend.uninstall(
+              appId: bundleId,
+              flavor: ios.flutter.flavor,
+              device: device,
+            ),
           );
         }
       case TargetPlatform.web:
