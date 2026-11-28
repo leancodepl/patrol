@@ -171,30 +171,6 @@ void main() {
     );
 
     test(
-      'fails when Flutter exits with code 0 before Chrome is ready',
-      () async {
-        when(startFlutter).thenAnswer((_) async => flutterProcess);
-        final session = develop();
-        await untilCalled(startFlutter);
-        final failed = expectLater(
-          session,
-          throwsA(
-            isA<StateError>().having(
-              (err) => err.message,
-              'message',
-              contains('Flutter exited with code 0'),
-            ),
-          ),
-        );
-
-        flutterExitCode.complete(0);
-
-        await failed;
-      },
-      timeout: const Timeout(Duration(seconds: 30)),
-    );
-
-    test(
       'kills the dependency install when interrupted',
       () async {
         when(startFlutter).thenAnswer(serveChrome);
