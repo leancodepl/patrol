@@ -438,7 +438,8 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
         }
     }
 
-    override fun markPatrolAppServiceReady() {
+    override fun markPatrolAppServiceReady(request: Contracts.MarkPatrolAppServiceReadyRequest) {
+        PatrolEngines.onEngineReady(request.port?.toInt())
         PatrolServer.appReady.open()
     }
 

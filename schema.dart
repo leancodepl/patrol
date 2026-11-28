@@ -26,6 +26,9 @@ enum RunDartTestResponseResult { success, skipped, failure, continuation }
 class RunDartTestRequest {
   late String name;
   int? phaseIndex;
+  // True when the native runner attached to a Flutter engine that replaced the
+  // one the test was running in.
+  bool? engineRestarted;
 }
 
 class RunDartTestResponse {
@@ -33,6 +36,15 @@ class RunDartTestResponse {
   String? details;
   int? nextPhaseIndex;
   String? nextPhaseLaunchUrl;
+  // True when the next phase attaches to the running app instead of killing
+  // and relaunching it.
+  bool? nextPhaseKeepsProcess;
+}
+
+class MarkPatrolAppServiceReadyRequest {
+  // The port PatrolAppService listens on in the Flutter engine that makes this
+  // call. Null if the native side chose the port itself.
+  int? port;
 }
 
 abstract class PatrolAppService<IOSClient, AndroidClient, DartServer> {
@@ -424,7 +436,7 @@ abstract class MobileAutomator<IOSServer, AndroidServer, DartClient> {
   void stopMockLocation();
 
   // TODO(bartekpacia): Move this RPC into a new PatrolNativeTestService service because it doesn't fit here
-  void markPatrolAppServiceReady();
+  void markPatrolAppServiceReady(MarkPatrolAppServiceReadyRequest request);
 
   IsVirtualDeviceResponse isVirtualDevice();
 

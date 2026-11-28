@@ -135,6 +135,76 @@ Dart runs.
   through a deep link needs iOS 16.4 or newer: below that, XCTest can't open a
   URL in the app, and the test fails before the app is killed.
 
+## Continuing in the running app
+
+`PatrolAppLaunch.attach()` starts a phase **without killing the app**. Use it
+when the previous phase can make the app restart its Flutter engine while the
+process keeps running. On Android this happens when the activity is destroyed
+and created again, for example by a deep link that the app opens in a cleared
+task. The Dart test runs in the engine, so it cannot continue past that point
+on its own.
+
+```dart
+patrolTest(
+  'opens a link while the app is running',
+  phases([
+    PatrolPhase(($) async {
+      await $.pumpWidgetAndSettle(const MyApp());
+      // ...
+      await $.platform.mobile.openUrl('https://example.com/path');
+    }),
+    PatrolPhase(
+      ($) async {
+        await $.pumpWidgetAndSettle(const MyApp());
+        // Assert the screen that the link opened.
+      },
+      launch: const PatrolAppLaunch.attach(),
+    ),
+  ]),
+);
+```
+
+The phase before an `attach()` phase ends in one of two ways:
+
+- **The engine restarts.** The phase ends there, even in the middle of its
+  callback, and the code after that point does not run. The next phase runs in
+  the new engine.
+- **The engine keeps running.** The phase runs to its end and the next phase
+  follows in the same engine. This is always the case on iOS.
+
+On Android, Patrol waits up to 2 seconds for a new engine before it starts the
+`attach()` phase in the old one. If the app restarts its engine later, the
+`attach()` phase can start in the old engine, stop when that engine is
+destroyed, and run again from its start in the new one.
+
+Write the two phases so that they work in both cases:
+
+- Make the action that can restart the engine the last step of its phase.
+- Begin the `attach()` phase by waiting for the screen that the restart shows,
+  before any action that changes the app.
+- Do not pass Dart objects from one phase to the next. Use files or other
+  persisted state.
+- The process is the same, so native in-memory state survives.
+
+Hooks follow the engine, not the phase:
+
+- **After an engine restart** the new engine runs the test files from the top,
+  so `setUp` and `patrolSetUp` run again before the `attach()` phase, with
+  `currentPhaseIndex` set to its index. The old engine's `tearDown` and
+  `patrolTearDown` don't run.
+- **In the same engine** the `attach()` phase continues the test body:
+  `setUp` and `patrolSetUp` don't run again, and `tearDown` runs once, after
+  the last phase that runs in that engine. `currentPhaseIndex` changes to the
+  index of the phase that is running.
+- `willRelaunchApp` stays `false` before an `attach()` phase, since the app
+  isn't killed.
+
+If the engine restarts in a test that has no `attach()` phase at that point,
+the test fails with a message that says so.
+
+A working example lives in
+[`engine_restart_test.dart`](https://github.com/leancodepl/patrol/blob/master/dev/e2e_app/patrol_test/engine_restart_test.dart).
+
 ## Requirements and limits
 
 <Warning>

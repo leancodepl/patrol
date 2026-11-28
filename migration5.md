@@ -368,3 +368,9 @@ the Inbox before 5.0.0 is released.
   counts every matching element (a web heading and its text are 2 matches), so n can differ from
   Android. Tests that passed `instance` for Android only: use `PlatformSelector` or drop `instance`
   on iOS.
+- #3393, `patrol`: on Android each Flutter engine binds a free port for the app service and reports
+  it to the runner, so `--app-server-port` no longer has an effect there (Apple platforms keep it).
+  Drop it from Android commands, and don't rely on a fixed app service port on the device (e.g. in
+  `adb forward` or firewall rules). A test whose app restarts its Flutter engine without a process
+  death now fails with an explanation instead of hanging; split it with `phases()` and start the
+  next phase with `PatrolAppLaunch.attach()`.

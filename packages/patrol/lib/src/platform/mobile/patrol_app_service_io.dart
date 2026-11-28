@@ -2,6 +2,7 @@
 // ignore_for_file: avoid_print
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:http_multi_server/http_multi_server.dart';
 import 'package:patrol/patrol.dart';
@@ -41,8 +42,15 @@ Future<void> runAppService(PatrolAppService service) async {
       .addMiddleware(shelf.logRequests())
       .addHandler(service.handle);
 
-  final server = await HttpMultiServer.loopback(service.port);
+  // On Android the engine takes a free port and reports it to the native
+  // runner. A fixed port would not work when the app replaces its Flutter
+  // engine: the new engine starts in the same process before the old one is
+  // destroyed, so the old server still holds the port.
+  final server = await HttpMultiServer.loopback(
+    Platform.isAndroid ? 0 : service.port,
+  );
   server.idleTimeout = _idleTimeout;
+  PatrolRuntimePorts.boundAppServerPort = server.port;
 
   shelf_io.serveRequests(server, pipeline);
 
@@ -146,6 +154,33 @@ class PatrolAppService extends PatrolAppServiceServer {
     _continuation = continuation;
   }
 
+  /// Reports the end of the currently running Dart phase.
+  ///
+  /// If the next phase attaches to the running app, this answers the native
+  /// side's request now and returns its request for the next phase, which runs
+  /// in this engine. Otherwise the native side has to relaunch the app, so
+  /// this returns `null` and the answer is sent when the test body completes.
+  Future<RunDartTestRequest?> finishPhase(
+    PatrolPhaseContinuation continuation,
+  ) async {
+    if (!continuation.keepsProcess) {
+      setContinuation(continuation);
+      return null;
+    }
+
+    // The next phase is requested through this service again.
+    _completeExecution(
+      _TestExecutionResult(
+        passed: true,
+        details: null,
+        continuation: continuation,
+      ),
+      expectAnotherRequest: true,
+    );
+
+    return testExecutionRequested;
+  }
+
   /// Marks [dartFileName] as completed with the given [passed] status.
   ///
   /// If an exception was thrown during the test, [details] should contain the
@@ -168,29 +203,39 @@ class PatrolAppService extends PatrolAppServiceServer {
       'that was most recently requested to run was ${request.name}',
     );
 
-    final completed = _testExecutionCompleted;
-    final continuation = passed ? _continuation : null;
     // A failure (even one reported after the phase body, e.g. in tearDown)
     // ends the test, so the app is not relaunched.
+    final continuation = passed ? _continuation : null;
     _continuation = continuation;
-    if (reuseAcrossTests) {
-      // The orchestrator is off, so this same app service will serve the next
-      // test too. Swap in fresh completers *before* unblocking runDartTest, so
-      // the next waitForExecutionRequest/runDartTest pair gets a clean pair.
-      // The in-flight runDartTest already holds a reference to `completed`, and
-      // this runs synchronously (no await) before the suite advances to the
-      // next test's waitForExecutionRequest, so there is no race.
-      _testExecutionRequested = Completer<RunDartTestRequest>();
-      _testExecutionCompleted = Completer<_TestExecutionResult>();
-      _continuation = null;
-    }
-    completed.complete(
+    // With the orchestrator off, this same app service serves the next test
+    // too.
+    _completeExecution(
       _TestExecutionResult(
         passed: passed,
         details: details,
         continuation: continuation,
       ),
+      expectAnotherRequest: reuseAcrossTests,
     );
+  }
+
+  /// Answers the in-flight [runDartTest] with [result].
+  ///
+  /// If [expectAnotherRequest] is true, fresh completers are swapped in
+  /// *before* runDartTest is unblocked, so that the next request gets a clean
+  /// pair. The in-flight runDartTest already holds a reference to the old
+  /// completer, and this runs synchronously, so there is no race.
+  void _completeExecution(
+    _TestExecutionResult result, {
+    required bool expectAnotherRequest,
+  }) {
+    final completed = _testExecutionCompleted;
+    if (expectAnotherRequest) {
+      _testExecutionRequested = Completer<RunDartTestRequest>();
+      _testExecutionCompleted = Completer<_TestExecutionResult>();
+      _continuation = null;
+    }
+    completed.complete(result);
   }
 
   /// Returns when the native side requests execution of a Dart test. If the
@@ -343,6 +388,7 @@ class PatrolAppService extends PatrolAppServiceServer {
       details: testExecutionResult.details,
       nextPhaseIndex: continuation?.nextPhaseIndex,
       nextPhaseLaunchUrl: continuation?.launchUrl,
+      nextPhaseKeepsProcess: continuation?.keepsProcess,
     );
   }
 }

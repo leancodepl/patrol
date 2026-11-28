@@ -389,7 +389,8 @@ static inline void PatrolWithoutQuiescenceWait(void (^block)(void)) {
     return [[ObjCRunDartTestResponse alloc] initWithResult:@"failure"                                               \
                                                    details:details                                                  \
                                             nextPhaseIndex:nil                                                      \
-                                        nextPhaseLaunchUrl:nil];                                                    \
+                                        nextPhaseLaunchUrl:nil                                                      \
+                                     nextPhaseKeepsProcess:NO];                                                     \
   }                                                                                                                 \
                                                                                                                     \
   /* Runs a Dart test and, for a phased test, kills and relaunches the app for each next phase.                     \
@@ -425,6 +426,11 @@ static inline void PatrolWithoutQuiescenceWait(void (^block)(void)) {
       phaseIndex = response.nextPhaseIndex;                                                                         \
       if (phaseIndex == nil) {                                                                                      \
         return [self patrolFailureResponse:@"A phased Patrol test returned continuation without a next phase"];     \
+      }                                                                                                             \
+      if (response.nextPhaseKeepsProcess) {                                                                         \
+        /* The next phase attaches to the running app. The engine survives on iOS, */                               \
+        /* so the same app service runs it. */                                                                      \
+        continue;                                                                                                   \
       }                                                                                                             \
       /* Check the link before the app is killed, so a bad one fails the test at once. */                           \
       NSString *launchURL = response.nextPhaseLaunchUrl;                                                            \

@@ -1,3 +1,14 @@
+## Unreleased
+
+- Add `PatrolAppLaunch.attach()`, which starts a phase in the running app. The
+  test continues when the app restarts its Flutter engine without a process
+  death, e.g. when Android recreates the activity for a deep link. A test that
+  does not expect such a restart now fails with a clear message instead of
+  hanging. (#3393)
+- On Android, `PatrolAppService` now listens on a free port and reports it to
+  the native runner, so `--app-server-port` no longer has an effect there.
+  (#3393)
+
 ## 5.0.0-dev.1
 
 - **Breaking:** Require Flutter 3.44 and Dart 3.12 or newer. See `migration5.md`. (#3377)

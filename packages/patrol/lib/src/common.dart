@@ -191,14 +191,15 @@ void patrolTest(
         platformAutomator: platformAutomator,
         entrypointArgs: patrolBinding.entrypointArgs,
       );
-      // The phase the native side asked for. It stays null in develop mode,
-      // where nothing asks, and on runners that can't relaunch the app.
-      int? requestedPhaseIndex;
-      if (phasedTest != null && !constants.hotRestartEnabled) {
-        final request =
-            await patrolBinding.patrolAppService.testExecutionRequested;
-        requestedPhaseIndex = request.phaseIndex;
+      // The native side's request. It stays null in develop mode, where
+      // nothing asks.
+      RunDartTestRequest? request;
+      if (!constants.hotRestartEnabled) {
+        request = await patrolBinding.patrolAppService.testExecutionRequested;
       }
+      // The phase the native side asked for. It stays null on runners that
+      // can't relaunch the app.
+      final requestedPhaseIndex = request?.phaseIndex;
 
       // Later phases continue the test the first process started, so only the
       // first one logs the start. It's logged before anything below can reject
@@ -213,12 +214,36 @@ void patrolTest(
       }
 
       try {
+        if ((request?.engineRestarted ?? false) &&
+            !(phasedTest?.canAttachAt(requestedPhaseIndex ?? 0) ?? false)) {
+          // The native runner found a new Flutter engine while the test was
+          // running in the previous one, and the test did not allow for it.
+          // Thrown here, so that the failure screenshot is taken.
+          final restartedPhase = phasedTest == null
+              ? ''
+              : ' phase ${(requestedPhaseIndex ?? 1) - 1}';
+          throw StateError(
+            'The app restarted its Flutter engine, or started another one, '
+            'while this test was running$restartedPhase, so the Dart test '
+            'could not continue. If the restart is expected, split the test '
+            'with phases() and start the phase that follows the restart with '
+            'PatrolAppLaunch.attach(). Patrol supports one Flutter engine at a '
+            'time.',
+          );
+        }
+
         var callbackToRun = callback;
         var phaseIndex = 0;
         if (phasedTest != null) {
           if (constants.hotRestartEnabled) {
             throw UnsupportedError(
               'Phased Patrol tests are not supported in develop mode',
+            );
+          }
+          if (patrolBinding.patrolAppService.reuseAcrossTests) {
+            throw UnsupportedError(
+              'Phased Patrol tests need the Android test orchestrator, so they '
+              'are not supported with BrowserStack Dart coverage',
             );
           }
           if (const bool.fromEnvironment('COVERAGE_ENABLED') &&
@@ -237,13 +262,36 @@ void patrolTest(
           }
         }
 
-        await runWithDeterministicCursor(
-          enabled: deterministicCursor,
-          body: () => callbackToRun(patrolTester),
-        );
-        final continuation = phasedTest?.continuationAfter(phaseIndex);
-        if (continuation != null) {
-          patrolBinding.patrolAppService.setContinuation(continuation);
+        while (true) {
+          await runWithDeterministicCursor(
+            enabled: deterministicCursor,
+            body: () => callbackToRun(patrolTester),
+          );
+          final continuation = phasedTest?.continuationAfter(phaseIndex);
+          if (continuation == null) {
+            break;
+          }
+
+          final nextRequest = await patrolBinding.patrolAppService.finishPhase(
+            continuation,
+          );
+          if (nextRequest == null) {
+            // The native runner relaunches the app for the next phase.
+            break;
+          }
+
+          // The next phase attaches to the running app, and the engine is
+          // still alive, so it runs here.
+          if (nextRequest.name != global_state.currentTestFullName ||
+              nextRequest.phaseIndex != continuation.nextPhaseIndex) {
+            throw StateError(
+              'Expected phase ${continuation.nextPhaseIndex} of this test to '
+              'be requested next, but the native runner requested phase '
+              '${nextRequest.phaseIndex} of "${nextRequest.name}"',
+            );
+          }
+          phaseIndex = continuation.nextPhaseIndex;
+          callbackToRun = phasedTest!.phaseAt(phaseIndex).callback;
         }
       } catch (err, st) {
         // Capture the failing screen before teardown pumps the next frame.

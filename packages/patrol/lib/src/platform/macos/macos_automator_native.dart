@@ -5,12 +5,14 @@ import 'package:patrol/src/platform/contracts/contracts.dart'
         ConfigureRequest,
         IOSElementType,
         IOSTapRequest,
-        IOSWaitUntilVisibleRequest;
+        IOSWaitUntilVisibleRequest,
+        MarkPatrolAppServiceReadyRequest;
 import 'package:patrol/src/platform/contracts/ios_automator_client.dart';
 import 'package:patrol/src/platform/contracts/mobile_automator_client.dart';
 import 'package:patrol/src/platform/macos/macos_automator.dart'
     as macos_automator;
 import 'package:patrol/src/platform/macos/macos_automator_config.dart';
+import 'package:patrol/src/platform/mobile/patrol_runtime_ports.dart';
 import 'package:patrol/src/platform/selector.dart' show IOSSelector;
 import 'package:patrol_log/patrol_log.dart';
 
@@ -153,7 +155,11 @@ class MacOSAutomator implements macos_automator.MacOSAutomator {
   Future<void> markPatrolAppServiceReady() async {
     await _wrapRequest(
       'markPatrolAppServiceReady',
-      _mobileClient.markPatrolAppServiceReady,
+      () => _mobileClient.markPatrolAppServiceReady(
+        MarkPatrolAppServiceReadyRequest(
+          port: PatrolRuntimePorts.boundAppServerPort,
+        ),
+      ),
       enablePatrolLog: false,
     );
   }
