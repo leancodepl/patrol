@@ -27,8 +27,15 @@ void main() {
       }),
       PatrolPhase(($) async {
         await createApp($);
-        expect($('Applink Screen'), findsOneWidget);
+        // The link arrives over a platform channel, after the first frame.
+        await $('Applink Screen').waitUntilVisible();
+        await $.pumpAndSettle();
         expect($('Uri: patrol://check/somepath?query=10'), findsOneWidget);
+        // Opened once: no second copy in the routes below the top one.
+        expect(
+          find.text('Applink Screen', skipOffstage: false),
+          findsOneWidget,
+        );
       }, launch: PatrolAppLaunch.deepLink('patrol://check/somepath?query=10')),
     ]),
     tags: ['android', 'emulator', 'ios', 'simulator'],
