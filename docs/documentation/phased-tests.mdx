@@ -6,9 +6,13 @@ A Patrol test is normally one Dart callback in one app process. **Phased tests**
 split that callback into consecutive phases. When a phase finishes, the native
 runner **kills the app and starts a new process** for the next phase.
 
-Use this when you need to keep testing after a real process death: in-memory
-state is gone, `main()` runs again, and persisted files or plugins survive if
-the OS did not wipe them.
+Use this when you need to keep testing after the app's process is gone:
+in-memory state is lost, `main()` runs again, and persisted files survive.
+
+On Android Patrol stops the app with `am force-stop`, which also cancels its
+alarms and scheduled jobs and removes its notifications. iOS terminates the app
+without that. A phase that checks something scheduled before the kill can
+therefore pass on iOS and fail on Android.
 
 ## Basic usage
 
@@ -49,15 +53,17 @@ asserts a different PID.
 
 ## setUp / tearDown and timeouts
 
-Every phase runs in its own app process, and every process runs your test file
-from the top. That means:
+Every phase runs in its own app process, and every process runs the code of
+all the test files in the run from the top. That means:
 
-- `setUp` / `tearDown`, `patrolSetUp` / `patrolTearDown` and `setUpAll` run
-  **in every phase's process**, not once for the whole phased test.
-- A plain `setUp` / `tearDown` also runs for the other tests of the file in that
-  process, for example right before your test's next phase starts.
-  `patrolSetUp` / `patrolTearDown` run only for the test the native side asked
-  for.
+- `setUp` / `tearDown`, `patrolSetUp` / `patrolTearDown` and `setUpAll` /
+  `tearDownAll` run **in every phase's process**, not once for the whole phased
+  test.
+- Plain `setUp` / `tearDown` and `setUpAll` / `tearDownAll` also run for the
+  other tests of the run in that process: for the ones before your test right
+  before its next phase starts, and for the ones after it between a phase
+  passing and the kill. `patrolSetUp` / `patrolTearDown` run only for the test
+  the native side asked for.
 - The test `timeout` applies to **each** phase separately.
 
 So a hook that clears storage or logs out can delete the state the next phase
@@ -82,8 +88,8 @@ patrolTearDown(() async {
 });
 ```
 
-`setUpAll` runs before the native side asks for a test, so it can't tell the
-phases apart. Keep state resets out of it in files with phased tests.
+Plain `setUp` / `tearDown` and `setUpAll` / `tearDownAll` can't tell the
+phases apart, so keep state resets out of them in a run with phased tests.
 
 ## How to launch the next process
 

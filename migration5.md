@@ -343,6 +343,9 @@ the Inbox before 5.0.0 is released.
 - #3282, `patrol`: multi-phase `phases([...])` tests are unsupported with `patrol test --coverage`
   (VM). Run without `--coverage`, or use a single phase. Hooks run in every phase's process; put
   cleanup in `patrolTearDown` and skip it while `PatrolBinding.instance.willRelaunchApp` is `true`.
+- #3282, `patrol`: `ObjCRunDartTestResponse` has `result` (`success`, `failure`, `skipped` or
+  `continuation`) instead of `passed` and `skipped`. A `RunnerUITests.m` that copies a runner
+  macro's body instead of expanding the macro has to read `result`.
 - #3382, `patrol_cli`: `patrol develop` no longer accepts `--tags`, which it never applied. Remove
   `--tags` from `patrol develop` commands and scripts; `patrol test` keeps it.
 - #3040, `patrol_cli`: `patrol develop` on web requires Flutter 3.47.0 or newer, since hot restart

@@ -28,6 +28,10 @@
   `waitUntilVisible` target the n-th match instead of always the first. On macOS, `$.platform.tap`
   does too. On iOS and macOS, `waitUntilVisible` with `instance` now fails when there are fewer
   matches, instead of passing. (#3445)
+- **Breaking:** `ObjCRunDartTestResponse`, which the iOS and macOS runner macros
+  use, reports `result` and the next phase instead of `passed` and `skipped`. A
+  `RunnerUITests.m` that copies a runner macro's body instead of expanding the
+  macro has to read `result`. See `migration5.md`. (#3282)
 - Fix `doubleTap`, `enterText`, `waitUntilVisible`, `tapOnNotificationBySelector` and
   `getNativeViews` with a selector `instance` on Android failing with "instance() argument is not
   supported for BySelector". `tapOnNotificationBySelector` taps the n-th match, and `getNativeViews`
