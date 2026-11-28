@@ -121,22 +121,6 @@ class XcodeRunnerSetup {
       _discoveryModeFile.deleteSync();
     }
 
-    final runner = _runnerFile;
-    if (!runner.existsSync()) {
-      return;
-    }
-
-    if (_removedStaticMacro.hasMatch(runner.readAsStringSync())) {
-      throwToolExit(
-        '${runner.path} uses the ${runnerMacro}_STATIC_BEGIN and _END macros, '
-        'which were removed in Patrol 5.0. Replace them with:\n'
-        '\n'
-        '${_indented('$runnerMacro(RunnerUITests)\n$_generatedIncInclude')}\n'
-        '\n'
-        'See $_discoveryDocsUrl',
-      );
-    }
-
     if (emitTestManifest) {
       final problem = discoverySetupProblem();
       if (problem != null) {
@@ -154,9 +138,6 @@ class XcodeRunnerSetup {
       ..createSync(recursive: true)
       ..writeAsStringSync(emitTestManifest ? _buildTimeMode : _runtimeMode);
   }
-
-  RegExp get _removedStaticMacro =>
-      RegExp('^[ \\t]*${runnerMacro}_STATIC_BEGIN\\b', multiLine: true);
 
   static String _indented(String lines) =>
       lines.split('\n').map((l) => '  $l').join('\n');

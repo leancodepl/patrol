@@ -25,6 +25,12 @@
 - Fix Ctrl+C during a web `patrol test` being ignored until the web app finished building, after
   which the run hung. It now stops the Flutter web server and exits at any phase of the run. (#3339)
 - Report a dead `flutter attach` or `flutter logs` in `patrol develop`. (#3234)
+- **BREAKING CHANGE**
+  - `--web-headless` no longer takes a value: `--web-headless=true` and `--web-headless false` fail.
+    Use `--web-headless` or `--no-web-headless`.
+  - A `RunnerUITests.m` with the 4.7.0 `PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN`/`_END`
+    macros now fails in `xcodebuild` instead of with a Patrol hint. Replace them with the snippet
+    from `migration5.md`.
 
 ## 5.0.0-dev.1
 
