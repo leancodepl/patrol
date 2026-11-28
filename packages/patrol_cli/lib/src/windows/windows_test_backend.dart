@@ -9,6 +9,7 @@ import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart' show BuildMode;
+import 'package:patrol_cli/src/windows/visual_studio.dart';
 import 'package:patrol_cli/src/windows/windows_app_options.dart';
 import 'package:process/process.dart';
 
@@ -174,16 +175,70 @@ class WindowsTestBackend {
     ).firstMatch(cmake.readAsStringSync())?.group(1)?.trim();
   }
 
+  /// The newest Visual Studio with C++ tools and its CMake generator.
+  Future<(VisualStudioInstall, String)> _findVisualStudio(Progress task) async {
+    const missing =
+        'Visual Studio 2022 or 2026 with the "Desktop development with C++" '
+        'workload, including "C++ CMake tools for Windows", is required to '
+        'build patrol_windows_runner.';
+    final vswhere = vswherePath(io.Platform.environment);
+    if (!_fs.file(vswhere).existsSync()) {
+      task.fail('Visual Studio not found');
+      throwToolExit('$missing\n`$vswhere` does not exist.');
+    }
+
+    Future<String> query(String property) async {
+      final result = await _processManager.run([
+        vswhere,
+        ...vswhereArguments(property),
+      ], stdoutEncoding: vswhereEncoding);
+      return result.exitCode == 0 ? result.stdout as String : '';
+    }
+
+    final install = visualStudioInstallFrom(
+      version: await query('installationVersion'),
+      path: await query('installationPath'),
+    );
+    final generator = install?.cmakeGenerator;
+    if (install == null || generator == null) {
+      task.fail('Visual Studio not found');
+      throwToolExit(
+        install == null
+            ? missing
+            : '$missing\nFound Visual Studio ${install.version}, '
+                  'which is not supported.',
+      );
+    }
+    _logger.detail(
+      'Using Visual Studio ${install.version} at ${install.path} '
+      '(CMake generator "$generator")',
+    );
+    return (install, generator);
+  }
+
   Future<String> _ensureRunnerBuilt(DisposeScope scope) async {
     final runnerDir = await _resolveRunnerDirectory();
     final buildDir = _fs.directory(p.join(runnerDir, 'build'));
     final task = _logger.task('Building patrol_windows_runner');
+    final (install, generator) = await _findVisualStudio(task);
+    final bundledCmake = install.bundledCmakePath;
+    final String cmake;
+    if (_fs.file(bundledCmake).existsSync()) {
+      cmake = bundledCmake;
+    } else if (_processManager.canRun('cmake')) {
+      cmake = 'cmake';
+    } else {
+      task.fail('CMake not found');
+      throwToolExit(
+        'CMake was not found at `$bundledCmake` or on PATH. Add '
+        '"C++ CMake tools for Windows" to Visual Studio ${install.version}.',
+      );
+    }
 
     Future<void> runCmake(List<String> args, {required String label}) async {
       var killed = false;
       final process = await _processManager.start(
         args,
-        runInShell: true,
         workingDirectory: runnerDir,
       );
       process.disposedByTree(scope, onKill: () => killed = true);
@@ -203,26 +258,25 @@ class WindowsTestBackend {
     }
 
     // Configure when there is no usable cache. A failed configure can still
-    // leave CMakeCache.txt behind, so also require a generated VS solution.
+    // leave CMakeCache.txt behind, so also require a finished generate step.
     final cache = buildDir.childFile('CMakeCache.txt');
-    final solution = buildDir.childFile('patrol_windows_runner.sln');
-    final needsConfigure = !cache.existsSync() || !solution.existsSync();
+    final generated = buildDir.childFile('cmake_install.cmake');
+    final needsConfigure = !cache.existsSync() || !generated.existsSync();
     if (needsConfigure) {
       if (buildDir.existsSync()) {
         buildDir.deleteSync(recursive: true);
       }
       try {
-        await runCmake([
-          'cmake',
-          '-S',
-          runnerDir,
-          '-B',
-          buildDir.path,
-          '-G',
-          'Visual Studio 17 2022',
-          '-A',
-          'x64',
-        ], label: 'cmake configure');
+        await runCmake(
+          cmakeConfigureArguments(
+            cmake: cmake,
+            sourceDir: runnerDir,
+            buildDir: buildDir.path,
+            generator: generator,
+            install: install,
+          ),
+          label: 'cmake configure',
+        );
       } catch (_) {
         if (buildDir.existsSync()) {
           buildDir.deleteSync(recursive: true);
@@ -232,7 +286,7 @@ class WindowsTestBackend {
     }
 
     await runCmake([
-      'cmake',
+      cmake,
       '--build',
       buildDir.path,
       '--config',

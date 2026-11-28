@@ -1,0 +1,117 @@
+name: test windows
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - 'packages/patrol/**'
+      - 'packages/patrol_finders/**'
+      - 'packages/patrol_log/**'
+      - 'packages/patrol_cli/**'
+      - 'dev/windows_poc/**'
+      - '.github/workflows/test-windows.yaml'
+      - '!**.md'
+      - '!**.mdx'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  run_tests:
+    if: github.event.pull_request.draft != true
+    name: Flutter ${{ matrix.flutter-version }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 40
+
+    strategy:
+      fail-fast: false
+      matrix:
+        flutter-version: ['3.44.x']
+        flutter-channel: ['stable']
+        os: [windows-2022, windows-2025]
+
+    defaults:
+      run:
+        shell: pwsh
+        working-directory: dev/windows_poc/app
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          channel: ${{ matrix.flutter-channel }}
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Preload Flutter artifacts
+        run: flutter precache --windows
+
+      - name: Print toolchain
+        run: |
+          flutter doctor -v
+          cmake --version
+
+      - name: Set up Patrol CLI
+        working-directory: packages/patrol_cli
+        run: dart pub global activate --source path . && patrol
+
+      - name: Build native dialog fixture
+        working-directory: .
+        run: dotnet build dev/windows_poc/fixture -c Release
+
+      - name: Get dependencies
+        id: pub_get
+        run: flutter pub get
+
+      - name: Run Explorer smoke test
+        id: smoke
+        timeout-minutes: 15
+        run: patrol test -d windows -t patrol_test/explorer_demo_test.dart --verbose
+
+      - name: Capture screen after Explorer smoke test failure
+        if: ${{ failure() && steps.smoke.outcome == 'failure' }}
+        env:
+          SCREEN_FILE: screen-explorer.png
+        working-directory: .
+        run: |
+          Add-Type -AssemblyName System.Windows.Forms, System.Drawing
+          $bounds = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
+          $bitmap = New-Object System.Drawing.Bitmap $bounds.Width, $bounds.Height
+          $graphics = [System.Drawing.Graphics]::FromImage($bitmap)
+          $graphics.CopyFromScreen($bounds.Location, [System.Drawing.Point]::Empty, $bounds.Size)
+          $bitmap.Save($env:SCREEN_FILE)
+
+      - name: Run Flutter + native dialog test
+        id: dialog
+        if: ${{ !cancelled() && steps.pub_get.outcome == 'success' }}
+        timeout-minutes: 15
+        run: patrol test -d windows -t patrol_test/demo_test.dart --verbose
+
+      - name: Capture screen after native dialog test failure
+        if: ${{ failure() && steps.dialog.outcome == 'failure' }}
+        env:
+          SCREEN_FILE: screen-dialog.png
+        working-directory: .
+        run: |
+          Add-Type -AssemblyName System.Windows.Forms, System.Drawing
+          $bounds = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
+          $bitmap = New-Object System.Drawing.Bitmap $bounds.Width, $bounds.Height
+          $graphics = [System.Drawing.Graphics]::FromImage($bitmap)
+          $graphics.CopyFromScreen($bounds.Location, [System.Drawing.Point]::Empty, $bounds.Size)
+          $bitmap.Save($env:SCREEN_FILE)
+
+      - name: Upload screen captures
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Screens from ${{ matrix.os }}
+          path: screen-*.png
+          if-no-files-found: ignore

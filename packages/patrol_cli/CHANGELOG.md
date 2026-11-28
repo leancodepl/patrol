@@ -2,6 +2,7 @@
 
 - Experimental `patrol test` support for Windows desktop (build + out-of-process
   automator sidecar). `patrol develop` on Windows is not supported yet. (#3183)
+- `patrol test -d windows` builds its runner with Visual Studio 2026 as well as 2022. (#3459)
 - `patrol develop` stops waiting for the app's uninstall after 30 s when a session ends without `q`,
   for example when the device goes away. (#3370)
 - `patrol mcp` refuses a `run` that would hot restart the running session right away, with the
