@@ -18,7 +18,7 @@ build:
 
 ```powershell
 cmake -S packages/patrol/windows_runner -B packages/patrol/windows_runner/build `
-  -G "Visual Studio 17 2022" -A x64
+  -G "Visual Studio 17 2022" -A x64  # or "Visual Studio 18 2026"
 cmake --build packages/patrol/windows_runner/build --config Release
 # → packages/patrol/windows_runner/build/bin/patrol_windows_runner.exe
 ```

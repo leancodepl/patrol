@@ -6,8 +6,8 @@ Example app and tests for experimental Patrol Windows support
 ## Prerequisites
 
 - Flutter with Windows desktop enabled
-- Visual Studio 2022 **Desktop development with C++** (or Build Tools with
-  `VCTools`) and CMake on `PATH`
+- Visual Studio 2022 or 2026 **Desktop development with C++** (or Build Tools
+  with `VCTools`). Patrol uses the CMake that ships with it.
 - Interactive desktop session (not a locked screen)
 
 .NET is only needed for the optional native-dialog fixture, not for the runner.
