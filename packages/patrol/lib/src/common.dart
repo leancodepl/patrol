@@ -191,28 +191,19 @@ void patrolTest(
         platformAutomator: platformAutomator,
         entrypointArgs: patrolBinding.entrypointArgs,
       );
-      var callbackToRun = callback;
-      var phaseIndex = 0;
-      if (phasedTest != null) {
-        if (constants.hotRestartEnabled) {
-          throw UnsupportedError(
-            'Phased Patrol tests are not supported in develop mode',
-          );
-        }
-        if (const bool.fromEnvironment('COVERAGE_ENABLED') &&
-            phasedTest.phases.length > 1) {
-          throw UnsupportedError(
-            'Phased Patrol tests with more than one phase are not supported '
-            'with --coverage',
-          );
-        }
+      // The phase the native side asked for. It stays null in develop mode,
+      // where nothing asks, and on runners that can't relaunch the app.
+      int? requestedPhaseIndex;
+      if (phasedTest != null && !constants.hotRestartEnabled) {
         final request =
             await patrolBinding.patrolAppService.testExecutionRequested;
-        phaseIndex = phasedTest.phaseIndexFor(request.phaseIndex);
-        callbackToRun = phasedTest.phaseAt(phaseIndex).callback;
+        requestedPhaseIndex = request.phaseIndex;
       }
 
-      if (phaseIndex == 0) {
+      // Later phases continue the test the first process started, so only the
+      // first one logs the start. It's logged before anything below can reject
+      // the test, so that a rejection is reported like any other failure.
+      if ((requestedPhaseIndex ?? 0) == 0) {
         patrolLog.log(
           TestEntry(
             name: global_state.currentTestFullName,
@@ -222,6 +213,25 @@ void patrolTest(
       }
 
       try {
+        var callbackToRun = callback;
+        var phaseIndex = 0;
+        if (phasedTest != null) {
+          if (constants.hotRestartEnabled) {
+            throw UnsupportedError(
+              'Phased Patrol tests are not supported in develop mode',
+            );
+          }
+          if (const bool.fromEnvironment('COVERAGE_ENABLED') &&
+              phasedTest.phases.length > 1) {
+            throw UnsupportedError(
+              'Phased Patrol tests with more than one phase are not supported '
+              'with --coverage',
+            );
+          }
+          phaseIndex = phasedTest.phaseIndexFor(requestedPhaseIndex);
+          callbackToRun = phasedTest.phaseAt(phaseIndex).callback;
+        }
+
         await runWithDeterministicCursor(
           enabled: deterministicCursor,
           body: () => callbackToRun(patrolTester),
