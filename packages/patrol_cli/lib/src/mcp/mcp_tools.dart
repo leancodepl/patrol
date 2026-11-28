@@ -138,6 +138,11 @@ const suiteStatusSchema = JsonObject(
     ),
     'droppedFlags': JsonString(),
     'deviceSelectionNote': JsonString(),
+    'logFile': JsonString(
+      description:
+          'The file holding the whole log of the session the suite writes '
+          'to. Follow it with tail -F to show the run live.',
+    ),
     'projectRoot': JsonString(),
   },
   required: [
@@ -232,6 +237,10 @@ class McpTools {
   Future<CallToolResult> nativeTree() =>
       _tracked('native-tree', _nativeTreeTool);
 
+  /// The tools whose events report the suite's platform when no develop
+  /// session has a device.
+  static const _suiteTools = {'test', 'status', 'quit'};
+
   /// Runs a tool and reports how it ended, without waiting for the report.
   Future<CallToolResult> _tracked(
     String tool,
@@ -247,7 +256,11 @@ class McpTools {
         tool: tool,
         outcome: outcome,
         duration: watch.elapsed,
-        platform: _session.device?.targetPlatform ?? _session.suitePlatform,
+        platform:
+            _session.device?.targetPlatform ??
+            (_suiteTools.contains(tool) && _session.suiteIsNewer
+                ? _session.suitePlatform
+                : null),
         flutterCommand: () => _session.flutterCommand,
         workingDirectory: _session.projectRoot,
       ),
@@ -496,7 +509,12 @@ class McpTools {
   }
 
   CallToolResult statusResult(PatrolStatus status, {bool isError = false}) {
-    final map = {...status.toMap(), 'suite': ?_session.suiteStatus};
+    final suite = _session.suiteStatus;
+    final map = {
+      ...status.toMap(),
+      if (suite != null && _session.suiteIsNewer) 'summary': suite['summary']!,
+      'suite': ?suite,
+    };
     return CallToolResult(
       content: [TextContent(text: jsonEncode(map))],
       structuredContent: map,

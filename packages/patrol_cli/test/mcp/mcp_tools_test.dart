@@ -326,6 +326,26 @@ void main() {
       skip: Platform.isWindows ? 'The suite is a POSIX shell script.' : null,
     );
 
+    test(
+      'reports no suite platform for tools other than the suite',
+      () async {
+        expected = 2;
+        final tools = toolsWith(
+          FakeDevelop(),
+          suiteCommand: const ['sh', '-c', 'exit 0', 'patrol'],
+          analytics: analytics(),
+        );
+
+        await tools.test({'waitMinutes': 1}, extra());
+        await tools.devices();
+
+        expect(await sent(), [('test', 'passed'), ('devices', 'ok')]);
+        expect(events.first['platform'], 'android');
+        expect(events.last['platform'], 'none');
+      },
+      skip: Platform.isWindows ? 'The suite is a POSIX shell script.' : null,
+    );
+
     test('reports a tool that throws as an error, and still throws', () async {
       final tools = toolsWith(FakeDevelop(), analytics: analytics());
 
@@ -476,6 +496,58 @@ void main() {
       expect(
         (status.structuredContent!['suite']! as Map)['suiteState'],
         'cancelled',
+      );
+    });
+
+    test('status headlines a suite that started after a failed run', () async {
+      final fake = FakeDevelop();
+      final tools = toolsWith(fake, suiteCommand: suite('exit 0'));
+      final run = tools.run({'testFile': 'app_test.dart'}, extra());
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      fake.reportTestFailed('app_test taps', details: 'Bad state: tapped');
+      await run;
+      await tools.quit();
+
+      await tools.test({'waitMinutes': 1}, extra());
+      final status = (await tools.status()).structuredContent!;
+
+      expect(status['summary'], SuiteState.passed.summary);
+      expect(status['testState'], 'idle');
+      expect(status.containsKey('error'), isFalse);
+    });
+
+    test('test and status name the log the suite writes to', () async {
+      final tools = toolsWith(FakeDevelop(), suiteCommand: suite('exit 0'));
+
+      final result = await tools.test({'waitMinutes': 1}, extra());
+      final status = await tools.status();
+
+      expect(result.structuredContent!['logFile'], isA<String>());
+      expect(
+        (status.structuredContent!['suite']! as Map)['logFile'],
+        result.structuredContent!['logFile'],
+      );
+    });
+
+    test('quit after patrol test exited reports the finished suite', () async {
+      final tools = toolsWith(
+        FakeDevelop(),
+        // The background sleep keeps the pipes open past the exit.
+        suiteCommand: suite('(sleep 2) & exit 0'),
+      );
+      await tools.test({'waitMinutes': 0.0001}, extra());
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+
+      final quit = await tools.quit();
+
+      expect(
+        text(quit),
+        'The suite had already finished: ${SuiteState.passed.summary}',
+      );
+      final status = await tools.status();
+      expect(
+        (status.structuredContent!['suite']! as Map)['suiteState'],
+        'passed',
       );
     });
 
