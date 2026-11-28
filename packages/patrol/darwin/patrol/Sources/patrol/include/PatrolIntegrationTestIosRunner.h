@@ -385,6 +385,58 @@ static inline void PatrolWithoutQuiescenceWait(void (^block)(void)) {
     return server.appReady;                                                                                         \
   }                                                                                                                 \
                                                                                                                     \
+  +(ObjCRunDartTestResponse *_Nullable)runPhasedDartTestNamed : (NSString *)dartTestName                            \
+                                                    withClient : (ObjCPatrolAppServiceClient *)appServiceClient     \
+                                                        server : (PatrolServer *)server                             \
+                                                    forTestCase : (XCTestCase *)testCase {                          \
+    __block ObjCRunDartTestResponse *response = NULL;                                                               \
+    __block NSError *error = nil;                                                                                   \
+    NSNumber *phaseIndex = nil;                                                                                     \
+    while (true) {                                                                                                  \
+      response = NULL;                                                                                              \
+      error = nil;                                                                                                  \
+      [appServiceClient                                                                                             \
+          runDartTestWithName:dartTestName                                                                          \
+                       phaseIndex:phaseIndex                                                                        \
+                       completion:^(ObjCRunDartTestResponse *_Nullable r, NSError *_Nullable err) {                 \
+                         if (err != NULL) {                                                                         \
+                           error = err;                                                                             \
+                         } else {                                                                                   \
+                           response = r;                                                                            \
+                         }                                                                                          \
+                         NSString *status = err != NULL ? @"CRASHED" : response.result.uppercaseString;             \
+                         NSLog(@"runDartTest(\"%@\"): call finished, test result: %@", dartTestName, status);       \
+                       }];                                                                                          \
+                                                                                                                    \
+      while (!response && !error) {                                                                                 \
+        [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                          \
+      }                                                                                                             \
+      if (error != nil || response == nil || ![response.result isEqualToString:@"continuation"]) {                  \
+        break;                                                                                                      \
+      }                                                                                                             \
+                                                                                                                    \
+      phaseIndex = response.nextPhaseIndex;                                                                         \
+      if (phaseIndex == nil) {                                                                                      \
+        XCTFail(@"A phased Patrol test returned continuation without a next phase");                                \
+        return nil;                                                                                                 \
+      }                                                                                                             \
+      NSString *launchURL = response.nextPhaseLaunchUrl;                                                            \
+      XCUIApplication *app = [[XCUIApplication alloc] init];                                                        \
+      [app terminate];                                                                                              \
+      [self launchPatrolAppWithServer:server launchURL:launchURL];                                                  \
+      BOOL appReady = [self waitForPatrolAppReadyWithServer:server timeout:180.0];                                  \
+      if (!appReady) {                                                                                              \
+        if (PATROL_SCREENSHOT_ON_FAILURE) {                                                                         \
+          [PatrolScreenshotBuffer attachCurrentScreenNamed:@"patrol_failure" to:testCase];                          \
+        }                                                                                                           \
+        XCTFail(@"Patrol app did not become ready for test \"%@\" phase %@ on port %ld", dartTestName,              \
+                phaseIndex, (long)server.boundAppPort);                                                             \
+        return nil;                                                                                                 \
+      }                                                                                                             \
+    }                                                                                                               \
+    return response;                                                                                                \
+  }                                                                                                                 \
+                                                                                                                    \
   +(BOOL)instancesRespondToSelector : (SEL)aSelector {                                                              \
     if (self != [__test_class class] || (![self isPatrolDevelopMode] && [self patrolHasGeneratedTests])) {          \
       return [super instancesRespondToSelector:aSelector];                                                          \
@@ -579,47 +631,11 @@ static inline void PatrolWithoutQuiescenceWait(void (^block)(void)) {
           return;                                                                                                   \
         }                                                                                                           \
                                                                                                                     \
-        __block ObjCRunDartTestResponse *response = NULL;                                                           \
-        __block NSError *error = nil;                                                                               \
-        NSNumber *phaseIndex = nil;                                                                                 \
-        while (true) {                                                                                              \
-          response = NULL;                                                                                          \
-          error = nil;                                                                                              \
-          [appServiceClient                                                                                         \
-              runDartTestWithName:dartTestName                                                                      \
-                       phaseIndex:phaseIndex                                                                        \
-                       completion:^(ObjCRunDartTestResponse *_Nullable r, NSError *_Nullable err) {                 \
-                         if (err != NULL) {                                                                         \
-                           error = err;                                                                             \
-                         } else {                                                                                   \
-                           response = r;                                                                            \
-                         }                                                                                          \
-                         NSString *status = err != NULL ? @"CRASHED" : response.result.uppercaseString;             \
-                         NSLog(@"runDartTest(\"%@\"): call finished, test result: %@", dartTestName, status);       \
-                       }];                                                                                          \
-                                                                                                                    \
-          while (!response && !error) {                                                                             \
-            [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                      \
-          }                                                                                                         \
-          if (error != nil || response == nil || ![response.result isEqualToString:@"continuation"]) {              \
-            break;                                                                                                  \
-          }                                                                                                         \
-                                                                                                                    \
-          phaseIndex = response.nextPhaseIndex;                                                                     \
-          if (phaseIndex == nil) {                                                                                  \
-            XCTFail(@"A phased Patrol test returned continuation without a next phase");                            \
-            return;                                                                                                 \
-          }                                                                                                         \
-          NSString *launchURL = response.nextPhaseLaunchUrl;                                                        \
-          XCUIApplication *app = [[XCUIApplication alloc] init];                                                    \
-          [app terminate];                                                                                          \
-          [__test_class launchPatrolAppWithServer:server launchURL:launchURL];                                      \
-          appReady = [__test_class waitForPatrolAppReadyWithServer:server];                                         \
-          XCTAssertTrue(appReady, @"Patrol app did not become ready on port %ld", (long)server.boundAppPort);       \
-          if (!appReady) {                                                                                          \
-            return;                                                                                                 \
-          }                                                                                                         \
-        }                                                                                                           \
+        ObjCRunDartTestResponse *response =                                                                         \
+            [__test_class runPhasedDartTestNamed:dartTestName                                                       \
+                                       withClient:appServiceClient                                                  \
+                                           server:server                                                            \
+                                       forTestCase:_self];                                                          \
         BOOL passed = response != nil && [response.result isEqualToString:@"success"];                              \
         NSString *details = response ? response.details : @"(no details - app likely crashed)";                     \
         if (response && [response.result isEqualToString:@"skipped"]) {                                             \
@@ -688,23 +704,14 @@ static inline void PatrolWithoutQuiescenceWait(void (^block)(void)) {
       return;                                                                                                       \
     }                                                                                                               \
                                                                                                                     \
-    __block ObjCRunDartTestResponse *response = NULL;                                                               \
-    __block NSError *error;                                                                                         \
-    [_patrolAppServiceClient runDartTestWithName:dartTestName                                                       \
-                                      completion:^(ObjCRunDartTestResponse *_Nullable r, NSError *_Nullable e) {    \
-                                        if (e != NULL) {                                                            \
-                                          error = e;                                                                \
-                                        } else {                                                                    \
-                                          response = r;                                                             \
-                                        }                                                                           \
-                                      }];                                                                           \
-                                                                                                                    \
-    while (!response && !error) {                                                                                   \
-      [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                            \
-    }                                                                                                               \
-    BOOL passed = response ? response.passed : NO;                                                                  \
+    ObjCRunDartTestResponse *response =                                                                             \
+        [__test_class runPhasedDartTestNamed:dartTestName                                                           \
+                                   withClient:_patrolAppServiceClient                                               \
+                                       server:_patrolServer                                                         \
+                                   forTestCase:self];                                                               \
+    BOOL passed = response != nil && [response.result isEqualToString:@"success"];                                  \
     NSString *details = response ? response.details : @"(no details - app likely crashed)";                         \
-    if (response && response.skipped) {                                                                             \
+    if (response && [response.result isEqualToString:@"skipped"]) {                                                 \
       XCTSkip(@"%@", details);                                                                                      \
     }                                                                                                               \
     [[PatrolScreenshotBuffer sharedBuffer] drainAttachingTo:self];                                                  \

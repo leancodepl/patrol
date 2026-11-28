@@ -25,6 +25,15 @@ void main() {
         expect(pid, isNot(previousPid));
         await file.delete();
       }),
+      PatrolPhase(
+        ($) async {
+          await createApp($);
+          expect($('Applink Screen'), findsOneWidget);
+          expect($('Uri: patrol://check/somepath?query=10'), findsOneWidget);
+        },
+        launch: PatrolAppLaunch.deepLink('patrol://check/somepath?query=10'),
+      ),
     ]),
+    tags: ['android', 'emulator', 'ios', 'simulator'],
   );
 }

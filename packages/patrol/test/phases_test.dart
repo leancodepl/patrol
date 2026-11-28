@@ -10,7 +10,7 @@ void main() {
         PatrolPhase((_) => Future.value()),
         PatrolPhase(
           (_) => Future.value(),
-          launch: const PatrolAppLaunch.deepLink('patrol://settings'),
+          launch: PatrolAppLaunch.deepLink('patrol://settings'),
         ),
       ];
 
@@ -36,6 +36,18 @@ void main() {
 
     test('rejects an empty phase list', () {
       expect(() => phases([]), throwsArgumentError);
+    });
+
+    test('rejects a deep link on the first phase', () {
+      expect(
+        () => phases([
+          PatrolPhase(
+            (_) => Future.value(),
+            launch: PatrolAppLaunch.deepLink('patrol://settings'),
+          ),
+        ]),
+        throwsArgumentError,
+      );
     });
   });
 

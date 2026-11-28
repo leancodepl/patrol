@@ -108,14 +108,23 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
   @override
   void initState() {
     super.initState();
-    _linkSubscription = _appLinks.uriLinkStream.listen((uri) {
+    void openLink(Uri uri) {
       if (!mounted) {
         return;
       }
       Navigator.of(
         context,
       ).push(MaterialPageRoute<void>(builder: (_) => ApplinkScreen(uri: uri)));
-    });
+    }
+
+    // Cold starts (e.g. PatrolAppLaunch.deepLink) deliver the URL before the
+    // stream listener is attached; the stream covers warm opens.
+    unawaited(_appLinks.getInitialLink().then((uri) {
+      if (uri != null) {
+        openLink(uri);
+      }
+    }));
+    _linkSubscription = _appLinks.uriLinkStream.listen(openLink);
   }
 
   @override

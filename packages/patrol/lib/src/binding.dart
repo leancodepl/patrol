@@ -222,6 +222,15 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
       _entrypointArgs = List.unmodifiable(value);
   List<String> _entrypointArgs = const [];
 
+  /// Index of the phase running in this process for a phased test.
+  ///
+  /// `null` when the current test is not phased, or before `patrolTest` sets
+  /// it. Use this in `setUp` / `tearDown` (and `patrolSetUp` / `patrolTearDown`)
+  /// when cleanup should run only after the last phase.
+  int? get currentPhaseIndex => _currentPhaseIndex;
+  set currentPhaseIndex(int? value) => _currentPhaseIndex = value;
+  int? _currentPhaseIndex;
+
   /// The singleton instance of this object.
   ///
   /// Provides access to the features exposed by this class. The binding must be

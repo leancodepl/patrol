@@ -27,7 +27,15 @@ final class PatrolAppLaunch {
   const PatrolAppLaunch.normal() : url = null;
 
   /// Launches the app through [url].
-  const PatrolAppLaunch.deepLink(String this.url) : assert(url != '');
+  ///
+  /// [url] must include a scheme (for example `myapp://settings`). Plain paths
+  /// like `/settings` are rejected.
+  PatrolAppLaunch.deepLink(String this.url)
+    : assert(url != ''),
+      assert(
+        url.contains('://'),
+        'Deep link URL must include a scheme, e.g. myapp://path',
+      );
 
   /// The deep link URL, or `null` for a normal launch.
   final String? url;
@@ -94,9 +102,16 @@ PatrolPhaseCallback phases(List<PatrolPhase> phases) {
       'A phased test must contain at least one phase',
     );
   }
+  if (phases.first.launch.url != null) {
+    throw ArgumentError(
+      'launch on the first phase is ignored by the native runner; '
+      'put PatrolAppLaunch.deepLink on phase 2 or later',
+    );
+  }
   Future<void> callback(PatrolIntegrationTester $) {
     throw UnsupportedError(
-      'A phased Patrol test body can only be executed by patrolTest',
+      'phases([...]) must be passed directly as the patrolTest body; '
+      'wrapping it in another callback loses the phase metadata',
     );
   }
 

@@ -33,13 +33,16 @@
   supported for BySelector". `tapOnNotificationBySelector` taps the n-th match, and `getNativeViews`
   returns every match, as on iOS. (#3445)
 - Report the default route name the native side started the engine with, e.g.
-  the link a `PatrolAppLaunch.deepLink` phase opens, instead of the `/`
-  flutter_test puts in its place. (#3282)
+  the link a `PatrolAppLaunch.deepLink` phase opens on Android, instead of the
+  `/` flutter_test puts in its place. On iOS Flutter's built-in deep linking
+  still does not receive that URL in a Patrol process; use a native initial-link
+  plugin (for example `app_links`) there. (#3282)
 - Add `phases()` so a Patrol test can continue after the app is killed and
   relaunched (normal start or a deep link). Requires the self-instrumenting
-  Android `:patrolTest` layout; unsupported in `patrol develop` and on macOS.
+  Android `:patrolTest` layout; unsupported in `patrol develop`, on macOS, and
+  with `--coverage` when there is more than one phase.
   See [Phased tests](https://patrol.leancode.co/documentation/phased-tests).
-  (#1374)
+  (#3282)
 - Add the optional self-instrumenting Android `:patrolTest` layout, which runs
   JUnit outside the app process. The in-app `androidTest` layout remains
   supported. Needs a matching `patrol_cli` release: an older CLI still runs the

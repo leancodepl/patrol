@@ -12,8 +12,8 @@ the OS did not wipe them.
 
 ## Basic usage
 
-Pass `phases([...])` as the test body instead of a single `($) async { ... }`
-callback:
+Pass `phases([...])` **directly** as the `patrolTest` / `patrol` body. Wrapping
+it in another callback loses the phase metadata and throws at runtime:
 
 ```dart title="patrol_test/restart_app_test.dart"
 import 'dart:io';
@@ -47,12 +47,38 @@ A working example lives in
 in the Patrol repository: phase 1 writes the current PID to a file, phase 2
 asserts a different PID.
 
+## setUp / tearDown and timeouts
+
+Every phase is its own Dart test process. That means:
+
+- Your `setUp` / `tearDown`, `patrolSetUp` / `patrolTearDown`, and `setUpAll`
+  run **around every phase**, not once for the whole phased test.
+- The test `timeout` applies to **each** phase separately.
+
+A `tearDown` that clears storage or logs out will therefore run right after
+phase 0 and can delete the state phase 1 is meant to find after the kill. Skip
+that cleanup between phases with [`PatrolBinding.instance.currentPhaseIndex`]:
+
+```dart
+tearDown(() async {
+  final phase = PatrolBinding.instance.currentPhaseIndex;
+  if (phase != null && phase < lastPhaseIndex) {
+    return;
+  }
+  // Clear storage / log out only after the last phase.
+});
+```
+
 ## How to launch the next process
 
 By default the next phase starts the same way as a normal Patrol launch (the
 app's launcher activity / default URL).
 
-To open the next process through a deep link, set `launch` on **that** phase:
+To open the next process through a deep link, set `launch` on **that** phase
+(phase 2 or later). Prefer a **custom scheme** your app already handles
+(`myapp://settings`), or a host you have registered as an Android App Link /
+iOS Universal Link. A bare `https://` URL that the OS opens in Safari will not
+reach your app:
 
 ```dart
 patrolTest(
@@ -65,18 +91,27 @@ patrolTest(
     PatrolPhase(
       ($) async {
         await $.pumpWidgetAndSettle(const MyApp());
-        // Assert the route that the URL opened.
+        // Assert the route / screen the URL opened.
       },
-      launch: PatrolAppLaunch.deepLink('https://example.com/path'),
+      launch: PatrolAppLaunch.deepLink('myapp://settings'),
     ),
   ]),
 );
 ```
 
-`PatrolAppLaunch.normal()` is the default.
+`PatrolAppLaunch.normal()` is the default. A non-normal `launch` on the **first**
+phase is rejected: that process is already started by the native runner before
+Dart runs.
 
-`launch` is **ignored on the first phase**. That process is already started by
-the native runner before Dart runs. Put a deep link on phase 2 or later.
+### Platform notes for deep links
+
+- **Android:** the launch intent's data becomes the engine's initial route, so
+  Flutter's built-in deep linking / `WidgetsApp` can open the matching screen.
+- **iOS:** Flutter's built-in deep linking does **not** receive the URL in a
+  Patrol process (the first frame belongs to `flutter_test`). Read the initial
+  link with a native plugin such as [`app_links`] instead. Below iOS 16.4 the
+  runner launches normally and then opens the URL, so it is a warm link, not a
+  cold start.
 
 ## Requirements and limits
 
@@ -90,8 +125,12 @@ the native runner before Dart runs. Put a deep link on phase 2 or later.
 - **`patrol test` / `patrol build`, not `patrol develop`.** Hot Restart cannot
   survive killing the app. Phased tests throw in develop mode.
 - **Web is not supported.**
+- **`--coverage` (VM) with more than one phase is not supported.** Each phase
+  is a new process; coverage collection stops after the suite test count.
 - A phased list must contain **at least one** phase. One phase is valid; it
   behaves like a normal test (no kill).
 
 [native automation]: /documentation/native/usage
 [`:patrolTest`]: /documentation#android-setup
+[`PatrolBinding.instance.currentPhaseIndex`]: /documentation/phased-tests
+[`app_links`]: https://pub.dev/packages/app_links

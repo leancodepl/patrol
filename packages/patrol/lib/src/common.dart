@@ -199,9 +199,17 @@ void patrolTest(
             'Phased Patrol tests are not supported in develop mode',
           );
         }
+        if (const bool.fromEnvironment('COVERAGE_ENABLED') &&
+            phasedTest.phases.length > 1) {
+          throw UnsupportedError(
+            'Phased Patrol tests with more than one phase are not supported '
+            'with --coverage',
+          );
+        }
         final request =
             await patrolBinding.patrolAppService.testExecutionRequested;
         phaseIndex = request.phaseIndex ?? 0;
+        patrolBinding.currentPhaseIndex = phaseIndex;
         callbackToRun = phasedTest.phaseAt(phaseIndex).callback;
       }
 
