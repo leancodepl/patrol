@@ -12,6 +12,7 @@
   such as allure-android, work on a fresh device. (#3427)
 - Fix Ctrl+C during a web `patrol test` being ignored until the web app finished building, after
   which the run hung. It now stops the Flutter web server and exits at any phase of the run. (#3339)
+- Report a dead `flutter attach` or `flutter logs` in `patrol develop`. (#3234)
 
 ## 4.10.0
 
