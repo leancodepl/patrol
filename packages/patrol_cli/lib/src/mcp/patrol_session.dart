@@ -1532,7 +1532,8 @@ final class PatrolSession {
   Map<String, Object>? get suiteStatus => _suite?.toMap();
 
   /// Runs `patrol test` on [targets], or on the whole suite when they are
-  /// empty, and waits up to [wait] for it to finish.
+  /// empty, and waits up to [wait] for it to finish, or until [stopWaiting]
+  /// completes.
   ///
   /// Returns the suite's state, or why it did not start: a develop session or
   /// another suite holds the device, or the project cannot be run here.
@@ -1543,6 +1544,7 @@ final class PatrolSession {
     String? device,
     String? projectRoot,
     required Duration wait,
+    Future<void>? stopWaiting,
   }) async {
     if (_live) {
       return (
@@ -1580,7 +1582,7 @@ final class PatrolSession {
     } finally {
       start.complete();
     }
-    await suite.waitFor(wait);
+    await Future.any([suite.waitFor(wait), ?stopWaiting]);
     return (status: suite.toMap(), refusal: null);
   }
 
