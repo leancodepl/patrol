@@ -351,3 +351,8 @@ the Inbox before 5.0.0 is released.
   `PlatformAction.safe()` now requires a `windows:` callback, and exhaustive switches over
   `PatrolTargetPlatform` / CLI `TargetPlatform` need a Windows case — update call sites even if you
   do not run on Windows yet.
+- #3452, `patrol_cli`: `--web-headless` no longer takes a value (deprecated since 4.6.0), and
+  commands other than `patrol mcp` reject leftover positional arguments instead of ignoring them.
+  Replace `--web-headless=true` or `--web-headless true` with `--web-headless`, and the `false`
+  forms with `--no-web-headless`. Also fix scripts that pass a value after any flag
+  (`--release true`), a test file without `-t`/`--target`, or arguments after `--`.

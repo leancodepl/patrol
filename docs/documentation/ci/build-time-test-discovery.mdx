@@ -125,8 +125,8 @@ with the lines to add. If you turned build-time discovery on explicitly (`--emit
   `RunnerUITests.m` files set up for the opt-in in Patrol 4.x, with
   `PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BASE`, keep working: that macro is now
   a deprecated alias of `PATROL_INTEGRATION_TEST_IOS_RUNNER`. The 4.7.0 pair
-  `PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN`/`_END` was removed, and the
-  build tells you what to replace it with.
+  `PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN`/`_END` was removed and no
+  longer compiles; replace it with the lines above.
 </Info>
 
 On **macOS** the same applies to `macos/RunnerUITests/RunnerUITests.m`, after

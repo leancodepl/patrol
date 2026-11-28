@@ -38,9 +38,6 @@ const sessionStatusSchema = JsonObject(
     'currentTestFile': JsonString(),
     'warning': JsonString(),
     'deviceSelectionNote': JsonString(),
-    'error': JsonString(
-      description: 'The failure details the test reported, when it failed.',
-    ),
     'deviceName': JsonString(),
     'deviceId': JsonString(),
     'devicePlatform': JsonString(),
@@ -62,6 +59,31 @@ const sessionStatusSchema = JsonObject(
       description:
           'Present when --show-terminal could not open a Terminal window for '
           'the session log, with the reason.',
+    ),
+    'error': JsonString(
+      description:
+          'Why the first failing test failed: its name and the error lines '
+          'patrol reported for it. Absent unless a test failed.',
+    ),
+    'cli': JsonObject(
+      description:
+          'The patrol_cli serving this server, and where it comes from.',
+      properties: {
+        'version': JsonString(),
+        'source': JsonString(enumValues: ['global', 'project', 'path']),
+        'projectRoot': JsonString(),
+      },
+    ),
+    'cliPinWarning': JsonString(
+      description:
+          'Present when the project pins a patrol_cli other than the one '
+          'serving it; runs use the serving one. Report it when results '
+          'differ from what the project sees elsewhere.',
+    ),
+    'logFile': JsonString(
+      description:
+          'The file holding the whole log of the session, build output '
+          'included. Follow it with tail -F to show a run live.',
     ),
     'output': JsonString(),
     'summary': JsonString(),
