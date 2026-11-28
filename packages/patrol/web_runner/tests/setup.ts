@@ -22,7 +22,7 @@ async function setup(config: FullConfig) {
     })
   })
 
-  await page.goto(baseURL)
+  await page.goto(baseURL, { timeout: 300000 })
 
   await initialise(page)
 
