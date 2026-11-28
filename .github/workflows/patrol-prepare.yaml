@@ -190,15 +190,23 @@ jobs:
   # A normal app build (without the patrol CLI, so without PATROL_ENABLED)
   # must compile and must not contain Patrol's test server.
   normal-build-ios:
-    name: iOS build without patrol CLI (${{ matrix.dependency-manager }})
+    name: iOS build without patrol CLI (${{ matrix.dependency-manager }}, ${{ matrix.flutter-version }})
     runs-on: macos-26
 
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.38.x']
-        flutter-channel: ['stable']
-        dependency-manager: [cocoapods, swiftpm]
+        include:
+          - dependency-manager: cocoapods
+            flutter-version: '3.38.x'
+            flutter-channel: 'stable'
+          # With SwiftPM, resolving the example app's packages needs the
+          # FlutterFramework package, which Flutter 3.38 doesn't generate
+          # ("Flutter/ephemeral/Packages/.packages/FlutterFramework doesn't
+          # exist").
+          - dependency-manager: swiftpm
+            flutter-version: '3.44.x'
+            flutter-channel: 'stable'
 
     defaults:
       run:
