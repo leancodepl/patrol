@@ -2,6 +2,15 @@
 title: Firebase Test Lab
 ---
 
+<Warning>
+  Firebase Test Lab will be fully shut down on September 30, 2027. Google
+  recommends migrating to the Developer Device Platform, which is still in
+  preview and needs a Google Cloud project with billing enabled. Patrol is
+  moving its own Android runs there. See the [Firebase Test Lab migration
+  guide][ftl_migration] before you set up a new CI pipeline on Firebase Test
+  Lab.
+</Warning>
+
 There are many device lab providers. Below we're showing how to run Patrol tests
 on [Firebase Test Lab], because it's popular in the Flutter community, but the
 instructions should be similar for other device farms, such as [AWS Device
@@ -202,6 +211,7 @@ test run writes, and `patrol coverage pull` turns them into a `patrol_lcov.info`
 [example_android_script]: https://github.com/leancodepl/patrol/blob/master/dev/e2e_app/run_android_testlab
 [example_ios_script]: https://github.com/leancodepl/patrol/blob/master/dev/e2e_app/run_ios_testlab
 [firebase test lab]: https://firebase.google.com/products/test-lab
+[ftl_migration]: https://firebase.google.com/docs/test-lab/migrate
 [aws_device_farm]: https://aws.amazon.com/device-farm
 [install the gcloud tool]: https://cloud.google.com/sdk/docs/install
 [gcloud_android]: https://cloud.google.com/sdk/gcloud/reference/firebase/test/android/run
