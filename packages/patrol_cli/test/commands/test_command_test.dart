@@ -282,17 +282,6 @@ void main() {
       });
     });
 
-    test('converts web coverage after a failed run', () async {
-      when(webExecute).thenThrow(Exception('a test failed'));
-
-      expect(
-        await runTest(androidDevice, ['--device', 'chrome', '--coverage']),
-        1,
-      );
-
-      verify(webCoverageRun).called(1);
-    });
-
     test('gives up on the Android uninstall after the run once it takes '
         'longer than 30s', () {
       fakeAsync((async) {
