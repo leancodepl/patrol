@@ -1,19 +1,23 @@
-## Unreleased
+## 5.0.0-dev.1
 
-- Experimental Windows support via `$.platform.windows` (out-of-process
-  automator sidecar): find/tap/`enterText`/`pressKey`, `WindowsSelector` with
-  optional `WindowsScope` (defaults to the app under test), and `WindowsKey`
-  helpers. (#3183)
+- **Breaking:** Require Flutter 3.44 and Dart 3.12 or newer. See `migration5.md`. (#3377)
+- **Breaking:** Bump `minSdk` to 24 (Android 7.0), Flutter 3.44's minimum. See `migration5.md`.
+  (#3378)
+- **Breaking:** Bump the minimum macOS deployment target to 10.15, Flutter 3.44's minimum. See
+  `migration5.md`. (#3378)
 - **Breaking:** Remove the native API deprecated in 4.0: `$.native`, `$.native2`, `NativeAutomator`,
   `NativeAutomator2`, `NativeAutomatorConfig`, `NativeSelector`, `GetNativeViewsResult` and the
   `nativeAutomatorConfig` parameter of `patrolTest`. Use `$.platform`. `dart fix --apply` rewrites
   most of the calls. See `migration5.md`. (#3417)
 - **Breaking:** Remove the `timeout` parameter of `PatrolBinding.runTest`, deprecated since 2.6.
   (#3417)
+- **Breaking:** Bump `patrol_finders` to `^4.0.0-dev.1`: `$.pumpAndSettle()` and
+  `$.pumpWidgetAndSettle()` return the number of pumped frames, and `$.pumpWidget()` takes named
+  arguments. See `migration5.md` and the `patrol_finders` changelog. (#3448)
 - **Breaking:** `PATROL_INTEGRATION_TEST_IOS_RUNNER` now runs both build-time and runtime test
   discovery: followed by `#include "PatrolGeneratedTests.inc"`, it runs the generated tests when the
   file declares any, and discovers tests at runtime otherwise. `..._STATIC_BASE` is a deprecated
-  alias, and the 4.7.0 `..._STATIC_BEGIN`/`_END` macros are removed. See `migration5.md`.
+  alias, and the 4.7.0 `..._STATIC_BEGIN`/`_END` macros are removed. See `migration5.md`. (#3395)
 - **Breaking:** With build-time test discovery, a test the app registers that discovery didn't find
   (for example one behind `Platform.isAndroid`) fails every test of the run with the list of
   missing tests, instead of silently never running. Requires `patrol_cli` 5.0. (#3425)
@@ -21,9 +25,6 @@
   seconds, or time out with `SettlePolicy.settle`, while a text field is focused on iOS (or a
   `CupertinoTextField` on any platform). To keep the blinking cursor, pass
   `deterministicCursor: false`. See `migration5.md`. (#3439)
-- **Breaking:** Bump `patrol_finders` to `^4.0.0-dev.1`: `$.pumpAndSettle()` and
-  `$.pumpWidgetAndSettle()` return the number of pumped frames, and `$.pumpWidget()` takes named
-  arguments. See `migration5.md` and the `patrol_finders` changelog. (#3448)
 - **Breaking:** `Selector.instance` now works on iOS: `tap`, `doubleTap`, `enterText` and
   `waitUntilVisible` target the n-th match instead of always the first. On macOS, `$.platform.tap`
   does too. On iOS and macOS, `waitUntilVisible` with `instance` now fails when there are fewer
@@ -32,16 +33,15 @@
   use, reports `result` and the next phase instead of `passed` and `skipped`. A
   `RunnerUITests.m` that copies a runner macro's body instead of expanding the
   macro has to read `result`. See `migration5.md`. (#3282)
-- Fix `doubleTap`, `enterText`, `waitUntilVisible`, `tapOnNotificationBySelector` and
-  `getNativeViews` with a selector `instance` on Android failing with "instance() argument is not
-  supported for BySelector". `tapOnNotificationBySelector` taps the n-th match, and `getNativeViews`
-  returns every match, as on iOS. (#3445)
-- In a phase launched with `PatrolAppLaunch.deepLink`, report the default route
-  name the native side started the engine with (on Android, the link's path)
-  instead of the `/` flutter_test puts in its place. Other tests keep `/`. On
-  iOS Flutter's built-in deep linking still does not receive that URL in a
-  Patrol process; use a native initial-link plugin (for example `app_links`)
-  there. (#3282)
+- Experimental Windows support via `$.platform.windows` (out-of-process automator sidecar):
+  find/tap/`enterText`/`pressKey`, `WindowsSelector` with optional `WindowsScope` (defaults to the
+  app under test), and `WindowsKey` helpers. (#3183)
+- Add the optional self-instrumenting Android `:patrolTest` layout, which runs JUnit outside the app
+  process. The in-app `androidTest` layout remains supported. Needs `patrol_cli` 5.0: an older CLI
+  still runs the empty `:app` androidTest. (#3280)
+- Add `$.entrypointArgs` with the Dart entrypoint arguments the native side of the app passes to
+  the test bundle (`dartEntrypointArgs` on Android, `entrypointArgs` on iOS and macOS). Needs
+  `patrol_cli` 5.0. (#3366)
 - Add `phases()` so a Patrol test can continue after the app is killed and
   relaunched (normal start or a deep link). Runs on iOS and on Android with the
   self-instrumenting `:patrolTest` layout; on macOS, web, Windows and the in-app
@@ -50,58 +50,50 @@
   launched through a deep link needs iOS 16.4 or newer.
   See [Phased tests](https://patrol.leancode.co/documentation/phased-tests).
   (#3282)
-- Add the optional self-instrumenting Android `:patrolTest` layout, which runs
-  JUnit outside the app process. The in-app `androidTest` layout remains
-  supported. Needs a matching `patrol_cli` release: an older CLI still runs the
-  empty `:app` androidTest, and a newer CLI with an older `patrol` fails without
-  `android_test`. (#3280)
-- Add `$.entrypointArgs` with the Dart entrypoint arguments the native side of the app passes to
-  the test bundle (`dartEntrypointArgs` on Android, `entrypointArgs` on iOS and macOS). Needs a
-  `patrol_cli` release that includes this change. (#3366)
-- Fix web test discovery failing with `page.goto: Timeout 30000ms exceeded` when a debug web build
-  takes longer than 30 s to load, for example on a small CI runner. The setup navigation now waits
-  up to 300 s, like the runner's other waits for the app. (#3389)
-- Agent skills: `patrol-write-test` now covers the state a restart of a running session keeps,
-  what a failed run leaves behind, assertions that cannot fail, steps a test does not need, and
-  `settlePolicy` on screens with never-ending animations.
-- Fix web tests failing on Ubuntu 26.04 (now `ubuntu-latest` on GitHub Actions) with "Playwright does
-  not support chromium on ubuntu26.04-x64", by updating Playwright to 1.61.1, which also moves web
-  tests to Chromium 149. This also fixes `npx playwright install` hanging while extracting Chromium
-  on Node.js 26 and newer Node.js 24 releases. With `--web-reporter junit`, some failures are now
-  reported as `<error>` instead of `<failure>` in the XML.
-- `--full-isolation` deletes the app on iOS in seconds instead of minutes. Patrol no longer waits
-  for the home screen to stop animating after every step, and waits for each button of the deletion
-  instead. When it cannot delete the app, the test fails instead of running in the previous install.
-  (#3416)
+- In a phase launched with `PatrolAppLaunch.deepLink`, report the default route
+  name the native side started the engine with (on Android, the link's path)
+  instead of the `/` flutter_test puts in its place. Other tests keep `/`. On
+  iOS Flutter's built-in deep linking still does not receive that URL in a
+  Patrol process; use a native initial-link plugin (for example `app_links`)
+  there. (#3282)
 - Add native screenshots on iOS: `screenshot_on_failure: true` and `$.takeNativeScreenshot('tag')`
   now work on simulators and physical devices. See the
   [docs](https://patrol.leancode.co/cli-commands/test#on-ios). (#3271)
 - `PATROL_INTEGRATION_TEST_MACOS_RUNNER` runs build-time discovered tests the same way, so build-time
   test discovery works on macOS. (#3432)
+- **`patrol develop` on web requires Flutter 3.47.0 or newer**, and `patrol_cli` exits with an error
+  below it. Every other platform keeps working on 3.44.0. (#3040)
+- Show the page's DOM in the Patrol DevTools extension on web, where the `flt-semantics` elements
+  carry the roles, labels and text that web selectors match. (#3040)
+- Report a failing test's details in `patrol develop`, not just that it failed. (#3040)
+- Depend on Flutter's `FlutterFramework` Swift package when the app builds with Swift Package Manager,
+  as Flutter 3.41+ expects from plugins. (#3377)
+- Agent skills: `patrol-write-test` now covers the state a restart of a running session keeps,
+  what a failed run leaves behind, assertions that cannot fail, steps a test does not need, and
+  `settlePolicy` on screens with never-ending animations (#3430). `patrol-setup` covers the
+  self-instrumenting Android layout (#3280) and sets up Patrol MCP as `patrol mcp` (#3368).
+- `--full-isolation` deletes the app on iOS in seconds instead of minutes. When it cannot delete the
+  app, the test fails instead of running in the previous install. (#3416)
+- Update Playwright to 1.61.1 (Chromium 149). This fixes web tests failing on Ubuntu 26.04 (now
+  `ubuntu-latest` on GitHub Actions) with "Playwright does not support chromium on
+  ubuntu26.04-x64", and `npx playwright install` hanging on Node.js 26 and newer Node.js 24
+  releases. With `--web-reporter junit`, some failures are now reported as `<error>` instead of
+  `<failure>`. (#3401)
+- Fix web test discovery failing with `page.goto: Timeout 30000ms exceeded` when a debug web build
+  takes longer than 30 s to load, for example on a small CI runner. The setup navigation now waits
+  up to 300 s, like the runner's other waits for the app. (#3389)
+- Fix `patrol develop` on web slowing down and eventually hanging after a handful of hot restarts,
+  with render assertions filling the console. Those assertions are no longer reported as failures
+  of the running test. (#3040)
+- Fix the Playwright develop driver idling forever after `flutter run` closes the browser. (#3040)
+- Fix `doubleTap`, `enterText`, `waitUntilVisible`, `tapOnNotificationBySelector` and
+  `getNativeViews` with a selector `instance` on Android failing with "instance() argument is not
+  supported for BySelector". `tapOnNotificationBySelector` taps the n-th match, and `getNativeViews`
+  returns every match, as on iOS. (#3445)
 - Fix `enterText` and `enterTextByIndex` on iOS leaving a trailing newline in multi-line native text
   fields (for example the Messages compose field) with the default `KeyboardBehavior.showAndDismiss`,
   so selectors by the entered text didn't match. The keyboard still stays open in these fields.
   (#3449)
-
-## 5.0.0-dev.1
-
-- **Breaking:** Require Flutter 3.44 and Dart 3.12 or newer. See `migration5.md`. (#3377)
-- **Breaking:** Bump `minSdk` to 24 (Android 7.0), Flutter 3.44's minimum. See `migration5.md`.
-  (#3378)
-- **Breaking:** Bump the minimum macOS deployment target to 10.15, Flutter 3.44's minimum. See
-  `migration5.md`. (#3378)
-- Depend on Flutter's `FlutterFramework` Swift package when the app builds with Swift Package Manager,
-  as Flutter 3.41+ expects from plugins. (#3377)
-- **`patrol develop` on web requires Flutter 3.47.0 or newer**, and `patrol_cli` exits with an error
-  below it. Every other platform keeps working on 3.44.0.
-- Show the page's DOM in the Patrol DevTools extension on web, where the `flt-semantics` elements
-  carry the roles, labels and text that web selectors match.
-- Report a failing test's details in `patrol develop`, not just that it failed.
-- Fix `patrol develop` on web slowing down and eventually hanging after a handful of hot restarts.
-  Each one left the previous run's binding rendering into the view that same restart had disposed,
-  so the console filled with render assertions and restarts went from 300 ms to seconds.
-- Stop those render assertions being reported as failures of whichever test was running.
-- Fix the Playwright develop driver idling forever after `flutter run` closes the browser.
 
 ## 4.12.0
 
