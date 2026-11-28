@@ -28,8 +28,10 @@
   `waitUntilVisible` target the n-th match instead of always the first. On iOS and macOS,
   `waitUntilVisible` with `instance` now fails when there are fewer matches, instead of passing.
   (#3445)
-- Fix `doubleTap`, `enterText` and `waitUntilVisible` with a selector `instance` on Android failing
-  with "instance() argument is not supported for BySelector". (#3445)
+- Fix `doubleTap`, `enterText`, `waitUntilVisible`, `tapOnNotificationBySelector` and
+  `getNativeViews` with a selector `instance` on Android failing with "instance() argument is not
+  supported for BySelector". `tapOnNotificationBySelector` taps the n-th match, and `getNativeViews`
+  returns every match, as on iOS. (#3445)
 - Add the optional self-instrumenting Android `:patrolTest` layout, which runs
   JUnit outside the app process. The in-app `androidTest` layout remains
   supported. Needs a matching `patrol_cli` release: an older CLI still runs the
