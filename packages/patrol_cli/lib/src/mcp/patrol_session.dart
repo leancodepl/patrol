@@ -1035,6 +1035,7 @@ final class PatrolSession {
       },
     );
     _isRunning = true;
+    _suiteIsNewer = false;
     _currentTestFile = testFile;
     _testState = TestState.running;
     _quitRequested = false;
@@ -1232,6 +1233,10 @@ final class PatrolSession {
       }
     }
     if (_suite case final suite? when suite.isRunning) {
+      if (suite.hasExited) {
+        await suite.done.timeout(_suiteDrainTimeout, onTimeout: () {});
+        return 'The suite had already finished: ${suite.state.summary}';
+      }
       await suite.stop();
       return suite.isRunning
           ? 'Stopped the suite, but patrol test has not exited yet. Check '
@@ -1642,7 +1647,18 @@ final class PatrolSession {
   bool get isSuiteRunning => _suiteLive;
 
   /// The last suite run's state, or null when this server has run none.
-  Map<String, Object>? get suiteStatus => _suite?.toMap();
+  Map<String, Object>? get suiteStatus => switch (_suite) {
+    final suite? => {...suite.toMap(), 'logFile': ?_logPath},
+    null => null,
+  };
+
+  /// Whether the last suite started after the last develop session, so its
+  /// result is the newer one.
+  bool get suiteIsNewer => _suiteIsNewer;
+  var _suiteIsNewer = false;
+
+  /// How long a suite whose process exited may take to read its last output.
+  static const _suiteDrainTimeout = Duration(seconds: 1);
 
   /// The platform of the device the last suite runs on, when it is known.
   TargetPlatform? get suitePlatform => _suitePlatform;
@@ -1700,7 +1716,7 @@ final class PatrolSession {
       start.complete();
     }
     await Future.any([suite.waitFor(wait), ?stopWaiting]);
-    return (status: suite.toMap(), refusal: null);
+    return (status: suiteStatus, refusal: null);
   }
 
   /// Resolves the project, the device and the command line of a suite run and
@@ -1712,6 +1728,7 @@ final class PatrolSession {
     required String? device,
     required String? projectRoot,
   }) async {
+    _suitePlatform = null;
     await awaitTeardown();
     if (_suiteCancelRequested) {
       return (suite: null, refusal: _suiteCancelled);
@@ -1798,6 +1815,7 @@ final class PatrolSession {
       },
     );
     _deviceSelectionNote = null;
+    _clearDevelopResult();
     unawaited(
       suite.done.then((_) async {
         // The log is shared with whatever run started since.
@@ -1812,6 +1830,19 @@ final class PatrolSession {
       }),
     );
     return (suite: suite, refusal: null);
+  }
+
+  /// Clears the last develop session's result, which `status` would otherwise
+  /// report next to the suite that replaced it.
+  void _clearDevelopResult() {
+    _suiteIsNewer = true;
+    _testState = TestState.idle;
+    _currentTestFile = null;
+    _finishWarning = null;
+    _outputs.clear();
+    _clearFailure();
+    _lastTestEntry = null;
+    _lastTestEntryAt = null;
   }
 
   /// [target] as the resolved project sees it. The first target resolved the

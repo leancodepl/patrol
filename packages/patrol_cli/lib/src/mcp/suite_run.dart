@@ -262,6 +262,10 @@ final class SuiteRun {
   /// Whether the run has not exited yet, stopping included.
   bool get isRunning => !_finished.isCompleted;
 
+  /// Whether `patrol test` has exited, while its last output may still be
+  /// draining.
+  bool get hasExited => _exited;
+
   int? _exitCode;
 
   /// Set when the exit code arrives, before the last output is read.
