@@ -104,6 +104,7 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
       // we're done reading _testResults, right before returning.
       try {
         if (_isDevelopMode) {
+          _reportUnreportedDevelopFailure();
           // Sending results ends the test, which we don't want for Hot Restart
           return;
         }
@@ -217,6 +218,25 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
   void Function() _stopGatheringExceptions = () {};
 
   final DevtoolsServiceExtensions _serviceExtensions;
+
+  /// Logs the failure of a test whose body did not log it, such as one whose
+  /// `setUp` threw: `patrol mcp` ends a develop run on a failure entry.
+  void _reportUnreportedDevelopFailure() {
+    if (global_state.isInternalTestExplorer(
+          global_state.currentTestIndividualName,
+        ) ||
+        !global_state.isCurrentTestFailureUnreported) {
+      return;
+    }
+    PatrolLogWriter().log(
+      TestEntry(
+        name: global_state.currentTestFullName,
+        status: TestEntryStatus.failure,
+        error: global_state.currentTestErrors.join('\n'),
+      ),
+    );
+    global_state.markCurrentTestFailureReported();
+  }
 
   /// Temporary workaround for DevTools extension changing this value and not
   /// resetting it.

@@ -67,6 +67,25 @@ bool get isCurrentTestPassing {
   return Invoker.current!.liveTest.state.result.isPassing;
 }
 
+LiveTest? _failureReportedFor;
+
+/// Records that the develop log already has a failure entry for the current
+/// test.
+void markCurrentTestFailureReported() {
+  _failureReportedFor = Invoker.current!.liveTest;
+}
+
+/// Whether the current test failed without a failure entry in the develop log,
+/// which happens when a `setUp` throws and the test body never runs.
+bool get isCurrentTestFailureUnreported =>
+    !isCurrentTestPassing &&
+    !identical(_failureReportedFor, Invoker.current!.liveTest);
+
+/// The errors the current test has failed with so far.
+List<Object> get currentTestErrors => [
+  for (final error in Invoker.current!.liveTest.errors) error.error,
+];
+
 /// Whether [entry] runs: a test that is not skipped, or a group with such a
 /// test. The test explorer does not count.
 ///

@@ -66,44 +66,64 @@ void main() {
 $body}
 ''';
 
-/// Files whose skipped tests must still let the run report its end, in the
-/// order the test hot restarts into them.
-final skipStages = <({String name, String contents})>[
-  (
-    name: 'a skipped last test',
-    contents: _testFile('''
+/// The name of the test whose `setUp` throws in the last stage.
+const setUpThrowsTestName = 'This test has a setUp that throws';
+
+/// Files the test hot restarts into, in order. Each stage ends when `done`
+/// holds for its output: the end of the run, or for a throwing `setUp`, the
+/// test's failure entry.
+final skipStages =
+    <({String name, String contents, bool Function(String) done})>[
+      (
+        name: 'a skipped last test',
+        done: _endsRun,
+        contents: _testFile('''
 ${_passingTest()}
   patrol('This skipped test is the last one in the file', (\$) async {},
       skip: true);
 '''),
-  ),
-  (
-    name: 'a skipped test in the middle',
-    contents: _testFile('''
+      ),
+      (
+        name: 'a skipped test in the middle',
+        done: _endsRun,
+        contents: _testFile('''
 ${_passingTest()}
   group('skipped tests', () {
     setUp(() => print('$skippedSetUpMarker'));
     patrol('This skipped test is in the middle', (\$) async {}, skip: true);
   });
 ${_passingTest('This test runs after the skipped one')}'''),
-  ),
-  (
-    name: 'a skipped group at the end',
-    contents: _testFile('''
+      ),
+      (
+        name: 'a skipped group at the end',
+        done: _endsRun,
+        contents: _testFile('''
 ${_passingTest()}
   group('skipped group', () {
     setUp(() => print('$skippedSetUpMarker'));
     patrol('This test is in a skipped group', (\$) async {});
   }, skip: true);
 '''),
-  ),
-  (
-    name: 'only skipped tests',
-    contents: _testFile(r'''
+      ),
+      (
+        name: 'only skipped tests',
+        done: _endsRun,
+        contents: _testFile(r'''
   patrol('This test is skipped', ($) async {}, skip: true);
 '''),
-  ),
-];
+      ),
+      (
+        name: 'a last test whose setUp throws',
+        done: (output) =>
+            output.contains('❌') && output.contains(setUpThrowsTestName),
+        contents: _testFile('''
+  setUp(() => throw StateError('setUp failed'));
+  patrol('$setUpThrowsTestName', (\$) async {});
+'''),
+      ),
+    ];
+
+bool _endsRun(String output) => output.contains(allTestsExecuted);
 
 const allTestsExecuted =
     'All tests were executed. Press "r" to start again or "q" to quit';
@@ -192,7 +212,7 @@ void main(List<String> args) async {
         print('Exiting with exit code 1');
         io.exit(1);
       }
-      if (stageOutput.contains(allTestsExecuted)) {
+      if (skipStages[skipStage].done(stageOutput)) {
         print('The run reported its end with ${skipStages[skipStage].name}');
         if (skipStage == skipStages.length - 1) {
           print('Exiting with exit code 0');

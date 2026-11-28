@@ -205,6 +205,7 @@ void patrolTest(
               status: TestEntryStatus.failure,
             ),
           );
+          global_state.markCurrentTestFailureReported();
         }
         rethrow;
       }
@@ -226,6 +227,7 @@ void patrolTest(
             error: caughtException.toString(),
           ),
         );
+        global_state.markCurrentTestFailureReported();
       }
 
       if (constants.hotRestartEnabled) {
