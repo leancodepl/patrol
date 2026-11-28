@@ -7,6 +7,7 @@ import 'package:dispose_scope/dispose_scope.dart' hide ProcessDisposed;
 import 'package:meta/meta.dart';
 import 'package:package_config/package_config.dart';
 import 'package:path/path.dart' show basename;
+import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/coverage/bind_unused_port.dart';
@@ -153,12 +154,18 @@ class WebTestBackend {
       ..detail('Starting web test execution...')
       ..info('Building Flutter web app...');
 
+    _throwIfInterrupted();
     final flutterProcess = await _startFlutterWebServer(
       options,
       develop: false,
     );
 
     try {
+      if (_disposeScope.disposed) {
+        await _killLateStart(flutterProcess);
+      }
+      flutterProcess.disposedByTree(_disposeScope);
+
       final baseUrl = await _waitForWebServer(
         flutterProcess,
         serverTimeout: options.serverTimeout,
@@ -171,10 +178,13 @@ class WebTestBackend {
         hideTestSteps: hideTestSteps,
         clearTestSteps: clearTestSteps,
       );
+    } catch (_) {
+      _throwIfInterrupted();
+      rethrow;
     } finally {
       _logger.detail('Stopping Flutter web server...');
 
-      flutterProcess.kill();
+      await flutterProcess.killTree();
 
       try {
         await flutterProcess.exitCode.timeout(const Duration(seconds: 5));
@@ -187,6 +197,23 @@ class WebTestBackend {
       }
     }
   }
+
+  /// Throws when [_disposeScope] is disposed, which happens mid-run only on an
+  /// interrupt.
+  void _throwIfInterrupted() {
+    if (_disposeScope.disposed) {
+      throwToolInterrupted(_interruptedDetails);
+    }
+  }
+
+  /// Kills [process], which finished starting after an interrupt, together
+  /// with its descendants, and reports the interrupt.
+  Future<Never> _killLateStart(Process process) async {
+    await process.killTree();
+    throwToolInterrupted(_interruptedDetails);
+  }
+
+  static const _interruptedDetails = 'the web run was interrupted';
 
   /// Runs a develop session on web, where "r" hot restarts the resident
   /// `flutter run`. Requires Flutter 3.47 (flutter/flutter#183838).
@@ -648,8 +675,9 @@ class WebTestBackend {
           }
         });
 
+    // `flutter` can exit with code 0 on SIGINT.
     flutterProcess.exitCode.then((exitCode) {
-      if (!completer.isCompleted && exitCode != 0) {
+      if (!completer.isCompleted) {
         stdoutSubscription.cancel();
         stderrSubscription.cancel();
         completer.completeError(
@@ -771,6 +799,8 @@ class WebTestBackend {
     required bool clearTestSteps,
     String? runnerPath,
   }) async {
+    _throwIfInterrupted();
+
     _logger.info('Running Playwright tests against: $baseUrl');
     final completer = Completer<void>();
 
@@ -789,20 +819,23 @@ class WebTestBackend {
         ..detail('Test results will be saved to: $testResultsDir')
         ..detail('Test report will be saved to: $testReportDir');
 
-      final playwrightProcess =
-          await _processManager.start(
-              ['npx', 'playwright', 'test', 'tests/test.spec.ts'],
-              workingDirectory: webRunnerPath,
-              environment: {
-                ...Platform.environment,
-                'BASE_URL': baseUrl,
-                'PATROL_TEST_RESULTS_DIR': testResultsDir,
-                'PATROL_TEST_REPORT_DIR': testReportDir,
-                ...options.toEnvironmentVariables(),
-              },
-              runInShell: true,
-            )
-            ..disposedByTree(scope);
+      _throwIfInterrupted();
+      final playwrightProcess = await _processManager.start(
+        ['npx', 'playwright', 'test', 'tests/test.spec.ts'],
+        workingDirectory: webRunnerPath,
+        environment: {
+          ...Platform.environment,
+          'BASE_URL': baseUrl,
+          'PATROL_TEST_RESULTS_DIR': testResultsDir,
+          'PATROL_TEST_REPORT_DIR': testReportDir,
+          ...options.toEnvironmentVariables(),
+        },
+        runInShell: true,
+      );
+      if (scope.disposed || _disposeScope.disposed) {
+        await _killLateStart(playwrightProcess);
+      }
+      playwrightProcess.disposedByTree(scope);
 
       final isShardedRun = (options.workers ?? 0) > 1;
       if (isShardedRun) {

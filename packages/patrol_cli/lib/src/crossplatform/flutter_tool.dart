@@ -5,6 +5,8 @@ import 'dart:io' as io;
 import 'package:dispose_scope/dispose_scope.dart' hide ProcessDisposed;
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' show basename;
+import 'package:patrol_cli/src/base/exceptions.dart';
+import 'package:patrol_cli/src/base/extensions/completer.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
@@ -49,21 +51,28 @@ class FlutterTool {
   var _devtoolsUrl = '';
   io.Process? _attachProcess;
   var _pendingHotRestart = false;
+  int? _attachExitCode;
+  String? _attachFailure;
   void Function()? _onRestartCompleted;
   void Function()? _onRestartFailed;
 
   /// Sends a Hot Restart to the attached app - the same as pressing `r`.
   ///
   /// If `flutter attach` hasn't connected yet the request is queued and sent
-  /// as soon as it does. Dropping it (the previous behaviour) left callers
-  /// such as patrol_mcp waiting for a test run that never started.
+  /// as soon as it does. Once `flutter attach` has exited without attaching,
+  /// the request is refused with a warning and neither callback fires.
   ///
   /// [onCompleted] fires once `flutter attach` reports the restart as
   /// completed ('Restarted application ...'), not when it is requested.
   /// Callers use it to tell output of the old and the new program apart.
   /// [onFailed] fires instead when the restart is rejected (compile error);
-  /// exactly one of the two fires, at most once.
+  /// for a request that is sent, exactly one of the two fires, at most once.
   void hotRestart({void Function()? onCompleted, void Function()? onFailed}) {
+    // Repeats the stderr tail: a restart comes long after the exit scrolled by.
+    if (_attachFailure case final failure?) {
+      _logger.warn(failure);
+      return;
+    }
     _onRestartCompleted = onCompleted;
     _onRestartFailed = onFailed;
     final process = _attachProcess;
@@ -91,6 +100,16 @@ class FlutterTool {
   /// A restart requested earlier is held until then, so a caller that reports
   /// on the restart waits for this before claiming it was sent.
   Future<void> get hotRestartReady => _hotRestartReady.future;
+
+  /// Why `flutter attach` exited without attaching, once it has: its exit
+  /// code and what it wrote to stderr. Hot restart is unavailable from then on.
+  String? get attachFailure => _attachFailure;
+
+  /// The exit code of `flutter attach` once it has exited without attaching.
+  int? get attachExitCode => _attachExitCode;
+
+  static String _attachUnavailable(int code) =>
+      'Hot Restart is not available: ${_exitSummary('flutter attach', code)}';
 
   /// Forwards logs and hot restarts the app when "r" is pressed.
   Future<void> attachForHotRestart({
@@ -139,6 +158,9 @@ class FlutterTool {
                 deviceId,
                 flutterCommand: flutterCommand,
               ));
+      if (url == null) {
+        return;
+      }
 
       await attach(
         flutterCommand: flutterCommand,
@@ -168,11 +190,14 @@ class FlutterTool {
     }
   }
 
-  Future<String> _readDebugUrlFromFlutterLogs(
+  /// Completes with null once the session is disposed before the URL arrives.
+  Future<String?> _readDebugUrlFromFlutterLogs(
     String deviceId, {
     required FlutterCommand flutterCommand,
   }) async {
-    final urlCompleter = Completer<String>();
+    final urlCompleter = Completer<String?>();
+    // The error can be set before anything awaits this below.
+    urlCompleter.future.ignore();
     await logs(
       deviceId,
       flutterCommand: flutterCommand,
@@ -301,8 +326,18 @@ class FlutterTool {
       scope.addDispose(() {
         if (!completer.isCompleted) {
           _logger.detail('Killed before attached to the app');
-          completer.complete();
         }
+        completer.maybeComplete();
+      });
+
+      _reportExit(process, scope, 'flutter attach', (code, reason) {
+        if (completer.isCompleted) {
+          return;
+        }
+        _attachExitCode = code;
+        _attachFailure = 'Hot Restart is not available: $reason';
+        _logger.err(_attachUnavailable(code));
+        completer.maybeComplete();
       });
 
       var quitting = false;
@@ -311,6 +346,10 @@ class FlutterTool {
             final char = String.fromCharCode(event.first);
             if (char == 'r' || char == 'R') {
               if (!_hotRestartActive) {
+                if (_attachFailure case final failure?) {
+                  _logger.warn(failure);
+                  return;
+                }
                 _logger.warn(
                   'Hot Restart: not attached to the app yet, will restart once '
                   'attached',
@@ -344,9 +383,7 @@ class FlutterTool {
               }
               quitting = true;
               _logger.success('Quitting process...');
-              if (!completer.isCompleted) {
-                completer.complete();
-              }
+              completer.maybeComplete();
 
               // Call the uninstall function if provided
               if (onQuit != null) {
@@ -395,7 +432,7 @@ class FlutterTool {
               if (!_logsActive && !_logsSkipped) {
                 _logger.warn('Hot Restart: logs are not connected yet');
               }
-              completer.complete();
+              completer.maybeComplete();
             }
 
             if (line.startsWith('Restarted application')) {
@@ -421,16 +458,6 @@ class FlutterTool {
           })
           .disposedBy(scope);
 
-      process
-          .listenStdErr((line) {
-            if (line.startsWith('Waiting for another flutter command')) {
-              // This is a warning that we can ignore
-              return;
-            }
-            _logger.err('\t$line');
-          })
-          .disposedBy(scope);
-
       await completer.future;
     });
   }
@@ -441,7 +468,7 @@ class FlutterTool {
   Future<void> logs(
     String deviceId, {
     required FlutterCommand flutterCommand,
-    Completer<String>? observationUrlCompleter,
+    Completer<String?>? observationUrlCompleter,
   }) async {
     await _disposeScope.run((scope) async {
       _logger.detail('Logs: waiting for them...');
@@ -462,8 +489,22 @@ class FlutterTool {
 
       final completer = Completer<void>();
       scope.addDispose(() {
+        completer.maybeComplete();
+        observationUrlCompleter?.maybeComplete();
+      });
+
+      _reportExit(process, scope, 'flutter logs', (code, _) {
+        final summary = _exitSummary('flutter logs', code);
         if (!completer.isCompleted) {
-          completer.complete();
+          _logger.err('Logs are not available: $summary');
+          completer.maybeComplete();
+        }
+
+        if (observationUrlCompleter case final urlCompleter?
+            when !urlCompleter.isCompleted) {
+          urlCompleter.completeError(
+            ToolExit('$summary before reporting the Dart VM service URL'),
+          );
         }
       });
 
@@ -482,7 +523,7 @@ class FlutterTool {
               if (!_hotRestartActive) {
                 _logger.warn('Hot Restart: not attached to the app yet');
               }
-              completer.complete();
+              completer.maybeComplete();
             }
 
             // Skip the log line that contains "PATROL_LOG" prefix
@@ -506,11 +547,58 @@ class FlutterTool {
           })
           .disposedBy(scope);
 
-      process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
-
       await completer.future;
     });
   }
+
+  /// Forwards the process stderr and, once it exits, hands [onExit] its exit
+  /// code and a description of that exit that ends with the stderr tail.
+  ///
+  /// The lines explaining an exit can still be in flight when its exit code
+  /// arrives, so the description is built once stderr drains. Only the tail is
+  /// kept: a long session can produce thousands of lines.
+  void _reportExit(
+    io.Process process,
+    DisposeScope scope,
+    String command,
+    void Function(int code, String reason) onExit,
+  ) {
+    final stderrLines = <String>[];
+    final drained = Completer<void>();
+
+    process
+        .listenStdErr((line) {
+          if (line.startsWith('Waiting for another flutter command')) {
+            // This is a warning that we can ignore
+            return;
+          }
+          stderrLines.add(line);
+          if (stderrLines.length > _maxStderrLines) {
+            stderrLines.removeAt(0);
+          }
+          _logger.err('\t$line');
+        }, onDone: drained.maybeComplete)
+        .disposedBy(scope);
+
+    process.exitCode.then((code) async {
+      await drained.future.timeout(
+        const Duration(seconds: 1),
+        onTimeout: () {},
+      );
+      onExit(code, _describeExit(command, code, stderrLines));
+    });
+  }
+
+  static const _maxStderrLines = 20;
+
+  String _describeExit(String command, int code, List<String> stderrLines) {
+    final lines = stderrLines.where((line) => line.trim().isNotEmpty);
+    final reason = lines.isEmpty ? '' : ':\n\t${lines.join('\n\t')}';
+    return '${_exitSummary(command, code)}$reason';
+  }
+
+  static String _exitSummary(String command, int code) =>
+      '`$command` exited with code $code';
 
   /// Enables interactive mode. Returns the previous stdin modes.
   StdinModes enableInteractiveMode() {
